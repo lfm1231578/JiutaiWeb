@@ -1,0 +1,527 @@
+﻿@using BaseinfoManage.Factory.IBLL;
+@using EYB.ServiceEntity.BaseInfo;
+@using WarehouseManage.Factory.IBLL;
+@{
+    Layout = null;
+    IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseinfoBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    int rows = 0;
+    int pagecount = 0;
+
+    ProjectEntity info = new ProjectEntity();
+    info.HospitalID = ViewBag.ParentHospitalID;
+    info.numPerPage = 200; //每页显示条数
+    info.orderField = "ID";
+    info.Name=Request["ProjectName"];
+    info.BrandID = Convert.ToInt32(Request["ProjectBrandID"]);
+    var type = Request["type"];
+
+    ProductEntity info1 = new ProductEntity();
+    info1.ParentHospitalID = ViewBag.ParentHospitalID;
+    info1.numPerPage = 200; //每页显示条数
+    info1.orderField = "ID";
+    info1.Name = Request["ProductName"];
+    info1.BrandID= Convert.ToInt32(Request["ProductBrandID"]);
+
+    MainCardEntity info2 = new MainCardEntity();
+    info2.HospitalID = ViewBag.ParentHospitalID;
+    info2.numPerPage = 200; //每页显示条数
+    info2.orderField = "ID";
+    info2.Name = Request["TreatmentName"];
+    info2.Type = 2;
+    IList<ProjectEntity> list = baseinfoBLL.GetAllProject(info, out rows, out pagecount).ToList(); //项目
+    IList<ProductEntity> list1 = baseinfoBLL.GetAllProduct(info1, out rows, out pagecount);//产品
+    IList<MainCardEntity> list2 = baseinfoBLL.GetAllTreatment(info2, out rows, out pagecount);//疗程卡
+    var brandlist = wareBll.GetBrandListNoPage(ViewBag.ParentHospitalID);
+
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    @*<script src="../../Scripts/Common/common.js" type="text/javascript"></script>*@
+</head>
+<body style="background: #fff; overflow-x: hidden;">
+    <div id="mainContentRight" style="width: 100%;">
+        <div id="tabbox">
+            <ul class="tabs" id="tabs">
+                <li><a href="#" tab="tab1">项目</a></li>
+                <li><a href="#" tab="tab2">产品</a></li>
+                <li><a href="#" tab="tab3">疗程卡</a></li>
+            </ul>
+            <ul id="tab_conbox" class="tab_conbox">
+                <li id="tab1" class="tab_con">
+                    <div id="articles">
+                        <form action="" method="post" id="searchForm">
+                            <div class="accountdiv" style="margin-bottom: 0px;">
+                                <input type="hidden" value="@DateTime.Now.Ticks" name="T" id="txtTime" />
+                                <input type="text" value="0" id="type" name="type" style="display:none" /> 
+                                <label style="font-weight: normal;">
+                                    项目名称：
+                                </label>
+                                <input type="text" name="ProjectName" id="Name" class="text-input input130" style="height:20px;" value="@info.Name" />
+                                <label style="font-weight: normal;">
+                                    所属品牌:
+                                </label>
+                                <select name="ProjectBrandID" id="BrandID" style="width: 100px;" class="select">
+                                    <option value="0">=选择品牌=</option>
+                                    @foreach (var entity in brandlist)
+                                    {
+                                        <option @(info.BrandID == entity.ID ? "selected='selected'" : "") value="@entity.ID">@entity.Name</option>
+                                    }
+                                </select>
+                                <input type="submit" class="submitbutton2" id="btnsumbit" style="float: none;" value="查 询" />
+                                <input type="button" value="确定" class="submitbutton2" style="float: none;" onclick="ShareSelect()" />
+                            </div>
+                            <table class="gridTable" style="height: auto; border-collapse: collapse;" cellpadding="0"
+                                   cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')"/>
+                                        </th>
+                                        <th>
+                                            项目名称
+                                        </th>
+                                        <th>
+                                            品牌
+                                        </th>
+                                        <th>
+                                            零售价
+                                        </th>
+                                        <th>
+                                            服务时长
+                                        </th>
+                                        <th>
+                                            所属类别
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var entity in list)
+                                    {
+                                        var listValue = entity.ID + "|" + entity.Name + "|1";
+                                        <tr class="ableclick">
+                                            <td>
+                                                <input type="checkbox" id="check_box" name="checkbox" class="checkbox" value="@listValue" />
+                                            </td>
+                                            <td>
+                                                @entity.Name
+                                            </td>
+                                            <td>
+                                                @entity.BrandName
+                                            </td>
+                                            <td>
+                                                @entity.RetailPrice
+                                            </td>
+                                            <td>
+                                                @entity.ServiceTime
+                                            </td>
+                                            <td>
+                                                @entity.TypeName
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </li>
+                <li id="tab2" class="tab_con" style="display: none;">
+                    <div id="articlesproduct">
+                        <form action="" method="post" id="submitform">
+                            <div class="accountdiv" style="margin-bottom: 0px;">
+                                <input type="hidden" value="@DateTime.Now.Ticks" name="T" id="txtTime" />
+                                <input type="text" value="1" id="type" name="type" style="display:none" /> 
+                                <label style="font-weight: normal;">
+                                    产品名称：
+                                </label>
+                                <input type="text" name="ProductName" id="Name" class="text-input input130" style="height:20px;" value="@info1.Name" />
+                                <label style="font-weight: normal;">
+                                    所属品牌:
+                                </label>
+                                <select name="ProductBrandID" id="BrandID" style="width: 100px;" class="select">
+                                    <option value="0">=选择品牌=</option>
+                                    @foreach (var entity in brandlist)
+                                    {
+                                        <option @(info1.BrandID == entity.ID ? "selected='selected'" : "") value="@entity.ID">@entity.Name</option>
+                                    }
+                                </select>
+                                <input type="submit" class="submitbutton2" id="btnsumbit" style="float: none;" value="查 询" />
+                                <input type="button" value="确定" class="submitbutton2" style="float: none;" onclick="Chanpin()" />
+                            </div>
+                            <table class="gridTable" style="height: auto; border-collapse: collapse;" cellpadding="0"
+                                   cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="check_box" class="checkbox1" onclick="selectall1('checkbox1')" />
+                                        </th>
+                                        <th orderfield="Name">
+                                            产品名称
+                                        </th>
+                                        <th orderfield="RetailPrice">
+                                            零售价
+                                        </th>
+                                        <th orderfield="BrandName">
+                                            所属品牌
+                                        </th>
+                                        <th orderfield="ProductTypeName">
+                                            所属分类
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var entity in list1)
+                                    {
+                                        var listValue = entity.ID + "|" + entity.Name + "|2";
+                                        <tr class="ableclick">
+                                            <td>
+                                                <input type="checkbox" id="check_box" name="checkbox1" class="checkbox1" value="@listValue" />
+                                                @*<input type="radio" name="checkbox1" value="@listValue" />*@
+                                            </td>
+                                            <td>
+                                                @entity.Name
+                                            </td>
+                                            <td>
+                                                @entity.RetailPrice
+                                        </td>
+                                        <td>
+                                            @entity.BrandName
+                                        </td>
+                                        <td>
+                                            @entity.ProductTypeName
+                                    </td>
+                                </tr>
+
+                                    }
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </li>
+                <li id="tab3" class="tab_con" style="display: none;">
+                    <div id="articlesliaocheng">
+                        <form action="" method="post">
+                            <div class="accountdiv" style="margin-bottom: 0px;">
+                                <input type="hidden" value="@DateTime.Now.Ticks" name="T" id="txtTime" />
+                                <input type="text" value="2" id="type" name="type" style="display:none" /> 
+                                <label style="font-weight: normal;">
+                                    名称：
+                                </label>
+                                <input type="text" name="TreatmentName" id="Name" class="text-input input130" style="height:20px;" value="@info2.Name" />
+                                <input type="submit" class="submitbutton2" id="btnsumbit" style="float: none;" value="查 询" />
+                                <input type="button" value="确定" class="submitbutton2" style="float: none;" onclick="LiaoCengKa()" />
+                            </div>
+                            <table class="gridTable" style="width: 99%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            <input type="checkbox" id="check_box" class="checkbox2" onclick="selectall2('checkbox2')" />
+                                        </th>
+                                        <th>
+                                            卡名称
+                                        </th>
+                                        <th>
+                                            有效期（天）
+                                        </th>
+                                        <th>
+                                            购卡金额
+                                        </th>
+                                        <th>
+                                            疗程次数
+                                        </th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (EYB.ServiceEntity.BaseInfo.MainCardEntity entity in list2)
+                                    {
+                                        var listValue = entity.ID + "|" + entity.Name + "|3";
+                                        <tr class="ableclick">
+                                            <td>
+                                                @*<input type="radio" name="checkbox2" value="@listValue" />*@
+                                                <input type="checkbox" id="check_box" name="checkbox2" class="checkbox2" value="@listValue" />
+                                            </td>
+                                            <td>
+                                                @entity.Name
+                                            </td>
+                                            <td>
+                                                @entity.VaildityDay
+                                            </td>
+                                            <td>
+                                                @entity.Price
+                                            </td>
+                                            <td>
+                                                @entity.AllTimes
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+   //全选框
+    function selectall(name) {
+        if ($(".checkbox").prop("checked") == false) {
+
+            $("input[name='" + name + "']").each(function () {
+                this.checked = false;
+            });
+        } else {
+
+            $("input[name='" + name + "']").each(function () {
+                this.checked = true;
+            });
+        }
+    }
+    function selectall1(name) {
+        if ($(".checkbox1").prop("checked") == false) {
+
+            $("input[name='" + name + "']").each(function () {
+                this.checked = false;
+            });
+        } else {
+
+            $("input[name='" + name + "']").each(function () {
+                this.checked = true;
+            });
+        }
+    }
+    function selectall2(name) {
+        if ($(".checkbox2").prop("checked") == false) {
+
+            $("input[name='" + name + "']").each(function () {
+                this.checked = false;
+            });
+        } else {
+
+            $("input[name='" + name + "']").each(function () {
+                this.checked = true;
+            });
+        }
+    }
+
+    //项目
+    function ShareSelect()
+    {
+        if ($("input[name='checkbox']:checked").length == 0) {
+            alert("请选择项目!"); return;
+        }
+        var arr = new Array();
+        $('input[name="checkbox"]:checked').each(function (i) {
+            if ($(this).attr("checked")) {
+                arr[i] = $(this).attr('value');
+            }
+
+
+        });
+        var values = "";
+        for (var i = 0; i < arr.length; i++) {
+            values += arr[i] + ",";
+        }
+        art.dialog.data('bValue', values); // 存储数据
+        art.dialog.close();
+    }
+    //产品
+    function Chanpin()
+    {
+        if ($("input[name='checkbox1']:checked").length == 0) {
+            alert("请选择项目!"); return;
+        }
+        var arr = new Array();
+        $('input[name="checkbox1"]:checked').each(function (i) {
+            if ($(this).attr("checked")) {
+                arr[i] = $(this).attr('value');
+            }
+
+
+        });
+        var values = "";
+        for (var i = 0; i < arr.length; i++) {
+            values += arr[i] + ",";
+        }
+        art.dialog.data('bValue', values); // 存储数据
+        art.dialog.close();
+    }
+    //疗程卡
+    function LiaoCengKa()
+    {
+        if ($("input[name='checkbox2']:checked").length == 0) {
+            alert("请选择项目!"); return;
+        }
+        var arr = new Array();
+        $('input[name="checkbox2"]:checked').each(function (i) {
+            if ($(this).attr("checked")) {
+                arr[i] = $(this).attr('value');
+            }
+
+
+        });
+        var values = "";
+        for (var i = 0; i < arr.length; i++) {
+            values += arr[i] + ",";
+        }
+        art.dialog.data('bValue', values); // 存储数据
+        art.dialog.close();
+    }
+    //Tab切换
+    $("#tabs  li").click(function () {
+        $("#tabs li").removeClass("thistab");
+        $(this).addClass("thistab");
+        $(".tab_con").hide();
+        var index = $(this).parent().find("li").index(this);
+        $("#tab_conbox").find(".tab_con").eq(index).show();
+        var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+        iframe1.attr("src", iframe1.attr("href"));
+    });
+    $("#tabs li:first").addClass("thistab").show();
+    $("#tabs").find("li").eq(@type).click();
+
+    @*$(function () {
+        var thetype = "@type";
+        if (thetype != "0") {
+            $("#tabs").find("li").eq(parseInt(thetype)).click();
+        }*@
+
+    //项目
+    $("#articles").delegate("tr.ableclick", "click", function () {
+        var $chekbox = $(this).find("input:checkbox");
+        if ($chekbox.prop("checked") == false) {
+            $chekbox.attr("checked", "checked");
+            $(this).css("background", "#E7F6FF");
+        } else {
+            $chekbox.attr("checked", false);
+            $(this).css("background", "");
+        }
+    });
+    $("#articles").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+    $("#articles").delegate("tr.ableclick", "dblclick", function () {
+        $(this).find("input:checkbox").attr("checked", "checked");
+        FullValue();
+    });
+
+    //产品
+
+    $("#articlesproduct").delegate("tr.ableclick", "click", function () {
+        var $chekbox = $(this).find("input:checkbox");
+        if ($chekbox.prop("checked") == false) {
+            $chekbox.attr("checked", "checked");
+            $(this).css("background", "#E7F6FF");
+        } else {
+            $chekbox.attr("checked", false);
+            $(this).css("background", "");
+        }
+    });
+    $("#articlesproduct").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+    $("#articlesproduct").delegate("tr.ableclick", "dblclick", function () {
+        $(this).find("input:checkbox").attr("checked", "checked");
+        FullValue1();
+    });
+
+  
+    //疗程卡
+
+    $("#articlesliaocheng").delegate("tr.ableclick", "click", function () {
+        var $chekbox = $(this).find("input:checkbox");
+        if ($chekbox.prop("checked") == false) {
+            $chekbox.attr("checked", "checked");
+            $(this).css("background", "#E7F6FF");
+        } else {
+            $chekbox.attr("checked", false);
+            $(this).css("background", "");
+        }
+    });
+    $("#articlesliaocheng").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+    $("#articlesliaocheng").delegate("tr.ableclick", "dblclick", function () {
+        $(this).find("input:checkbox").attr("checked", "checked");
+        FullValue2();
+    });
+
+
+    //确定选择按钮
+    function FullValue() {
+        var value = "";
+        $("input[name='checkbox']:checked").each(function (i) {
+            value += $(this).val()+",";
+        });
+        if (value == undefined) {
+            alert("请选择项目");
+            return false;
+        }
+
+        art.dialog.data('bValue', value); // 存储数据
+        art.dialog.close();
+    }
+    //确定选择按钮
+    function FullValue1() {
+        var value = "";
+        $("input[name='checkbox1']:checked").each(function (i) {
+            value += $(this).val() + ",";
+        });
+        if (value == undefined) {
+            alert("请选择项目");
+            return false;
+        }
+
+        art.dialog.data('bValue', value); // 存储数据
+        art.dialog.close();
+    }
+    //确定选择按钮
+    function FullValue2() {
+        var value = "";
+        $("input[name='checkbox2']:checked").each(function (i) {
+            value += $(this).val()+",";
+        });
+        if (value == undefined) {
+            alert("请选择项目");
+            return false;
+        }
+
+        art.dialog.data('bValue', value); // 存储数据
+        art.dialog.close();
+    }
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+
+</script>

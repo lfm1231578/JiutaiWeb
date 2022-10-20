@@ -1,0 +1,86 @@
+﻿@using Webdiyer.WebControls.Mvc;
+
+@{
+    ViewBag.Title = "普及率";
+    Layout = null;
+    var sumquan = ViewBag.ordersum;
+}
+<form action="" method="post" id="submitform">
+    <table class="gridTable" style="border-collapse: collapse;">
+        <thead style="position:absolute; width:98%;">
+            <tr>
+                <th @(ViewBag.orderField == "ProductName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProductName">
+                    疗程名称
+                </th>
+                @*@if (ViewBag.s_ID == 1)
+                {
+                    <th>
+                        疗程销售
+                    </th>
+                }*@
+                <th @(ViewBag.orderField == "Quantity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quantity">
+                    疗程销售数量
+                </th>
+                <th @(ViewBag.orderField == "UserID" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserID">
+                    <span title="购买客数指购买单项的人头数">购买客数</span>
+                </th>
+                <th><span title="[有效可]3个月内到店一次">有效客数</span></th>
+                <th>
+                    疗程普及率
+                </th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="height:40px;"></tr>
+            @foreach (var entity in Model)
+            {
+                if (entity.Quantity > 0)
+                {
+                    //sumquan += entity.Quantity;
+                <tr>
+                    <td>
+                        @entity.ProductName
+                    </td>
+                    @*@if (ViewBag.s_ID == 1)
+                    {
+                        <td>
+                            @entity.AllTimes
+                        </td>
+                    }*@
+                    <td>
+                        @entity.Quantity
+                    </td>
+                    <td>
+                        @entity.UserID
+                    </td>
+                    <td>
+                        @ViewBag.Sumyouxiaoke
+                    </td>
+                    <td>
+                        @((Convert.ToDouble(entity.Quantity) <= 0 ? 0.00 : (Convert.ToDouble(entity.Quantity) * 100 / Convert.ToDouble(sumquan))).ToString("0.00") + "%")
+                        @*@((Convert.ToDouble(entity.DocumentNumber) <= 0 ? 0.00 : (Convert.ToDouble(entity.UserID) * 100 / Convert.ToDouble(entity.DocumentNumber))).ToString("0.00") + "%")*@
+                    </td>
+                    <td>
+                        <a href="javascript:OpenPopularityDetail('@entity.ProductID','@entity.Type','@entity.HospitalID')">详情</a>
+                    </td>
+                </tr>
+                }
+            }
+            @*       @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 10))*@
+        </tbody>
+    </table>
+</form>
+<div style="height:120px;"></div>
+<script type="text/javascript">
+    //打开普及率详情
+    function OpenPopularityDetail(ProdcuitID, Type, HospitalID) {
+        var s_StareTime = $("#s_StareTime").val();
+        var s_Endtime = $("#s_Endtime").val();
+        art.dialog.open("/CenterManage/PopularityRateDetail?ProdcuitID=" + ProdcuitID + "&s_ID=" + Type + "&s_StareTime=" + s_StareTime + "&s_Endtime=" + s_Endtime + "&s_HospitalID=" + HospitalID, { title: "普及率详情", width: 670, height: 500 });
+    }
+
+</script>
+<script src="/Scripts/ymx/commonTable.js"></script>

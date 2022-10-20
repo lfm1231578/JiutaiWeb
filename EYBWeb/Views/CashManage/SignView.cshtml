@@ -1,0 +1,79 @@
+﻿
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    ViewBag.Title =  "签名项目";
+    
+    Layout = null;
+    var OrderNo =Request["OrderNofilter"];
+    var ParentHospitalID = ViewBag.ParentHospitalID;//总店ID
+   
+    var Autograph = ViewBag.Autograph;
+}
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+    <head>
+        <title></title>
+        @*<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+        <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+        位置不能颠倒，否则影响样式
+        <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+              type="text/css" />
+        <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+        <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+        Panel
+        <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+        表格
+        <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+        表单验证
+        <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+        日期
+        <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+        弹出框
+        <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+        <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>*@
+    </head>
+    <body style="background-color:#fff ;text-align: center;">
+        <div style="overflow:hidden; ">
+            <div id="showqianming"></div>
+            <div id="qianming"></div>
+        </div>
+
+
+        <script src="../../Scripts/Common/jquery-2.2.2.min.js"></script>
+        <script src="../../Scripts/Common/flashcanvas.js"></script>
+        <script src="../../Scripts/Common/jSignature.js"></script>
+        <script src="../../Scripts/Common/modernizr.js"></script>
+        <script type="text/javascript">
+            $(function () {
+            //初始化插件
+            $("#signature").jSignature();
+            var img = new Image();
+            datapair = ["image/png;base64", "@Autograph"]
+            img.src = "data:" + datapair[0] + "," + datapair[1];
+            img.image = datapair[1];
+            if (img.image != "") {
+                $("#showqianming").append(img);
+                $("#qianming").hide();
+            }
+            else {
+                $("#qianming").show();
+            }
+        })
+
+        </script>
+
+    </body>
+
+</html>
+
+</EYB.ServiceEntity.CashEntity.OrderEntity>

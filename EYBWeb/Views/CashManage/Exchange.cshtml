@@ -1,0 +1,248 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "退换操作";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+    //查询门店美容师
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    persoList = persoList.Where(i => i.IsSys != 1).ToList();
+    //获取用户所有的划扣次数
+    var projectList = cashBll.GetProjectBalance(UserID, 0, ViewBag.ParentHospitalID);
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_PreAddorder);
+}
+<div id="mainContentBody">
+    @Html.Partial("_CashControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                
+                </label>
+                退卡<label style="font-size:14px;color:red;">(注意：如实退金额的小数值跟实际值有差异，可手动修改小数的值！)</label>
+            </div>
+            <div class="mainContentRight_bottom clearfix">
+                @Html.Partial("_PatientSelect")
+                <div id="tabbox" style="overflow-x: hidden; overflow-y: auto;">
+                    <ul class="tabs" id="tabs">
+                        <li><a href="###" tab="tab1">退疗程卡</a></li>
+                        <li><a href="###" tab="tab2" style="display: none;">退换产品</a></li>
+                        <li><a href="###" tab="tab3">退储值卡</a></li>
+                    </ul>
+                    <ul id="tab_conbox" class="tab_conbox">
+                        <li id="tab1" class="tab_con">
+                            <table class="gridTable" style="width: 96%; border-collapse: collapse;margin-top:5px;">
+                                <thead>
+                                    <tr style="background: rgba(251,195,196,0.8); text-align: center;">
+                                        <th>
+                                            选择
+                                        </th>
+                                        <th>
+                                            卡项名称
+                                        </th>
+                                        <th>
+                                            项目名称
+                                        </th>
+                                        <th style="display: none;">
+                                            单次原价
+                                        </th>
+                                        <th>
+                                            优惠单价
+                                        </th>
+                                        <th>
+                                            总次数
+                                        </th>
+                                        <th>
+                                            结余次数
+                                        </th>
+                                        <th>
+                                            退卡次数
+                                        </th>
+                                        <th>
+                                            应退金额
+                                        </th>
+                                        <th>
+                                            实退金额
+                                        </th>
+                                        <th>
+                                            参与员工
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gridtbody"></tbody>
+                            </table>
+                            <div class="accountdiv" style="width:96%;padding:0;margin:0 auto;">
+                                <label style="font-weight: normal;">
+                                    退卡次数：
+                                </label><label id="labtuitimes" style="color: red; font-size: 16px;">0</label>
+                                <label style="font-weight: normal;">
+                                    应退总额：
+                                </label><label id="yingtui" style="color: Green; font-size: 16px;">0</label>
+                                <label style="font-weight: normal;">
+                                    实退总额：
+                                </label><label id="labamout" style="color: red; font-size: 16px;">0</label>
+                                <label style="font-weight: normal;">
+                                    手续费及其他：
+                                </label>
+                                <input type="text" style="width: 80px;" id="txtshouxufei" disabled="disabled" onkeyup='javascript:CheckInputIntFloat(this);' />
+                                <label style="font-weight: normal;">
+                                    说明：
+                                </label>
+                                <input type="text"  id="txtmemo" />
+                                <label style="font-weight: normal; color: Red;">
+                                    退卡原因：
+                                </label>
+                                <select id="tuiliaochengType">
+                                    <option value="0">请选择退卡原因</option>
+                                    <option value="2">正常退卡</option>
+                                    <option value="4">公司退款</option>
+                                    <option value="1">开错订单</option>
+                                    <option value="3">顾客转卡</option>
+                                </select>
+                                @if (result1)
+                                {
+                                    <label>补单：</label>
+                                    <input type="text" autocomplete="off" class="text-input Wdate"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                           name="CreateTime" id="txtCreateTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                        <input type="checkbox" value="1" name="CheckCreateTime" id="chkcreatetime" style="width: 20px;height: 20px; vertical-align: middle; margin: -4px 2px 0px 2px;" />
+                                }
+                            </div>
+                            <div class="accountdiv" style="margin-top:5px;">
+                                <input type="button" class="submitbutton2" value="结 账" onclick="CheckOrder()" />
+                                <input type="button" class="submitbutton2" value="返 回" onclick="history.go(-1)" />
+                            </div>
+                        </li>
+                        <!--退换产品-->
+                        <li id="tab2" class="tab_con" style="display: none;">
+                            <table class="gridTable" style="width: 96%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background:rgba(251,195,196,0.8); text-align: center;">
+                                        <th>
+                                            选择
+                                        </th>
+                                        <th>
+                                            产品名称
+                                        </th>
+                                        <th>
+                                            原价
+                                        </th>
+                                        <th>
+                                            优惠单价
+                                        </th>
+                                        <th>
+                                            数量
+                                        </th>
+                                        <th>
+                                            合计
+                                        </th>
+                                        <th>
+                                            退换数量
+                                        </th>
+                                        <th>
+                                            应退金额
+                                        </th>
+                                        <th>
+                                            参与员工
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gridtbody1"></tbody>
+                            </table>
+                            <div class="accountdiv" style="width:96%;margin:0 auto; padding:0;">
+                                <label style="font-weight: normal;">
+                                    退卡次数：
+                                </label><label id="labtuitimes1" style="color: red; font-size: 16px;">0</label>
+                                <label style="font-weight: normal;">
+                                    本次实退总额：
+                                </label><label id="labamout1" class="labamout1" style="color: Green; font-size: 16px;">0</label>
+                                <label style="font-weight: normal;">
+                                    手续费及其他：
+                                </label>
+                                <input type="text" style="width: 80px; border:none;" id="txtshouxufei1" onkeyup='javascript:CheckInputIntFloat(this);' />
+                                <label style="font-weight: normal;">
+                                    说明：
+                                </label>
+                                <input type="text" style="width: 80px;" id="txtmemo1" />
+                            </div>
+                            <div class="accountdiv">
+                                <input type="button" class="submitbutton2" value="结 账" onclick="PayOrderProduct()" />
+                                <input type="button" class="submitbutton2" value="返 回" onclick="history.go(-1)" />
+                            </div>
+                        </li>
+                        <!--退换储值卡-->
+                        <li id="tab3" class="tab_con" style="display: none;">
+                            <table class="gridTable" style="width: 96%; border-collapse: collapse; margin-top:5px;">
+                                <thead>
+                                    <tr style="background: rgba(251,195,196,0.8); text-align: center;">
+                                        <th>
+                                            选择
+                                        </th>
+                                        <th>
+                                            卡项名称
+                                        </th>
+                                        <th>
+                                            是否为赠卡
+                                        </th>
+                                        <th>
+                                            结余金额
+                                        </th>
+                                        <th>
+                                            应退金额
+                                        </th>
+                                        <th>
+                                            实退金额
+                                        </th>
+                                        <th style="width: 90px;">
+                                            参与员工
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="gridtbody2"></tbody>
+                            </table>
+                            <div class="accountdiv" style="width:96%;margin:0 auto;padding:0;">
+                                <label style="font-weight: normal;">
+                                    应退总额：
+                                </label><label id="labyingtui" style="color: Green; font-size: 16px;">0</label>
+                                <label style="font-weight: normal;">
+                                    实退总额：
+                                </label><label id="labamout2" style="color: red; font-size: 16px;">0</label>
+                                <label style="font-weight: normal;">
+                                    手续费及其他：
+                                </label>
+                                <input type="text" style="width: 80px;border:none;" id="txtshouxufei2" disabled="disabled" onkeyup='javascript:CheckInputIntFloat(this);' />
+                                <label style="font-weight: normal;">
+                                    说明：
+                                </label>
+                                <input type="text"  id="txtmemo2" />
+                                <label style="font-weight: normal; color: Red;">
+                                    退卡原因：
+                                </label>
+                                <select id="tuichuzhiType" >
+                                    <option value="0">请选择退卡原因</option>
+                                    <option value="2">正常退卡</option>
+                                    <option value="4">公司退款</option>
+                                    <option value="1">开错订单</option>
+                                    <option value="3">顾客转卡</option>
+                                </select>
+                                补单：
+                                <input type="text" autocomplete="off" class="text-input Wdate"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                       name="CreateTime" id="txtCreateTime1" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <input type="checkbox" value="1" name="CheckCreateTime" id="chkcreatetime1" style="width: 20px;
+                    height: 20px; vertical-align: middle; margin: -4px 2px 0px 2px;" />
+                            </div>
+                            <div class="accountdiv" style="margin-top:5px;" >
+                                <input type="button" class="submitbutton2" value="结 账" onclick="PayOrderCard()" />
+                                <input type="button" class="submitbutton2" value="返 回" onclick="history.go(-1)" />
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+        </form>
+    </div>
+</div>
+<script src="../../Scripts/Controls/CashManage/Exchange.js?v=1.8" type="text/javascript"></script>
+<script>
+    $("#tabbox").css("min-height", getDocumentHeight() - $("#header").height() - $("#footer").height() - 170 + "px");
+</script>

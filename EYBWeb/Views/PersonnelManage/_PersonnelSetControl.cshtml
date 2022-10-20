@@ -1,0 +1,16 @@
+﻿@{
+    ViewBag.Title = "_PersonnelControl";
+}
+
+    <div id="mainContentLeft">
+        <div id="mainContentLeft_top" >
+         <a style="background:#fff url('../../Content/themes/default/images/menu/icon1.jpg')  left -260px no-repeat;"> </a><span>个人设置</span>   </div>
+        <div id="mainContentLeft_center">
+            <ul>
+                <li><a href="@Url.Content("~/PersonnelManage/PersonnelDetail?UserID=")@ViewBag.UserID"><img width='130' height='110' src='../../Content/themes/images/personset1.png'   /><label>个人资料</label></a></li>
+                <li style="margin-left:20px;"><a href="@Url.Content("~/PersonnelManage/PersonnelAccount")"><img width='130' height='110' src='../../Content/themes/images/personset2.png'   /><label>账号安全</label></a></li>
+            </ul>
+        </div>
+       
+    </div>
+    

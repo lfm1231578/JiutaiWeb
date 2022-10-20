@@ -1,0 +1,402 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model List<EYB.ServiceEntity.MoneyEntity.PassengerTrafficEntity>
+    @{
+        Layout = null;
+        var allCustomerService = 0;
+        var customerService = 0;
+        var headCount = 0;
+        var passengerTraffic = 0;
+        decimal projectNumber = 0;
+        //var fuwuPassengerTraffic = 0;
+        decimal fuwuPassengerTraffic = 0;
+        decimal kuadianKeliu = 0;
+        var buyCount = 0;
+        decimal keliu = 0;
+        int hospitalBuyCount = 0;
+
+        decimal youxiaokeliu = 0;
+        var youxiaokezongRenTou = 0;
+    }
+    <style>
+        .box {
+            width: 150px;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            background-color: #FFF0F5;
+            float: left;
+        }
+
+        .boxfixed {
+            width: 5%;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .boxHeight22 {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            background-color: #00ffff;
+            text-overflow:;
+        }
+        .boxHeight {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+         .boxHeight1 {
+            display: flex;
+            align-items: center;
+            height: 102px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+         .boxHeight4 {
+            display: flex;
+            align-items: center;
+            height: 206px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+         .boxHeight3 {
+            display: flex;
+            align-items: center;
+            height: 154px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+         .boxHeight6 {
+            display: flex;
+            align-items: center;
+            height: 310px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+         .boxHeight7 {
+            display: flex;
+            align-items: center;
+            height: 362px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+         .boxHeight14 {
+            display: flex;
+            align-items: center;
+            height: 726px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+        .scrollBox-f {
+            width: 88%;
+            display: inline-block;
+            overflow-x: auto;
+        }
+    </style>
+    @*<form action="" method="post" id="submitform">
+            <table class="gridTable" style="border-collapse: collapse;">
+                <thead style="position:absolute;">
+                    <tr>
+                        <th orderfield="">
+                            门店
+                        </th>
+                        <th orderfield="">
+                            员工姓名
+                        </th>
+                        <th @(ViewBag.orderField == "AllCustomerService" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllCustomerService">
+                            管理客数
+                        </th>
+                        <th @(ViewBag.orderField == "CustomerService" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CustomerService">
+                            新增客数
+                        </th>
+                        <th>
+                            买单人头
+                        </th>
+                        <th @(ViewBag.orderField == "HeadCount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HeadCount">
+                            护理人头数
+                            (护理人头)
+                        </th>
+
+                        汪
+                        <th style="display:none">
+                            <span title="店有效人头数=正式会员和非正式会员的员工服务人头数">店有效人头数</span>
+                        </th>
+                        汪
+
+                        <th @(ViewBag.orderField == "fuwuPassengerTraffic" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="fuwuPassengerTraffic">
+                            护理客流量
+                            （护理人次）
+                        </th>
+
+                        <th @(ViewBag.orderField == "kuadianKeliu" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="kuadianKeliu">
+                            跨店客流量
+                            （跨店客流量）
+                        </th>
+                        <th @(ViewBag.orderField == "Keliu" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Keliu">
+                            多人客流量
+                            (单据审核)
+                        </th>
+                        <th @(ViewBag.orderField == "PassengerTraffic" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="PassengerTraffic">
+                                客流量<br />
+                                (客流人次)
+                            </th>
+                        <th style="display:none">
+                            <span title="门店有效客流量=正式会员和非正式会员的门店服务客流量">店有效客流量</span>
+                        </th>
+                        <th @(ViewBag.orderField == "projectNumber" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="projectNumber">
+                            项目数
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="height:40px;"></tr>
+                    @foreach (var entity in Model)
+                    {
+                        allCustomerService += entity.AllCustomerService;
+                        customerService += entity.CustomerService;
+                        headCount += entity.HeadCount;
+                        buyCount += entity.BuyCount;
+                        passengerTraffic += entity.PassengerTraffic;
+                        projectNumber += entity.projectNumber;
+                        //fuwuPassengerTraffic += (entity.fuwuPassengerTraffic - (int)entity.JianquKeliu);
+                        fuwuPassengerTraffic += (entity.fuwuPassengerTraffic - entity.JianquKeliu);
+                        kuadianKeliu += entity.kuadianKeliu;
+                        keliu += entity.Keliu;
+                        hospitalBuyCount = entity.HospitalBuyCount;
+                        youxiaokezongRenTou += entity.HsopitalHeadCount;
+                        youxiaokeliu += entity.fuwuliuliang;
+                        <tr>
+                            <td>
+                                @entity.HospitalName
+                            </td>
+                            <td>
+                                @entity.UserName
+                            </td>
+                            <td>
+                                @entity.AllCustomerService
+                            </td>
+                            <td>
+                                @entity.CustomerService
+                            </td>
+                            <td>
+                                @entity.BuyCount
+                            </td>
+                            <td style="color:red;">
+                                @entity.HeadCount
+                            </td>
+
+                            汪
+                            <td style="display:none">
+                                @entity.HsopitalHeadCount
+                            </td>
+                            汪
+                            <td>
+                                @(entity.fuwuPassengerTraffic - entity.JianquKeliu)
+                            </td>
+                            <td>
+                                @entity.kuadianKeliu
+                            </td>
+                            <td>
+                                @entity.Keliu
+                            </td>
+                            <td>
+                                    @entity.PassengerTraffic
+                                </td>
+                            <td style="display:none">
+                                @entity.fuwuliuliang
+                            </td>
+                            <td>
+                                @entity.projectNumber
+                            </td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            合计：
+                        </td>
+                        <td>
+                            @allCustomerService
+                        </td>
+                        <td>
+                            @customerService
+                        </td>
+                        <td>
+                            @buyCount
+                        </td>
+                        <td>
+                            @headCount  店人头数：@hospitalBuyCount
+                        </td>
+
+                        汪
+                        <td style="display:none">
+                            <span title="店有效人头数=正式会员和非正式会员的员工服务人头数">店有效人头数：</span>@youxiaokezongRenTou
+                        </td>
+                        汪
+
+                        <td>
+                            @fuwuPassengerTraffic
+                        </td>
+                        <td>
+                            @kuadianKeliu
+                        </td>
+                        <td>
+                            @keliu
+                        </td>
+                        <td>
+                                @passengerTraffic
+                            </td>
+                        <td style="display:none">
+                            <span title="门店有效客流量=正式会员和非正式会员的门店服务客流量">门店有效客流量：</span>@youxiaokeliu
+                        </td>
+                        <td>
+                            @projectNumber
+                        </td>
+                    </tr>
+                    @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 11))
+                </tbody>
+            </table>
+            @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+        </form>*@
+    <div style="display: flex; margin-left:20px;justify-content: flex-start; margin-bottom:100px">
+        <div class="boxfixed">
+            <div class="boxHeight">	</div>
+            <div class="boxHeight4">	考勤	</div>
+            <div class="boxHeight6">	底薪	</div>
+            <div class="boxHeight6">	实操业绩提成	</div>
+            <div class="boxHeight14">	现金业绩提成	</div>
+            <div class="boxHeight3">	卡扣业绩提成	</div>
+            <div class="boxHeight7">	奖励&扣罚	</div>
+            <div class="boxHeight">	行政扣罚	</div>
+            <div class="boxHeight1">	职能考评	</div>
+            <div class="boxHeight">		</div>
+        </div>
+        <div class="boxfixed">
+            <div class="boxHeight">	姓名	</div>
+            <div class="boxHeight">	出勤	</div>
+            <div class="boxHeight">	应享公休	</div>
+            <div class="boxHeight">	已休	</div>
+            <div class="boxHeight">	超休	</div>
+            <div class="boxHeight">	月实操	</div>
+            <div class="boxHeight">	底薪1	</div>
+            <div class="boxHeight">	客流	</div>
+            <div class="boxHeight">	客流单价	</div>
+            <div class="boxHeight">	底薪2	</div>
+            <div class="boxHeight22">	合计	</div>
+            <div class="boxHeight">	指定客实操	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	非指定客实操	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	手工	</div>
+            <div class="boxHeight">	合计	</div>
+            <div class="boxHeight">	指定客储值卡	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	非指定客储值卡	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	指定客疗程家居	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	非指定客疗程家居	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	指定客大项目	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	非指定客大项目	</div>
+            <div class="boxHeight">	家居服务业绩	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	合计	</div>
+            <div class="boxHeight">	卡扣业绩	</div>
+            <div class="boxHeight">	提点	</div>
+            <div class="boxHeight">	合计	</div>
+            <div class="boxHeight">	新客/人	</div>
+            <div class="boxHeight">	新客奖罚	</div>
+            <div class="boxHeight">	客流项目奖	</div>
+            <div class="boxHeight">	家居返单	</div>
+            <div class="boxHeight">	单次项目	</div>
+            <div class="boxHeight">	是否全勤	</div>
+            <div class="boxHeight">	全勤奖	</div>
+            <div class="boxHeight">	行政扣罚	</div>
+            <div class="boxHeight">	分数	</div>
+            <div class="boxHeight">	是否挂钩	</div>
+            <div class="boxHeight">	应发工资	</div>
+        </div>
+        <div class="scrollBox-f">
+            <div id="scrollBox">
+                @foreach (var entity in Model)
+                {
+                <div class="box">
+                    <div class="boxHeight">@entity.UserName</div>
+                    <div class="boxHeight">@entity.BuyCount</div>
+                    <div class="boxHeight">@entity.AllCustomerService</div>
+                    <div class="boxHeight">@entity.UserName</div>
+                    <div class="boxHeight">@entity.AllCustomerService</div>
+                    <div class="boxHeight">55</div>
+                    <div class="boxHeight">66</div>
+                    <div class="boxHeight">77</div>
+                    <div class="boxHeight">88</div>
+                    <div class="boxHeight">999</div>
+                    <div class="boxHeight22">999</div>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div style="height:60px;"></div>
+
+    <script>
+        let boxLength = document.getElementsByClassName("box").length;
+        let boxWidth = document.getElementsByClassName("box")[0].offsetWidth;
+        let scrollBox = document.getElementById("scrollBox");
+        let a = (boxLength * boxWidth) + "px";
+        Object.assign(document.getElementById("scrollBox").style, {
+            width: a
+        })
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+            $("#showmessage").css("display", "none");
+        })
+    </script>
+    <script type="text/javascript">
+        $(function () {
+
+            window.setTimeout(function () {
+                var gridtablewidth = $(".gridTable").width();
+                var thlen = $(".gridTable thead th").length;
+                let theadWidth = $(".gridTable tbody").width()
+                $(".gridTable thead").css("width", theadWidth + "px")
+                let tdWidth = (theadWidth / (thlen - 2)) + "px";
+                $(".gridTable thead th").css("width", tdWidth);
+                $(".gridTable tr td").css("width", tdWidth);
+            }, 100)
+
+        })
+
+    </script>

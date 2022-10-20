@@ -1,0 +1,212 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "档案变更";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    IPersonnelManageBLL personnelBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //顾客ID
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+
+    //查询门店美容师
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    //获取用户所有的划扣次数
+    var projectList = cashBll.GetProjectBalance(UserID, 0, ViewBag.ParentHospitalID);
+}
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+               </label>
+            档案变更
+        </div>
+        <div class="mainContentRight_bottom clearfix">
+            @Html.Partial("_PatientSelect")
+            <div id="tabbox" style="overflow-x: hidden; overflow-y: auto;">
+                <ul class="tabs" id="tabs">
+                    <li><a href="###" tab="tab1">疗程卡变更</a></li>
+                    <li><a href="###" tab="tab2">储值卡变更</a></li>
+                    <li id="qiankuan"><a href="###" class="btab3" tab="tab3">欠款变更</a></li>
+                </ul>
+                <ul id="tab_conbox" class="tab_conbox">
+                    <li id="tab1" class="tab_con" style="padding: 8px;">
+                        <form id="myform" action="@Url.Content("~/CashManage/AddCard1")" class="clearfix" method="post"  >
+                        <input type="hidden" id="labuserid1" name="txtUserID" value="@UserID" />
+                        <div class="clearfix">
+                            <fieldset style="width: 400px; float: left;">
+                                <legend>已购买卡项</legend>
+                                <table class="gridTable" id="cardlist"  style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;">
+                                                项目名称
+                                            </th>
+                                            <th style="text-align:center;">
+                                                剩余次数
+                                            </th>
+                                            <th style="text-align:center;">
+                                                操作
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cardtbody1">
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                            <fieldset style="width: 490px; float: left; margin-left: 5px;">
+                                <legend>添加疗程卡</legend>
+                                <table id="purchasetable" class="gridTable" style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;">
+                                                卡项名称
+                                            </th>
+                                            <th style="text-align:center;">
+                                                售价
+                                            </th>
+                                            <th style="display: none;">
+                                                描述
+                                            </th>
+                                            <th style="display: none;">
+                                                参与员工
+                                            </th>
+                                            <th style="text-align:center;">
+                                                项目管理
+                                            </th>
+                                            <th style="text-align:center;">
+                                                操作
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="purchasetbody">
+                                    </tbody>
+                                </table>
+                                <div class="accountdiv2">
+
+                                    <label style="font-weight: normal; line-height: 40px;">
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消费总额：</label><label id="labamout">0</label>
+                                    @*<label style="font-weight: normal;">
+                                        备注：</label>
+                                    <input type="text" style="width: 80px;" name="Memo" id="txtmemo1" />*@
+                                </div>
+                                <div style="text-align: right; margin-top: 5px; margin-right: 3px;">
+
+                                    <input type="button" style="float: none;" class="addtreament submitbutton2" value="选择卡项" />
+                                    <input type="button" id="btnsavetem" style="float: none;" class="submitbutton2" value="保 存" />
+                                    <input type="reset" onclick="history.go(-1)" style="float: none;" class="submitbutton2"
+                                        value="返 回" />
+                                </div>
+                            </fieldset>
+                        </div>
+                        </form>
+                    </li>
+                    <li id="tab2" class="tab_con" style="display: none;">
+                        <form id="myform2" action="@Url.Content("~/CashManage/AddCard1")" class="clearfix" method="post"  >
+                        <input type="hidden" id="labuserid3" name="txtUserID" value="@UserID" />
+                        <div class="clearfix">
+                            <fieldset style="width: 400px; float: left;">
+                                <legend>已购买卡项</legend>
+                                <table class="gridTable" id="cardlist3" style="border-collapse: collapse;">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;">
+                                                卡项名称
+                                            </th>
+                                            <th style="text-align:center;">
+                                                余额
+                                            </th>
+                                            <th style="text-align:center;">
+                                                操作
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cardtbod3">
+                                    </tbody>
+                                </table>
+                            </fieldset>
+                            <fieldset style="width: 490px; float: left; margin-left: 5px;">
+                                <legend>添加卡项</legend>
+                                <table id="purchasetable3" class="gridTable">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center;">
+                                                卡项名称
+                                            </th>
+                                            <th style="text-align:center;">
+                                                总金额
+                                            </th>
+                                            <th style=" text-align:center;">
+                                                划扣折率
+                                            </th>
+                                            <th style="text-align:center;">
+                                                余额
+                                            </th>
+                                            <th style="text-align:center;">
+                                                操作
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="purchasetbody3">
+                                    </tbody>
+                                </table>
+                                <div class="accountdiv1">
+                                    <label style="font-weight: normal; line-height: 40px;">
+                                        &nbsp;&nbsp;消费总额：</label><label id="labcash0" class="labamout0">0</label>
+                                    <label style="font-weight: normal;">
+                                        应付金额：</label>
+                                    <label id="labamout0" style="color: Red;">
+                                        0</label>
+                                    @*<label style="font-weight: normal;">
+                                        备注：</label>
+                                    <input type="text" style="width: 80px;" name="Memo" id="txtmemo" />*@
+                                </div>
+                                <div style="text-align: right; margin-top: 5px; margin-right: 3px;">
+                                    <input type="button" id="addsto" style="float: none;" class="submitbutton2" value="选择卡项" />
+                                    <input type="button" id="btnsavesto" style="float: none;" class="submitbutton2" value="保 存" />
+                                    <input type="reset" onclick="history.go(-1)" style="float: none;" class="submitbutton2"
+                                        value="返 回" />
+                                </div>
+                            </fieldset>
+                        </div>
+                        </form>
+                    </li>
+                    <li id="tab3" class="tab_con" style="display: none;">
+                         <iframe id="hidif"   href="@Url.Content("~/PatientManage/ArchivesChangeQiankuan?UserID=")" src="" frameborder="0"   style="width:100%;_border:none;border:none; border:0px; _border:0px;"> </iframe>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../Scripts/Controls/Patient/ArchivesChange.js?v=0.01" type="text/javascript"></script>
+<script type="text/javascript">
+    $("#labuserid").val("0");
+    $("#tabbox").css("min-height", getDocumentHeight() - $("#header").height() - $("#footer").height() - 170 + "px");
+
+    jQuery(document).ready(function () {
+        $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 110);
+        //Tab切换
+        $("#tabs  .btab3").click(function () {
+            var userid = $("#labuserid").val();
+            if (parseInt(userid) == 0) { alert("请选择顾客!"); return false; }
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            var index = $(this).parent().find("li").index(this);
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+            var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+
+            iframe1.attr("src", iframe1.attr("href") + userid.toString());
+    });
+        $("#tabs li:first").addClass("thistab").show();
+
+    });
+    //修改欠款 子页面增加作废欠款调用
+    function ChangelabQinakuan(money) {
+        var nowqiankuan = parseFloat($("#labQinakuan").text());
+        $("#labQinakuan").text(nowqiankuan-money);
+    }
+</script>

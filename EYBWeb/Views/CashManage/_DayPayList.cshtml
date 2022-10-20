@@ -1,0 +1,171 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.DayPayEntity>
+    @{
+        ViewBag.Title = "_Patientlist";
+        Layout = null;
+    }
+    <style>
+        /*******表格********/
+        .gridTable tbody {
+            display: block;
+        }
+
+        .gridTable tr {
+            display: block;
+        }
+
+        .gridTable th {
+            width: 200px;
+            line-height: 40px;
+        }
+
+        .gridTable td {
+            width: 200px;
+        }
+    </style>
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <style>
+            td > div {
+                word-break: break-word;
+                word-wrap: break-word;
+            }
+        </style>
+        <table class="gridTable" style="border-collapse: collapse; overflow:scroll;">
+            <thead style=" display:block; position:absolute; width:99%;  ">
+                <tr>
+                    <th>
+                        费用项目名称
+                    </th>
+                    <th>
+                        收入金额
+                    </th>
+                    <th>
+                        支出金额
+                    </th>
+                    <th>
+                        来往单位名称
+                    </th>
+                    <th>
+                        责任人
+                    </th>
+                    <th>
+                        票据号码
+                    </th>
+                    <th>
+                        业务日期
+                    </th>
+                    <th>
+                        备注
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style=" height:40px;"><td colspan="8"></td></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.Name
+                    </td>
+                    <td>
+                        @entity.InMoney
+                </td>
+                <td>
+                    @entity.OutMoney
+            </td>
+            <td>
+                @entity.CompanyName
+        </td>
+        <td>
+            @entity.UserName
+    </td>
+    <td>
+        @entity.PiaoNo
+</td>
+<td>
+    @entity.CreateTime
+</td>
+<td style="overflow:hidden;" title="@entity.Memo">
+    <div style=" overflow:hidden;">@entity.Memo</div>
+</td>
+<td>
+    <a href="javascript:;" code="@entity.ID" class="deletecode">删除</a>
+</td>
+</tr>
+}
+                <tr>
+                    <td>
+                        合计:
+                    </td>
+                    <td class="txtShouru">
+                        @ViewBag.Shouru
+                    </td>
+                    <td class="txtZhichu">
+                        @ViewBag.Zhichu
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 9))
+            </tbody>
+
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <div style="height:100px;"></div>
+    <script type="text/javascript">
+ $(function () {
+        $("#sp").text('@ViewBag.AllCount');
+       //计算head高度，宽度 计算articles高度
+
+    })
+     $(".deletecode").click(function(){
+    var obj = $(this).attr("code");
+        if (confirm("确认要删除吗？")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "Json", //返回json格式的数据
+                url: "/CashManage/DelDayPay",
+                data: { "ID": obj },
+                async: false,
+                success: function (data) {
+                    if (data >0 ) {
+                          artdialog("删除成功！","@Url.Content("~/CashManage/DayPayList")");
+                    }
+                },
+                error: function () {
+                    alert("数据请求失败!");
+                }
+            });
+
+    }
+    });
+
+    </script>
+    <script>
+        $(function () {
+            var gridtablewidth = $(".gridTable").width();
+            var thlen = $(".gridTable thead th").length;
+            $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+            $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+
+        })
+
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

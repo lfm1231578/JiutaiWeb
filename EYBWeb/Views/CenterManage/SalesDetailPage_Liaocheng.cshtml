@@ -1,0 +1,189 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using WarehouseManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+@{
+    ViewBag.Title = "疗程卡销售明细";
+    Layout = null;
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(ParentHospitalID, 0);
+    var brandlist = wareBll.GetBrandListNoPage(ParentHospitalID);//获取品牌列表
+    var caretypelist = wareBll.GetProductTypeNoPage(ParentHospitalID, 1);//获取项目分类列表
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    var HospitalID = ViewBag.HospitalID;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+        type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+ <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <style type="text/css">
+        body
+        {
+            background: #fff;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="mainContentRight_bottom" style="margin-top: 0px; overflow:hidden;">
+        @using (Ajax.BeginForm("SalesDetailPage_Liaocheng", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+        {
+            <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+            <input type="hidden" value="" name="orderField" id="orderField" />
+            <div class="accountdiv ullist" style="margin-bottom: 0px; margin-top: 0px; width: 99%; ">
+                <ul>
+                    @if (HasPermission)
+                    {
+                        <li>
+                            <label style="font-weight: normal;">
+                                所属分店：
+                            </label>
+                            <select name="s_HospitalID" id="s_HospitalID" class="select ymxSelect">
+                                <option value="0">请选择分店</option>
+                                @if (RegionhospitalList.Count > 0)
+                                {
+                                    foreach (var info in RegionhospitalList)
+                                    {
+                                        <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "")=) value="@info.HospitalID">@info.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var info in hospitalList)
+                                    {
+                                        <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "")=) value="@info.ID">@info.Name</option>
+                                    }
+                                }
+                            </select>
+                        </li>
+                    }
+                    <li>
+                        <label style="font-weight: normal;">
+                            项目名称
+                        </label>
+                        <input type="text" name="s_Name" id="s_Name" class="ymxInput" />
+                    </li>
+                    <li>
+                        <label style="font-weight: normal;">
+                            品牌:
+                        </label>
+                        <select name="s_BrandID" id="s_BrandID" class="select ymxSelect">
+                            <option value="0">=选择品牌=</option>
+                            @foreach (var info in brandlist)
+                            {
+                                <option value="@info.ID">@info.Name</option>
+                            }
+                        </select>
+                    </li>
+                    <li>
+                        <label style="font-weight: normal;">
+                            项目类别
+                        </label>
+                        <select name="s_ProductType" id="s_ProductType" class="select ymxSelect">
+                            <option value="0">=选择分类=</option>
+                            @foreach (var info in caretypelist)
+                            {
+                                <option value="@info.ID">@info.Name</option>
+                            }
+                        </select>
+                    </li>
+                    <li>
+                        <label style="font-weight: normal;">
+                            开始时间：
+                        </label>
+                        <input type="text" autocomplete="off" class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                               name="s_StareTime" id="s_StareTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </li>
+                    <li>
+                        <label style="font-weight: normal;">
+                            至：
+                        </label><input type="text" autocomplete="off" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                       name="s_EndTime" id="s_EndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </li>
+                    <li>
+                        <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                        <input type="submit" class="submitbutton2 ymxButtonMT" id="btnsearch" style="float: none;" value="查询" />
+                        <input type="button" class="submitbutton2 ymxButtonMT" id="btnSave" style="float: none;" value="导出" />
+                    </li>
+                </ul>
+                <div style="clear:both;"></div>
+            </div>
+
+        }
+        <div id="articles" class="mainContentRight_bottom" style="width:99%;overflow:auto;">
+            @Html.Partial("_Sale_Liaocheng", Model)
+        </div>
+
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    </div>
+
+    <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $("#btnsearch").click(function () {
+            $("#txtTime").val(Math.random());
+            $("#showmessage").css("display","");
+        })
+
+        //导出
+        $("#btnSave").click(function () {
+            var s_StareTime = $("#s_StareTime").val();
+            var s_EndTime = $("#s_EndTime").val();
+            //var s_HospitalID = $("#s_HospitalID").val();
+            if ($("#s_HospitalID").val() == "" || $("#s_HospitalID").val() == null) {
+                var s_HospitalID =@HospitalID;
+            }
+            else { var s_HospitalID = $("#s_HospitalID").val(); }
+            var s_Name = $("#s_Name").val();
+            var s_BrandID = $("#s_BrandID").val();
+            var s_ProductType = $("#s_ProductType").val();
+            var txtQuatity = document.querySelector("#txtQuatity").innerText;
+            var txtSumPrice = document.querySelector("#txtSumPrice").innerText;
+            var txtZengSong = document.querySelector("#txtZengSong").innerText;
+            var txtZheRang = document.querySelector("#txtZheRang").innerText;
+            var url = "/CenterManage/ExportSalesDetailPage_Liaocheng?pageNum=1&numPerPage=1000000&s_HospitalID=" + s_HospitalID + "&s_StareTime=" + s_StareTime + "&s_EndTime=" + s_EndTime + "&s_Name=" + s_Name + "&s_BrandID=" + s_BrandID + "&txtQuatity="+txtQuatity+"&txtSumPrice="+txtSumPrice+"&txtZengSong="+txtZengSong+"&txtZheRang="+txtZheRang+"&s_ProductType=" + s_ProductType;
+            window.location.href = url;
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                url: url,
+                async: false,
+                success: function (data) {
+
+                },
+                error: function () {
+                    alert("数据获取失败！");
+                }
+            });
+        });
+    </script>
+    <script>
+        $(function () {
+            let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+            $("#articles").css("height", acHeight + "px");
+        })
+    </script>
+</body>
+</html>

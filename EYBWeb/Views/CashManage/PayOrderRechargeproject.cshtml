@@ -1,0 +1,157 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "支付界面";
+    Layout = null;
+
+    var allamout = Request["allamout"];//所有总额
+    var UserID = Request["UserID"];//顾客ID
+    var IDList = Request["IDList"];//余额记录ID集合
+    var TimesList = Request["TimesList"];//退卡次数集合
+    var HuankuanList = Request["HuankuanList"];//退款金额 -集合
+    var UserIDList = Request["UserIDList"];//参与员工 -集合
+
+    var shouxufei = Request["shouxufei"];//手续费
+    var txtmemo = Request["txtmemo"];//说明
+    var ProductyType = Request["ProductyType"];//退换类型 1项目 2产品 3储值卡  用于定位方法用
+    
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    var list = cashBll.GetMainCardBalanceList(new MainCardBalanceEntity { UserID = ConvertValueHelper.ConvertIntValue(UserID), Type = 1 });
+    //获取支付方式
+     SystemManage.Factory.IBLL.ISystemManageBLL  systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+     var BaseList = systemBLL.GetBaseInfoTreeByType("Payment", 1, ViewBag.ParentHospitalID);
+    
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background:#fff;">
+<div  style="width: 395px; height: 420px; float: left;">
+<fieldset style="width: 395px; height: 300px;overflow:auto; ">
+    <legend>&nbsp;&nbsp;储值卡&nbsp;&nbsp;</legend>
+    <table class="gridTable" style="height: auto; border-collapse: collapse; margin-left: 5px;"
+        cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th>
+                    选择
+                </th>
+                <th>
+                    卡名称
+                </th>
+                <th>
+                    可用余额
+                </th>
+            </tr>
+        </thead>
+        <tbody id="tbodychekbox">
+            @foreach (var info in list)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox"  IsGive="@info.IsGive" value="@info.Price" @(info.Price<1?"disabled=disabled":"") name="@info.Name" code="@info.ID" />
+                    </td>
+                    <td>
+                        @info.Name
+                    </td>
+                    <td>
+                        @info.Price
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</fieldset>
+<fieldset style="width: 395px; height: 115px; " id="otherPayment">
+    <legend>&nbsp;&nbsp;其他支付&nbsp;&nbsp;</legend>
+    <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;">
+        @foreach (var info in BaseList)
+        {
+            if (info.parentID != 0)
+            {
+            <div  style="float:left;min-width:80px;margin-left:10px;margin-top:10px;">
+                 <input type="checkbox" code="@info.InfoName" name="txt-@info.ID" value="@info.ID" id="txt-@info.ID"  iscash="@info.IsCash"  /><label for="txt-@info.ID"> @info.InfoName</label>
+                 </div>
+            }
+        }
+        </div>
+</fieldset>
+</div>
+<div id="mainContentRight" style="width: 320px;  float: left; margin: 0px;
+    margin-left: 10px;">
+    <fieldset style="border-color: #ccc; height: 420px;">
+        <legend>&nbsp;&nbsp;订单详情&nbsp;&nbsp;</legend>
+        <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;">
+            <table class="mainContentRight_bottomnewdepart" id="mainContentRight_bottomnewdepart">
+                <tr>
+                    <td>
+                        订单总额
+                    </td>
+                    <td style="color: Red; font-size: 20px; font-weight: bold;">
+                        @allamout
+                    </td>
+                </tr>
+            
+                <tr style="height: 40px;">
+                    <td style="border-bottom: 1px #ccc dashed;">
+                        结算总额
+                    </td>
+                    <td style="color: Green; font-size: 30px; font-weight: bold; border-bottom: 1px #ccc dashed;">
+                        @allamout &nbsp;&nbsp;&nbsp;&nbsp;
+              
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        现金
+                    </td>
+                    <td>
+                        <input onkeyup="javascript:CheckInputIntFloat(this);" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                            type="text" style="width: 150px;" name="CashPrice" id="txtCash" value="@(Convert.ToDecimal(allamout))" class="CardMoney text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        银联卡
+                    </td>
+                    <td>
+                        <input onkeyup="javascript:CheckInputIntFloat(this);" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                            type="text" style="width: 150px;" name="CardPrice" id="txtyingliancard" value="0"
+                            class="CardMoney text-input" />
+                    </td>
+                </tr>
+            </table>
+            <div style="margin: 20px; margin-left: 50px;" class="clearfix">
+                <input type="button" class="submitbutton2" value="支 付" onclick="PayMoney()" />
+                <input class="submitbutton2" type="button" onclick="closeedNorefresh()" value="取 消" /></div>
+        </div>
+    </fieldset>
+</div>
+</body>
+</html>
+<script type="text/javascript">
+    var UserID = "@UserID";
+    var cashamout = "@allamout";
+    var IDList = "@IDList";
+    var TimesList = "@TimesList";
+    var HuankuanList = "@HuankuanList";
+    var UserIDList = "@UserIDList";
+    var shouxufei = "@shouxufei";
+    var txtmemo = "@txtmemo";
+    var ProductyType = "@ProductyType";
+    
+</script>
+<script src="../../Scripts/Controls/CashManage/PayOrderRechargeproject.js?v=1.7" type="text/javascript"></script>

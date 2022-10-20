@@ -1,0 +1,854 @@
+﻿@using PatientManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.PatientEntity;
+@using EYB.ServiceEntity.SystemEntity;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using HS.SupportComponents;
+@{
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+
+    var Hid = ViewBag.HospitalID;//门店ID
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    IPatientManageBLL patientBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPatientManageBLL>();//顾客
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //查询员工
+    IList<HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(Hid, 0);
+    PersonList = PersonList.Where(i => i.IsSys != 1).ToList();
+    //var docList = List.Where(x => x.IsDoctor > 0).ToList();
+    //查询详情
+    var patientInfo = patientBLL.GetPatienttEntityByID(Convert.ToInt64(UserID));//个人信息  
+    string[] address = new string[4];
+    //详细地址
+    if (!String.IsNullOrEmpty(patientInfo.Address))
+    {
+        address = patientInfo.Address.Split('-');
+    }
+    //获取省份
+    var SList = systemBLL.GetAllAreaList("171");
+    //var SList = AreaList.Where(x => x.ParentAreaCode == 171).ToList();
+    //基础字典查询
+    var BaseInfolist = systemBLL.GetBaseInfoTreeByType("Category", 1, ViewBag.ParentHospitalID);
+    //会员级别
+    var MemberTypelist = systemBLL.GetBaseInfoTreeByType("MemberType", 1, ViewBag.ParentHospitalID);
+    //获悉方式
+    var OriginList = systemBLL.GetBaseInfoTreeByType("Origin", 1, ViewBag.ParentHospitalID);
+
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    //获取顾客护理图片
+    var imglist = patientBLL.GePatientImgList(new PatientImgEntity { UserID = UserID });
+    var userid = Request["UserID"];
+}
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.handlers.js"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgdialog/lhgdialog.js?skin=idialog")"></script>
+<link href="@Url.Content("~/Content/themes/css/lightbox.min.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+<script src="../../Scripts/Jquery/lightbox.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        //头像
+        $(".upload-album").each(function () {
+            $(this).InitSWFUpload({ btntext: "上传护理照片", btnwidth: 140, btnheight: 30, single: false, water: false, thumbnail: false, filesize: "9948", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+        });
+    });
+</script>
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            顾客登记</div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <input type="hidden" name="UserID" id="UserID" value="@patientInfo.UserID"/><!-- 顾客ID-->
+            <div class="mainContentRight_bottomContent">
+                <div class="accountdiv">
+                    基本资料</div>
+                <form action="" method="post" class="clearfix" id="myform" style="position: relative;">
+                <table class="mainContentRight_table">
+                    <tr>
+                        <td class="tdright">
+                            <span class="red">*&nbsp;</span>姓名
+                        </td>
+                        <td>
+                            <input type="text"  class="validate[required] text-input input200" name="UserName" id="UserName" value="@patientInfo.UserName"/>
+                        </td>
+                        <td class="tdright">
+                            生日
+                        </td>
+                        @{
+                            var Birthday = patientInfo.Birthday;
+                        }
+                        <td>
+                            <select class="select" name="Y" id="Y">
+                                @{ for (int i = 1910; i < 2020; i++)
+                                   { <option   @(Birthday + "" == "" ? (i == 1990 ? "selected=selected" : "") : Birthday.Split('-')[0] == i.ToString() ? "selected=selected" : "")  value="@i">@i</option>} }
+                            </select><span>年</span><select class="select" style="margin-left: 5px;" name="M"
+                                id="M">@{ for (int i = 1; i <= 12; i++)
+                                          {
+                                              if (i >= 10)
+                                              {
+                                    <option @(Birthday + "" == "" ? "" : Birthday.Split('-')[1] == i.ToString() ? "selected=selected" : "") value="@i">@i</option>
+                                              }
+                                              else
+                                              {
+                                    <option @(Birthday + "" == "" ? "" : Convert.ToInt32(Birthday.Split('-')[1]) == i ? "selected=selected" : "") value="@("0" + i)">@i</option> 
+                                              }
+                                          } 
+                                }
+                            </select><span>月</span><select class="select" style="margin-left: 5px;" name="D"
+                                id="D">@{ for (int i = 1; i <= 31; i++)
+                                          {
+                                              if (i >= 10)
+                                              {
+                                    <option  @(Birthday + "" == "" ? "" : Birthday.Split('-')[2] == i.ToString() ? "selected=selected" : "") value="@i">@i</option>
+                                              }
+                                              else
+                                              {
+                                    <option  @(Birthday + "" == "" ? "" : Convert.ToInt32(Birthday.Split('-')[2]) == i ? "selected=selected" : "") value="@("0" + i)">@i</option>
+                                              }
+
+
+                                          } }
+                            </select><span>日</span>
+                            <input type="checkbox" id="Calendar" name="Calendar"  @(patientInfo.Calendar == "农历" ? "checked=checked" : "") value="@patientInfo.Calendar" />农历
+                        </td>
+                        @*   <td class="tdright">
+                            会员卡号
+                        </td>
+                        <td>
+                            <input type="text" name="MemberNo" class=" text-input input200" id="MemberNo" value="@patientInfo.MemberNo" />
+                        </td>*@
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            咨询顾问
+                        </td>
+                        <td>
+                            <select class="select" name="FollowUpUserID">
+                                <option value="0"></option>
+                                @foreach (var info in PersonList)
+                                {
+                                    <option @(info.UserID == patientInfo.FollowUpUserID ? "selected=selected" : "") value="@info.UserID">@info.UserName</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="tdright">
+                            美容师
+                        </td>
+                        <td>
+                            <select class="select" name="FollowUpMrUserID">
+                                <option value="0"></option>
+                                @foreach (var info in PersonList)
+                                {
+                                    <option @(info.UserID == patientInfo.FollowUpMrUserID ? "selected=selected" : "") value="@info.UserID">@info.UserName</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            尊贵级别
+                        </td>
+                        <td>
+                            <select class="select" name="Category" id="Category">
+                                <option value="0">请选择</option>
+                                @foreach (var info in BaseInfolist)
+                                {
+                                    <option  value="@info.InfoName" @(info.InfoName == patientInfo.Category ? "selected=selected" : "")>@info.InfoName
+                                    </option>
+                                }
+                            </select>
+                        </td>
+                        <td class="tdright">
+                            性别
+                        </td>
+                        <td>
+                            @if (patientInfo.UserID != 0)
+                            {
+                                <select class="select" name="Sex" id="Sex">
+                                    <option value="1"  @(patientInfo.Sex == 1 ? "selected=selected" : "")>女</option>
+                                    <option  value="0" @(patientInfo.Sex == 0 ? "selected=selected" : "")>男</option>
+                                </select>
+                            }
+                            else
+                            { 
+                                <select class="select" name="Sex" id="Sex">
+                                    <option value="1" selected="selected">女</option>
+                                    <option value="0">男</option>
+                                </select>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            手机
+                        </td>
+                        <td>
+                            <input type="text"  class="validate[custom[phone]] text-input input200" name="Mobile" id="Mobile" value="@patientInfo.Mobile" />
+                        </td>
+                        <td class="tdright">
+                            电子邮件
+                        </td>
+                        <td>
+                            <input type="text" name="Email" class="validate[custom[email]] text-input input200" id="email" value="@patientInfo.Email" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            QQ号
+                        </td>
+                        <td>
+                            <input type="text" class="text-input input200" name="QQ" id="QQ" value="@patientInfo.QQ" />
+                        </td>
+                        <td class="tdright">
+                            微信号
+                        </td>
+                        <td>
+                            <input type="text" class=" text-input input200" name="Weixin" id="Weixin" value="@patientInfo.Weixin" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            身份证号
+                        </td>
+                        <td>
+                            <input type="text" name="CertNo" class="text-input input200" id="CertNo" value="@patientInfo.CertNo" />
+                        </td>
+                        <td class="tdright">
+                            邮编
+                        </td>
+                        <td>
+                            <input   class="validate[] text-input input200" type="text" name="PostalCode" id="PostalCode" value="@patientInfo.PostalCode" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            获悉方式
+                        </td>
+                        <td>
+                            <select class="select" name="Channel" id="Channel">
+                                <option value="0"></option>
+                                @foreach (var info in OriginList)
+                                {
+                                    <option  value="@info.InfoName" @(info.InfoName == patientInfo.Channel ? "selected=selected" : "")>@info.InfoName
+                                    </option>
+                                }
+                            </select>
+                        </td>
+                        <td class="tdright">
+                            介绍人
+                        </td>
+                        <td>
+                            <input id="JieshaoUserID"   type="hidden" name="JieshaoUserID"  value="@patientInfo.JieshaoUserID" />
+                            <input id="txtjieshaoUsername" name="JieshaoUserName"   class="validate[] text-input input200" style="width:100px;float:left; "   type="text"    value="@patientInfo.JieshaoUserName" />
+                            <input type="button" id="btnAddHSUserID" style="float: left; margin-top: 4px; padding: 4px;
+                                color: #555; border: 1px solid #B5B8C8; background: #FFF repeat-x;" class="addsame"
+                                onclick="PatientList()" value="点击选择人员" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            <span class="red">*&nbsp;</span>入会时间
+                        </td>
+                        <td>
+                            <input type="text" name="RuHuiTime"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" class="validate[required]  text-input input200" id="RuHuiTime" value="@(patientInfo.RuHuiTime)" />
+                        </td>
+                        <td class="tdright">
+                            所属门店
+                        </td>
+                        <td>
+                            <select name="HospitalID" class="select" style="height: 25px; width: 100px;">
+                                @foreach (var info in hospitalList)
+                                {
+                                    <option @(Hid == info.ID ? "selected=selected" : "") value="@info.ID">@info.Name</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            家庭地址
+                        </td>
+                        <td colspan="1">
+                            <select class="select" style="width: 99px;" id="SelProvince" name="S" onchange="GetCity()">
+                                @{foreach (var s in SList)
+                                  {<option id="@s.AreaCode" @( address[0] == s.AreaName ? "selected=selected" : "") value="@s.AreaName">@s.AreaName</option>}}
+                            </select>
+                            <select style="width: 99px; margin-left: 5px;" class="select" name="Q" id="SelCity"
+                                onchange="GetArea()">
+                                <option value="">请选择市</option>
+                            </select>
+                            <select style="width: 99px; margin-left: 5px;" class="select" name="X" id="SelArea">
+                                <option value="">请选择县区</option>
+                            </select>
+                            <input style="width:170px;margin-left:5px;" type="text" class="text-input" name="AD" id="AD" value="@address[3]" />
+                        </td>
+                        <td class="tdright">
+                            微信昵称
+                        </td>
+                        <td>
+                            <input type="text" disabled="disabled" value="@patientInfo.WeixinNickName" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            备注
+                        </td>
+                        <td colspan="1">
+                            <textarea name="Memo" style="width: 500px;">@patientInfo.Memo</textarea>
+                        </td>
+                        <td class="tdright">
+                            微信头像
+                        </td>
+                        <td>
+                            <img src="@(patientInfo.WeixinImgUrl == null ? "/Content/themes/default/images/noface.jpg" : patientInfo.WeixinImgUrl)" width="100" height="100" />
+                        </td>
+                    </tr>
+                </table>
+                <div class="mainContentButton clearfix">
+                    <input type="submit" id="btnsave" class=" submitbutton2" value="保 存" style="margin-left: 140px;" />
+                    <input type="reset" class="submitbutton2" value="重 置" />
+                    <input type="button" class="submitbutton2" onclick="history.go(-1)" value="返 回" />
+                    <input type="hidden" id="IsUp" name="IsUp" value="0" /><!--手机号存在是否修改顾客信1.修改0.不修改 -->
+                </div>
+                </form>
+                <div class="panel collapse close" defh="0">
+                    <h1>
+                        档案详情</h1>
+                    <div>
+                        <div class="accountdiv">
+                            消费分析</div>
+                        <table class="mainContentRight_table">
+                            <tr>
+                                <td>
+                                    1、曾经做过的护理项目：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    2、曾经购买的家具产品：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    3、年&nbsp;均&nbsp; 消&nbsp; 费&nbsp; 金&nbsp; 额 ：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />元
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    4、结账习惯
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="HealthCondition" value="3" />现付&nbsp;&nbsp;&nbsp;<input
+                                        type="checkbox" name="HealthCondition" value="1" />月结&nbsp;&nbsp;&nbsp;<input name="HealthCondition"
+                                            value="2" type="checkbox" />整清&nbsp;&nbsp;&nbsp;<input name="HealthCondition" value="2"
+                                                type="checkbox" />拖欠&nbsp;&nbsp;&nbsp;<input name="HealthCondition" value="2" type="checkbox" />赖账
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    5、消费潜力
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                A、职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                            </td>
+                                            <td>
+                                                B、职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;务：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                            </td>
+                                            <td>
+                                                C、个人收入：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />万/年
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                D、婚姻状况：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                            </td>
+                                            <td>
+                                                E、配偶职业：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                            </td>
+                                            <td>
+                                                F、家庭收入：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />万/年
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                G、私&nbsp;&nbsp;家&nbsp;&nbsp;车：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                            </td>
+                                            <td>
+                                                H、住房状况：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                            </td>
+                                            <td>
+                                                I、其他收入：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    6、消费意识
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />消费型&nbsp;&nbsp;&nbsp;<input
+                                        type="checkbox" name="Medicines" value="1" />居家型&nbsp;&nbsp;&nbsp;
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    7、消费外因
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                     &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />配偶支持
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />配偶不支持
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />配偶反对  
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    8、消费倾向
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />美容
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />整形
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />美体  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />养生
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />健康
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />抗衰  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />健身
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />美发
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />美甲  
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />时装
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />配饰
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />旅游
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />饮食
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />娱乐
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />珠宝
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />收藏品
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />奢侈品牌
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    9、消费类型
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />时尚
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />前卫
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />保守  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />阔绰
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />大方
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />小气  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />冲动型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />理智型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />虚荣型  
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />实惠型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />从众型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />有主见
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />没主见
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />节俭型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />透支型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />挑剔型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />张扬型
+                         &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />平和型
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />低调型
+                                </td>
+                            </tr>
+                            
+                        </table>
+                         <div class="accountdiv">
+                            性格分析</div>
+                        <table class="mainContentRight_table">
+                            <tr>
+                                <td>
+                                    1、血型：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    2、星座：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    3、属相：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                          
+                            <tr>
+                                <td>
+                                    4、性格
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />内向
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />开朗
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />外向  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />不善谈
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />健谈
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />暴躁  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />怪癖
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />急性子
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />慢性子  
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />温和
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />爱发火
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />豪放
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />有洁癖
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />敏感
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />多疑
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />自信
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />优越感
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />平和
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />尖锐
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />挑剔
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />忧郁
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />乐观
+                                </td>
+                            </tr>
+                            
+                        </table>
+                 <div class="accountdiv">
+                            护理习惯</div>
+                        <table class="mainContentRight_table">
+                            <tr>
+                                <td>
+                                    1、习惯到店时间：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    2、习&nbsp;惯&nbsp;到&nbsp;店&nbsp;日：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    3、月&nbsp;到&nbsp;店&nbsp;次&nbsp;数：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                          
+                            <tr>
+                                <td>
+                                    4、护理习惯
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />畏寒
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />怕热
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />怕喧闹  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />喜欢睡觉
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />喜欢聊天
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />喜欢力度大  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />承受力差
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />怕痒
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />预约  
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />守时
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />按时到店
+                      
+                                </td>
+                            </tr>
+                            
+                        </table>
+                <div class="accountdiv">
+                            生活习惯</div>
+                        <table class="mainContentRight_table">
+                                <tr>
+                                <td>
+                                    1、生理期：<input   class="validate[] text-input input200" type="text" name=""   value="@patientInfo.PostalCode" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    2、睡眠习惯
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />早睡早起
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />晚睡晚起
+                       
+                                </td>
+                            </tr>
+                          
+                            <tr>
+                                <td>
+                                    3、运动习惯
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />经常运动
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />偶尔运动
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />从不运动  
+                       
+                                </td>
+                            </tr>
+                             <tr>
+                                <td>
+                                    4、饮食习惯
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />喜食辛辣
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />经常宵夜
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />喜欢蔬菜  
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />喜吃荤腥
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />多吃水果
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />喜吃甜品
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />喜吃零食
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />喜吃面食
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />海鲜过敏
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />饮水充足
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />很少喝水
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />节食
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />暴饮暴食
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />不吃早餐
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />喜零食
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />经常饮酒
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />口味真
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />三餐定时定量
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    5、其他
+                                </td>
+                            </tr>
+                            <tr class="bgcolor">
+                                <td>
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />接送子女上学
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />子女已工作
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />子女已婚  
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />经常出差
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />夫妻两地分居
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />夫妻感情
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />夫妻感情不好
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />家庭和睦
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />工作繁忙 
+                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />工作压力
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />工作愉快
+                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="1" />工作不开心 
+                         &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Medicines" value="5" />人际关系广泛 
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <form id="submitfomimg" action="" method="post" enctype="multipart/form-data">
+                <div class="panel collapse close" minh="400" defh="0">
+                    <h1 id="h2">
+                        护理图片</h1>
+                    <div>
+                        <input type="hidden" name="UserID"  value="@patientInfo.UserID"/><!-- 顾客ID-->
+                        <div class="upload-box upload-album" style="width: 20px; float: left;">
+                        </div>
+                        <input type="button" id="btnupload" class=" submitbutton2" value="保 存" style="margin-left: 140px;" />
+                        <div class="clearfix">
+                        </div>
+                        <input type="hidden" name="hidFocusPhoto" id="hidFocusPhoto" class="focus-photo" />
+                        <div class="photo-list">
+                            <ul>
+                                @foreach (var info in imglist)
+                                {
+                                    <li>
+                                        <input type="hidden" name="hid_photo_name" value="@info.UserID|@info.ImgUrl|@info.ImgUrl" />
+                                        <input type="hidden" name="hid_photo_remark" value="@info.Memo" />
+                                        <div class="img-box" onclick="setFocusImg(this);">
+                                            <a href="@info.ImgUrl" data-lightbox="image-1"  data-title="@info.Memo【@info.CreateTime.ToString("yyyy-MM-dd HH:mm")】">
+                                                <img src="@info.ImgUrl" bigsrc="@info.ImgUrl" /></a> <span class="remark"><i>@info.Memo</i></span>
+                                        </div>
+                                        <div>@info.CreateTime.ToString("yyyy-MM-dd")</div>
+                                        <a href="javascript:;" onclick="setRemark(this);">描述</a> <a href="javascript:;" onclick="delImg(this);">
+                                            删除</a> </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var uid = '@userid';
+    jQuery(document).ready(function(){
+
+        jQuery('#myform').validationEngine('attach', {
+            promptPosition: "topLeft",
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentRight_bottomInfo",
+            onValidationComplete: function(form, status){
+                if(status)
+                {
+                saveAs();
+                }
+        }
+        });
+         $("#SelProvince option[id='@ViewBag.ProvinceCode']").attr("selected",true);
+        //获取地区列表
+        GetCity();
+
+
+    });
+     //选择顾客赋值
+    function InFoDate(obj) {
+        $("#JieshaoUserID").val(obj.split("|")[0]);
+        $("#txtjieshaoUsername").val(obj.split("|")[1]);
+    }
+    function saveAs()
+     {
+        if ($("#Calendar").prop("checked") == true) {
+             $("#Calendar").val("农历");
+        }else{
+            $("#Calendar").val("公历");
+        }
+        $("#btnsave").attr("disabled","disabled");
+         $.ajax({
+                cache: true,
+                type: "POST",
+                url: '@Url.Content("~/PatientManage/AddUpPatient")',
+                data: $('#myform').serialize(), // 你的formid
+                asyanc: false,
+                error: function (request) {
+                    alert("保存出错");
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("保存成功！");
+                        if (uid > 0) {
+                            history.go(-1);
+                        } else {
+                            artdialog("保存成功！","@Url.Content("~/PatientManage/PatientInfoManage")");
+                        }
+                   if("@UserID"=="0")
+                    {
+                    OperateCard(data);
+                   }
+                   }else{
+                    artdialogfail("保存失败");
+                   }
+                }
+            });
+         $("#btnsave").attr("disabled","");
+     }
+    //图片上传
+     $("#btnupload").click(function(){
+         $.ajax({
+            type: "POST",
+             url: '@Url.Content("~/PatientManage/UploadPatientImg")'+"?UserID=@UserID",
+            data: $('#submitfomimg').serialize(), // 你的formid 
+            asyanc: false,
+             error: function(request) { 
+                    alert("保存出错"+request.responseText); 
+            }, 
+            success: function (data) { 
+                if(data > 0) { 
+                    artdialog("保存成功！"); 
+                }else{ 
+                    artdialogfail("保存失败！"); 
+                } 
+            }
+         });
+    });
+    $("h1").toggle(function(){$(".expandable").click();},function(){  $(".collapsable").click();});
+    //办卡
+    function OperateCard(UserID) {
+    art.dialog.open("/PatientManage/MakeCardNoSet?UserID="+UserID, { title: "办卡", width: 530, height: 460 })
+    }
+     //查询市
+    function GetCity() {
+           
+        var obj=$("#SelProvince").find("option:selected").attr("id");
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data:{areacode:obj},
+            async:false,
+            success: function (data) {
+              $("#SelCity").empty();
+              var areacode ="";
+              $(data).each(function (i,n){
+                
+                  $("#SelCity").append("<option id="+n.AreaCode+" value="+n.AreaName+">"+n.AreaName+"</option>");
+              });
+                 $("#SelCity option[value='@address[1]']").attr("selected", true)
+                 
+            areacode= $("#SelCity").find("option:selected").attr("id"); 
+              GetAreaByCode(areacode);
+          
+            $("#SelArea option[value='@address[2]']").attr("selected", true)
+            }
+           
+        });
+     } 
+     //获取县区
+    function GetArea() {
+    var obj=$("#SelCity").find("option:selected").attr("id");
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data:{areacode:obj},
+            async:false,
+            success: function (data) {
+              $("#SelArea").empty();
+              $("#SelArea").append("<option value=''>请选择县区</option>");
+              $(data).each(function (i,n){
+                  $("#SelArea").append("<option id="+n.AreaCode+" value="+n.AreaName+">"+n.AreaName+"</option>");
+              })
+            }
+           
+        });
+     } 
+
+      //根据编号查询
+    function GetAreaByCode(code) {
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data:{areacode:code},
+            async:false,
+            success: function (data) {
+              $("#SelArea").empty();
+                $("#SelArea").append("<option value=''>请选择县区</option>");
+              $(data).each(function (i,n){
+                  $("#SelArea").append("<option  id="+n.AreaCode+" value="+n.AreaName+">"+n.AreaName+"</option>");
+                  
+              })
+            }
+           
+        });
+     }
+     // 所有复选框 单选
+//     $("input:checkbox").click(function(){
+//        //$(this).attr("checked",true);
+//        if(!$(this).hasClass("Diseases"))
+//        {
+//        $(this).siblings("input[type=checkbox]").attr("checked",false);
+//        }
+//     })
+  
+</script>

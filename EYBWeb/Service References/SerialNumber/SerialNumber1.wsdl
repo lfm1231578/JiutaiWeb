@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:element name="GetEntityByserialnumber">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="serialnumber" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEntityByserialnumberResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetEntityByserialnumberResult" type="tns:SerialNumberEntity" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="SerialNumberEntity">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:BaseCondition">
+            <s:sequence>
+              <s:element minOccurs="1" maxOccurs="1" name="ID" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="HospitalID" type="s:int" />
+              <s:element minOccurs="0" maxOccurs="1" name="HospitalName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="SerialNumber" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="IsUse" type="s:int" />
+              <s:element minOccurs="1" maxOccurs="1" name="CreateTime" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="MachineNumber" type="s:string" />
+              <s:element minOccurs="1" maxOccurs="1" name="Number" type="s:int" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="BaseCondition">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Sidx" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Sord" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="Page" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Rows" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="SessionID" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsQuery" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="pageNum" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="numPerPage" type="s:int" />
+          <s:element minOccurs="0" maxOccurs="1" name="orderField" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="orderDirection" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="ids" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetEntityByMachineNumber">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="MachineNumber" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetEntityByMachineNumberResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetEntityByMachineNumberResult" type="tns:SerialNumberEntity" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateByserialnumber">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="serialnumber" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="MachineNumber" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UpdateByserialnumberResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="UpdateByserialnumberResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetVersion">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="type" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetVersionResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="GetVersionResult" type="s:double" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddAppStatistics">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="ip" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="IPAddress" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="CreateTime" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="AddAppStatisticsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="AddAppStatisticsResult" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="GetEntityByserialnumberSoapIn">
+    <wsdl:part name="parameters" element="tns:GetEntityByserialnumber" />
+  </wsdl:message>
+  <wsdl:message name="GetEntityByserialnumberSoapOut">
+    <wsdl:part name="parameters" element="tns:GetEntityByserialnumberResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetEntityByMachineNumberSoapIn">
+    <wsdl:part name="parameters" element="tns:GetEntityByMachineNumber" />
+  </wsdl:message>
+  <wsdl:message name="GetEntityByMachineNumberSoapOut">
+    <wsdl:part name="parameters" element="tns:GetEntityByMachineNumberResponse" />
+  </wsdl:message>
+  <wsdl:message name="UpdateByserialnumberSoapIn">
+    <wsdl:part name="parameters" element="tns:UpdateByserialnumber" />
+  </wsdl:message>
+  <wsdl:message name="UpdateByserialnumberSoapOut">
+    <wsdl:part name="parameters" element="tns:UpdateByserialnumberResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionSoapIn">
+    <wsdl:part name="parameters" element="tns:GetVersion" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionSoapOut">
+    <wsdl:part name="parameters" element="tns:GetVersionResponse" />
+  </wsdl:message>
+  <wsdl:message name="AddAppStatisticsSoapIn">
+    <wsdl:part name="parameters" element="tns:AddAppStatistics" />
+  </wsdl:message>
+  <wsdl:message name="AddAppStatisticsSoapOut">
+    <wsdl:part name="parameters" element="tns:AddAppStatisticsResponse" />
+  </wsdl:message>
+  <wsdl:portType name="SerialNumberSoap">
+    <wsdl:operation name="GetEntityByserialnumber">
+      <wsdl:input message="tns:GetEntityByserialnumberSoapIn" />
+      <wsdl:output message="tns:GetEntityByserialnumberSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetEntityByMachineNumber">
+      <wsdl:input message="tns:GetEntityByMachineNumberSoapIn" />
+      <wsdl:output message="tns:GetEntityByMachineNumberSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="UpdateByserialnumber">
+      <wsdl:input message="tns:UpdateByserialnumberSoapIn" />
+      <wsdl:output message="tns:UpdateByserialnumberSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetVersion">
+      <wsdl:input message="tns:GetVersionSoapIn" />
+      <wsdl:output message="tns:GetVersionSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="AddAppStatistics">
+      <wsdl:input message="tns:AddAppStatisticsSoapIn" />
+      <wsdl:output message="tns:AddAppStatisticsSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="SerialNumberSoap" type="tns:SerialNumberSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetEntityByserialnumber">
+      <soap:operation soapAction="http://tempuri.org/GetEntityByserialnumber" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEntityByMachineNumber">
+      <soap:operation soapAction="http://tempuri.org/GetEntityByMachineNumber" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateByserialnumber">
+      <soap:operation soapAction="http://tempuri.org/UpdateByserialnumber" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVersion">
+      <soap:operation soapAction="http://tempuri.org/GetVersion" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddAppStatistics">
+      <soap:operation soapAction="http://tempuri.org/AddAppStatistics" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="SerialNumberSoap12" type="tns:SerialNumberSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="GetEntityByserialnumber">
+      <soap12:operation soapAction="http://tempuri.org/GetEntityByserialnumber" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetEntityByMachineNumber">
+      <soap12:operation soapAction="http://tempuri.org/GetEntityByMachineNumber" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="UpdateByserialnumber">
+      <soap12:operation soapAction="http://tempuri.org/UpdateByserialnumber" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVersion">
+      <soap12:operation soapAction="http://tempuri.org/GetVersion" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="AddAppStatistics">
+      <soap12:operation soapAction="http://tempuri.org/AddAppStatistics" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="SerialNumber">
+    <wsdl:port name="SerialNumberSoap" binding="tns:SerialNumberSoap">
+      <soap:address location="http://101.231.69.110:8083/SerialNumber.asmx" />
+    </wsdl:port>
+    <wsdl:port name="SerialNumberSoap12" binding="tns:SerialNumberSoap12">
+      <soap12:address location="http://101.231.69.110:8083/SerialNumber.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

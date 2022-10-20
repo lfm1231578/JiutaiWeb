@@ -1,0 +1,65 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.BonusItemEntity>
+@{
+    Layout = null;
+    int countNum = 0;
+}
+<form action="" method="post" id="searchForm">
+    <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+    <input type="hidden" value="" name="orderField" id="orderField" />
+    <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+    cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th></th>
+                <th>
+                    项目名称
+                </th>
+                <th>
+                    毛利率%
+                </th>
+                <th>
+                    排序
+                </th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var entity in Model)
+        {
+            countNum = countNum + 1;
+            var listValue = entity.Id + "|" + entity.Name + "|" + entity.GrossProfit + "|" + entity.Sort + "|" + entity.CreateTime + "|" + entity.UpdateTime + "|" + "$";
+                <tr class="ableclick">
+                    <td>
+                        @countNum
+                    </td>
+                    <td>
+                        @entity.Name
+                    </td>
+                    <td>
+                        @entity.GrossProfit
+                    </td>
+                    <td>
+                        @entity.Sort
+                    </td>
+                    <td>
+                        <a href="javascript:OpenDailogDetail('Edit',@entity.Id);">修改</a>
+                        @*@if (entity.IsShow == 1)
+                            {
+                                <a href="javascript:;" onclick="deltetproduct(@entity.ID,2)">启用</a>
+                            }
+                            else
+                            {*@
+                        <a href="javascript:;" onclick="deltetproduct(@entity.Id,1)">删除</a>
+                        @*}  *@
+                    </td>
+                </tr>
+           }
+        </tbody>
+    </table>
+    @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+</form>
+
+

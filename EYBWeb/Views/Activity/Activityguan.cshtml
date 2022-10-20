@@ -1,0 +1,216 @@
+﻿@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@using EYB.ServiceEntity.BaseInfo;
+@using EYB.ServiceEntity.SystemEntity;
+@using PersonnelManage.Factory.IBLL;
+@using ActivityFactory.Factory.IBLL;
+@using EYB.ServiceEntity.ActivityEntity;
+@{
+    var type = Request["Type"];
+    int id = Convert.ToInt32(Request["ID"]);
+    Layout = null;
+    ProductEntity entity = new ProductEntity();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+
+    IActivityBLL iactivity = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IActivityBLL>();
+    BonusEmployeeRelevanceEntity bouns = new BonusEmployeeRelevanceEntity();
+    bouns.UserId = Convert.ToInt32(id);
+    List<BonusEmployeeRelevanceEntity> listd = new List<BonusEmployeeRelevanceEntity>();
+    listd = iactivity.GetListBounsEmployeelike(bouns);
+
+    //var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    var PersonList = personbll.GetAllUserByHospitalID(Convert.ToInt32(Session["HositalId"]), 1);
+    int count = 0;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/addactive.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+    <style type="text/css">
+        .isshowth {
+            padding: 10px;
+        }
+
+        td {
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentBody">
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <form id="myform" action="" method="post">
+                    <input type="hidden" name="BonusEmployeeId" value="@id" />
+                    <table class="gridTable" style="width: 96%; border-collapse: collapse;">
+
+                        <tr>
+
+                            <td>员工姓名</td>
+                            <td>分红占比（100%）</td>
+                            <td>操作</td>
+                        </tr>
+
+
+
+                        <tbody id="gridtbody">
+                            @foreach (var enti in listd)
+                            {
+                                count = count + 1;
+                                <tr>
+                                    <td>
+                                        <select name="UserId"   class="" style="width: 150px; height: 30px;
+                                    line-height: 30px;">
+
+                                            <option value="0">请选择员工</option>
+                                            @foreach (var info in PersonList)
+                                            {
+                                                <option value="@info.UserID" @(info.UserID == enti.UserId ? "selected=selected" : "")>@info.UserName</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" value='@Convert.ToInt32(enti.Percentage)' onkeyup="CheckInputIntFloat(this)" name="Percentage" />
+
+                                    </td>
+                                    <td>
+                                        <a href="javascript:;" class="addbtn">添加</a> @if (count != 1)
+                                        {<a href="javascript:;" class="deletebtn">删除</a>}
+                                    </td>
+                                </tr>
+                            }
+
+
+                        </tbody>
+                        <tr>
+                            <td class="isshowth"></td>
+                            <td class="isshowth">
+                                <input type="button" class="submitbutton3" value="确 定" onclick="SendShuju()" />
+                                <input class="submitbutton3" type="button" onclick="closeedNorefresh()" value="返 回" />
+                            </td>
+
+
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    //添加
+    $(function () {
+     
+        $("#gridtbody").delegate(".addbtn", "click", function () {
+            var strd = '<tr><td>'
+              + ' <select name="UserId"   class="" style="width: 150px; height: 30px;line-height: 30px;">'
+              + ' <option value="0">请选择员工</option>'
+                    @foreach (var info in PersonList)
+            {
+                @: + '<option value= @info.UserID > @info.UserName </option>'
+            }
+            + '</select></td><td><input type="text" value="" onkeyup="CheckInputIntFloat(this)" name="Percentage"/></td><td><a href="javascript:;" class=\'addbtn\'>添加</a> &nbsp;'
+            + '<a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>';
+            $("#gridtbody").append(strd);
+        })
+
+        //删除
+        $("#gridtbody").delegate('.deletebtn',
+            'click',
+            function () {
+                $(this).parent().parent().remove();
+            });
+
+    });
+
+
+    //添加员工分工占比确定
+    function SendShuju() {
+        var shu = new Array();
+        var arr = new Array();
+        
+        $("#gridtbody tr").each(function (i) {
+            arr[i] = $(this).find(":input[name='UserId']").val()
+            shu[i] = $(this).find(":input[name='Percentage']").val()
+        });
+        var zong = 0;
+        for (var i = 0; i < shu.length; i++) {
+            //if (shu[i].indexOf('.') > 1) {
+            //    alert("数字不能带有小数点"); return;
+            //}
+            zong += parseFloat(shu[i]);
+        }
+        if (zong > 100) {
+            alert("员工总比不能超过100%"); return;
+        }
+        if (zong < 100)
+        { alert("员工总比不能小于100%"); return; }
+
+        var newarr = arr.sort();
+        
+        for (var i = 0; i < newarr.length - 1; i++) {
+            if (newarr[i] == newarr[i + 1])
+            {
+                alert("员工姓名不能重复"); return;
+            }     
+            if (parseFloat(newarr[i]) ==0)
+            { alert("员工姓名不能为空"); return; }
+        }
+   
+        
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "json", //返回json格式的数据
+            url: "/Activity/BonusEmployeeRelevance_Add",
+            data: $("#myform").serialize(),
+            async: false,
+            success: function (data) {
+                if (data > 0) {
+                    alert("操作成功！");
+                    closeed();
+                }
+                else if (date = -1) {
+                    alert("操作失败！");
+                }
+
+            },
+            error: function () {
+                alert("数据请求失败!");
+            }
+        });
+
+    }
+
+</script>
+</html>

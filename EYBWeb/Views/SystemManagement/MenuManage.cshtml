@@ -1,0 +1,12 @@
+﻿@{
+    ViewBag.Title = "菜单管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@section head
+{
+<link type="text/css" rel="Stylesheet" href="@Url.Content("~/Content/Css/tree.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.tree.js")"></script>  
+
+}
+@RenderPage("~/Views/SystemManage/Controls/MenuManage_Tree.cshtml")
+<script type="text/javascript" src="@Url.Content("~/Scripts/Controls/SystemManage/Menu.js")"></script>

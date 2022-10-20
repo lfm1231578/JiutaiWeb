@@ -1,0 +1,547 @@
+table
+{
+    width: 100%;
+    border-collapse: separate;
+    empty-cells: show;
+}
+.formular fieldset
+{
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid #B5B8C8;
+}
+
+.formular legend
+{
+    font-size: 12px;
+    color: #15428B;
+    font-weight: 900;
+}
+
+.formular fieldset label
+{
+    float: none;
+    text-align: inherit;
+    display: block;
+    width: auto;
+}
+
+.formular label span
+{
+    color: #000;
+}
+
+.formular input, .formular select, .formular textarea
+{
+    display: block; /* this breaks relative positioning */
+    margin-bottom: 5px;
+}
+.mainContentRight_table .text-input
+{
+    width: 220px;
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+}
+.mainContentRight_table .input200
+{
+    width: 200px;
+}
+
+.tdright
+{
+    text-align: right;
+    padding-right: 15px;
+}
+
+
+.mainContentRight_table .select
+{
+    color: #555;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+   
+    height: 26px;
+    font-family: 微软雅黑;
+}
+
+.formular .text-input
+{
+    width: 250px;
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+    z-index: 1;
+}
+
+.formular .select
+{
+    width: 115px;
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+    float: left;
+    height: 26px;
+}
+
+.condition .select
+{
+    width: 80px;
+    color: #555;
+    padding: 2px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+  
+    height: 25px;
+}
+.input130
+{
+    width:130px;
+    padding-left:10px;
+    height:22px;
+}
+.formular .addsame
+{
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+    float: left;
+}
+.selectmenu
+{
+    width: 135px;
+    color: #a9a9a9;
+    padding: 6px;
+    padding-left: 35px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    background: #FFF repeat-x;
+    float: left;
+    margin-left:15px;
+    background: #fff url('../default/images/menu/icon1.jpg') -63px -4px no-repeat;
+}
+.formular textarea
+{
+    width: 500px;
+    height: 70px;
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+}
+
+.formular .infos
+{
+    background: #FFF;
+    color: #333;
+    font-size: 12px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.formular span.checkbox, .formular .checkbox, .formular .radio
+{
+    display: inline;
+}
+
+.formular .submit
+{
+    border: 0px;
+    width: 129px;
+    height: 36px;
+    padding: 4px;
+    float: left;
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+.submitbutton
+{
+    width: 129px;
+    height: 36px;
+    float: left;
+    margin-left: 10px;
+    display: inline;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 0px;
+    background: url('../images/button.jpg') 0px -10px no-repeat;
+}
+.submitbutton1 {
+    width: 100px;
+    height: 30px;
+   
+    float: left;
+    margin-left: 10px;
+    display: inline;
+    text-align: center;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 0px;
+    background:#fff;
+    border-radius: 2px;
+    cursor: pointer;
+    color:#444;
+    border:1px solid #888;
+}
+.submitbutton2 {
+    width: 83px;
+    height: 30px;
+    
+    float: left;
+    text-align: center;
+    margin-left: 10px;
+    display: inline;
+    color: #4d4d4d;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid #888888;
+    background:#fff;
+    border-radius: 2px;
+    cursor: pointer;
+}
+.submitbutton1:hover {
+    background-color: #cb0000;
+    border: 0px;
+    color: #fff;
+}
+.submitbutton2:hover {
+    background-color: #cb0000;
+    border: 0px;
+    color: #fff;
+}
+.submitbutton3:hover {
+    background-color: #cb0000;
+    border: 0px;
+    color: #fff;
+}
+.submitbutton4:hover {
+    background-color: #cb0000;
+    border: 0px;
+    color: #fff;
+}
+@keyframes myfirst {
+    from {
+            background-color: #FFA99C;
+        }
+    to {
+        background-color: #cb0000;
+        border: 0px;
+        color: #fff;
+    }
+    }
+
+    /* 超链接样式*/
+.submitbutton3 {
+    width: 83px;
+    height: 30px;
+    line-height: 30px;
+    float: left;
+    text-align: center;
+    margin-left: 10px;
+    display: inline;
+    color: #4d4d4d;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    border: 0px;
+    background-color: #fff;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid #888;
+}
+/* 无背景样式*/
+.submitbutton4 {
+    width: 83px;
+    height: 33px;
+    cursor:pointer;
+    line-height: 30px;
+    background: #fff;
+    border:1px solid #888888;
+
+}
+.searchsubmitton
+{
+    width: 80px;
+    height: 30px;
+    line-height:27px;
+}
+.submitbuttonauto
+{
+    background: url('../images/btnbg1.jpg') left 0;
+    color: #fff;
+    text-decoration: none;
+    border: 0px;
+    height: 36px;
+    float: left;
+    cursor: hand;
+    margin: 0 5px 0 0;
+    text-decoration: none;
+}
+.submitbuttonauto span
+{
+    background: url('../images/btnbg1.jpg') right 0;
+    padding: 9px 6px 9px 0;
+    margin: 0 0 0 8px;
+    float: left;
+    height: 18px;
+    font-size: 14px;
+    font-weight: bold;
+}
+.mainContentButton .submit
+{
+    border: 1px solid #AAA;
+    padding: 4px;
+    float: left;
+    text-decoration: none;
+    cursor: pointer;
+    margin-left: 5px;
+    background-image: url('../images/btnbg.jpg') no-repeat;
+}
+
+
+.Soliddots
+{
+    color: #00b0de;
+    font-size: 18px;
+}
+.formular .button
+{
+    border: 1px solid #AAA;
+    padding: 4px;
+    margin-left: 20px;
+    float: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.formular hr
+{
+    clear: both;
+    visibility: hidden;
+}
+
+.formular .fc-error
+{
+    width: 350px;
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 12px;
+    margin-bottom: 15px;
+    background: #FFEAEA;
+}
+
+.formular input[data-prompt-position="inline"]
+{
+    display: inline;
+}
+
+.footnote
+{
+    font-size: 11px;
+    color: #666;
+    font-style: italic;
+}
+
+.prompt-target
+{
+    border: 1px dotted #666;
+    min-height: 21px;
+}
+
+.inline-prompts label > span
+{
+    display: inline-block;
+    width: 250px;
+}
+
+.inline-prompts .text-input + .formError
+{
+    margin-left: 10px;
+}
+
+.prompt-summary .inline
+{
+    display: block;
+}
+.formular .textarea-input
+{
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+    border-style: none;
+    height: 80px;
+    width: 97%;
+}
+.formular td
+{
+    color: #666;
+    font-size: 14px;
+}
+.reservationagain
+{
+    line-height: 26px;
+    height: 26px;
+    width: 98%;
+    margin: 25px 0 10px 0;
+}
+.reservationagain .textinput
+{
+    width: 160px;
+    height: 30px;
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+    z-index: 1;
+}
+.reservationagain .select
+{
+    width: 160px;
+    height: 30px;
+}
+.resultselect
+{
+    width: 50px;
+    color: #555;
+    padding: 4px;
+    border: 1px solid #B5B8C8;
+    font-size: 14px;
+    float: left;
+    display: block;
+    margin-top: 4px;
+    background: #FFF repeat-x;
+}
+.usepowertd span
+{
+    display: block;
+    width: 60px;
+    float: left;
+    margin-top: 14px;
+}
+.red
+{
+    color: Red;
+}
+
+.case_a
+{
+    padding: 2px 8px 2px 8px;
+    border: 1px solid #EEE;
+    color: #00b0de;
+    background: #fff;
+}
+.case_a_click
+{
+    padding: 2px 8px 2px 8px;
+    border: 1px solid #EEE;
+    background-color: #00b0de;
+    color: #fff;
+}
+
+.width50tr
+{
+}
+.width50tr tr
+{
+    width: 50%;
+}
+
+.abtn
+{
+    display: block;
+    width:83px;
+    height: 26px;
+    border: 1px solid #707070;
+    margin: 5px 0 0 5px;
+    line-height: 26px;
+    font-size:13px;
+    text-align: center;
+    border-radius: 3px;
+    filter: progid:DXImageTransform.Microsoft.Gradient(gradientType=0,startColorStr=#b8c4cb,endColorStr=#f6f6f8); /*IE 6 7 8*/
+    background: -ms-linear-gradient(top, #CFCFCF,#F2F2F2); /* IE 10 */
+    background: -moz-linear-gradient(top,#CFCFCF,#F2F2F2); /*火狐*/
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%,from(#CFCFCF), to(#F2F2F2)); /*谷歌*/
+    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CFCFCF), to(#F2F2F2)); /* Safari 4-5, Chrome 1-9*/
+    background: -webkit-linear-gradient(top, #CFCFCF, #F2F2F2); /*Safari5.1 Chrome 10+*/
+    background: -o-linear-gradient(top, #CFCFCF, #F2F2F2); /*Opera 11.10+*/
+}
+.wid50{ width:50px;}
+.wid30{ width:30px;}
+.hidden{ display:none;}
+
+
+
+
+/*--------------- input select 公共样式----------------------*/
+
+.ymxInput {
+    width: 120px;
+    height: 22px;
+
+}
+
+.ymxSelect {width: 120px;height: 24px;}
+
+.ymxRiLi {width: 100px;  padding-left: 10px;}
+.ymxButtonMT{margin-top:5px;}
+
+.gridTable thead tr th {
+    background: #edf1f3;
+    color: #636465;
+}
+.ymxulist ul li {height: 40px;line-height: 40px;}
+.ymxkaoqingTr {background-color: #ff8680;}
+.ymxkaoqingTr th { color: #fff;}
+.gridTable .ymxkaoqingTr:hover { background-color: #ff8680;}
+.ymxslectDis{height:25px;}
+.ymxBTLine{line-height:30px;}
+
+.ymxDate { padding-left:10px; width:120px; height:22px;
+}
+.ymxInput12 {
+    width:120px; 
+    height:22px;
+
+}
+.ymxtop {
+    margin-top:8px;
+}
+
+.ymxsalarTable {
+    margin: 10px 10px 20px;
+    padding: 10px;
+    background: #EEF5F9;
+    border-radius: 10px;
+}

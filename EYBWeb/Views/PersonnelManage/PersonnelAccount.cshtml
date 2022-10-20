@@ -1,0 +1,139 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.SystemEntity.SysOperateLogEntity>
+@{
+    ViewBag.Title = "PersonnelAccount";
+}
+<div id="mainContentBody">
+    @Html.Partial("_PersonnelSetControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+             <label class="Soliddots">●</label> 账号安全</div>
+        <div class="mainContentRight_bottom" style=" position:relative;">
+            <div class="accountdiv">
+                修改密码</div>
+            <form id="myform" action="@Url.Content("~/PersonnelManage/UpdatePwd")" class="formular" method="post"  >
+            <table class="mainContentRight_bottomnewdepart" style="margin-left:40px;">
+                <tr>
+                    <td style="width: 110px;">
+                        账号：
+                    </td>
+                    <td>
+                        <input type="hidden" name="UserID" value="@ViewBag.UserID" />
+                        @ViewBag.LoginAccount
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        原密码：
+                    </td>
+                    <td>
+                        <input type="password" name="OldPwd" id="txtpwd" class="validate[required] text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        新密码：
+                    </td>
+                    <td>
+                        <input type="password" name="Password" id="txtnewpwd" class="validate[required] text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        确认新密码：
+                    </td>
+                    <td>
+                        <input type="password" id="txtrenewpwd" class="validate[required,equals[txtnewpwd]] text-input" />
+                    </td>
+                </tr>
+                <tr>
+                     <td></td>
+                    <td >
+
+                        <input type="button" id="btnsave" class="submitbutton2" value="保存修改" style=" margin:0;" />
+                    </td>
+                </tr>
+            </table>
+            </form>
+            <div class="accountdiv">
+                最近30条登录日志</div>
+            <table class="gridTable" style="width:96%;">
+                <thead>
+                    <tr style=" background:#c4c4c4;">
+                        <th>
+                            用户
+                        </th>
+                        <th>
+                            时间
+                        </th>
+                        <th>
+                            IP地址
+                        </th>
+                        <th>
+                            IP所在地
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var info in Model)
+                {
+                    <tr>
+                        <td>
+                            @info.LoginAccount
+                        </td>
+                        <td>
+                             @info.OccurTime
+                        </td>
+                        <td>
+                             @info.ClientIP
+                        </td>
+                        <td>
+                             @info.Memo
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+
+            @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery("#myform").validationEngine('attach', {
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentBody",
+            promptPosition: "bottomLeft"
+        });
+    //保存
+     $("#btnsave").click(function(){
+         if($("#txtpwd").val()=="" || $("#txtnewpwd").val()==""  || $("#txtrenewpwd").val()==""   )
+         {
+            $('#myform').submit();
+            return;
+         }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/PersonnelManage/UpdatePwd")",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                alert("Connection error");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("修改成功！");
+               }else if(data==-2){
+               artdialogfail("原密码错误！","@Url.Content("~/PersonnelManage/PersonnelAccount")");
+               }else
+               {
+                artdialogfail("修改失败！");
+               }
+            }
+        });
+     });
+    });
+</script>

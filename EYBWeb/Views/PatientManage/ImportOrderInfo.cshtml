@@ -1,0 +1,68 @@
+﻿@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<BrandEntity>
+@{
+    ViewBag.Title = "导入单据";
+    Layout = null;
+   
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <form action="@Url.Content("~/PatientManage/OrderImportInfo")"  method="post" id="submitbutton"  enctype="multipart/form-data" >
+    <table class="mainContentRight_bottomnewdepart" style="z-index: 0px;">
+        <tr>
+            <td style="width: 110px;">
+                卡项名称
+            </td>
+            <td>
+                <input type="text" name="Name" id="txtName" class="validate[required] text-input" style="height:22px;" />
+            </td>
+        </tr>
+        <tr style=" height:60px;">
+            <td style="width: 110px;">
+                选择文件
+            </td>
+            <td>
+                <input type="file" name="fileName"  style="height:28px;" />
+            </td>
+        </tr>
+        <tr>
+            <td style="width: 110px;">
+            </td>
+            <td>
+                <input type="submit" id="btnsave" class="submitbutton2" value="保 存" />
+            </td>
+        </tr>
+    </table>
+    </form>
+</body>
+</html>
+<script type="text/javascript">
+//        $("#btnsave").click(function(){
+//         $.ajax({
+//            type: "post",
+//            dataType: "json",
+//            url:"@Url.Content("~/PatientManage/OrderImportInfo")",
+//            data:$("#submitbutton").serialize(),
+//            success: function (data) {
+//                if(data>0)
+//                {
+//                alert("保存成功！");
+//                    
+//                }
+//                closeed();
+//            }
+//        });
+//     });
+         
+    
+</script>

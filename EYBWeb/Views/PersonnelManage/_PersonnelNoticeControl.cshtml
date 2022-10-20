@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "_PersonnelControl";
+    //新建通知
+    bool  result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.NoticeManager_Manage_View_New);
+    //已发通知
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.NoticeManager_Manage_View_Send);
+    //未读通知
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.NoticeManager_Manage_View_ReceiveNo);
+    //已读通知
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.NoticeManager_Manage_View_Receive);
+}
+
+    <div id="mainContentLeft">
+     <form action="@Url.Content("~/PersonnelManage/SearchNotice")" method="post" id="submitform11" >
+        <div id="mainContentLeft_top">
+        <a style="background:#fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -230px no-repeat;"> </a><span>通知公告</span></div>
+        <div id="mainContentLeft_center">
+            <ul>
+                <li redirect="@Url.Content("~/PersonnelManage/PersonnelNoticeNew")" onclick='CheckRight(this,"@result1")'><a   id="btncheckright"   style="cursor: pointer; "><img width='130' height='110' src='../../Content/themes/images/notice1.png'   /><label>新建通知</label></a></li>
+                <li redirect="@Url.Content("~/PersonnelManage/PersonnelNoticeSend?Type=1")" onclick='CheckRight(this,"@result2")' style="margin-left:20px;"><a   style="cursor: pointer; "><img width='130' height='110' src='../../Content/themes/images/notice2.png'   /><label>已发送通知</label></a></li>
+            </ul>
+        </div>
+        <div id="mainContentLeft_bottom">
+            <ul>
+                <li  onclick='CheckRight(this,"@result3")'  redirect="@Url.Content("~/PersonnelManage/PersonnelNoticeNoReciev?Type=2")"><span style="background:#fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -230px no-repeat;"></span><a  style="cursor: pointer; " >未读通知</a> </li>
+                <li  onclick='CheckRight(this,"@result4")'   redirect="@Url.Content("~/PersonnelManage/PersonnelNoticeReciev?Type=3")"><span style="background:#fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -230px no-repeat;"></span><a style="cursor: pointer; ">已读通知</a> </li>
+                <li style=" height:33px;padding-left:13px;"><span  class="submitspan"  ></span><input type="text" name="UserName" class="searchInput" value="搜索" />
+                <input type="submit" class="submitbutton"  value="" />
+                </li>
+            </ul>
+        </div>
+         </form>
+    </div>
+    
+      
+    <script type="text/javascript">
+        //登录回车事件
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13 || event.keyCode == 32) {
+                if ($.trim($(".searchInput").val()) != "" && $(".searchInput").val() != "搜索") {
+                    document.getElementById("submitform11").submit();
+                }
+            }
+        });
+         
+       
+       
+    </script>

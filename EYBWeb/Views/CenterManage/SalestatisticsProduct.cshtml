@@ -1,0 +1,178 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model  List<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@{
+    ViewBag.Title = "前台管理";
+    Layout = null;
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+    var brandlist = wareBll.GetBrandListNoPage(ParentHospitalID);//获取品牌列表
+    var productcaretypelist = wareBll.GetProductTypeNoPage(ParentHospitalID, 2);//获取产品分类列表
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    var HospitalID = ViewBag.HospitalID;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<!--位置不能颠倒，否则影响样式-->
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<style type="text/css">
+    body
+    {
+        background: #fff;
+        overflow-x: hidden;
+    }
+</style>
+</head>
+<body style="overflow-x:hidden;">
+    <div class="mainContentRight_bottom" style="margin-top:0px;">
+        @using (Ajax.BeginForm("SalestatisticsProduct", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+        {
+            <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+            <input type="hidden" value="" name="orderField" id="orderField" />
+            <div class="accountdiv" style=" margin-top: 0px;margin-bottom: 0px;width:100%;">
+                @if (HasPermission)
+                {
+                    <label style="font-weight: normal; display:inline; ">
+                        所属分店：
+                    </label>
+                    <select name="s_HospitalID" id="s_HospitalID" class="select ymxSelect">
+                        <option value="0">请选择分店</option>
+                        @if (RegionhospitalList.Count > 0)
+                        {
+                            foreach (var info in RegionhospitalList)
+                            {
+                                <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "")=) value="@info.HospitalID">@info.Name</option>
+                            }
+                        }
+                        else
+                        {
+                            foreach (var info in hospitalList)
+                            {
+                                <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "")=) value="@info.ID">@info.Name</option>
+                            }
+                        }
+                    </select>
+                }
+                <label style="font-weight: normal; display:inline;">
+                    产品名称：
+                </label>
+                <input type="text" id="s_Keyword" name="s_Keyword" class="ymxInput" />
+                <label style="font-weight: normal; display:inline;">
+                    品牌:
+                </label>
+                <select name="BrandID" id="BrandID" class="select ymxSelect">
+                    <option value="0">=选择品牌=</option>
+                    @foreach (var info in brandlist)
+                    {
+                        <option value="@info.ID">@info.Name</option>
+                    }
+                </select>
+                <label style="font-weight: normal; display:inline;">
+                    类别
+                </label>
+                <!--产品类别-->
+                <select name="ProductType" id="ProductType" class="select ymxSelect">
+                    <option value="0">=选择分类=</option>
+                    @foreach (var info in productcaretypelist)
+                    {
+                        <option value="@info.ID">@info.Name</option>
+                    }
+                </select>
+                <label style="font-weight: normal; display:inline;">
+                    开始时间：
+                </label>
+                <input type="text" autocomplete="off" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                       name="s_StareTime" id="s_StareTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <label style="font-weight: normal; display:inline;">
+                    至
+                </label><input type="text" autocomplete="off" class="text-input Wdate input130 " onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                               name="s_Endtime" id="s_Endtime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                <input type="submit" id="btnsumbit" class="submitbutton2 ymxBTLine" style="float: none; width:86px;" value="查询" />
+                <input type="button" class="submitbutton2 ymxBTLine" id="btnSave" style="float: none; width:86px;" value="导出" />
+            </div>
+
+        }
+        <div id="articles" style="margin-top: 5px; width:100%;">
+            @Html.Partial("_SalestatisticsProduct", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+
+
+        <div id="showmessage" style=" display:none;width:220px; height:140px; position:fixed; top:300px; left:650px; color:Red;  margin:0 auto; text-align:center;">
+            <img src="../../Content/themes/images/loading.gif" width="100" />
+            <p style=" text-align:center; height:30px;line-height:30px;">
+                正在努力查询中，请稍后...
+            </p>
+        </div>
+        <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+    </div>
+</body>
+<script type="text/javascript">
+    $("#btnsumbit").click(function () {
+        $("#txtTime").val(Math.random());
+        $("#showmessage").css("display","");
+    })
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+        $("#txtUserName").keyup(function () {
+            $("#btnsumbit").click();
+            //document.getElementById("searchForm").submit();
+        });
+    });
+
+    //导出
+    $("#btnSave").click(function () {
+
+        //var s_HospitalID = $("#s_HospitalID").val();
+        if ($("#s_HospitalID").val() == "" || $("#s_HospitalID").val() == null) {
+            var s_HospitalID =@HospitalID;
+        }
+        else { var s_HospitalID = $("#s_HospitalID").val(); }
+        var s_Keyword = $("#s_Keyword").val();
+        var BrandID = $("#BrandID").val();
+        var ProductType = $("#ProductType").val();
+        var s_StareTime = $("#s_StareTime").val();
+        var s_Endtime = $("#s_Endtime").val();
+        var txtshuliang = document.querySelector(".txtQuatity").innerText
+        var txtheji = document.querySelector(".txtheji").innerText
+        var txtzengsong = document.querySelector(".txtzengsong").innerText
+        var txtzherang = document.querySelector(".txtzherang").innerText
+        var txtchengben = document.querySelector(".txtchengben").innerText
+        var txtmaoli = document.querySelector(".txtmaoli").innerText
+        var url = "/CenterManage/ExportSalestatisticsProduct?pageNum=1&numPerPage=10000&s_HospitalID=" + s_HospitalID + "&s_Keyword=" + s_Keyword + "&BrandID=" + BrandID + "&ProductType=" + ProductType + "&s_StareTime=" + s_StareTime + "&txtshuliang="+txtshuliang+"&txtheji="+txtheji+"&txtzengsong="+txtzengsong+"&txtzherang="+txtzherang+"&txtchengben="+txtchengben+"&txtmaoli="+txtmaoli+"&s_Endtime=" + s_Endtime;
+        window.location.href = url;
+    });
+</script>
+</html>

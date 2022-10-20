@@ -1,0 +1,84 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    
+    Layout = null;
+}
+<form action="" method="post" id="submitform">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="border-collapse: collapse;width:99%;">
+    <thead>
+        <tr>
+            <th orderfield="UserName" >
+                客户姓名
+            </th>
+            <th orderfield="Mobile" >
+                电话
+            </th>
+            <th orderfield="OrderNo">
+                订单编号
+            </th>
+            <th orderfield="Price" style="">
+                订单总额
+            </th>
+          
+            <th orderfield="CreateTime">
+               导入时间
+            </th>
+            <th>
+               凭据号
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr>
+                <td>
+                  <div >
+                        <a href="@Url.Content("~/PatientManage/PatientDetail")?UserID=@entity.UserID">@entity.UserName</a></div>
+                </td>
+                <td>
+                    @entity.Mobile
+                </td>
+                <td>
+                     @entity.OrderNo
+                </td>
+                <td>
+                  @entity.Price
+                </td>
+               
+                <td>
+                    @entity.CreateTime
+                </td>
+                <td>
+                    @entity.PingzhengNo
+                </td>
+                <td>
+                    <a href="####" onclick="OpenOrderDetail('@entity.OrderNo')">详情</a>
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 7))
+    </tbody>
+    <tfoot>
+        <tr style=" height:30px; line-height:30px;">
+         <td></td>
+            <td></td>
+            <td></td>
+            <td style="color:Red;">合计:@ViewBag.PageSum</td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script>
+    $("#labcount").text("@Model.Count");
+</script>

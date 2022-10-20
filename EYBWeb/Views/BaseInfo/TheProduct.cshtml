@@ -1,0 +1,190 @@
+﻿@using EYB.ServiceEntity.BaseInfo;
+@using BaseinfoManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<ProductEntity>
+@{
+    ViewBag.Title = "产品列表";
+    //  var ProductType = Request["ProductType"];
+    //IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseinfoBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var parentHospitalID = Common.Manager.LoginHospitalUserManager.GetLoginInfo().ParentHospitalID;//获取当前用户的父点ID
+
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+
+    var orderName = ViewBag.orderName;
+    var oederProductType = ViewBag.oederProductType;
+    var BrandID = ViewBag.BrandID;
+
+    //获取品牌列表
+    IList<BrandEntity> brandlist = new List<BrandEntity>();
+    brandlist = wareBll.GetBrandListNoPage(parentHospitalID);
+    bool HasPermissionPhone = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_查看手机号);//设置隐藏顾客的也是用这个权限
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_产品管理);
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>产品管理(<span id="sp">@Model.TotalItemCount</span>) <a href="javascript:OpenDailogDetail('ADD',0);"
+                    class="addbutton">新建</a>
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative; overflow:hidden;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                @using (Ajax.BeginForm("TheProduct", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                {
+                    <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+                    <input type="hidden" value="" name="orderField" id="orderField" />
+                    <div class="accountdiv" style="margin-bottom: 0px;">
+                        所属品牌：
+                        <select name="BrandID" id="BrandID" class="select ymxSelect">
+                            <option value="0">全部</option>
+                            @foreach (var info in brandlist)
+                            {
+                                <option @(info.ID == Convert.ToInt32(BrandID) ? "selected=selected" : "") value="@info.ID">@info.Name</option>
+                            }
+                        </select>&nbsp;产品名称：
+                        <input type="text" name="Name" id="Name" class="text-input ymxInput" value="@orderName" />
+                        是否显示:
+                        <select name="IsShow" class="ymxSelect">
+                            <option value="2">正常产品</option>
+                            <option value="1">删除产品</option>
+                            <option value="0">全部</option>
+                        </select>
+                        <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                        <input type="submit" class="submitbutton2" id="btnsumbit" style="float: none;" value="查 询" />
+                        <input type="submit" class="submitbutton2" id="BtnSave" style="float: none;" value="导出(xlsx)" />
+                        <input type="submit" class="submitbutton2" id="BtnSave1" style="float: none;" value="导出(xls)" />
+                        @if (HasPermission)
+                        {
+                            <input type="button" class="submitbutton1" id="btnsetCost" style="float: none;" onclick="OpenDailogSetCost()"
+                                   value="批量设置成本" />
+                        }
+                        @*   @if (HasPermissionPhone)
+        {
+            <input type="button" id="btnSetYinchang" class="submitbutton3" style="float: none;"
+                value="设 置" />
+        }*@
+                    </div>
+                }
+                <div id="articles" class="" style="margin-top: 5px; width: 100%; overflow:auto;">
+                    @Html.Partial("_TheProduct", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#btnsumbit").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+   function OpenDailogDetail(type,obj) {
+        var title ="";         
+        if(type=="ADD")
+        {
+         title="新建产品";
+        }else{
+        title="编辑产品";
+        }
+        art.dialog.open("/BaseInfo/EditProduct?Type="+type +"&ID=" + obj, { title: title, width: 960, height: 640 });
+    }
+ function OpenDailogSetCost() {
+        art.dialog.open("/BaseInfo/BatchSetCostProduct?Type=2" , { title: "批量设置产品成本", width: 960, height: 640 });
+    }
+    function deltetproduct(obj,isshow) {
+        var id = obj;
+        if(confirm("确认操作吗？"))
+        {
+          $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/ProductDel?ID=")"+id+"&isshow="+isshow,
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+            },
+            success: function (data) {
+             if(data>0){
+                //artdialog("操作成功！","@Url.Content("~/BaseInfo/TheProduct")");
+                alert("操作成功！");
+                $("#btnsumbit").click();
+               }else
+               {
+                artdialogfailTwo("操作失败,！","","250","100");
+               }
+            }
+        });
+        }
+
+    }
+//      $("#Name").keyup(function () {
+//        $("#btnsearch").click();
+//        //document.getElementById("searchForm").submit();
+//        });
+        
+       $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+
+
+    
+    $("#BtnSave").click( function(){
+        var Name = $("#Name").val();
+        var BrandID = $("#BrandID").val();
+        var url = getControllerUrl("BaseInfo", "ExportTheProductList") + "?pageNum=1&numPerPage=10000000&Name=" + Name + "&BrandID=" + BrandID;
+        // window.open(url);
+        window.location.href = url;
+    })
+    $("#BtnSave1").click( function(){
+        var Name = $("#Name").val();
+        var BrandID = $("#BrandID").val();
+        var url = getControllerUrl("BaseInfo", "ExportTheProductList1") + "?pageNum=1&numPerPage=10000000&Name=" + Name + "&BrandID=" + BrandID;
+        // window.open(url);
+        window.location.href = url;
+    })
+
+
+    $("#btnSetYinchang").click(function () {
+
+            var str = "";
+            $('input[name="checkbox"]:checked').each(function () {
+                str += $(this).val() + "|";
+            });
+            if (str == "") {
+                alert("请先勾选产品!");
+            }
+            else if (confirm('确定操作吗？')) {
+
+                $.ajax({
+                    type: "POST",
+                    url: getControllerUrl("BaseInfo", "SetProductIsMoni"),
+                    async: false,
+                    data: $("#submitform").serialize(), // 你的formid
+                    error: function (request) {
+                        artdialogfailTwo("操作失败！", "", "250", "100");
+                    },
+                    success: function (data) {
+                        if (data > 0) {
+                            artdialog("操作成功！", "", "250", "100");
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        });
+</script>
+<script>
+    $(function () {
+        let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+        $("#articles").css("height", acHeight + "px");
+    })
+</script>

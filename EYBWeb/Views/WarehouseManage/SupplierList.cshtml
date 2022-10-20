@@ -1,0 +1,89 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.SupplierEntity>
+@{
+    ViewBag.Title = "供应商列表";
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<body style="background: #fff;">
+    
+        @using (Ajax.BeginForm("SupplierList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+        {
+            <table width="100%" cellspacing="0" class="search-form">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="explain-col">
+                                <label class="labelspan">
+                                    名称</label>
+                                <input type="text" id="Name" name="Name" value="" style="width: 100px; height: 26px;
+                                    line-height: 26px; float: left;" />
+                                <input type="submit" id="btnsearch" name="search" class="submitbutton4" value="搜 索" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+        <div id="articles" class="mainContentRight_bottom" style="height: 350px; overflow: hidden;
+            margin-top: 5px; width: 100%;">
+            @Html.Partial("_SupplierList", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="确 定" onclick="FullValue()" />
+            <input class="submitbutton2" type="button" onclick="closeedNorefresh()" value="取 消" /></div>
+    
+</body>
+<script type="text/javascript">
+    $("#articles").delegate("tr.ableclick", "click", function () {
+        $(this).find("input:radio").attr("checked", "checked");
+        $("tbody tr").css("background", "");
+        $(this).css("background", "#E7F6FF");
+    });
+    $("#articles").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+    $("#Name").keyup(function () {
+        $("#btnsearch").click();
+        //document.getElementById("searchForm").submit();
+    });
+    $("#articles").delegate("tr.ableclick", "dblclick", function () {
+        $(this).find("input:radio").attr("checked", "checked");
+        FullValue();
+    });
+    //确定选择按钮
+    function FullValue() {
+        var value = "";
+        $("input[name='radioList']:checked").each(function (i) {
+            value += $(this).val();
+        });
+
+        if (value == undefined) {
+            alert("请选择供应商");
+            return false;
+        }
+        art.dialog.data('SValueProduct', value); // 存储数据
+        art.dialog.close();
+    }
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+
+    function closeedNorefresh() {
+        art.dialog.data('SValueProduct', "");
+        art.dialog.close();
+    }
+</script>

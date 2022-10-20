@@ -1,0 +1,117 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+@{
+    ViewBag.Title = "划扣销售汇总";
+    Layout = null;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+}
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#showmessage").css("display", "none");
+        $("#searchresult").html("");
+    });
+</script>
+
+
+<form action="" method="post" id="submitform">
+<table class="gridTable" style="border-collapse: collapse;width:99%;">
+    <thead>
+        <tr>
+            <th @(ViewBag.orderField == "HospitalName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalName">
+                店名
+            </th>
+            <th>
+                名称
+            </th>
+            <th @(ViewBag.orderField == "RetailPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="RetailPrice">
+                单价
+            </th>
+            <th @(ViewBag.orderField == "RetailPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="RetailPrice">
+                优惠价
+            </th>
+            <th @(ViewBag.orderField == "Quantity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quantity">
+                数量
+            </th>
+            <th @(ViewBag.orderField == "AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllPrice">
+                合计
+            </th>
+            <th @(ViewBag.orderField == "CostPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CostPrice">
+                成本
+            </th>
+            <th @(ViewBag.orderField == "Maoli" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Maoli">
+                毛利
+            </th>
+            <th @(ViewBag.orderField == "AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllPrice">
+                销售占比
+            </th>
+            <th style="display:none;">
+                毛利占比
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            if (entity.HospitalID == ViewBag.HospitalID)
+            {
+            <tr>
+                <td>
+                    @entity.HospitalName
+                </td>
+                <td>
+                    @entity.ProdcuitName
+                </td>
+                
+                <td>
+                    @entity.RetailPrice
+                </td>
+                <td>
+                    @Math.Round(entity.Price, 2).ToString()
+                </td>
+                <td>
+                    @entity.Quantity
+                </td>
+                <td>
+                    @entity.AllPrice
+                </td>
+             
+                <td>
+                    @entity.CostPrice
+                </td>
+                <td>
+                    @entity.Maoli
+                </td>
+                <td>
+                    @((entity.AllPrice / Convert.ToDecimal(ViewBag.AllPrice) * 100).ToString("#0.00") + "%")
+                </td>
+                <td style="display:none;">
+                    @((entity.Maoli / Convert.ToDecimal(ViewBag.AllMaoLi) * 100).ToString("#0.00") + "%")
+                </td>
+            </tr>
+            }
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 15))
+    </tbody>
+    <tfoot>
+        <tr style=" line-height:30px;  height:30px;">
+            <td colspan="4" style=" text-align:right;">总计:</td>
+            <td class="txtshuliang">@ViewBag.AllQuantity</td>
+            <td class="txtheji">@ViewBag.AllPrice</td>
+            <td class="txtchengben">@ViewBag.AllChengben</td>
+            <td class="txtmaoli">@ViewBag.AllMaoLi</td>
+            @*<td>@ViewBag.AllQuantity</td>
+            <td>@ViewBag.AllPrice</td>
+
+            <td> @ViewBag.AllChengben</td>
+            <td>@ViewBag.AllMaoLi</td>*@
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>

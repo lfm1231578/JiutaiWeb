@@ -1,0 +1,84 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/addactive.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+    <script>
+        $(function () {
+            $('#btnOk').click(function () {
+                $.post('@Url.Action("_RechargeDeposit")',$('#myForm').serialize(),function(data) {
+                    if (data.IsError) {
+                        alert(data.Message);
+                    } else {
+                        alert(data.Message);
+                        art.dialog.open.api.close();
+                        var win = art.dialog.open.origin; //来源页面
+                        win.find(':subimt').click();
+                    }
+                });
+            });
+        });
+    </script>
+    <style>
+        .mainContentRight { width: 100%; float: none; }
+    </style>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight">
+        <form class="formular" method="post" id="myForm">
+            <div class="mainContentRight_bottom" style="overflow-y: hidden;">
+                <input type="hidden" name="ShareholderId" value="@Model" />
+                <table class="mainContentRight_bottomnewdepart">
+                    <tr>
+                        <td>充值金额：</td>
+                        <td><input type="number" id="txtMoney" name="Amount" class="text-input" style="width: 100px;"  /></td>
+                    </tr>
+                    <tr>
+                        <td>备注：</td>
+                        <td>
+                            <textarea name="Remarks" class="text-input" style="resize: none;" placeholder="备注"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="button" id="btnOk" value="确 定" class="submitbutton2" />
+                            <input type="button" value="取 消" class="submitbutton2" onclick="closeedNorefresh()" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

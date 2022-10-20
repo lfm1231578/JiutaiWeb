@@ -1,0 +1,51 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PatientEntity.PatientEntity>
+@{
+    ViewBag.Title = "患者信息管理";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    var name = ViewBag.PatientName;
+}
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+        @using (Ajax.BeginForm("SearchResult", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+{
+      <input type="hidden" name="UserName" id="UserName" value="@name" />
+       <input type="submit" style=" display:none" id="GoSelect" />
+}
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+
+          <label class="Soliddots">●</label>  搜索结果 (<span>@Model.TotalItemCount</span>)</div>
+
+        <div class="mainContentRight_bottom">
+         <div id="articles">
+            @Html.Partial("_SearchResultList", Model)
+         </div>
+        </div>
+       
+    </div>
+  @{Html.RegisterMvcPagerScriptResource();}
+<script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+    function goPage(UserID) {
+
+        art.dialog.open("/DoctorManage/ReservationAgain?UserID=" + UserID, { title: "再次预约", width: 900, height: 560 })
+    }
+
+    $(document).ready(function () {
+
+        $("#GoSelect").submit();
+    })
+</script>
+

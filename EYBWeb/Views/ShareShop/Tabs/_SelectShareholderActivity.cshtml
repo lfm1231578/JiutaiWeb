@@ -1,0 +1,41 @@
+﻿@*@model EYB.Web.Models.ShareShop.Tabs.SelectShareholderActivityModel*@
+@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.ShareholderActivityEntity>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>选择</th>
+                    <th>赠卡活动</th>
+                    <th>会员卡</th>
+                    <th>股东赠卡数</th>
+                    <th>客源赠卡</th>
+                    <th>赠送积客价值</th>
+                    <th>赠送积客数量</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+            {
+                var listValue = entity.Id + "|" + entity.ActivityName;
+                    <tr class="ableclick">
+                        <td><input name="radioList" type="radio" code="@entity.Id" value="@listValue" /></td>
+                        <td>@entity.ActivityName</td>
+                        <td>@entity.MainCardName</td>
+                        <td>@entity.ShareQuantity</td>
+                        <td>@entity.FriendShareQuantity</td>
+                        <td>@entity.ActivityValue</td>
+                        <td>@entity.ActivityCount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+

@@ -1,0 +1,62 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.BuyOrderEntity>
+@{
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+    width: 100%; margin-left: 5px;" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                单据编号
+            </th>
+            <th orderfield="">
+                业务日期
+            </th>
+            <th orderfield="">
+                销售数量
+            </th>
+            <th>
+                总计金额
+            </th>
+            <th>
+                应付金额
+            </th>
+            <th orderfield="">
+                操作人
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        { 
+            <tr>
+                <td>@entity.OrderNo
+                </td>
+                <td>
+                    @entity.CreateTime.ToString("yyyy-MM-dd")
+                </td>
+                <td>@entity.AllQutity
+                </td>
+                <td>@entity.NeedMoney
+                </td>
+                <td>@entity.ActualMoney
+                </td>
+                <td>@entity.UserName
+                </td>
+                <td>
+                    <a href="@Url.Content("~/WarehouseManage/OrderInfo")?ID=@entity.ID">详细</a>
+                </td>
+            </tr>
+                    
+        }
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>

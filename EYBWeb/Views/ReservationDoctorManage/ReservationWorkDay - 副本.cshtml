@@ -1,0 +1,135 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using EYB.ServiceEntity.ReservationEntity;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@{
+    Layout = null;
+    var Hid = ViewBag.HospitalID;//门店ID
+    var Year = Request["Year"];//年份
+    var Month = Request["Month"];//
+    var M = Month;
+    if (Year == "" || Year == null)
+    {
+        Year = DateTime.Now.Year.ToString();
+    }
+    if (Month == "" || Month == null)
+    {
+        M = DateTime.Now.Month.ToString();
+        if (DateTime.Now.Month < 10)
+        {
+            Month = "0" + DateTime.Now.Month;
+        }
+
+    }
+    else
+    {
+        if (Convert.ToInt32(Month) < 10)
+        {
+            Month = "0" + Month;
+        }
+    }
+    var YearMonth = Year + "-" + Month + "-01";
+    var DocID = Request["DocID"];
+    IReservationDoctorManageBLL resBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+}
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="../../Content/themes/css/core.css" />
+<body style="background: #fff;">
+    <div>
+        <div style="margin-left:17px;">
+            <select name="Year" id="Year" onchange="goPage()" style="width: 55px; float: left;
+                margin: 4px 0 0 2px;">
+                <option @(Year == "2014" ? "selected=selected" : "") value="2014">2014</option>
+                <option  @(Year == "2015" ? "selected=selected" : "") value="2015">2015</option>
+                <option  @(Year == "2016" ? "selected=selected" : "") value="2016">2016</option>
+                <option  @(Year == "2017" ? "selected=selected" : "") value="2017">2017</option>
+                <option  @(Year == "2018" ? "selected=selected" : "") value="2018">2018</option>
+            </select>
+            <span style="display: block; float: left; width: 15px; height: 25px; line-height: 25px;">
+                年</span>
+            <select name="Month" id="Month" onchange="goPage()" style="width: 55px; margin: 4 0 0px 2px;
+                float: left;">
+                <option @(M == "1" ? "selected=selected" : "") value="1">1</option>
+                <option @(M == "2" ? "selected=selected" : "") value="2">2</option>
+                <option @(M == "3" ? "selected=selected" : "")  value="3">3</option>
+                <option @(M == "4" ? "selected=selected" : "") value="4">4</option>
+                <option @(M == "5" ? "selected=selected" : "")  value="5">5</option>
+                <option @(M == "6" ? "selected=selected" : "") value="6">6</option>
+                <option @(M == "7" ? "selected=selected" : "")  value="7">7</option>
+                <option @(M == "8" ? "selected=selected" : "") value="8">8</option>
+                <option @(M == "9" ? "selected=selected" : "")  value="9">9</option>
+                <option @(M == "10" ? "selected=selected" : "") value="10">10</option>
+                <option @(M == "11" ? "selected=selected" : "") value="11">11</option>
+                <option @(M == "12" ? "selected=selected" : "") value="12">12</option>
+            </select>
+            <span style="display: block; float: left; width: 15px; height: 27px; line-height: 27px;">
+                月</span>
+        </div>
+        <div class="mainContentRight_bottom board clearfix" style="position: relative;">
+            <ul>
+                @{
+                    var resList = resBLL.GetReservationMontList(Convert.ToDateTime(YearMonth), Hid, Convert.ToInt32(DocID));
+                    var YM = Year + "-" + Month;
+                    //获取所有休息日
+                    var listXiuxi = personbll.GetDate(Convert.ToInt32(DocID), YM);
+                    foreach (var R in resList)
+                    {    
+                    <li >
+                        @{
+                        //得到日期
+                        var Dates = YM + "-" + R.D;
+                        DateTime dt = Convert.ToDateTime(Dates);
+                        var name = R.UserName + "";
+                       
+                            <h3>
+                                <span class="spanleft">@HS.SupportComponents.Season.GetWeekByDate(dt) </span><span class="spanright">@R.D 日</span>
+                            </h3>
+                        //判断是否休假
+                        if (listXiuxi.Contains(dt.ToString("yyyy-MM-dd")))
+                        {
+                            <div style="position: relative; width: 103px; min-width: 103px; height: 94px; min-height: 94px;
+                                text-align: center; line-height: 94px; font-size: 14px; background:#3baeda;color:#fff;">
+                                休假</div>
+                        }
+                        else
+                        {
+                            <div style="position: relative; width: 103px; min-width: 103px; height: 94px; min-height: 94px;line-height: 94px;
+                                font-size: 12px;">
+                                @{
+                            var list = name.Split(',');
+                            if (name != "")
+                            { //分割名称
+                                foreach (var p in name.Split(','))
+                                {
+                                    <a  style="font-size:12px;margin-top:3px; display:block;" id="@p.Split('-')[1]">@p.Split('-')[0]
+                                        <span style="color: ##6c777c; font-size: 12px;">@p.Split('-')[2].Split('至')[0]</span>
+                                        <br />
+                                    </a>
+                                }
+
+                            }
+                            else
+                            {
+                                     <div style="position: relative; width: 103px; min-width: 103px; height: 94px; min-height: 94px;
+                                text-align: center; line-height: 94px; font-size: 14px; color:#3baeda;">
+                                暂无预约</div>
+                            }
+                                }
+                            </div>
+                        }
+                        }
+                    </li> 
+                    }
+                                                
+                }
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    function goPage() {
+     location.href="@Url.Content("~/ReservationDoctorManage/ReservationWorkDay")?Year="+$("#Year").val()+"&Month="+$("#Month").val()+"&DocID=@DocID";
+     // $("#iframecontent").attr("src",); 
+    }
+</script>

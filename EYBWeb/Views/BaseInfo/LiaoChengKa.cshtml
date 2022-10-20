@@ -1,0 +1,177 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.BaseInfo.MainCardEntity>
+@{
+    ViewBag.Title = "疗程卡iframe页面";
+
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    var name = ViewBag.orderName;
+    var type = ViewBag.Type;
+
+    var parentHospitalID = Common.Manager.LoginHospitalUserManager.GetLoginInfo().ParentHospitalID;
+    SystemManage.Factory.IBLL.ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    List<EYB.ServiceEntity.SystemEntity.BaseinfoEntity> caretypelist = new List<EYB.ServiceEntity.SystemEntity.BaseinfoEntity>();
+    caretypelist = sysBll.GetBaseInfoTreeByType("TreatementCardType", 1, parentHospitalID);//疗程卡类型分类
+}
+
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>疗程卡管理(<span id="sp">@Model.TotalItemCount</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative; overflow:hidden;" id="mainContentRight_bottom">
+                <div class="mainContentRight_bottomContent">
+                    <div class="mainContentRight condition">
+                        <div class="toolbar">
+                            <div class="box-wrap">
+                                <div class="l-list">
+                                    @using (Ajax.BeginForm("LiaoChengKa", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                                    {
+                                        <div class="accountdiv clearfix" style="margin-bottom: 0px; margin-top: 0px; width: 98%;">
+                                            <ul>
+                                                <li>名称：
+                                                    <input type="text" name="Name" id="txtname" class="ymxInput" value="@name" />
+                                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                                @*    类别：
+                                                    <select name="CardType" id="txtcardtype" class="select" style="height: 26px; padding: 4px;
+                                                        margin-top: 10px;">
+                                                        <option value="0">请选择类别</option>
+                                                        @foreach (var cy in caretypelist)
+                                                        { 
+                                                            <option @(type == cy.ID ? "selected=selected" : "") value="@cy.ID">@cy.InfoName</option>
+                                                        }
+                                                    </select>*@
+                                                     是否显示
+                                                <select id="IsActive" name="IsActive" class="ymxSelect">
+                                                    <option selected="selected" value="0">正常疗程卡</option>
+                                                    <option value="1">已删除疗程卡</option>
+                                                </select>
+
+                                                </li>
+                                            </ul>
+                                            <ul class="icon-list">
+                                                <li><a class="add" href="javascript:OpenDailogDetail('ADD',0);" >
+                                                  <span>添加</span></a> &nbsp;&nbsp;</li>
+                                                <li><a id="btnSave" class="save" style="cursor: pointer;"><span>导出</span></a></li>
+                                            </ul>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div id="articles" class="" style="overflow:auto; margin-top: 5px;">
+                            @Html.Partial("_TreamentCardPageList", Model)
+                        </div>
+                        @{Html.RegisterMvcPagerScriptResource();}
+                        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript">
+       function delit(obj,thiss,IsActive) {
+       if(confirm("确认删除?") ){
+        var id = obj;
+            $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/TreatmentCardDel?ID=")"+id+"&IsActive="+IsActive,
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("操作成功！","");
+                $(thiss).parent().parent().remove();
+               }else
+               {
+                artdialogfailTwo("操作失败,！","","250","100");
+               }
+            }
+        });
+        }
+
+    }
+
+ function OpenDailogDetail(type, obj) {
+        var title = "";
+        if (type == "ADD") {
+            title = "新建疗程卡";
+        } else {
+            title = "编辑疗程卡";
+        }
+        art.dialog.open("/BaseInfo/EditTreatmentCard?Type=" + type + "&ID=" + obj, { title: title, width: 960, height: 640 });
+    }
+
+ $("#txtname").keyup(function () {
+     $("#txtTime").val(Math.random());
+     $("#searchForm").submit();
+ });
+
+
+       $("#IsActive").change(function() {
+           $("#txtTime").val(Math.random());
+           $("#searchForm").submit();
+       });
+
+       $("#txtcardtype").change(function() {
+           $("#txtTime").val(Math.random());
+           $("#searchForm").submit();
+       });
+
+      $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+
+
+
+        //导出
+        $("#btnSave").click(function () {
+            var CardType = $("#txtcardtype").val();
+            var Name = $("#txtname").val();
+            var IsActive = $("#IsActive option:selected").val();
+            var url = getControllerUrl("BaseInfo", "ExportTreanebrCardList") + "?pageNum=1&numPerPage=10000&IsActive=" + IsActive + "&Name=" + Name + "&CardType=" + CardType;
+             window.location.href=url;
+        });
+    
+
+    </script>
+<script type="text/javascript">
+    $(function () {
+        $("#tabs li:first").addClass("thistab").show();
+        $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 130);
+        $("#tabs  li").click(function () {
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            var index = $(this).parent().find("li").index(this);
+            // -------------------------------获取iframe的url值,然后赋值给sec
+            var iniframe = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+            var url = iniframe.attr("url"); //获取url链接
+            iniframe.attr("src", url); //给SrC赋值
+            iniframe.show();
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+            //------------------------------end
+
+
+        });
+
+    })
+
+</script>
+
+<script>
+    $(function () {
+        let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+        $("#articles").css("height", acHeight + "px");
+    })
+</script>

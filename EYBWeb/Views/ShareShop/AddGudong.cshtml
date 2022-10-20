@@ -1,0 +1,205 @@
+﻿@model EYB.Web.Models.ShareShop.ShareholderInfoModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/addactive.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+    <script>
+        //加载选择顾客后事件
+        function InFoDate(obj) {
+            if ($.trim(obj.split('|')[11]) == '') {
+                alert('顾客未绑定微信，请先绑定微信');
+                return false;
+            }
+
+            $('#Name').val(obj.split('|')[1]);
+            $('#CustomerUserId').val(obj.split('|')[0]);
+            $('#Mobile').val(obj.split('|')[5]);
+            return true;
+        }
+
+        function ShareholderDate(obj) {
+            $('#ReferrerId').val(obj.split('|')[0]);
+            $('#ReferrerName').val(obj.split('|')[1]);
+        }
+
+        function ShareholderActivity(obj) {
+            $('#ShareholderActivityId').val(obj.split('|')[0]);
+            $('#ShareholderActivityName').val(obj.split('|')[1]);
+        }
+
+        $(function () {
+            $('#ReferrerName').click(function () {
+                art.dialog.open("@Url.Action("SelectShareholder")",
+                    {
+                        title: '选择介绍人',
+                        width: 900,
+                        height: 600
+                    });
+            });
+            $('#ShareholderActivityName').click(function () {
+                art.dialog.open("@Url.Action("SelectShareholderActivity")",
+                    {
+                        title: '选择活动赠卡',
+                        width: 900,
+                        height: 580
+                    });
+            });
+
+            $('#btnOk').click(function () {
+                if ($('#CustomerUserId').val() == '0' || $('#CustomerUserId').val() == '') {
+                    alert('请选择顾客');
+                    return;
+                }
+
+                if ($('#BonusScheme').val() == '0' || $('#BonusScheme').val() == '') {
+                    alert('请选择分红方案');
+                    return;
+                }
+
+                $.post('@Url.Action("_AddShareholder")', $('#myForm').serialize(), function (data) {
+                    if (data.IsError) {
+                        alert(data.Message);
+                        closeed();
+                    } else {
+                        alert(data.Message);
+                        closeed();
+                    }
+
+                }, 'json');
+            });
+        });
+    </script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight">
+        <form class="formular" method="post" id="myForm">
+            <div class="mainContentRight_bottom" style="overflow-y: hidden;">
+                <input type="hidden" name="Id" value="@Model.Result.Id" />
+                <table class="mainContentRight_bottomnewdepart">
+                    <tr>
+                        <td>股东姓名：</td>
+                        <td>
+                            @if (Model.Result.Id > 0)
+                            {
+                                <input type="text" id="Name" name="UserName" class="text-input" value="@Model.Result.UserName" />
+                            }
+                            else
+                            {
+                                <input type="text" id="Name" name="UserName" class="text-input" value="@Model.Result.UserName" readonly="readonly" onclick="PatientList()" />
+                            }
+                            <input type="hidden" id="CustomerUserId" name="CustomerUserId" value="@Model.Result.CustomerUserId" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>手机号码：</td>
+                        <td>
+                            @if (Model.Result.Id > 0)
+                            {
+                                @Model.Result.Mobile
+                            }
+                            else
+                            {
+                                <input type="text" id="Mobile" class="text-input" name="Mobile" value="@Model.Result.Mobile" readonly="readonly" />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>入股金额：</td>
+                        <td>
+                            @if (Model.Result.Id > 0)
+                            {
+                                @Model.Result.AmountTotal
+                            }
+                            else
+                            {
+                                <input type="text" id="txtMoney" class="text-input" name="AmountTotal" onkeyup="CheckInputIntFloat(this);" placeholder="0" value="@Model.Result.AmountTotal" />
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>选择分红方案：</td>
+                        <td>
+                            <select id="BonusScheme" name="BonusSchemeId" class="select">
+                                <option value="">==请选择==</option>
+                                @foreach (var bonusScheme in Model.Schemes)
+                                {
+                                    <option value="@bonusScheme.Id" @(bonusScheme.Id == Model.Result.BonusSchemeId ? "selected=\"selected\"" : "")>@bonusScheme.Name</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>入股介绍人：</td>
+                        <td>
+                            <input type="text" id="ReferrerName" class="text-input" name="ReferrerName" value="@(Model.Referrer)" />
+                            <input type="hidden" id="ReferrerId" name="ReferrerId" value="@Model.Result.ReferrerId" />
+                        </td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td>股东消费有分红：</td>
+                        <td><input type="checkbox" id="cbo" name="IsShareholderExpenseBonus" value="1" @(Model.Result.IsShareholderExpenseBonus == 1 ? "checked=\"checked\"" : "") /></td>
+                    </tr>
+
+                    <tr>
+                        <td>股东赠卡：</td>
+                        <td>
+                            @if (Model.Result.Id > 0)
+                            {
+                                <input type="text"   class="text-input" name="ShareholderActivityName" readonly="readonly" value="@(Model.ActivityName)"/>
+                                <input type="hidden" name="ShareholderActivityId"   value="@Model.Result.ShareholderActivityId"/>
+                            }
+                            else
+                            {
+                                <input type="text" id="ShareholderActivityName" class="text-input" name="ShareholderActivityName" readonly="readonly" value="@(Model.ActivityName)"/>
+                                <input type="hidden" name="ShareholderActivityId" id="ShareholderActivityId" value="@Model.Result.ShareholderActivityId"/>
+                            }
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>备注：</td>
+                        <td>
+                            <textarea name="Remarks" class="text-input" style="resize: none; height: 50px;">@Model.Result.Remarks</textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="button" id="btnOk" value="确 定" class="submitbutton2" />
+                            <input type="button" value="取 消" class="submitbutton2" onclick="closeedNorefresh()" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

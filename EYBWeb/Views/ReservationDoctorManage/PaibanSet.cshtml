@@ -1,0 +1,143 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model  List<EYB.ServiceEntity.ReservationEntity.PaiBanSetEntity>
+@{
+    Layout = null;
+    ViewBag.Title = "排班管理";
+    
+    
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+        type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <style type="text/css">
+        body
+        {
+            background: #fff;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="mainContentRight_bottom " style="margin: 0px; overflow:hidden;">
+        <div class="box-wrap toolbar" style="min-height: auto; overflow: hidden;">
+            <div class="accountdiv l-list ullist" style="margin: 0px auto; padding: 0px; width: 99%;">
+                <ul id="tdul">
+                    @using (Ajax.BeginForm("PaibanSet", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                    {
+                        
+                          
+                        <li style="">
+                            <ul class="icon-list" style="float: none;">
+                                <li><a class="add" style="cursor: pointer;" onclick="redirectUrl1(0)"><span>添加记录</span></a></li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+                <div style="clear: both;">
+                </div>
+            </div>
+        </div>
+        <div id="articles" style="overflow:auto;">
+            <table class="gridTable" style="border-collapse: collapse;">
+                <thead style="position:absolute;">
+                    <tr>
+                        <th>
+                            班次名称
+                        </th>
+                        <th>
+                            上班时间
+                        </th>
+                        <th>
+                            下班时间
+                        </th>
+                        <th>
+                            休息开始时间
+                        </th>
+                        <th>
+                            休息结束时间
+                        </th>
+                        <th>
+                            状态
+                        </th>
+                        <th>
+                            备注
+                        </th>
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="height:40px;"></tr>
+                     @foreach (var entity in Model)
+                    {
+                        <tr>
+                            <td>
+                                @entity.Name
+                            </td>
+                            <td>
+                                @entity.WorkStartTime
+                            </td>
+                            <td>
+                                @entity.WorkEndTime
+                            </td>
+                            <td>
+                                @entity.RestStartTime
+                            </td>
+                            <td>
+                                @entity.RestEndTime
+                            </td>
+                            <td>
+                                @(entity.Statu == 1 ? "启用" : "禁用")
+                            </td>
+                            <td>
+                                @entity.Memo
+                            </td>
+                            <td>
+                                <a href="javascript:;" onclick="redirectUrl1(@entity.ID)">编辑</a>
+                            </td>
+                        </tr>
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    function redirectUrl1(obj) {
+        art.dialog.open("/ReservationDoctorManage/PaibanSetAdd?ID="+obj, { title: "排班设置", width: 800, height: 460 })
+    }
+
+</script>
+
+<script>
+    $(function () {
+        let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+        $("#articles").css("height", acHeight + "px");
+    })
+</script>
+<script src="/Scripts/ymx/commonTable.js"></script>

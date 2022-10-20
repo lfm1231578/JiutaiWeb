@@ -1,0 +1,203 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using DepartmentManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@using EYB.ServiceEntity.ReservationEntity;
+
+@using HS.SupportComponents;
+@{ 
+    var HID = ViewBag.HospitalID;
+    var UserID = ConvertValueHelper.ConvertLongValue(Request["UserID"]);
+    var ID = ConvertValueHelper.ConvertIntValue(Request["ID"]);
+    IReservationDoctorManageBLL reserBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+
+    var entity = reserBLL.ReservationEntityByID(ID);// ID and 门店ID 获取对象
+
+    ViewBag.Title = "ReservationDetail";
+    var url = Request.UrlReferrer; 
+}
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+           <label class="Soliddots">
+              </label>  预约详情</div>
+        <div class="mainContentRight_bottom formular">
+            <table class="mainContentRight_bottomnewdepart">
+                <tr>
+                    <td style="width: 110px;">
+                        顾客编号：
+                    </td>
+                    <td>@entity.UserID
+                    </td>
+                </tr>
+                <tr>
+                    <td >
+                        预约编号：
+                    </td>
+                    <td>@entity.Reservationnumber
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        姓名：
+                    </td>
+                    <td>@entity.UserName
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        性别：
+                    </td>
+                    <td>@(entity.Sex == 0 ? "男" : "女")
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        国籍：
+                    </td>
+                    <td>
+                        @entity.Nationals
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        年龄：
+                    </td>
+                    <td>
+                        @entity.Age
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        联系方式：
+                    </td>
+                    <td>
+                        @entity.Mobile
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        家庭地址：
+                    </td>
+                    <td>
+                        @entity.Address
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        电子邮箱：
+                    </td>
+                    <td>
+                        @entity.Email
+                    </td>
+                </tr>
+             
+                <tr>
+                    <td>
+                        预约美容师：
+                    </td>
+                    <td>
+                        @entity.DepartmentName
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        预约日期：
+                    </td>
+                    <td>
+                        @entity.ApplyTime.Value.ToString("yyyy-MM-dd")
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        预约时段：
+                    </td>
+                    <td>
+                       @entity.StartTime-@entity.EndTime
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td>
+                        备注：
+                    </td>
+                    <td>
+                      @entity.Memo
+                    </td>
+                </tr>
+               
+                <tr>
+               
+                    <td colspan="2">
+                   
+                        <input class="submitbutton2" type="button" value="取消预约" onclick="Del('@entity.ID','@entity.UserID')"  />
+                        <input type="button" value="修改预约" class="submitbutton2" onclick="GoPage('@entity.ID','@(entity.ApplyTime!=null?entity.ApplyTime.Value.ToString("yyyy-MM-dd"):"")','@entity.ReservationUserID','@entity.StartTime','@entity.EndTime')" />
+                          <a style="font-size:15.4px;" href="@Url.Content("~/ReservationDoctorManage/ReservationReVisit?UserID=")@entity.UserID&ReservationID=@entity.ID" class="submitbutton2" >回 访</a>
+                            <input type="button" value="返 回" onclick="history.go(-1)"  class="submitbutton2"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  
+    //打开预约   
+    function GoPage(ID, Date,DocID,StatrTime,EndTime)
+     {  
+    // alert("/PatientManage/PatientMonthReserve" + "?ID=" + ID+"&Date="+Date+"&DocID="+DocID+"&StatrTime="+StatrTime+"&EndTime="+EndTime );
+    art.dialog.open("/PatientManage/PatientMonthReserve" + "?ID=" + ID+"&Date="+Date+"&DocID="+DocID+"&StatrTime="+StatrTime+"&EndTime="+EndTime ,{title:"修改预约", width: "900", height: "560"})
+    }
+   
+     //已结算
+    function UpVisitTime(UserID,ID) {
+   
+     UpStatu(ID);
+     $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/ReservationDoctorManage/UpVisitTime")",
+            data:{UserID:UserID},
+            success: function (data) {
+             if(data>0){
+              artdialog("保存成功!");
+             }
+            }
+           
+        });
+     }
+     //修改预约信息 为已结算
+     function UpStatu(ID)
+     {
+      $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/ReservationDoctorManage/UpReservationStatu")",
+            data:{Statu:4,ID:ID},
+            success: function (data) {
+             if(data>0){
+               
+             }
+            }
+           
+        });
+     }
+    //取消预约
+    function Del(ID,UserID) {
+     $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/ReservationDoctorManage/DelReservation")",
+            data:{ID:ID,UserID:UserID},
+            success: function (data) {
+             if(data==1){
+              art.dialog({ content: "<img style='float:left;margin-top:20px;' src='../../Content/themes/images/success.png' width='75' height='65' /><div style='float:left;margin-top:30px; text-align:left;width:120px; min-width:100px; height:50px;line-height:20px;'>取消成功！</div>", ok: function () { history.go(-1);}, cancelVal: '取 消', width: '200px', height: '50px' }, function () {  history.go(-1); location.href='@url' });
+             }
+              if(data==0){
+               artdialogfail("订单已结算,不可取消预约!");
+             }
+            }
+           
+        });
+     }
+</script>

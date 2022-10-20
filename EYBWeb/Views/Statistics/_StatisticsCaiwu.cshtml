@@ -1,0 +1,160 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    Layout = null;
+    decimal SumMoney = 0;
+    decimal Xianjin = 0;
+    decimal Zhifubao = 0;
+    decimal Weixin = 0;
+    decimal Yinlianka = 0;
+    decimal Chuzhika = 0;
+    decimal Huakouka = 0;
+    decimal MianDan = 0;
+    decimal OtherPay = 0;
+    decimal OtherPay1 = 0;
+}
+<style>
+    /*******表格********/
+    .gridTable tbody
+    {
+        display: block;
+    }
+    .gridTable tr
+    {
+        display: block;
+    }
+    .gridTable th
+    {
+        width: 200px;
+        line-height: 40px;
+    }
+    .gridTable td
+    {
+        width: 200px;
+    }
+</style>
+<form action="" method="post" id="submitform">
+<table class="gridTable" style="border-collapse: collapse; overflow: scroll;">
+    <thead style="display: block; position: fixed;">
+        <tr>
+            <th>
+                门店
+            </th>
+            <th @(ViewBag.orderField == "Xianjin" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Xianjin">
+                现金收款
+            </th>
+            <th @(ViewBag.orderField == "Zhifubao" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Zhifubao">
+                支付宝收款
+            </th>
+            <th @(ViewBag.orderField == "Weixin" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Weixin">
+                微信收款
+            </th>
+            <th @(ViewBag.orderField == "Yinlianka" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Yinlianka">
+                刷卡
+            </th>
+            <th @(ViewBag.orderField == "SumMoney" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="SumMoney">
+                当日实收
+            </th>
+            <th @(ViewBag.orderField == "Chuzhika" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Chuzhika">
+                储值卡
+            </th>
+            <th @(ViewBag.orderField == "Huakouka" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Huakouka">
+                划卡
+            </th>
+            <th @(ViewBag.orderField == "MianDan" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MianDan">
+                退至储值
+            </th>
+            <th  @(ViewBag.orderField == "OtherPay" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MianOtherPayDan">
+                当日实退
+            </th>
+            <th>
+                当日总退款
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height: 40px;">
+            <td colspan="11">
+            </td>
+        </tr>
+        @foreach (var entity in Model)
+        {
+            SumMoney = SumMoney + entity.SumMoney;
+            Xianjin = Xianjin + entity.Xianjin;
+            Zhifubao = Zhifubao + entity.Zhifubao;
+            Weixin = Weixin + entity.Weixin;
+            Yinlianka = Yinlianka + entity.Yinlianka;
+            Chuzhika = Chuzhika + entity.Chuzhika;
+            Huakouka = Huakouka + entity.Huakouka;
+            MianDan = MianDan + entity.MianDan;
+            OtherPay = OtherPay + entity.OtherPay;
+            OtherPay1 = OtherPay1 + entity.OtherPay + entity.MianDan;
+            <tr>
+                <td title="门店">@entity.Name
+                </td>
+                <td title="现金">@entity.Xianjin
+                </td>
+                <td title="支付宝">@entity.Zhifubao
+                </td>
+                <td title="微信">@entity.Weixin
+                </td>
+                <td title="刷卡">@entity.Yinlianka
+                </td>
+                <td title="当日实收">@entity.SumMoney
+                </td>
+                <td title="储值卡划扣">@entity.Chuzhika
+                </td>
+                <td title="划卡">@entity.Huakouka
+                </td>
+                <td title="退至储值">@entity.MianDan
+                </td>
+                <td title="当日实退">@entity.OtherPay
+                </td>
+                <td title="当日总退款">@(entity.MianDan + entity.OtherPay)
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                总计:
+            </td>
+            <td>@Xianjin
+            </td>
+            <td>@Zhifubao
+            </td>
+            <td>@Weixin
+            </td>
+            <td>@Yinlianka
+            </td>
+            <td>@SumMoney
+            </td>
+            <td>@Chuzhika
+            </td>
+            <td>@Huakouka
+            </td>
+            <td>@MianDan
+            </td>
+            <td>@OtherPay
+            </td>
+            <td>@OtherPay1
+            </td>
+        </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 11))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        //计算head高度，宽度 计算articles高度
+        var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+        $(".gridTable thead").css("top", theadheight + "px");
+        $(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+        $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+        $("#showmessage").css("display", "none");
+    })
+</script>

@@ -1,0 +1,180 @@
+﻿@model List<EYB.ServiceEntity.ShareShopEntity.BonusSchemeEntity>
+    @{
+        Layout = null;
+    }
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+        <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+        <!--位置不能颠倒，否则影响样式-->
+        <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="@Url.Content("~/Content/themes/css/addactive.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="/Content/themes/css/validationEngine.jquery.css" rel="stylesheet" type="text/css" />
+        <link href="/Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+        <script src="/Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+        <!--Panel-->
+        <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+        <!--表格-->
+        <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+        <!--表单验证-->
+        <script src="/Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+        <script src="/Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+        <!--弹出框-->
+        <script src="/Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+        <script src="/Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+        <script src="/Scripts/Common/wbox-min.js" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+        <script>
+            //加载选择顾客后事件
+            function InFoDate(obj) {
+                if ($.trim(obj.split('|')[11]) == '') {
+                    alert('顾客未绑定微信，请先绑定微信');
+                    return false;
+                }
+
+                $('#Name').val(obj.split('|')[1]);
+                $('#CustomerUserId').val(obj.split('|')[0]);
+                $('#Mobile').val(obj.split('|')[5]);
+                return true;
+            }
+
+            function ShareholderDate(obj) {
+                $('#ReferrerId').val(obj.split('|')[0]);
+                $('#ReferrerName').val(obj.split('|')[1]);
+            }
+
+            function ShareholderActivity(obj) {
+                $('#ShareholderActivityId').val(obj.split('|')[0]);
+                $('#ShareholderActivityName').val(obj.split('|')[1]);
+            }
+
+            $(function() {
+                $('#ReferrerName').click(function() {
+                    art.dialog.open("@Url.Action("SelectShareholder")",
+                        {
+                            title: '选择介绍人',
+                            width: 900,
+                            height: 600
+                        });
+                });
+                $('#ShareholderActivityName').click(function() {
+                    art.dialog.open("@Url.Action("SelectShareholderActivity")",
+                        {
+                            title: '选择活动',
+                            width: 900,
+                            height: 600
+                        });
+                });
+
+                $('#btnOk').click(function() {
+                    if (@ViewBag.Type == 1) {
+                        if ($('#BonusScheme').val() == '0' || $('#BonusScheme').val() == '') {
+                            alert('请选择分红方案');
+                            return;
+
+                        }
+                    }
+
+                    $.post('@Url.Action("_AuditShareholder")',
+                        $('#myForm').serialize(),
+                        function(data) {
+                            //art.dialog.open.api.close();
+                            //var win = art.dialog.open.origin; //来源页面
+                            if (data.IsError) {
+                                alert(data.Message);
+                                //closeed();
+                            } else {
+                                alert(data.Message);
+                                closeed();
+                                //$(win).find('#btnsumbit1').click();
+                            }
+
+                        },
+                        'json');
+                });
+            });
+        </script>
+        <style>
+            .accountdiv { width: 100%; }
+            .gridTable { width: 100%; }
+        </style>
+    </head>
+    <body style="background: #fff;">
+        <div id="mainContentRight">
+            <form class="formular" method="post" id="myForm">
+                <div class="mainContentRight_bottom" style="overflow-y: hidden;">
+                    <input type="hidden" name="Id" value="@ViewBag.Id" />
+                    <input type="hidden" name="AuditState" value="@ViewBag.Type" />
+                    <table class="mainContentRight_bottomnewdepart">
+                        @if (ViewBag.Type == 2)
+                        {
+                            <tr>
+                                <td>股东姓名：</td>
+                                <td>
+                                    <input type="text" id="Name" name="UserName" class="text-input" readonly="readonly" onclick="PatientList()" />
+                                    <input type="hidden" id="CustomerUserId" name="CustomerUserId" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>入股金额：</td>
+                                <td>
+                                    <input type="text" id="txtMoney" class="text-input" name="AmountTotal" onkeyup="CheckInputIntFloat(this);" placeholder="0" value="" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>选择分红方案：</td>
+                                <td>
+                                    <select id="BonusScheme" name="BonusSchemeId" class="select">
+                                        <option value="">==请选择==</option>
+                                        @foreach (var bonusScheme in Model)
+                                        {
+                                            <option value="@bonusScheme.Id">@bonusScheme.Name</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>入股介绍人：</td>
+                                <td>
+                                    <input type="text" id="ReferrerName" class="text-input" name="ReferrerName" value="" />
+                                    <input type="hidden" id="ReferrerId" name="ShareholderInfoId" value="" />
+                                </td>
+                            </tr>
+                            <tr style="display:none;">
+                                <td>保证金可归还：</td>
+                                <td><input type="checkbox" id="cbo" name="IsDepositReturn" value="1" /></td>
+                            </tr>
+                            <tr>
+                                <td>股东赠卡：</td>
+                                <td>
+                                    <input type="text" id="ShareholderActivityName" class="text-input" name="ShareholderActivityName" readonly="readonly" value="" />
+                                    <input type="hidden" name="ShareholderActivityId" id="ShareholderActivityId" value="" />
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>备注：</td>
+                            <td>
+                                <textarea name="Remarks" class="text-input" style="resize: none; height: 50px;"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <input type="button" id="btnOk" value="确 定" class="submitbutton2" />
+                                <input type="button" value="取 消" class="submitbutton2" onclick="closeedNorefresh()" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,83 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.BonusSchemeEntity>
+    @{
+        Layout = null;
+        string zhuangtaiYi = "停用";
+        string zhuangtaiEr = "正常";
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')" style="display:none" />
+                    </th>
+                    <th>
+                        方案名称
+                    </th>
+                    <th>
+                        一级毛利分红比例%
+                    </th>
+                    <th>
+                        二级毛利分红比例%
+                    </th>
+                    <th>
+                        状态
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+            {
+                    <tr class="ableclick">
+                        <td>
+                            <input type="checkbox" name="checkbox" class="checkbox" value="@entity.Id" style="display:none" />
+                        </td>
+                        <td>
+                            @entity.Name
+                        </td>
+                        <td>
+                            @entity.OneBonus
+                        </td>
+                        <td>
+                            @entity.TwoBonus
+                        </td>
+                        <td>
+                            @if (entity.State == 2)
+                            {
+                                @zhuangtaiYi
+                            }
+                            else
+                            {
+                                @zhuangtaiEr
+                            }
+                        </td>
+                        <td>
+                            <a href="javascript:OpenDailogDetail('Edit',@entity.Id);">修改</a>&nbsp;|&nbsp;
+                            @if (entity.State == 2)
+                            {
+                                <a href="javascript:;" onclick="deltetproduct(@entity.Id,1)">启用</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:;" onclick="deltetproduct(@entity.Id,2)">停用</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>
+

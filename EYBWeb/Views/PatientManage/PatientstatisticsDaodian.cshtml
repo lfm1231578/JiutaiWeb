@@ -1,0 +1,311 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.PatientEntity;
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<PatientEntity>
+    @{
+        ViewBag.Title = "顾客到店率统计";
+        Layout = null;
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+        IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+        //基础字典查询
+        //var BaseInfolist = systemBLL.GetBaseInfoTreeByType("Category", 1, ViewBag.ParentHospitalID);
+        var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+        //查询员工
+        IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(ViewBag.ParentHospitalID, 0);
+        bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+        int y = DateTime.Now.Year - 5;
+        //获取区域门店
+        var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+        bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_导出);
+        var HospitalID = ViewBag.HospitalID;
+    }
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+        <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+        <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+        <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+        <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+        <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <!--日期-->
+        <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+
+        @*汪 添加查询顾客详情的js引用 begin 2019-8-17 begin*@
+        <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+        @*汪 end*@
+
+        <style>
+            .up { background: url(../../Content/themes/default/images/order_down.gif) no-repeat right; }
+            .down { background: url(../../Content/themes/default/images/order_up.gif) no-repeat right; }
+        </style>
+        <style>
+            td>div{line-height:45px;}
+        </style>
+    </head>
+    <body style="background: #fff; overflow-x: hidden;">
+        <div class="mainContentRight_bottom" style="margin-top: 0px;">
+            @using (Ajax.BeginForm("PatientstatisticsDaodianOperate", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+            {
+                <div class="accountdiv ullist" style="margin-bottom: 0px; margin-top: 0px; width: 99%;height:120px;">
+                    <ul>
+                        @if (HasPermission)
+                        {
+                            <li>
+                                <label style="font-weight: normal;">
+                                    所属分店：
+                                </label>
+                                <select name="HospitalID" id="HospitalID" class="select ymxSelect" style="">
+                                    <option value="0">请选择分店</option>
+                                    @if (RegionhospitalList.Count > 0)
+                                    {
+                                        foreach (var info in RegionhospitalList)
+                                        {
+                                            <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "")=) value="@info.HospitalID">@info.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var info in hospitalList)
+                                        {
+                                            <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "")=) value="@info.ID">@info.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </li>
+
+                        }
+                        <li>
+                            <label style="font-weight: normal;">
+                                关键字：
+                            </label>
+                            <input type="text" id="UserName" name="UserName" class="ymxInput" style="padding-left:10px;" />
+                        </li>
+                        <li>
+                            <label style="font-weight: normal; float: left;">
+                                顾问:
+                            </label>
+                            <select class="select ymxtop" name="FollowUpUserID" id="FollowUpUserID"  >
+                                <option value="0">请选择顾问</option>
+                                @foreach (var info in PersonList)
+                                {
+                                    <option value="@info.UserID">@info.UserName</option>
+                                }
+                            </select>
+                        </li>
+                        <li>
+                            <label style="font-weight: normal; float: left;">
+                                跟进人：
+                            </label>
+                            <select class="select ymxSelect" name="FollowUpMrUserID" id="FollowUpMrUserID" style="margin-top: 8px;">
+                                <option value="0">请选择跟进人</option>
+                                @foreach (var info in PersonList)
+                                {
+                                    <option value="@info.UserID">@info.UserName</option>
+                                }
+                            </select>
+                        </li>
+                        @*<li>
+            <label style="font-weight: normal;">
+                周期：</label>
+            <select class="select" name="Zhouqi" id="Zhouqi" style="width: 40px;">
+                <option value="1">日</option>
+                <option value="2">周</option>
+                <option value="3">月</option>
+                <option value="4">季</option>
+                <option value="5">年</option>
+            </select>
+        </li>*@
+                        <li>
+                            <label style="font-weight: normal;">
+                                年：
+                            </label>
+                            <select name="years" id="years" >
+                                @for (int i = y; i < y + 7; i++)
+                                {
+                                    <option value="@i" @(i == y + 5 ? "selected='selected'" : "")=)>@i 年</option>
+                                }
+                            </select>
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                月：
+                            </label>@*<input type="text" style="width:80px;" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'MM'})"
+            name="EndTime1" id="EndTime1" value="@DateTime.Now.ToString("MM")" />*@
+                            <select name="months" id="months" >
+                                <option value="0">请选择</option>
+                                @for (int i = 1; i <= 12; i++)
+                                {
+                                    <option value="@i" @(DateTime.Now.Month == i ? "selected" : "")=)>@i 月</option>
+                                }
+                            </select>
+                            <input type="checkbox" id="IsChecked" name="IsChecked" value="1" />流失客户
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                合计次数：
+                            </label>
+                            <input type="text" class="text-input ymxInput" name="StartCount" id="StartCount" style="width: 40px;" />
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                至：
+                            </label>
+                            <input type="text" class="text-input ymxInput" name="EndCount" id="EndCount" style="width: 40px;" />
+                        </li>
+                        <li><input type="checkbox" id="IsKuaDian" name="IsKuaDian" value="1" />跨店查询</li>
+                        <li>
+                            <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                            <input type="button" class="submitbutton2 ymxButtonMT" id="btnselect" style="float: none; margin-left: 0px;"
+                                   value="查询" />
+                        </li>
+                        @if (HasPermission1)
+                        {
+                            <li>
+                                <input type="button" class="submitbutton2 ymxButtonMT" id="btnSave" style="float: none; margin-left: 0px;"
+                                       value="导出" />
+                            </li>
+                        }
+                        <li id="searchresult" style="color: Red;"></li>
+                    </ul>
+                    <div style="clear: both"></div>
+                </div>
+            }
+            @{Html.RegisterMvcPagerScriptResource();}
+            <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        </div>
+        <div id="articles" style="width: 100%; height: 100%; overflow: auto;
+        margin-bottom: 20px; margin-top: 3px;">
+        </div>
+        <div id="showmessage" style="display: none; width: 220px; height: 140px; position: fixed;
+        top: 300px; left: 450px; color: Red; margin: 0 auto; text-align: center;">
+            <img src="../../Content/themes/images/loading.gif" width="100" />
+            <p style="text-align: center; height: 30px; line-height: 30px;">
+                正在努力查询中，请稍后...
+            </p>
+        </div>
+        <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+        <script src="../../Scripts/Common/HtmlSort.js" type="text/javascript"></script>
+        <script type="text/javascript">
+        $('#UserName').placeholder({
+            word: '姓名、会员卡号'
+        });
+    $("#HospitalID").change(function () {
+        var id = $("#HospitalID").val(); //获取所选门店
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "text", //返回json格式的数据
+            url: "/MoneyManage/GetHospltalUser",
+            data: { "HospitalID": id },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $("#FollowUpMrUserID").empty();
+                    $("#FollowUpMrUserID").append(data.toString());
+                }
+            },
+            error: function () {
+                alert("数据请求失败!");
+            }
+        });
+    })
+        $("#btnselect").click(function () {
+            $("#txtTime").val(Math.random());
+
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "@Url.Content("~/PatientManage/PatientstatisticsDaodianOperate")",
+                data: $("#searchForm").serialize(),
+                beforeSend: function (XHR) { $("#showmessage").css("display", ""); },
+                success: function (data) {
+                    $("#articles").empty();
+                    if (data != null) {
+                        $("#showmessage").css("display", "none");
+                        $("#articles").append(data.OutputHtml);
+                        $("#searchresult").html("");
+                        $("#searchresult").append(data.rel + "<br/>" + data.forwardUrl);
+                        //------------------------------------------------
+                        //tableid  第几行是标签行，从第几行开始排序，第几行结束排序(999表示最后) 升序标签样式，降序标签样式  选中列样式
+                        //注意标签行的class应该是一致的
+                        var ex1 = new tableSort('gridTable', 1, 2, 999, 'up', 'down', 'hov');
+                        window.setTimeout(function () {
+                        var gridtablewidth = $(".gridTable").width();
+                        var thlen = $(".gridTable thead th").length;
+                        let theadWidth = $(".gridTable tbody").width()
+                        $(".gridTable thead").css("width", theadWidth + "px")
+                        let tdWidth = (theadWidth / thlen) + "px";
+                        $(".gridTable thead th").css("width", tdWidth);
+                        $(".gridTable tr td").css("width", tdWidth);
+                        }, 100)
+
+                    }
+                },
+                error: function () {
+                    alert("服务器错误！");
+                }
+
+            });
+        });
+
+
+        //导出
+        $("#btnSave").click(function () {
+            var StartTime1 = $("#StartTime1").val();
+            var EndTime1 = $("#EndTime1").val();
+            if ($("#HospitalID").val() == "" || $("#HospitalID").val() == null) {
+                var HospitalID =@HospitalID;
+            }
+            else { var HospitalID = $("#HospitalID").val(); }
+            var UserName = $("#UserName").val();
+            var FollowUpUserID = $("#FollowUpUserID").val();
+            var Zhouqi = $("#Zhouqi").val();
+            var StartCount = $("#StartCount").val();
+            var EndCount = $("#EndCount").val();
+            var s_MemberNo = $("#s_MemberNo").val();
+            var years = $("#years").val();
+            var months = $("#months").val();
+            var s_TableType = 0;
+            if ($("#IsChecked").attr("checked") == "checked") {
+                s_TableType = 1;
+            } else {
+                s_TableType = 0;
+            }
+            var IsKuaDian=0;
+            if ($("#IsKuaDian").attr("checked") == "checked") {
+                IsKuaDian = 1;
+            } else {
+                IsKuaDian = 0;
+            }
+            var StartCount = $("#StartCount").val();
+            var EndCount = $("#EndCount").val();
+            var url = "/PatientManage/PatientstatisticsDaodianOperate?pageNum=1&numPerPage=1000000&HospitalID=" + HospitalID + "&EndCount=" + EndCount + "&StartCount=" + StartCount + "&UserName=" + UserName + "&s_MemberNo=" + s_MemberNo + "&StartTime1=" + StartTime1 + "&EndTime1=" + EndTime1 + "&FollowUpUserID=" + FollowUpUserID + "&Zhouqi=" + Zhouqi + "&IsChecked=" + s_TableType + "&operareType=1&years=" + years + "&months=" + months+"&IsKuaDian="+IsKuaDian;
+            window.location.href = url;
+        });
+
+        //汪 增加顾客详情 2019-8-17 begin
+        function OpenPatientDetail(obj, type) {
+            art.dialog.open("/PatientManage/PatientDetailControl?type=" + type + "&UserID=" + obj, { title: "顾客详情", width: 960, height: 640 });
+        }
+        //end
+        </script>
+        <script>
+
+        </script>
+        <script>
+            $(function () {
+                let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+                $("#articles").css("height", acHeight + "px");
+            })
+        </script>
+
+
+    </body>
+
+</html>
+</PatientEntity>

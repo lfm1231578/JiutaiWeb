@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "卡项业务";
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            卡项业务设置</div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <div class="mainContentRight_bottomContent">
+                <div id="tabbox">
+                    <ul class="tabs" id="tabs">
+                        <li><a href="###" tab="tab1">疗程卡</a></li>
+                        <li><a href="###" tab="tab2">储值卡</a></li>
+                        <li><a href="###" tab="tab3" style="display:none;">方案卡</a></li>
+                    </ul>
+                    <ul id="tab_conbox" class="tab_conbox">
+                        <li id="tab1" class="tab_con">
+                            <iframe id="TreatmentIframe" frameborder="0" style=" width:100%; height:100%; border:none; _border:none;" name="TreatmentIframe" class="ifame" src="@Url.Content("~/BaseInfo/TreamentCardPageList")" url="@Url.Content("~/BaseInfo/TreamentCardPageList")">
+                            </iframe>
+                        </li>
+                        <li id="tab2" class="tab_con" style=" display:none;">
+                            <iframe id="StoredCardIframe" frameborder="0" style=" width:100%; border:none; _border:none;" name="StoredCardIframe"   class="ifame" src="" url="@Url.Content("~/BaseInfo/StordCardPageList")">
+                            </iframe>
+                        </li>
+                        <li id="tab3" class="tab_con" style="display:none;">
+                            <iframe id="ProgramCardIframe"  frameborder=0 style=" width:100%; border:none; _border:none;" name="ProgramCardIframe"   class="ifame" src="" url="@Url.Content("~/BaseInfo/ProgramCardPageList")">
+                            </iframe>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(function () {
+        $("#tabs li:first").addClass("thistab").show();
+        $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 130);
+        $("#tabs  li").click(function () {
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            var index = $(this).parent().find("li").index(this);
+            // -------------------------------获取iframe的url值,然后赋值给sec
+            var iniframe = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+            var url = iniframe.attr("url"); //获取url链接
+            iniframe.attr("src", url);//给SrC赋值
+            iniframe.show();
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+            //------------------------------end
+
+
+        });
+       
+    })
+
+</script>

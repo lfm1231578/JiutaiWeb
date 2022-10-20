@@ -1,0 +1,150 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using EYB.ServiceEntity.ReservationEntity;
+@using ReservationDoctorManage.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "预约管理-今日预约";
+    var Hid = ViewBag.HospitalID;//门店ID
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    IReservationDoctorManageBLL resBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    IList<HospitalUserEntity> depList = personbll.GetAllUserByHospitalID(Hid, 1);// 查询该门店的美容师
+    IList<ReservationEntity> resList = resBLL.GetReservationTodayByHospIDList(Hid);//查询门店当日的预约
+
+    //工作时段
+    DateTime WorkStartTime = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 08:00"));
+    DateTime WorkEndTime = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 22:00"));
+
+    var num = depList.Count + 1;
+}
+<style>
+    table tbody { }
+
+    table thead tr th { position: relative; }
+</style>
+<div id="mainContentBody">
+    @Html.Partial("_ReservationControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+              
+            </label>
+            今日预约 - @DateTime.Now.Month 月 @DateTime.Now.Day 日 - @( Season.GetWeekByDate(DateTime.Now))(<span id="weekreservationcount"></span>) &nbsp;<a href="javascript:goPage(this);" class="addbutton">
+                新建
+            </a>
+        </div>
+        <style>
+            th{border-right:1px solid #fff;}
+        </style>
+        <div id="tableDiv" class="mainContentRight_bottom clearfix" style="position: relative;">
+            <table id="weekTable" class="todayrevertion" cellpadding="0" cellpadding="0" style="margin-top: 10px;">
+                <thead>
+                    <tr>
+                        <th style="color: black;background-color:#edf1f3;" >
+                            员工
+                        </th>
+                        @{
+                            // 排序号
+                            foreach (var i in depList)
+                            {
+                                <th style="background-color:#edf1f3;">
+                                    <a href="javascript:goPage(@i.UserID);" style="color:#636465" title="@i.UserID">
+                                        @i.UserName
+                                    </a>
+                                </th>
+                            }
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        for (DateTime dt = WorkStartTime; dt <= WorkEndTime; dt = dt.AddMinutes(30))
+                        {
+                            string ss = dt.Hour + ":" + (dt.Minute == 0 ? "00" : dt.Minute + "");
+                            <tr>
+                                <td style="height: 60px;text-align:center;">
+                                    @ss
+                                </td>
+                                @foreach (var i in depList)
+                                {
+                                    //获取员工某天的预约情况
+                                    IList<ReservationEntity> TodayresList = resBLL.GetReservationListByUserID(new ReservationEntity
+                                    {
+                                        HospitalID = Hid,
+                                        ReservationUserID = i.UserID,
+                                        ApplyTime = DateTime.Now
+                                    }).Where(c => c.Statu != 4).ToList(); //查询门店当日的预约
+                                    if (TodayresList.Count > 0 && TodayresList.Select(c => c.StartTime).Contains(ss))
+                                    {
+                                       
+                                        <td style="text-align:center;" >
+                                            @{
+                                                var resultlist = TodayresList.Where(c => c.StartTime == ss).ToList();
+                                                if (resultlist.Count > 0)
+                                                {
+                                                    <a style="font-size: 14px;  float: left;text-align: center;"  class="weekreservation" href="###" onclick="openReservation(@resultlist[0].ID)">
+                                                        @Html.Raw(resultlist[0].UserName)
+                                                        <br />
+                                                        @Html.Raw(resultlist[0].Mobile)
+                                                        <br />
+                                                        @Html.Raw(resultlist[0].RoomNo)
+                                                        <br />
+                                                        @Html.Raw(resultlist[0].Memo)
+                                                    </a>
+                                                }
+                                            }
+                                        </td>
+                                     }else
+                                     {
+                                                    <td></td>
+                                      }
+                                 }
+                            </tr>
+                        }
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //统计预约人数
+    $("#weekreservationcount").text($(".weekreservation").length);
+    $("#weekTable").find("tr:nth-child(odd)").css("background-color", "#F4F4F4");
+    $("#weekTable").find("td:nth-child(even)").css("background-color", "#d8eff8");
+
+    function goPage(obj) {
+
+        art.dialog.open("@Url.Content("~/ReservationDoctorManage/ReservationAdd")?Date=@DateTime.Now.ToString("yyyy-MM-dd")" + "&DocID=" + obj, { title: "预约", width: 800, height: 470 });
+    }
+    //打开预约详情
+    function openReservation(obj) {
+        art.dialog.open("@Url.Content("~/ReservationDoctorManage/ReservationDetail")?ID=" + obj, { title: "预约详情", width: 800, height: 470 });
+    }
+
+    $(function () {
+
+        fixedHeader('weekTable', 'tableDiv');
+
+        $('#weekTable tbody tr').each(function () {
+            if ($(this).find('td:gt(0):not(:empty)').length == 0) {
+                $(this).remove();
+            }
+        });
+        var width=$("#tableDiv").width()/@num
+        $("#weekTable th").css("width", width);
+    });
+
+    function fixedHeader(table, tableDiv) {
+        $('#' + tableDiv).bind('scroll', function (e) {
+            var top = this.scrollTop;
+            $('#' + table + ' thead tr th').css('top', top);
+        });
+        // 获得表格的 这里的top 默认的时1，因为table宽度是1
+        var lineCcolor = $("<p class='table_border-line' style='position:relative;top:1px;'></p>").eq(0);
+        //var thColor = $("#" + table + " thead tr th").css("border-top-color");.css("background-color", thColor)
+        lineCcolor.css("z-index", "99999").css("height", "0").css("margin", "0").css("padding-bottom", "1px");
+        $("#" + tableDiv).before(lineCcolor);
+    }
+</script>

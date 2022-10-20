@@ -1,0 +1,92 @@
+﻿@model PagedList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity>
+@{
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+    <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+    <input type="hidden" value="" name="orderField" id="orderField" />
+    <table class="gridTable" style="height: auto; border-collapse: collapse;" cellpadding="0" cellspacing="0">
+        <thead style="position:absolute;">
+            <tr>
+                <th orderfield="">
+                    用户名
+                </th>
+                <th>
+                    账号
+                </th>
+                <th>
+                    所属门店
+                </th>
+                <th orderfield="">
+                    性别
+                </th>
+                <th orderfield="">
+                    权限组
+                </th>
+                <th>状态</th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="height:40px;"></tr>
+         @foreach (var entity in Model)
+            {
+                <tr>
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @entity.LoginAccount
+                    </td>
+                    <td>
+                        @entity.Name
+                    </td>
+                    <td>
+                        @entity.Sex
+                    </td>
+                    <td>
+                        @EYB.Web.Code.PageFunction.GetQuanXian(entity.Version, ViewBag.ParentHospitalID)
+                    </td>
+                    <td>
+                        @(entity.IsActive == 1 ? "正常" : "已删除")
+                    </td>
+                    <td>
+                        <a target="_top" href="@Url.Content("~/BaseInfo/UserManageEdit")?Type=Edit&UserID=@entity.UserID">编辑</a>
+
+                        @if (entity.IsActive == 1)
+                        {
+                            <a href="#" onclick="DelUser('@entity.UserID')">删除</a>
+                        }
+                        else
+                        {
+                            <a href="#" onclick="RestoreUser('@entity.UserID')">启用</a>
+                        }
+
+                    </td>
+
+                </tr>
+
+            }
+        </tbody>
+    </table>
+    @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<div style="height:100px;"></div>
+<script type="text/javascript">
+    $(function () {
+       $("#sp").text('@Model.TotalItemCount');
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+</script>

@@ -1,0 +1,223 @@
+﻿@model EYB.ServiceEntity.MoneyEntity.TimeConsumingPerformanceEntity
+@{
+    ViewBag.Title = "实耗业绩报表";
+    Layout = null;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+        type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <style type="text/css">
+        .linecent { display: inline-block; margin-bottom: 10px; }
+    </style>
+</head>
+<body style="background: #fff; overflow-x:hidden;">
+    <div class="clearfix" style="margin-bottom: 5px;">
+        <div class="toolbar">
+            <div class="box-wrap">
+                <div class="l-list">
+                    @using (Ajax.BeginForm("TimeConsumingPerformance", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                    {
+                         if (HasPermission)
+                         {
+                        <label style="font-weight: normal;">
+                            所属分店:</label>
+                        <select name="HospitalID" class="select" style="height: 25px; width: 100px;">
+                            <option value="0">请选择分店</option>
+                            @if (RegionhospitalList.Count > 0)
+                                {
+                                    foreach (var info in RegionhospitalList)
+                                    {
+                                    <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var info in hospitalList)
+                                    {
+                                    <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                    }
+                                }
+                        </select>
+                         }
+                        <label class="linecent">
+                            开始时间:</label>
+                        <input type="text" name="StartTime" id="StartTime" value="@ViewBag.st.ToString("yyyy-MM-dd")" class="text-input Wdate input130 linecent" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+                        <label class="linecent">
+                            结束时间:</label>
+                        <input type="text"  name="EndTime"  id="EndTime"  value="@ViewBag.et.ToString("yyyy-MM-dd")"  class="text-input Wdate input130 linecent" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"  />
+                         <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                        <input type="submit" class="submitbutton2" id="btnsearch" style="float: none; margin-top: 0px;"
+                            value="查 询" />
+                         <input type="button" class="submitbutton2" style="float: none;" name="" onclick="Preview1()" value="打印" />
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="gridTable" style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>
+                    类别
+                </th>
+                <th>
+                    金额
+                </th>
+            </tr>
+        </thead>
+        <tbody style=" text-align:center;">
+            <tr>
+                <td>
+                    所属门店
+                </td>
+                <td>
+                    @Model.HospitalName
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    收入
+                </td>
+                <td>@Model.Income
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    成本
+                </td>
+                <td>@Model.Cost
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    利润
+                </td>
+                <td>
+                    @(Model.Income - Model.Cost)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+     <div>
+<p style="color:#de480d;font-size:18px; height:40px; line-height:40px;padding-left:50px;">收入=项目+产品-赠卡支付-券类支付，欠款也算</p>
+<p style="color:#de480d;font-size:18px;height:40px; line-height:40px;padding-left:50px;">成本=产品销售成本+院装出库成本</p>
+</div>
+     <div id="printtab" style=" display:none;">
+    <table class="gridTable" style="border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th style=" width:100px;">
+                    类别
+                </th>
+                <th style=" width:100px;">
+                    金额
+                </th>
+            </tr>
+        </thead>
+        <tbody style=" text-align:center;">
+            <tr>
+                <td>
+                    所属门店
+                </td>
+                <td>
+                    @Model.HospitalName
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    收入
+                </td>
+                <td>@Model.Income
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    成本
+                </td>
+                <td>@Model.Cost
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    利润
+                </td>
+                <td>
+                    @(Model.Income - Model.Cost)
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width="0" height="0">
+        <embed id="LODOP_EM" type="application/x-print-lodop" width="0" height="0"></embed>
+    </object>
+</body>
+</html>
+<script type="text/javascript">
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+
+    //打印
+    var LODOP; //声明为全局变量  
+    function Preview1() {
+        try {
+            LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+            // LODOP.PRINT_INITA(0, 0, 580, 333, "自定义纸张1");
+            LODOP.PRINT_INIT("自定义纸张");
+            //  document.getElementById('W1').value;
+            LODOP.SET_PRINT_PAGESIZE(3, 580, 800, "A4");
+            LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+            LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+
+            AddPrintContent();
+            LODOP.PREVIEW();
+        } catch (e) { 
+         alert("打印错误，请关闭软件重新登录系统！")
+        }
+    };
+    function AddPrintContent() {
+        LODOP.ADD_PRINT_HTM(15, 20, 187, 25, "<label style='font-size:16px;'>" + $("#StartTime").val() + "至" + $("#EndTime").val() + "</label>");
+        LODOP.ADD_PRINT_HTM(35, 70, 147, 25, "<label style='font-size:20px;'>实耗报表</label>");
+        LODOP.SET_PRINT_STYLE("FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontSize", 10);
+        LODOP.SET_PRINT_STYLE("FontColor", 0);
+
+        //订单详情
+        var form1height = $("#printtab").height();
+        LODOP.ADD_PRINT_HTM(98, 5, 580, form1height, document.getElementById("printtab").innerHTML);
+        var trheight = 0;
+    }
+
+</script>

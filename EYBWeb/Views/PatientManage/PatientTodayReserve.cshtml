@@ -1,0 +1,97 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ReservationEntity.ReservationEntity>
+@{
+    ViewBag.Title = "今日预约";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    bool HasPermissionPhone = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_查看手机号);//设置隐藏顾客的也是用这个权限
+}
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            今日复诊预约 (<span>@Model.TotalItemCount</span>)</div>
+        <form action="@Url.Content("~/PatientManage/PatientTodayReserve")" method="post" id="submitform" >
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <div class="mainContentRight_bottom">
+            <table class="gridTable">
+                <thead>
+                    <tr>
+                        <th orderfield="UserID" style="width: 55px;">
+                            编号
+                        </th>
+                        <th orderfield="UserName" style="width: 70px;">
+                            姓名
+                        </th>
+                        <th orderfield="Sex" style="width: 55px;">
+                            性别
+                        </th>
+                        <th orderfield="Age" style="width: 55px;">
+                            年龄
+                        </th>
+                        @if (HasPermissionPhone)
+                        {
+                            <th orderfield="Mobile">
+                                联系电话
+                            </th>
+                        }
+                        <th>
+                            预约编号
+                        </th>
+                        <th>
+                            预约美容师
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var entity in Model)
+                    {
+                        <tr>
+                            <td>
+                                @entity.UserID
+                            </td>
+                            <td>
+                                <a  href="@Url.Content("~/PatientManage/PatientRegister")?UserID=@entity.UserID">@entity.UserName</a>
+                            </td>
+                            <td>
+                                @{if (entity.Sex == 0)
+                                  { <span>男</span>}
+                                  else
+                                  { 
+                                    <span>女</span> }
+                                }
+                            </td>
+                            <td>
+                                @entity.Age
+                            </td>
+                            @if (HasPermissionPhone)
+                            {
+                                <td>
+                                    @entity.Mobile
+                                </td>
+                            }
+                            <td>
+                                <a   href="@Url.Content("~/PatientManage/ReservationDetail")?ID=@entity.ID&UserID=@entity.UserID">@entity.Reservationnumber
+                                </a>
+                            </td>
+                            <td>
+                                @entity.DepartmentName
+                            </td>
+                        </tr>
+                    }
+                    @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+                </tbody>
+            </table>
+        </form>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </div>
+</div>
+<script type="text/javascript">
+    $("th[orderField='@orderField']").addClass("@orderDirection");
+    function goPage(UserID) {
+        art.dialog.open("/DoctorManage/ReservationAgain?UserID=" + UserID, { title: "新建预约", width: 900, height: 500 })
+    }
+</script>

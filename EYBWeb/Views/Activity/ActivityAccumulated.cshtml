@@ -1,0 +1,190 @@
+﻿@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@using EYB.ServiceEntity.BaseInfo;
+@using EYB.ServiceEntity.SystemEntity;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.ActivityEntity;
+@using EYB.ServiceEntity.ActivityEntity;
+@using ActivityFactory.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using Webdiyer.WebControls.Mvc;
+@model List<EYB.ServiceEntity.ActivityEntity.ActivityJoinEntity>
+    @{
+        var UserID = Request["UserID"];//用户编号集合
+        Layout = null;
+
+    }
+    <html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+        <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+        <!--位置不能颠倒，否则影响样式-->
+        <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="@Url.Content("~/Content/themes/css/addactive.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+        <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+              type="text/css" />
+        <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+        <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+        <!--Panel-->
+        <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+        <!--表格-->
+        <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+        <!--表单验证-->
+        <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+        <!--日期-->
+        <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+        <!--弹出框-->
+        <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+        <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+        <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+        <style type="text/css">
+            .isshowth {
+                padding: 10px;
+            }
+
+            td {
+                border: 1px solid #ccc;
+            }
+        </style>
+    </head>
+    <body style="background: #fff; overflow-y:hidden;">
+        <div id="mainContentBody">
+            <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+                <div class="mainContentRight" style="margin-top: 20px;">
+                    <table class="gridTable" style="width: 96%; border-collapse: collapse;">
+                        <tbody id="gridtbody">
+                            <tr class="cardtype">
+                                <td></td>
+                                <td>
+                                    优惠券名称
+                                </td>
+                                <td>
+                                    优惠券价值
+                                </td>
+                                <td>
+                                    优惠券号
+                                </td>
+                                <td>
+                                    剩余数量
+                                </td>
+                            </tr>
+                         @foreach (var item in Model)
+                         {
+                            <tr class="cardtype">
+                                <td></td>
+                                <td>
+                                    @item.ActivityName
+                                </td>
+                                <td>
+                                    @item.Amount
+                                </td>
+                                <td>
+                                    @item.CouponNo
+                                </td>
+                                <td>
+                                    @item.Quantity
+                                </td>
+                            </tr>
+                         }
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            //点击积客活动
+            $("#gridtbody").delegate('.jikehuodong',
+                'click',
+                function (event) {
+
+                    art.dialog.open("/Activity/TheActivityList",
+                        {
+                            title: "积客活动列表",
+                            width: 800,
+                            height: 600,
+                            close: function () {
+                                var bValueID = art.dialog.data('bValueID'); // 读取B页面的数据
+                                var bValueCode = art.dialog.data('bValueCode');
+                                var bValueData = art.dialog.data('bValueData');
+
+                                $(event.target).val(bValueCode);
+                                $(event.target).parent().find("input[name='ActivityID']").val(bValueID);
+                                $("#txtAmount").val(bValueData.split('|')[2]);
+                                $("#txtEnableCount").val(bValueData.split('|')[3]);
+                                $("#txtShareCount").val(bValueData.split('|')[4]);
+                                if (bValueData.split('|')[7] == '1') {
+                                    var now = new Date();
+                                    $("#txtValidityStartTime").val(formatDate(now));
+                                    $("#txtValidityStartEnd").val(formatDate(DateAdd("d", 5, now)));
+                                } else {
+                                    $("#txtValidityStartTime").val(bValueData.split('|')[9]);
+                                    $("#txtValidityStartEnd").val(bValueData.split('|')[10]);
+                                }
+                            }
+                        });
+
+
+                });
+        });
+        $("#HospitalID").change(function () {
+            var id = $("#HospitalID").val(); //获取所选门店
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "text", //返回json格式的数据
+                url: "/MoneyManage/GetHospltalUser",
+                data: { "HospitalID": id },
+                async: false,
+                success: function (data) {
+                    if (data != null) {
+                        $("#s_FollowUpUserID").empty();
+                        $("#s_FollowUpUserID").append(data.toString());
+                    }
+                },
+                error: function () {
+                    alert("数据请求失败!");
+                }
+            });
+
+        })
+        //确认发送
+        function SendWeixin() {
+            var txtActivityID = $("#txtActivityID").val();
+            var txtEnableCount = $("#txtEnableCount").val();
+            var txtShareCount = $("#txtShareCount").val();
+            var txtValidityStartEnd = $("#txtValidityStartEnd").val();
+            var txtRemarks = $("#txtRemarks").val();
+            $.ajax({
+                type: "POST",
+                url: "@Url.Content("~/Activity/AddActivitySend?UserIDList=")@UserID&Id=" + txtActivityID + "&EnableCount=" + txtEnableCount + "&ShareCount=" + txtShareCount + "&ValidityStartEnd=" + txtValidityStartEnd + "&Remarks=" + txtRemarks,
+                async: false,
+                error: function (request) {
+                    artdialogfailTwo("操作失败！", "", "250", "100");
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        alert("操作成功！");
+                        closeed();
+                    } else {
+                        artdialogfailTwo("操作失败,！", "", "250", "100");
+                    }
+                }
+            });
+
+        }
+    </script>
+</html>

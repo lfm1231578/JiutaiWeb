@@ -1,0 +1,126 @@
+﻿@using EYB.ServiceEntity.BaseInfo;
+@using BaseinfoManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.BonusRecordsEntity>
+    @{
+
+        IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+        var orderName = ViewBag.orderName;
+        var orderField = ViewBag.orderField;
+        var orderDirection = ViewBag.orderDirection;
+        var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+        //获取区域门店
+        var regionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+        bool hasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    }
+    <div id="mainContentBody">
+        @Html.Partial("_ActivityControl")
+        <div id="mainContentRight">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                    ●
+                </label>分红汇总(<span id="sp">@Model.TotalItemCount</span>)
+            </div>
+            <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;" id="">
+                <div class="mainContentRight">
+                    @using (Ajax.BeginForm("ActivityFenhongHuizong", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                    {
+                        <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                        <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+
+                        <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                            <ul>
+                                @if (hasPermission)
+                                {
+                                    <li>
+                                        <label style="font-weight: normal;">
+                                            所属分店：
+                                        </label>
+                                        <select name="HospitalId" id="HospitalId" class="" style="width: 100px;">
+                                            <option value="0">请选择分店</option>
+                                            @if (regionhospitalList.Count > 0)
+                                            {
+                                                foreach (var info in regionhospitalList)
+                                                {
+                                                    <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID">@info.Name</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                foreach (var info in hospitalList)
+                                                {
+                                                    <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID">@info.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </li>
+                                }
+                                <li>
+                                    <label style="font-weight: normal;">
+                                        员工姓名：
+                                    </label>
+                                    <input type="text" class="inputtext" name="UserName" id="txtUserName" value="" style="width: 140px;" />
+                                </li>
+                                <li>
+                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                                    <input type="button" id="btnsumbit" class="submitbutton2" style="float: none;" value="申请提现" onclick="Openwithdrawal()" />
+                                </li>
+                            </ul>
+                            <div style="clear: both;">
+                            </div>
+                        </div>
+                    }
+                    <div id="articles" class="" style="height: 100%; overflow: hidden; margin-top: 5px;
+                    width: 100%;">
+                        @Html.Partial("_ActivityFenhongHuizong", Model)
+                    </div>
+                    @{Html.RegisterMvcPagerScriptResource();}
+                    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        ////防止提现多选
+
+        $("#articles").delegate("tr.ableclick", "click", function () {
+            var $chekbox = $(this).find("input:checkbox");
+            if ($chekbox.prop("checked") == false) {
+                $chekbox.attr("checked", "checked");
+                $(this).css("background", "#E7F6FF");
+            } else {
+                $chekbox.attr("checked", false);
+                $(this).css("background", "");
+            }
+        });
+        $("#articles").delegate("input:checkbox", "click", function () {
+            if ($(this).prop("checked") == false) {
+                $(this).attr("checked", "checked");
+                $(this).parent().parent().css("background", "#E7F6FF");
+            } else {
+                $(this).attr("checked", false);
+                $(this).parent().parent().css("background", "");
+            }
+        });
+        function Openwithdrawal() {
+            if ($("input[name='checkbox']:checked").length == 0) {
+                alert("请选择发送的员工!"); return;
+            }
+            //jquery获取复选框值
+
+                var types = "";
+                $('input[name="checkbox"]:checked').each(function () {
+                    if ($(this).attr("checked")) {
+                       types = $(this).attr('value');
+                    }
+                    art.dialog.open("/Activity/withdrawal?UserID=" + types, { title: "申请提现", width: 400, height: 340 });
+
+                });
+
+
+        }
+
+    </script>

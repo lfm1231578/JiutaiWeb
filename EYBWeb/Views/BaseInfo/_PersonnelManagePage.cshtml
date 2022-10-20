@@ -1,0 +1,75 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity>
+@{
+    ViewBag.Title = "_PersonnelManagePage";
+}
+<form action="@Url.Content("~/PersonnelManage/PersonnelManagePage")" method="post" id="submitform" >
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable">
+    <thead>
+        <tr>
+          @* <th orderfield="">
+                员工工号
+            </th>*@
+            <th orderfield="UserName">
+                姓名
+            </th>
+            <th orderfield="Sex">
+                性别
+            </th>
+            <th orderfield="Age">
+                年龄
+            </th>
+            <th orderfield="DepartmentName" style="display: none;">
+                所在科室
+            </th>
+            <th orderfield="IsDoctor"  >
+                岗位
+            </th>
+            <th orderfield="Phone">
+                联系方式
+            </th>
+            <th>
+                员工管理
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var info in Model)
+        {
+            <tr>
+                @*<td>
+                    @info.LoginAccount
+                </td>*@
+                <td>
+                    @info.UserName
+                </td>
+                <td>
+                    @info.Sex
+                </td>
+                <td>
+                    @info.Age
+                </td>
+                <td style="display: none;">
+                    @info.DepartmentName
+                </td>
+                <td>
+                    @info.DutyName
+                </td>
+                <td>
+                    @info.Phone
+                </td>
+                <td>
+                    <a href="@Url.Content("~/PersonnelManage/PersonnelEdit?UserID=")@info.UserID">编辑</a>&nbsp;
+                    @if (info.IsAdmin != 1)
+                    {
+                        <a href="javascript:;"  code="@info.UserID"  class="deletebtn">删除</a>
+                    }
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+    </tbody>
+</table>
+</form>

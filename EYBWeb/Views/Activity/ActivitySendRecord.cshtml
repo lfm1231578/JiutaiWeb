@@ -1,0 +1,78 @@
+﻿@using Webdiyer.WebControls.Mvc;
+    @{
+        var UserID = Request["UserID"];
+    }
+    <div id="mainContentBody">
+        @Html.Partial("_ActivityControl")
+        <div id="mainContentRight">
+            <form action="" method="post" class="clearfix" name="myform" id="myform">
+                <input type="hidden" name="UserID" id="UserID" value="@UserID" /><!-- 顾客ID-->
+                <div class="mainContentRight_top">
+                    <label class="Soliddots">
+                        ●
+                    </label>
+                    发送记录
+                </div>
+                <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;
+            overflow: hidden;">
+                    <div class="mainContentRight_bottomContent">
+                        <div id="tabbox">
+                            <ul class="tabs" id="tabs">
+                                <li><a href="###" tab="tab0">发送记录</a></li>
+                                <li><a href="###" tab="tab1">分享记录</a></li>
+                                <li><a href="###" tab="tab2">发送明细</a></li>
+                            </ul>
+                            <div style="height:100%;float:left;margin-left:60px;margin-top:15px;height:110px; background-color:#00b0de;color:white;font-weight:bold;">
+                                    <ul>
+                                        <li style="float:left;width:270px;text-align:center;line-height:110px;border-right:1px solid white;">发送人数：<label>@Model.SendCountZong</label></li>
+                                        <li style="float:left;width:270px;text-align:center;line-height:110px;border-right:1px solid white;">领取人数：<label>@Model.ReceiveCountZong</label></li>
+                                        <li style="float:left;width:270px;text-align:center;line-height:110px;border-right:1px solid white;">分享人数：<label>@Model.ShareCountZong</label></li>
+                                        <li style="float:left;width:270px;text-align:center;line-height:110px;border-right:1px solid white;">消费人数：<label>@Model.UsecountZong</label></li>
+                                        <li style="float:left;width:270px;text-align:center;line-height:110px;">转化率：<label>@(ViewBag.zu+ "%")</label></li>
+                                    </ul>
+                             
+                            </div>
+                            <div style="clear:both"></div>
+                            <ul id="tab_conbox" class="tab_conbox">
+                                <li id="tab0" class="tab_con" style="height: 100%;">
+                                    <iframe src="@Url.Content("~/Activity/ActivitySendRecordList?UserID=")@UserID" href="@Url.Content("~/Activity/ActivitySendRecordList?UserID=")@UserID" frameborder="0" style="width:100%;_border:none; height:100%; border:none;border:0px; _border:0px;" ></iframe>
+                                </li>
+                                <li id="tab1" class="tab_con" style="height: 100%;">
+                                    <iframe src="" href="@Url.Content("~/Activity/ShareRecord?UserID=")@UserID" frameborder="0" style="width:100%;_border:none; height:100%; border:none;border:0px; _border:0px; "></iframe>
+                                </li>
+                                <li id="tab2" class="tab_con" style="display: none;">
+                                    <iframe id="PatientDetailPage" src="" frameborder="0" href="@Url.Content("~/Activity/ActivitySendRecordDetail?UserID=")@UserID&s_TableType=1" style="width:100%;_border:none;border:none; border:0px; _border:0px; "></iframe>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+<script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+            var docheight = getDocumentHeight() - $("#header").height() - $("#footer").height() + 15;
+        }
+
+        jQuery(document).ready(function () {
+            $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 110);
+            //Tab切换
+            $("#tabs  li").click(function () {
+                $("#tabs li").removeClass("thistab");
+                $(this).addClass("thistab");
+                $(".tab_con").hide();
+                var index = $(this).parent().find("li").index(this);
+                $("#tab_conbox").find(".tab_con").eq(index).show();
+                var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+                iframe1.attr("src", iframe1.attr("href"));
+            });
+            $("#tabs li:first").addClass("thistab").show();
+        });
+
+    </script>

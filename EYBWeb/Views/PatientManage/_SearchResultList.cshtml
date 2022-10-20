@@ -1,0 +1,90 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PatientEntity.PatientEntity>
+@{
+    ViewBag.Title = "_SearchResultList";
+}
+
+    <form action="" method="post" id="submitform" >
+            <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+            <input type="hidden" value="" name="orderField"  id="orderField"  />
+            
+            <table class="gridTable" style="border-collapse:collapse ;">
+            
+                <thead>
+                    <tr>
+                        <th orderField="UserID" style="width:53px;">
+                            编号
+                        </th>
+                        <th orderField="UserName" style="width:68px;">
+                            姓名
+                        </th>
+                        <th orderField="Sex" style="width:53px;">
+                            性别
+                        </th>
+                        <th orderField="Birthday" style="width:53px;">
+                            年龄
+                        </th>
+                        <th orderField="InfoName" style="width:83px;">
+                            就诊原因
+                        </th>
+                        <th orderField="CreateTime">
+                            登记时间
+                        </th>
+                         <th orderField="Mobile">
+                            预约编号
+                        </th>
+                        <th >
+                            患者管理
+                        </th>
+
+                       
+                    </tr>
+                </thead>
+                <tbody>
+                 @foreach (var entity in Model)
+                 {
+                    <tr>
+                        <td>
+                            @entity.UserID
+                        </td>
+                        <td>
+                             @entity.UserName
+                        </td>
+                        <td>
+                             @{if (entity.Sex == 0) { <span>男</span>}
+                               else
+                               { 
+                                   <span>女</span> }
+                               }
+                        </td>
+                        <td>
+                             @entity.Age
+                        </td>
+                        <td>
+                             @entity.InfoName
+                        </td>
+                        <td>
+                            @entity.CreateTime.Value.ToString("yyyy-MM-dd HH:mm")
+                        </td>
+                        <td>
+                             @{
+                                if(entity.Reservationnumber == 0)
+                                {
+                                    <label>无</label>
+                                }else{
+                                <a href="@Url.Content("~/PatientManage/ReservationDetail")?ID=@entity.ID&UserID=@entity.UserID">@entity.Reservationnumber</a>
+                                }
+                            }
+                        </td>
+                        <td>
+                         <a href="#" onclick="goPage('@entity.UserID')">预约</a>   <a href="@Url.Content("~/PatientManage/PatientRegister")?UserID=@entity.UserID">编辑</a>
+                        <!--  <a href="@Url.Content("~/PatientManage/PatientDetail")?UserID=@entity.UserID">就诊</a>  -->
+                        </td>
+                    </tr>
+                 }
+                 @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+                </tbody>
+            </table>
+           
+            @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+         </form>

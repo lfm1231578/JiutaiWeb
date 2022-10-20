@@ -1,0 +1,365 @@
+﻿@using HS.SupportComponents;
+@model PagedList<EYB.ServiceEntity.SystemEntity.UserSettingsEntity>
+    @{
+        ViewBag.Title = "用户设置";
+        var kk = "1";
+        if (ViewBag.HospitalID == 616 || ViewBag.HospitalID == 1108 || ViewBag.HospitalID == 1144 || ViewBag.HospitalID == 615)
+        {
+             kk = ViewBag.IsPrintPrice;
+        }
+    }
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style type="text/css">
+        table {
+            width: 100%;
+        }
+
+        tr {
+            line-height: 26px;
+        }
+
+        td {
+            float: left;
+            line-height: 36px;
+        }
+
+        .wid200 {
+            width: 200px;
+            text-align: left;
+            line-height: 36px;
+        }
+        
+    </style>
+    <div id="mainContentBody">
+        @Html.Partial("_BaseInfoControl")
+        <div id="mainContentRight">
+            <div class="mainContentRight_top">
+                <label class="Soliddots"></label>系统参数
+            </div>
+            <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+
+                &nbsp;
+                <form action="#" id="myform">
+                    <div style="width: 100%; height: 25px;">
+                    </div>
+                    <table>
+                        @{ var countSum = 0;}
+                        @foreach (var info in Model)
+                        {
+                            <input type="hidden" value="@info.ID" name="ID" />
+                            if (info.Type.ToLower() == "text")
+                            {
+                                @*疗程卡预警  也为卡项过期的提醒天数*@
+                                <tr>
+                                    <td class="tdright" style="width: 220px;">
+                                        @info.Memo :
+                                    </td>
+                                    <td>
+                                        <input name="@info.Name" style="display:block; margin-top:10px;" @(info.Name == "Intergate" ? "onkeyup=javascript:CheckInputIntFloat(this);" : "") type="text" value="@info.AttributeValue" />
+                                    </td>
+                                </tr>
+                            }
+                            else if (info.Type.ToLower() == "radio")
+                            {
+                                if (info.Name == "PrintTemplate")
+                                {
+                                    <tr>
+                                        <td class="tdright" style="width: 220px;">
+                                            @info.Memo :
+                                        </td>
+                                        <td>
+                                            <input name="@info.Name" type="radio" @(info.AttributeValue == "58" ? "checked=checked" : "") value="58" />58打印机
+                                            <input name="@info.Name" @(info.AttributeValue == "76" ? "checked=checked" : "") type="radio" value="76" />76打印机
+                                            <input name="@info.Name" @(info.AttributeValue == "80" ? "checked=checked" : "") type="radio" value="80" />其他打印机
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td class="tdright" style="width: 220px;">
+                                            @info.Memo :
+                                        </td>
+                                        <td>
+                                            <input name="@info.Name" type="radio" @(info.AttributeValue == "1" ? "checked=checked" : "") value="1" />是
+                                            <input name="@info.Name" @(info.AttributeValue == "2" ? "checked=checked" : "") type="radio" value="2" />否
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            if (countSum > 16)
+                            {
+                                break;
+                            }
+                            countSum++;
+                        }
+                        @if (ViewBag.HospitalID == 616 || ViewBag.HospitalID == 1108 || ViewBag.HospitalID == 1144 || ViewBag.HospitalID == 615)
+                        {
+                            <tr>
+                                <td class="tdright" style="width: 220px;">
+                                    是否显示打印价格 :
+                                </td>
+                                <td>
+                                    <input name="IsShowPrintPrice" type="radio" @(kk == "1" ? "checked=checked" : "") value="1" />是
+                                    <input name="IsShowPrintPrice" @(kk == "2" ? "checked=checked" : "") type="radio" value="2" />否
+                                </td>
+                            </tr>
+                        }
+                        @foreach (var info1 in Model)
+                        {
+                            if (info1.Memo == "顾客主动预约积分")
+                            {
+                                <tr>
+                                    <td class="tdright" style="width: 220px;">
+                                        @info1.Memo:
+                                    </td>
+                                    <td style="width:400px;">
+                                        <input name="@info1.Name" style=" margin-top:10px;" @(info1.Name == "Intergate" ? "onkeyup=javascript:CheckInputIntFloat(this);" : "") type="text" value="@info1.AttributeValue" />
+                                        （预约经审核且到店后生效）
+                                    </td>
+                                </tr>
+                            }
+                            if (info1.Memo == "转介绍送积分")
+                            {
+                                <tr>
+                                    <td class="tdright" style="width: 220px;">
+                                        @info1.Memo:
+                                    </td>
+                                    <td>
+                                        <input name="@info1.Name" style="display:block; margin-top:10px;" @(info1.Name == "Intergate" ? "onkeyup=javascript:CheckInputIntFloat(this);" : "") type="text" value="@info1.AttributeValue" />
+
+                                    </td>
+                                </tr>
+                            }
+                            if (info1.Name == "IntegralBy4")
+                            {
+                                <tr>
+                                    <td class="tdright" style="width: 220px;">
+                                        @info1.Memo:
+                                    </td>
+                                    <td style="width:400px;">
+                                        <input name="@info1.Name" style=" margin-top:10px;" @(info1.Name == "Intergate" ? "onkeyup=javascript:CheckInputIntFloat(this);" : "") type="text" value="@info1.AttributeValue" />
+                                    </td>
+                                </tr>
+                            }
+                            if (info1.Name == "MonthByDay")
+                            {
+                                <tr>
+                                    <td class="tdright" style="width: 220px;">
+                                        @info1.Memo:
+                                    </td>
+                                    <td style="width:400px;">
+                                        <input name="@info1.Name" style=" margin-top:10px;" @(info1.Name == "Intergate" ? "onkeyup=javascript:CheckInputIntFloat(this);" : "") type="text" value="@info1.AttributeValue" />
+                                    </td>
+                                </tr>
+                            }
+
+                            @*if (info1.Name == "guanliquanxian")
+                    {
+                        <tr>
+                            <td class="tdright" style="width: 220px;">
+                                @info1.Memo（删除客户资料权限） :
+                            </td>
+                            <td>
+                                <input name="@info1.Name" type="radio" @(info1.AttributeValue == "1" ? "checked=checked" : "") value="1" />是
+                                <input name="@info1.Name" @(info1.AttributeValue == "2" ? "checked=checked" : "") type="radio" value="2" />否
+                            </td>
+                        </tr>
+                    }*@
+                            @*if (info1.Name == "dianzhangquanxian")
+                    {
+                        <tr>
+                            <td class="tdright" style="width: 220px;">
+                                @info1.Memo（删除客户资料权限） :
+                            </td>
+                            <td>
+                                <input name="@info1.Name" type="radio" @(info1.AttributeValue == "1" ? "checked=checked" : "") value="1" />是
+                                <input name="@info1.Name" @(info1.AttributeValue == "2" ? "checked=checked" : "") type="radio" value="2" />否
+                            </td>
+                        </tr>
+                    }*@
+                            @*if (info1.Name == "qiantaiquanxian")
+                    {
+                        <tr>
+                            <td class="tdright" style="width: 220px;">
+                                @info1.Memo（删除客户资料权限） :
+                            </td>
+                            <td>
+                                <input name="@info1.Name" type="radio" @(info1.AttributeValue == "1" ? "checked=checked" : "") value="1" />是
+                                <input name="@info1.Name" @(info1.AttributeValue == "2" ? "checked=checked" : "") type="radio" value="2" />否
+                            </td>
+                        </tr>
+                    }*@
+                            @*if (info1.Name == "guwenquanxian")
+                    {
+                        <tr>
+                            <td class="tdright" style="width: 220px;">
+                                @info1.Memo（删除客户资料权限） :
+                            </td>
+                            <td>
+                                <input name="@info1.Name" type="radio" @(info1.AttributeValue == "1" ? "checked=checked" : "") value="1" />是
+                                <input name="@info1.Name" @(info1.AttributeValue == "2" ? "checked=checked" : "") type="radio" value="2" />否
+                            </td>
+                        </tr>
+                    }*@
+                            @*if (info1.Name == "meirongshiquanxian")
+                    {
+                        <tr>
+                            <td class="tdright" style="width: 220px;">
+                                @info1.Memo（删除客户资料权限） :
+                            </td>
+                            <td>
+                                <input name="@info1.Name" type="radio" @(info1.AttributeValue == "1" ? "checked=checked" : "") value="1" />是
+                                <input name="@info1.Name" @(info1.AttributeValue == "2" ? "checked=checked" : "") type="radio" value="2" />否
+                            </td>
+                        </tr>
+                    }*@
+                        }
+
+                        @*<input type="button" class="submitbutton2" id="btnclick" value="保 存" />
+                    </td>
+                </tr>
+                                }
+                            }
+                                @*<tr>
+                    <td class="tdright" style="width: 220px;">
+                        @Model.Memo :
+                    </td>
+                    <td>
+                        @*<input type="button" class="submitbutton2" id="btnclick" value="保 存" />
+                    </td>
+                </tr>*@
+
+                        <tr>
+                            <td class="tdright" style="width: 220px;">
+                                &nbsp;
+                            </td>
+                            <td>
+                                <input type="button" class="submitbutton2" id="btnclick" value="保 存" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+                <style>
+                    .m-salaryTitle {
+                        text-align: center;
+                        font-size: 22px;
+                    }
+
+                    .mt-salaryTitle {
+                        padding: 10px;
+                        font-size: 20px;
+                        color: 4c4c4c;
+                        text-align: center;
+                    }
+
+                    .title {
+                        padding: 10px;
+                    }
+
+                    .m-salaryLR {
+                        display: flex;
+                        justify-content: flex-start;
+                        background: #fff;
+                    }
+
+                    .m-salaryCell {
+                        width: 20%;
+                        line-height: 30px;
+                        text-align: center;
+                        border-right: 1px solid #d6d6d6;
+                        border-bottom: 1px solid #d6d6d6;
+                    }
+
+                        .m-salaryCell input {
+                            width: 60%;
+                        }
+
+                    .m-salaryCel2 {
+                        width: 18.1%;
+                        line-height: 30px;
+                        text-align: center;
+                        border-right: 1px solid #d6d6d6;
+                        border-bottom: 1px solid #d6d6d6;
+                    }
+
+                    .m-salaryCell3 {
+                        width: 33.3%;
+                        line-height: 30px;
+                        text-align: center;
+                        border-right: 1px solid #d6d6d6;
+                        border-bottom: 1px solid #d6d6d6;
+                    }
+
+                    .m-salaryCel2 input {
+                        width: 100px;
+                    }
+
+                    .salarCel-input {
+                        width: 60%;
+                    }
+
+                    .m-salaryCell3 {
+                        width: 33.3%;
+                    }
+                </style>
+
+
+
+
+
+
+            </div>
+
+            <script type="text/javascript">
+            // 所有复选框 单选
+            $("input:checkbox").click(function () {
+                //$(this).attr("checked",true);
+                if (!$(this).hasClass("Diseases")) {
+                    $(this).siblings("input[type=checkbox]").attr("checked", false);
+                }
+            })
+
+            //提交
+                $("#btnclick").click(function () {
+                    let IntergateValue = Number($("input[name$='Intergate']").val());
+                    //if (IntergateValue <= 1 || IntergateValue >= 1000000 || (String(IntergateValue).indexOf(".")>=0)) {
+                    if (IntergateValue < 1 || IntergateValue >= 1000000 || (String(IntergateValue).indexOf(".")>=0)) {
+                        alert("只能输入1-1000000之间,且不能为小数")
+                        return
+                    }
+
+                $.ajax({
+                    cache: true,
+                    type: "POST",
+                    url: "@Url.Content("~/BaseInfo/SaveSettings")",
+                    data: $('#myform').serialize(), // 你的formid
+                    async: false,
+                    error: function (request) {
+                        //artdialogfailTwo("保存失败！","","250","100");
+                        alert("保存失败!");
+                    },
+                    success: function (data) {
+                        if (data > 0) {
+                            alert("保存成功!");
+                            location.href = "/BaseInfo/UserSettings";
+                            // artdialog("保存成功！","@Url.Content("~/BaseInfo/UserSettings")");
+                        } else {
+                            alert("保存失败,请检查数据是否有效!");
+                            //artdialogfailTwo("操作失败！","","250","100");
+                        }
+                    }
+                });
+            })
+
+            </script>
+
+
+
+
+
+

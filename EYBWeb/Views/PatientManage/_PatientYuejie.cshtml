@@ -1,0 +1,74 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PatientEntity.PatientYuejieEntity>
+@{
+    ViewBag.Title = "_Patientlist";
+    Layout = null;
+    int YouXiaoke = 0;
+    int Chenshuike = 0;
+    int Sike = 0;
+}
+<form action="" method="post" id="submitform">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>
+                年份
+            </th>
+            <th>
+                月份
+            </th>
+            <th>
+                有效客
+            </th>
+            <th>
+                沉睡客
+            </th>
+            <th>
+                死客
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            YouXiaoke +=entity.YouXiaoke;
+            Chenshuike += entity.Chenshuike;
+            Sike += entity.Sike;
+            <tr>
+                <td>@entity.Year
+                </td>
+                <td>@entity.MonthDay
+                </td>
+                <td>@entity.YouXiaoke
+                </td>
+                <td>@entity.Chenshuike
+                </td>
+                <td>@entity.Sike
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+            </td>
+            <td>
+                合计
+            </td>
+            <td>@YouXiaoke
+            </td>
+            <td>
+                @Chenshuike
+            </td>
+            <td>
+                @Sike
+            </td>
+        </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 5))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $("#sp").html("@ViewBag.Count");
+</script>

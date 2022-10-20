@@ -1,0 +1,126 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.CustomerValueCardEntity>
+@{
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+    cellpadding="0" cellspacing="0">
+    <thead>
+    <tr>
+        <th>
+            <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')" />
+        </th>
+        <th>
+            所属门店
+        </th>
+        <th>
+            姓名
+        </th>
+        <th>
+            手机号
+        </th>
+        <th>
+            微信昵称
+        </th>
+        <th style="display: none;">
+            微信头像
+        </th>
+        <th>
+            活动数量
+        </th>
+        <th>
+            活动总额
+        </th>
+
+        <th>
+            卡类型
+        </th>
+        <th>
+            卡余额
+        </th>
+        <th>
+            关注公众号
+        </th>
+        <th>
+            注册时间
+        </th>
+    </tr>
+    </thead>
+    <tbody class="tabled">
+        @foreach (var entity in Model)
+        {
+
+            <tr class="ableclick">
+                <td>
+                    <input type="checkbox" name="checkbox" class="checkbox" value="@entity.Id"  />
+                </td>
+                <td>
+                    @entity.HospitalName
+                </td>
+                <td>
+                    @entity.UserName
+                </td>
+                <td>
+                    @entity.Mobile
+                </td>
+                <td>
+                    @entity.WxNickname
+                </td>
+                <td style="display: none;">
+                   <img width="50" src="" />
+                </td>
+                <td>
+                    @entity.Quantity
+                </td>
+                <td>
+                    <a href="javascript:OpenAccumlaction(@entity.Id);">
+                        @entity.AllAmount
+                    </a>
+
+                </td>
+                <td>
+                    @entity.CardType
+                </td>
+                <td>
+                    @entity.Amount
+                </td>
+                <td>
+                    @(string.IsNullOrEmpty(entity.WxOpenId) ? Html.Raw("<label style='color:red;'>未关注</label>") : Html.Raw("<label style='color:green;'>已关注</label>"))
+                </td>
+                <td>
+                    @entity.CreateTime
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+</form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+        $("#articles").delegate("tr.ableclick", "click", function () {
+            var $chekbox = $(this).find("input:checkbox");
+            if ($chekbox.prop("checked") == false) {
+                $chekbox.attr("checked", "checked");
+                $(this).css("background", "#E7F6FF");
+            } else {
+                $chekbox.attr("checked", false);
+                $(this).css("background", "");
+            }
+        });
+        $("#articles").delegate("input:checkbox", "click", function () {
+            if ($(this).prop("checked") == false) {
+                $(this).attr("checked", "checked");
+                $(this).parent().parent().css("background", "#E7F6FF");
+            } else {
+                $(this).attr("checked", false);
+                $(this).parent().parent().css("background", "");
+            }
+        });
+    </script>    
+

@@ -1,0 +1,298 @@
+﻿@using HS.SupportComponents;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@{
+    ViewBag.Title = "AccountPage";
+    Layout = null;
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+    SystemManage.Factory.IBLL.ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    //获取用户账户信息
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+
+    var entity = cashBll.GetAllBalance(new EYB.ServiceEntity.CashEntity.MainCardBalanceEntity { UserID = UserID });
+
+    //获取打印头
+    var PrintNameEntity = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "PrintName");
+    var PrintXuanNameEntity = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "PrintXuanName");
+    //打印机设置
+    var PrintTemplate = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "PrintTemplate").AttributeValue;
+    var s = Request["s"];
+    var isshow = false;
+    if (s == "n")
+    {
+        isshow = true;
+    }
+    bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_查看手机号);
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+</head>
+<body style="background-color: #fff;">
+    <table style="height: 250px;">
+        <tr>
+            <td class="tdright" style="width: 240px;">
+                卡号：
+            </td>
+            <td style="width: 120px;">
+                @entity.MemberNo
+            </td>
+            <td class="tdright">
+                姓名：
+            </td>
+            <td>
+                @entity.UserName
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                结余次数：
+            </td>
+            <td>
+                @entity.Tiems
+            </td>
+            <td class="tdright">
+                结余金额：
+            </td>
+            <td>
+                @entity.Price
+            </td>
+        </tr>
+        <tr>
+            @* <td class="tdright">
+                    购卡尾款：
+                </td>
+                <td>
+                   @entity.Weikuan
+                </td>*@
+            <td class="tdright">
+                总欠款：
+            </td>
+            <td>
+                @entity.AllPrice
+            </td>
+            <td class="tdright">
+                累计消费：
+            </td>
+            <td>
+                @entity.CostPrice
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                可用积分：
+            </td>
+            <td>
+                @entity.Integral
+            </td>
+            @if (HasPermission1)
+            {
+                <td class="tdright">
+                    手机号码：
+                </td>
+                <td>
+                    @entity.Phone
+                </td>
+            }
+        </tr>
+        <tr>
+            <td class="tdright">
+                生日：
+            </td>
+            <td style="">
+                @(entity.Calendar + ":" + entity.Birthday)
+            </td>
+            <td class="tdright">
+                最后到店时间：
+            </td>
+            <td>
+                @entity.LastTime
+            </td>
+        </tr>
+        <tr>
+            <td>
+            </td>
+            <td colspan="3">
+                <input type="button" class="submitbutton2" onclick="OperateCard(@UserID)" value="办卡" />
+                <input type="button" class="submitbutton2" onclick="OperateCard(@UserID)" value="补办卡" />
+                <input type="button" class="submitbutton1" onclick="UpdateCardPwd(@UserID)" value="更改卡密码" />
+                <input type="button" class="submitbutton2" onclick="Preview1()" value="打印" />
+            </td>
+        </tr>
+    </table>
+    <div style="display: none;" id="form1">
+        <table style="border: 0px; width: 100%; font-size: 16px; margin: 0; margin-top: 5px;
+            border-collapse: collapse;">
+            <tr style="height: 16px;">
+                <td style="width: 30%; font-weight: lighter; line-height: 16px; height: 16px;">
+                    名称
+                </td>
+                <td style="font-weight: lighter; line-height: 16px; height: 16px;">
+                    总数
+                </td>
+                <td style="font-weight: lighter; line-height: 16px; height: 16px;">
+                    余数
+                </td>
+                <td style="width: 28%; text-align: left; font-weight: lighter; line-height: 16px;
+                    height: 16px;">
+                    金额
+                </td>
+            </tr>
+            <tbody style="font-size: 16px;">
+                @foreach (var info in Model)
+                {
+                    <tr>
+                        <td style="width: 80px;">
+                            @info.Name
+                    </td>
+                    <td>
+                        @info.AllTiems
+                </td>
+                <td>
+                    @info.Number
+            </td>
+            <td style="width: 90px;">
+                @info.Price
+        </td>
+    </tr>
+}
+                <tr>
+                    <td>
+                        总欠款
+                    </td>
+                    <td>
+                    </td>
+                    <td colspan="2" style="">
+                        @entity.AllPrice
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width="0"
+        height="0">
+    <embed id="LODOP_EM" type="application/x-print-lodop" width="0" height="0" /></embed>
+</object>
+    @*顾客登记*@
+    <div>
+
+
+    </div>
+
+
+    @*顾客登记*@
+</body>
+</html>
+<script type="text/javascript">
+    var printtemp = '@PrintTemplate';
+    //补办卡页面
+    function OperateCard(UserID) {
+        art.dialog.open("/PatientManage/MakeCardNo?UserID=" + UserID, { title: "补办卡", width: 530, height: 360 })
+    }
+    //更改卡密码
+    function UpdateCardPwd(UserID) {
+        art.dialog.open("/PatientManage/UpdateCardPwd?UserID=" + UserID, { title: "更改会员卡密码", width: 530, height: 360 })
+    }
+    //注销卡号
+    function QuitCard(UserID) {
+        if (confirm("注销卡号")) { 
+               $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data:{areacode:code},
+            async:false,
+            success: function (data) {
+              $("#SelArea").empty();
+                $("#SelArea").append("<option value=''>请选择县区</option>");
+              $(data).each(function (i,n){
+                  $("#SelArea").append("<option  id="+n.AreaCode+" value="+n.AreaName+">"+n.AreaName+"</option>");
+                  
+              }) 
+            }
+           
+        });
+        }
+    }
+
+
+    //打印
+    var LODOP; //声明为全局变量  
+    function Preview1() {
+        LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+        if (printtemp == 58) {
+             //alert("我进了58打印!");
+            Preview58();
+        } else {
+            //alert("我进了76打印!");
+            Preview76();
+        }
+    };
+
+    function Preview58() {
+        // LODOP.PRINT_INITA(0, 0, 580, 333, "自定义纸张1");
+        LODOP.PRINT_INIT("自定义纸张");
+        //         document.getElementById('W1').value;
+        LODOP.SET_PRINT_PAGESIZE(3, 580, 800, "A4");
+        LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+        LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+        AddPrintContent();
+        //LODOP.PRINT_DESIGN();
+        LODOP.PREVIEW();
+    }
+
+    function Preview76() {
+        // LODOP.PRINT_INITA(0, 0, 580, 333, "自定义纸张1");
+        LODOP.PRINT_INIT("自定义纸张");
+        //         document.getElementById('W1').value;
+        LODOP.SET_PRINT_PAGESIZE(3, 760, 800, "A4");
+        LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+        LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+        AddPrintContent76();
+        //LODOP.PRINT_DESIGN();
+        LODOP.PREVIEW();
+    }
+
+
+
+    function AddPrintContent() {
+        // LODOP.SET_PRINT_STYLE("FontColor", 16711680);
+        // LODOP.ADD_PRINT_RECT(62, 16, 459, 217, 0, 1);
+        //LODOP.SET_PRINT_STYLEA(2, "FontSize", 16);
+        LODOP.ADD_PRINT_HTM(15, "5%", "100%", 25, "<div style='font-size:14px;  text-align:center;'>@PrintNameEntity.AttributeValue</div>");
+        LODOP.SET_PRINT_STYLE( "FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontSize", 12);
+        LODOP.SET_PRINT_STYLE( "FontColor", 0);
+        LODOP.ADD_PRINT_HTM(40, 5, "100%", 20, "<div style='font-size:12px; text-align:center;'>顾客结余欠款单据</div>");
+        LODOP.ADD_PRINT_HTM(65, 5, "100%", 20, "<div style='font-size:12px; text-align:center;'>姓名: @entity.UserName</div>");
+ LODOP.ADD_PRINT_HTM(80, 5, "100%", 20, "<div style='font-size:12px; text-align:center;'> @DateTime.Now</div>");
+        //订单详情
+        var form1height = $("#form1").height();
+        LODOP.ADD_PRINT_HTM(98, 5, "100%", form1height, document.getElementById("form1").innerHTML);
+    }
+
+    function AddPrintContent76() {
+        LODOP.SET_PRINT_STYLE("FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontSize", 14);
+        LODOP.SET_PRINT_STYLE("FontColor", 0);
+        LODOP.ADD_PRINT_HTM(15, 5, "100%", 20, "<div style='font-size:16px;  text-align:center;'>@PrintNameEntity.AttributeValue</div>");
+        LODOP.ADD_PRINT_HTM(40, 5, "100%", 20, "<div style='font-size:14px; text-align:center;'>顾客结余欠款单据</div>");
+        LODOP.ADD_PRINT_HTM(65, 5, "100%", 20, "<div style='font-size:14px; text-align:center;'>姓名: @entity.UserName</div>");
+ LODOP.ADD_PRINT_HTM(80, 5, "100%", 20, "<div style='font-size:12px; text-align:center;'> @DateTime.Now</div>");
+        //订单详情
+        var form1height = $("#form1").height();
+        LODOP.ADD_PRINT_HTM(98, 5, "100%", form1height, document.getElementById("form1").innerHTML);
+    }
+    
+</script>

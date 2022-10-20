@@ -1,0 +1,275 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "收银管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    //顾客ID
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+
+    //查询门店美容师
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    persoList = persoList.Where(i => i.IsSys != 1).ToList();
+    //获取用户所有的划扣次数
+    var projectList = cashBll.GetProjectBalance(UserID, 0, ViewBag.ParentHospitalID);
+    var hospitalList = personBLL.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_PreAddorder);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashMange_JoinMore);
+}
+<style>
+    .accountdiv li a:hover { background-color: #d5d0ce; display: block; }
+</style>
+<div id="mainContentBody">
+    @Html.Partial("_CashControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+            <div class="mainContentRight_top">
+                <label class="Soliddots"></label>
+                消费开单（服务开单） <a href="BedManagement" style="float: right; display: none; margin-right: 20px;
+                font-size: 16px; margin-top: 10px;">床位管理</a>
+            </div>
+            <div class="mainContentRight_bottom clearfix">
+                @Html.Partial("_PatientSelect")
+                <div class="accountdiv orderul" style="background-color: White;" id="selectOtherProject">
+                    @*  划扣次数：  <select id="selectProject" style="width: 200px; height: 26px; line-height: 26px;">
+                            <option style="width: 200px;" value="-999">请选择项目</option>
+                            @foreach (var info in projectList)
+                            {
+                                <option style=" width:200px;" value="@info.ID">@info.Name (剩余 @info.Tiems 次）</option>
+                            }
+                        </select>*@
+                    <ul class="searchul">
+                        <li>
+                            <div style="float: left; width: 80px; line-height: 30px;">
+                                划扣次数：
+                            </div>
+                            <ul class='selectUL' style="position: relative; float: left; width: 320px; margin-top: 3px;"
+                                id="selectUL">
+                                <li class="liMenu" style="width: 100%; position: relative; height: 27px; line-height: 27px;
+                                text-align: center; border: 1px solid #ccc;">疗程划次</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <input type="button" class="submitbutton4"   onclick="ProjetList()"
+                                   value="单次消费" />
+                        </li>
+                        <li>
+                            <input type="button" class="submitbutton4" onclick="ProductList()"  value="选择产品" />
+                        </li>
+                        <li style="color:#de480d;">
+                            注意：如果要得到精确销售数据，建议【产品】和【项目】分开开单
+                        </li>
+                    </ul>
+                </div>
+                <table class="gridTable" style="width: 96%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background:rgba(251,195,196,0.8);">
+                            <th>
+                                类型
+                            </th>
+                            <th>
+                                名称
+                            </th>
+                            <th>
+                                单价
+                            </th>
+                            <th>
+                                折扣
+                            </th>
+                            <th>
+                                数量
+                            </th>
+                            <th>
+                                合计
+                            </th>
+                            <th style="width: 100px;">
+                                参与员工 &nbsp;&nbsp;
+                                @if (result2)
+                                {
+                                    <a style="color: #776f6f;" href="#" id="btnmore">更多</a>
+                                }
+                            </th>
+                            @* <th class="isshowth" style="width: 80px; display: none;">
+                                    顾问
+                                </th>*@
+                            <th class="isshowth" style="display: none;">
+                                是否指定
+                            </th>
+                            @*    <th class="isshowth" style="display: none;">
+                                    消耗
+                                </th>*@
+                            <th class="isshowth" style="display: none;">
+                                手工
+                            </th>
+                            <th>
+                                操作
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="gridtbody"></tbody>
+                </table>
+                <div class="accountdiv" style="width:96%;margin:0 auto; padding:0;">
+                    <label style="font-weight: normal;">
+                        &nbsp;&nbsp;&nbsp;消费总额：
+                    </label><label id="labamout">0</label>
+                    <label style="font-weight: normal;">
+                        &nbsp;&nbsp;&nbsp; 卡类消费：
+                    </label>
+                    <label id="labcardamout">
+                        0
+                    </label>
+                    <label style="font-weight: normal;">
+                        &nbsp;&nbsp;&nbsp; 应付金额：
+                    </label>
+                    <label id="labcash" style="color: Red;">
+                        0
+                    </label>
+                    <label style="font-weight: normal;">
+                        说明：
+                    </label>
+                    <input type="text" name="Memo" id="txtmemo" />
+                    @if (result1)
+                    {
+                        <label>补单：</label>
+                        <input type="checkbox" value="1" class="selectboxchild" name="CheckCreateTime" id="chkcreatetime" style="width: 20px;
+                    height: 20px; vertical-align: middle; margin: -4px 2px 0px 2px;" />
+                        <input type="text" class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                               name="CreateTime" id="txtCreateTime" autocomplete="off" value="" />
+                        @*<input type="text" class="text-input Wdate"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+            name="CreateTime" id="txtCreateTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />*@
+                        <label style="color:#de480d;">
+                            注意：如果要补单请打钩和填日期，且日期在今天以前
+                        </label>
+
+                    }
+                </div>
+                <div class="accountdiv" style="margin-top:5px;">
+                    <input type="button" class="submitbutton2" value="挂 单" onclick="OperateOrder()" style="" />
+                    <input type="button" class="submitbutton2" onclick="GetOperateOrder()" value="提 单"
+                           style="" />
+                    <input type="button" id="btn" class="submitbutton2" value="结 账" onclick="CheckOrder()" />
+                    @*  <input type="button" id="btnsave" class="submitbutton2" value="返 回" onclick=" history.go(-1)" />*@
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="appendUser" style="display: none;">
+    <ul class='selectUL' style="position: relative;">
+        <li class="liMenu"><a href="javascript:;">选择员工</a></li>
+        <ul class="liHide ulClass" style="left: 0px;">
+            @foreach (var info in persoList)
+            {
+                <li class="liClass" style="">
+                    <input type="checkbox" id="#chk(@info.UserID)" code="@info.UserName" value="@info.UserID" name="UserID" /><label for="#chk(@info.UserID)">@info.UserName </label>
+                </li>
+            }
+            <li class="liClass" style="margin-left: -10px;">
+                <select name="HospitalID" class="select selHospitalID" style="width: 100px; color: Blue;
+                    font-size: 12px;">
+                    <option value="0">选择跨店员工</option>
+                    @foreach (var info in hospitalList)
+                    {
+                        if (info.ID != ViewBag.HospitalID)
+                        {
+                            <option value="@info.ID">@info.Name</option>
+                        }
+                    }
+                </select>
+            </li>
+        </ul>
+    </ul>
+</div>
+<div id="appendGuUser" style="display: none;">
+    <ul class='selectUL1' style="position: relative;">
+        <li class="liMenu1"><a href="javascript:;">选择员工</a></li>
+        <ul class="liHide1 ulClass">
+            @foreach (var info in persoList)
+            {
+                <li class="liClass">
+                    <input type="checkbox" id="chk1(@info.UserID)" code="@info.UserName" value="@info.UserID" name="UserID" /><label for="chk1(@info.UserID)">@info.UserName</label>
+                </li>
+            }
+        </ul>
+    </ul>
+</div>
+<style>
+    #txtchuzhishow .liClass{background-color:;}
+    #txtchuzhishow .liClass a:hover{background-color:rgb(252,207,208);display:block;}
+    #selectUL .liClass:hover{background-color:rgb(252,207,208); cursor:pointer; }
+</style>
+<script src="../../Scripts/Controls/CashManage/Consumer.js?v=2.16" type="text/javascript"></script>
+<script type="text/javascript">
+    ////ws
+    //$("#appendUser").on("click", "li", function (e) {
+    //    if (e.target.type === 'checkbox') {
+    //        return;
+    //    }
+    //    var input = $(this).find("input");
+    //    if ($(input).attr("checked")) {
+    //        $(input).removeAttr("checked");
+    //    }
+    //    else {
+    //        $("#appendUser li").find("input").each(function () {
+    //            $(this).removeAttr("checked");
+    //        });
+    //        $(input).attr("checked", true);
+    //    }
+    //});
+    $(function () {
+        $("#labuserid").val("0");
+        //默认加载有权限的
+        for (var i = 0; i < TheArray.length; i++) {
+            if (TheArray[i][0] == "True") {
+                if ("/CashManage/Consumer" == TheArray[i][1]) {
+                    return;
+                } else {
+                    self.location = TheArray[i][1];
+                    return;
+                }
+            }
+        }
+
+
+    });
+
+
+    //$(".selectboxchild").click(function () {
+    //    var btn = document.getElementById('txtCreateTime');
+    //    if ($(this).prop("checked") == true) {
+    //        btn.style.display = 'block';
+    //    } else {
+    //        btn.style.display = 'none';
+    //    }
+    //});
+</script>
+<script type="text/javascript">
+    $(function () {
+       
+        $("#gridtbody input").live("keydown", function (evt) {
+            var tabIndex = parseInt($(this).attr("tabindex"));
+            switch (evt.which) {
+                case 38: //上
+                    tabIndex -= 100;
+                    break;
+                case 40: //下
+                    tabIndex += 100;
+                    break;
+                case 37: //左(會導致輸入時無法使用左右移)
+                    tabIndex--;
+                    break;
+                case 39: //右(會導致輸入時無法使用左右移)
+                    tabIndex++;
+                    break;
+                default:
+                    return;
+            }
+            if (tabIndex > 0) {
+                $("input[tabindex=" + tabIndex + "]").focus();
+                return false;
+            }
+            return true;
+        });
+    });
+</script>

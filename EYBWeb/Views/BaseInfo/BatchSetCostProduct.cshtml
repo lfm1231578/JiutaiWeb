@@ -1,0 +1,125 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.BaseInfo;
+@model PagedList<ProductEntity>
+@{
+    ViewBag.Title = "项目管理";
+    Layout = null;
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var brandlist = wareBll.GetBrandListNoPage(ViewBag.ParentHospitalID);
+    var caretypelist = wareBll.GetProductTypeNoPage(ViewBag.ParentHospitalID, 1);//获取项目分类列表
+    var Type = Request["Type"];
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    @using (Ajax.BeginForm("BatchSetCostProduct", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+    {
+        <table width="100%" cellspacing="0" class="search-form">
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="explain-col">
+                               所属品牌：
+                        <select name="BrandID" id="BrandID" class="select" style="height: 26px; padding: 4px;">
+                            <option value="0">全部</option>
+                            @foreach (var info in brandlist)
+                            {
+                                <option   value="@info.ID">@info.Name</option>
+                            }
+                        </select>产品名称：
+                        <input type="text" name="Name" id="Name" class="text-input " style="height:20px;" value="" />
+                          是否显示:
+                        <select name="IsShow">
+                            <option value="2">正常产品</option>
+                            <option value="1">删除产品</option>
+                            <option value="0">全部</option>
+                        </select>
+                            <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                            <input type="submit" id="btnsearch" name="search" class="searchsubmitton" value="搜 索" />
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    }
+    <form action="" method="post" id="submitform">
+    <input type="hidden" value="@Type" name="operateType"  />
+    <div id="articles" class="mainContentRight_bottom" style="height: 520px; margin-top: 5px;
+        width: 98%;">
+        @Html.Partial("_BatchSetCostProduct", Model)
+    </div>
+    </form>
+    @{Html.RegisterMvcPagerScriptResource();}
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+        <input type="button" class="submitbutton2" value="保 存" onclick="FullValue()" />
+        <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" /></div>
+</body>
+<script type="text/javascript">
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+    $("#articles").delegate("tr.ableclick", "click", function () {
+        var $chekbox = $(this).find("input:checkbox");
+        if ($chekbox.prop("checked") == false) {
+            $chekbox.attr("checked", "checked");
+            $(this).css("background", "#E7F6FF");
+        } else {
+            $chekbox.attr("checked", false);
+            $(this).css("background", "");
+        }
+    });
+    $("#articles").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+
+
+    //确定选择按钮
+    function FullValue() {
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: getControllerUrl("BaseInfo", "SetBatchSetCost"),
+            data: $('#submitform').serialize(),
+            async: false,
+            success: function (data) {
+                if (data > 0) {
+                    alert("保存成功！");
+                } else {
+                    alert("保存失败！");
+                }
+            },
+            error: function (e) {
+                //alert(e.responseText);
+                alert("操作失败！");
+            }
+        });
+
+    }
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+  
+</script>
+</html>

@@ -1,0 +1,158 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.BaseInfo.ProjectEntity>
+@{
+    ViewBag.Title = "_CardXiaoFeiList";
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th orderfield="MemberNo">
+                会员卡号
+            </th>
+            <th orderfield="">
+                姓名
+            </th>
+            <th orderfield="">
+                项目名称
+            </th>
+            <th orderfield="">
+                购买量
+            </th>
+            <th>
+                购买单价
+            </th>
+            <th>
+                购买总价
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr class="clickclass">
+                <td>@entity.MemberNo
+                </td>
+                <td>@entity.UserName
+                </td>
+                <td>@entity.Name
+                </td>
+                <td>@entity.SellCount
+                </td>
+                <td>
+                    @Math.Round(entity.AveragePrice, 2).ToString()
+                </td>
+                <td>
+                    @(entity.AveragePrice * entity.SellCount)
+                </td>
+                <td>
+                    <input type="hidden" class="userid" value="@entity.UserID" />
+                    <input type="hidden" class="hidval" value="@entity.ID" />
+                    <input type="hidden" class="avprice" value="@entity.AveragePrice" />
+                    <a href="javascript:;" class="info" onclick="">详细</a>
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+    </tbody>
+    <tfoot>
+        <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+                @ViewBag.sumqu
+            </td>
+            <td>
+            </td>
+            <td>
+                @ViewBag.sumallprice
+            </td>
+            <td>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+
+
+    $(function () {
+
+        //        $(".info").click(function () {
+        //            alert("sss");
+        //            $(this).parent().append("<a href='javascript:;' class='hid' >关闭</a> ")
+        //            $(this).hide(); //影藏这个标签
+        //            var id = $(this).parent().find(".hidval").val();
+        //            var parent = $(this).parent().parent();
+        //            $.ajax({
+        //                type: "post", //使用get方法访问后台 
+        //                url: "/PatientManage/GetuserPaymentinfo",
+        //                data: { "UserID": id },
+        //                async: false,
+        //                success: function (data) {
+        //                    if (data != null) {
+        //                        parent.after("<tr class='newtr'><td colspan='6'>" + data + "</td></tr>");
+        //                    }
+        //                },
+        //                error: function () {
+        //                    alert("数据获取失败！");
+        //                }
+        //            });
+
+        //        })
+
+        //        $(".gridTable").delegate(".hid", "click", function () {
+
+        //            $(this).parent().parent().next().remove();
+        //            $(this).parent().find(".info").show();
+        //            $(this).hide();
+        //        })
+
+
+        $("tbody").delegate("tr.clickclass", "click", function () {
+            if ($(this).find(".info").is(":hidden")) {
+                $(this).next().remove();
+                $(this).find(".info").show();
+                $(this).find(".hid").remove();
+            }
+            else {
+                $(this).find(".info").parent().append("<a href='javascript:;' class='hid' >关闭</a> ")
+                $(this).find(".info").hide(); //影藏这个标签
+                var ProjectID = $(this).find(".hidval").val();
+                var HospitalID = $(".s_HospitalID").val();
+                var Endtime = $(".s_Endtime").val();
+                var StareTime = $(".s_StareTime").val();
+                var MemberNo = $(".s_MemberNo").val();
+                var userid = $(this).find(".userid").val();
+                var avprice = $(this).find(".avprice").val();
+                var parent = $(this);
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    url: "/PatientManage/GetPayinfoListForproject",
+                    data: { "UserID": userid, "HospitalID": HospitalID, "ProjectID": ProjectID, "Endtime": Endtime, "StareTime": StareTime, "MemberNo": MemberNo, "AveragePrice": avprice, "Type": 1 },
+                    async: false,
+                    success: function (data) {
+                        if (data != null) {
+                            parent.after("<tr class='newtr' style='background:#E7F6FF;'><td colspan='6'>" + data + "</td></tr>");
+                        }
+                    },
+                    error: function () {
+                        alert("数据获取失败！");
+                    }
+                });
+            }
+        })
+    })
+
+</script>

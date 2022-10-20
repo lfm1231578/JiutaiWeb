@@ -1,0 +1,532 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@using SystemManage.Factory.IBLL;
+@model List<EYB.ServiceEntity.ReservationEntity.DakaRecordEntity>
+    @{
+        Layout = null;
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+        var YingxianggongxiuDay = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "YingxianggongxiuDay");
+        var gongxiuday = ConvertValueHelper.ConvertIntValue(YingxianggongxiuDay.AttributeValue);
+        gongxiuday = gongxiuday == 0 ? 4 : gongxiuday;
+    }
+    <style>
+        .box {
+            width: 120px;
+            display: inline-block;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+            /*background-color: #FFF0F5;  #EEF5F9*/
+            float: left;
+        }
+
+        .boxfixed {
+            width: 5%;
+            display: inline-block;
+            vertical-align: top;
+            background-color: #EEF5F9;
+        }
+
+        .boxfixed1 {
+            width: 15px;
+            display: inline-block;
+            vertical-align: top;
+            background-color: #EEF5F9;
+        }
+
+        .boxfixed2 {
+            width: 44px;
+            display: inline-block;
+            vertical-align: top;
+            background-color: #EEF5F9;
+        }
+
+        .boxHeight22 {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            background-color: rgb(240,240,240);
+            /*background-color: #00ffff;*/
+            text-overflow:;
+        }
+
+        .boxHeighttop {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            position: absolute;
+            background-color: #00ffff;
+            text-overflow: ellipsis;
+        }
+
+        .boxHeight {
+            display: flex;
+            align-items: center;
+            height: 50px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+        
+        .boxHeight11 {
+            display: flex;
+            align-items: center;
+            height: 122px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+        
+        .boxHeight44 {
+            display: flex;
+            align-items: center;
+            height: 70px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+        .boxHeight1 {
+            display: flex;
+            align-items: center;
+            height: 102px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+        .boxHeight112 {
+            display: flex;
+            align-items: center;
+            height: 154px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight4 {
+            display: flex;
+            align-items: center;
+            height: 206px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight3 {
+            display: flex;
+            align-items: center;
+            height: 154px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight6 {
+            display: flex;
+            align-items: center;
+            height: 310px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight8 {
+            display: flex;
+            align-items: center;
+            height: 414px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight5 {
+            display: flex;
+            align-items: center;
+            height: 258px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight7 {
+            display: flex;
+            align-items: center;
+            height: 362px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:
+        }
+
+        .boxHeight14 {
+            display: flex;
+            align-items: center;
+            height: 726px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight18 {
+            display: flex;
+            align-items: center;
+            height: 934px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight19 {
+            display: flex;
+            align-items: center;
+            height: 985px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight25 {
+            display: flex;
+            align-items: center;
+            height: 1402px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .boxHeight21 {
+            display: flex;
+            align-items: center;
+            height: 1194px;
+            justify-content: center;
+            border: 1px solid #eee;
+            word-break: break-all;
+            overflow: hidden;
+            text-overflow:;
+        }
+
+        .scrollBox-f {
+            width: 88%;
+            display: inline-block;
+            overflow-x: auto;
+        }
+    </style>
+    @if (Model.Count() > 0)
+    {
+        <div id="11" style="display: flex; margin-left:20px;justify-content: flex-start; margin-bottom:0px;position:absolute;">
+            <div class="boxfixed1">
+                <div class="boxHeight">	</div>
+            </div>
+            <div class="boxfixed2   ">
+                <div class="boxHeight22">	姓名	</div>
+            </div>
+            <div class="scrollBox-f">
+                <div id="scrollBox">
+                    @foreach (var entity in Model)
+                    {
+                        <div class="box">
+                            @*<div class="boxHeighttop" style="position:absolute;">	 @entity.UserName	</div>*@
+                            @*<div class="boxHeighttop" style="position:fixed;">	 @entity.UserName	</div>*@
+                            <div class="boxHeight22">	 @entity.UserName	</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+        <div id="11" style="display: flex; margin-left:20px;justify-content: flex-start; margin-bottom:0px;top:50px;">
+            <div class="boxfixed1">
+                <div class="boxHeight">	</div>
+                <div class="boxHeight4">	考勤	</div>
+                <div class="boxHeight1">	底薪	</div>
+                <div class="boxHeight7">	业绩提成	</div>
+                <div class="boxHeight1">	奖励&扣罚	</div>
+                <div class="boxHeight11">	其他  	</div>
+                <div class="boxHeight11">	职能考评	</div>
+                <div class="boxHeight">		</div>
+            </div>
+            <div class="boxfixed2">
+                <div class="boxHeight">	姓名	</div>
+                <div class="boxHeight">	出勤	</div>
+                <div class="boxHeight">	应享公休	</div>
+                <div class="boxHeight">	已休	</div>
+                <div class="boxHeight">	超休	</div>
+                <div class="boxHeight">	店客流量	</div>
+                <div class="boxHeight22">	底薪	</div>
+
+                <div class="boxHeight">	店基础现金业绩	</div>
+                <div class="boxHeight">	提点	</div>
+                <div class="boxHeight">	店大项目现金业绩	</div>
+                <div class="boxHeight">	提点	</div>
+
+                <div class="boxHeight">	手工	</div>
+                <div class="boxHeight">	奖金	</div>
+                <div class="boxHeight22">	合计	</div>
+
+                <div class="boxHeight">	是否全勤	</div>
+                <div class="boxHeight">	全勤奖	</div>
+
+                <div class="boxHeight">	行政扣罚	</div>
+                <div class="boxHeight44">	总底薪是否与出勤天数挂钩	</div>
+                <div class="boxHeight">	分数	</div>
+                <div class="boxHeight44">	绩效工资是否与职能考评挂钩	</div>
+                <div class="boxHeight22">	应发工资	</div>
+            </div>
+            <div class="scrollBox-f">
+                <div id="scrollBox">
+                    @foreach (var entity in Model)
+                    {
+                    <div class="box">
+                        @*<div class="boxHeighttop" style="position:absolute;">	 @entity.UserName	</div>*@
+                        @*<div class="boxHeighttop" style="position:fixed;">	 @entity.UserName	</div>*@
+                        <div class="boxHeight">	 @entity.UserName	</div>
+                        <div class="boxHeight">	 @entity.ChuqingDay	</div>
+                        <div class="boxHeight">	 @entity.Yingxianggongxiu	</div>
+                        <div class="boxHeight">	@entity.XiuxiDay	</div>
+                        <div class="boxHeight">	@entity.Chaoxiuday	</div>
+                        <div class="boxHeight">	@entity.MrsDixin2keliu	</div>
+                        <div class="boxHeight22">	@entity.MrsDixin2	</div>
+
+                        <div class="boxHeight">	@entity.HospitalXianjinYeji	</div>
+                        <div class="boxHeight">		@entity.XianJinYejiJianFang %	</div>
+                        <div class="boxHeight">	@entity.Yeji_daxiangmuzhiding 	</div>
+                        <div class="boxHeight">		@entity.Yeji_daxiangmuzhidingf  %	</div>
+                        <div class="boxHeight">		@entity.ShouGongFei	</div>
+                        <div class="boxHeight">		@entity.Jiangli 	</div>
+                        <div class="boxHeight22">	@entity.MrsshicaoStr	</div>
+
+
+                        <div class="boxHeight">	@entity.IsQuanqing	</div>
+                        <div class="boxHeight">	@entity.QuanqingRewardf	</div>
+
+                        <div class="boxHeight">	@entity.Xingzhen	</div>
+                        <div class="boxHeight44">	@entity.IsDixinSalary	</div>
+                        <div class="boxHeight">	@entity.Fenshu	</div>
+                        <div class="boxHeight44">	@entity.Iszhinengkaoping	</div>
+                        <div class="boxHeight22">	@entity.ShifaSalary	</div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div style="height:40px;"></div>
+
+        <script>
+
+
+            let boxLength = document.getElementsByClassName("box").length;
+            let boxWidth = document.getElementsByClassName("box")[0].offsetWidth;
+            let scrollBox = document.getElementById("scrollBox");
+            let a = (boxLength * boxWidth) + "px";
+            Object.assign(document.getElementById("scrollBox").style, {
+                width: a
+            })
+        </script>
+        <script type="text/javascript">
+
+
+            $(function () {
+                $("#showmessage").css("display", "none");
+            })
+        </script>
+        <script type="text/javascript">
+            $(function () {
+
+                window.setTimeout(function () {
+                    var gridtablewidth = $(".gridTable").width();
+                    var thlen = $(".gridTable thead th").length;
+                    let theadWidth = $(".gridTable tbody").width()
+                    $(".gridTable thead").css("width", theadWidth + "px")
+                    let tdWidth = (theadWidth / (thlen - 2)) + "px";
+                    $(".gridTable thead th").css("width", tdWidth);
+                    $(".gridTable tr td").css("width", tdWidth);
+                }, 100)
+
+            })
+        </script>
+        @*
+                <form action="" method="post" id="submitform">
+                    <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+                    <input type="hidden" value="" name="orderField" id="orderField" />
+                    <table class="gridTable" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+
+                                <th orderfield="" style="font-size:11px">
+                                    员工职位
+                                </th>
+                                <th orderfield="" style="font-size:11px">
+                                    员工姓名
+                                </th>
+                                <th style="font-size:11px">
+                                    底薪【月客流量】
+                                </th>
+                                <th style="font-size:11px">
+                                    店业绩提成【店基础现金业绩】
+                                </th>
+                                <th style="font-size:11px">
+                                    手工费
+                                </th>
+                                <th>
+                                        责任【客流|新客】
+                                    </th>
+                                    <th>
+                                        新客提成
+                                    </th>
+                                    <th>
+                                        实操提成【实操】
+                                    </th>
+                                    <th>
+                                        单次项目
+                                    </th>
+                                    <th>
+                                        新客服务
+                                    </th>
+                                    <th>
+                                        绩效奖金
+                                    </th>
+                                    <th>
+                                        月实操
+                                    </th>
+                                    <th>
+                                        指定实操
+                                    </th>
+                                    <th>
+                                        非指定实操
+                                    </th>
+                                    <th>
+                                        基础现金
+                                    </th>
+                                    <th>
+                                        基础系数
+                                    </th>
+                                    <th>
+                                        实操基础
+                                    </th>
+                                    <th>
+                                        绩效提成
+                                    </th>
+                                    <th>
+                                        平均客流
+                                    </th>
+                                    <th>
+                                        平均项目
+                                    </th>
+                                    <th>
+                                        客流项目
+                                    </th>
+            </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.UserPost
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.MrsDixin2【@entity.MrsDixin2keliu】
+                        </td>
+                        <td>
+                            @entity.MrsshicaoStr【@entity.MrsHospitalYeji】
+                        </td>
+                        <td>
+                            @entity.ShouGongFei
+                        </td>
+                        <td>
+                                @entity.JiangliDuty【@entity.sumkeliu|@entity.newkeliu】
+                            </td>
+                            <td>
+                                @entity.NewCusReward
+                            </td>
+                            <td>
+                                @entity.MrsMouthShicao【@entity.Mrstichengzhidingke】
+                            </td>
+                            <td>
+                                @entity.Mrsdanxiangmu
+                            </td>
+                            <td>
+                                @entity.CustomerService
+                            </td>
+                            <td>
+                                @entity.JixiaoReward
+                            </td>
+                            <td>
+                                @entity.MrsMouthShicao
+                            </td>
+                            <td>
+                                @entity.Mrstichengzhidingke（@entity.Mrsag）
+                            </td>
+                            <td>
+                                @entity.Mrsfeitichengzhidingke（@entity.Mrsfg）
+                            </td>
+                            <td>
+                                @entity.MrsHospitalYeji
+                            </td>
+                            <td>
+                                @entity.Mrssdyeji
+                            </td>
+                            <td>
+                                @entity.MrsshicaoStr
+                            </td>
+                            <td>
+                                @entity.JixiaoTicheng
+                            </td>
+                            <td>
+                                @entity.Mrspingjukeliu
+                            </td>
+                            <td>
+                                @entity.Mrsxiangmu
+                            </td>
+                            <td>
+                                @entity.Mrsqqklxmj
+                            </td>
+                    </tr>
+                }
+            </tbody>
+            </table>
+
+            </form>
+            <script type="text/javascript">
+
+            </script>
+        *@

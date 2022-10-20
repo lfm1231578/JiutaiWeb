@@ -1,0 +1,484 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.MoneyEntity;
+@{
+    ViewBag.Title = "员工业绩排名";
+    Layout = null;
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(ParentHospitalID, 0);
+    var brandlist = wareBll.GetBrandListNoPage(ViewBag.ParentHospitalID);
+    var caretypelist = wareBll.GetProductTypeNoPage(ViewBag.ParentHospitalID, 1);//获取项目分类列表
+        
+}
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+ 
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/highcharts5.0.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <style type="text/css">
+        body
+        {
+            background: #fff;
+            overflow-x: hidden;
+            margin: 0px;
+            padding: 0px;
+        }
+        .ullist ul
+        {
+            width: 100%;
+        }
+        .ullist ul li
+        {
+            margin: 0px 5px;
+            display: block;
+            float: left;
+            width: auto;
+            white-space: nowrap;
+            word-break: normal;
+            word-wrap: break-word;
+            text-align: center;
+        }
+        .ullist ul li label
+        {
+            font-size: 14px;
+            text-align: center;
+            float: none;
+            display: inline-block;
+            line-height: 36px;
+            height: 36px;
+        }
+        .ullist ul li select
+        {
+            line-height: 40px;
+            height: 22px;
+            line-height: 18px;
+            padding: 2px 0;
+        }
+        .ullist ul li
+        {
+            display: block;
+            float: left;
+        }
+    </style>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../../Content/plugins/font-awesome/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link href="../../Content/Css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <!-- Theme style -->
+    <link href="../../Content/Css/adminlte.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="" style="margin-top: 0px; margin: 0px; padding: 2px;">
+        @using (Ajax.BeginForm("SellingProductAndProject", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+        {
+            <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+            <input type="hidden" value="" name="orderField" id="orderField" />
+            <div class="accountdiv ullist" style="margin: 0px; margin: 0px; width: 99%;">
+                <ul>
+                    <li>
+                        <label style="font-weight: normal; float: left;">
+                            所属分店：
+                        </label>
+                        <select name="HospitalID" class="form-control select2 select2-hidden-accessible"
+                            tabindex="-1" aria-hidden="true" id="s_HospitalID" style="width: 100px; float: left;">
+                            <option value="0">请选择门店</option>
+                            @foreach (var info in hospitalList)
+                            {
+                                <option value="@info.ID" @(ViewBag.HospitalID == info.ID ? "selected=selected" : "")>@info.Name</option>
+                            }
+                        </select>
+                    </li>
+                    <li>
+                        <label style="font-weight: normal; float: left;">
+                            时间：
+                        </label>
+                        <input type="text" autocomplete="off" class="form-control" style="width:120px;float:left;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                   name="StartTime" id="s_StareTime" value="@DateTime.Now.ToShortDateString()" />
+                        <input type="text" autocomplete="off" class="  form-control" style="width:120px;float:left;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="EndTime" id="s_EndTime" value="@DateTime.Now.ToShortDateString()" />
+                    </li>
+                    <li>
+                        <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                        <button type="button" id="btnsumbit" class="btn btn-primary">
+                            查 询</button>
+                    </li>
+                </ul>
+                <div style="clear: both;">
+                </div>
+            </div>
+
+        }
+        <div id="articles" class="mainContentRight_bottom" style="margin-top: 0px; width: 99%;">
+            <section class="content">
+      <div class="container-fluid">
+        <!-- Info boxes -->
+        <div class="row">
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box">
+              <span class="info-box-icon bg-info elevation-1"><i class="fa fa-gear"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">实收现金</span>
+                <span class="info-box-number" id="txtSumMoney">
+                  @Model.SumMoney
+                   
+                </span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-danger elevation-1"><i class="fa fa-google-plus"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">新增会员</span>
+                <span class="info-box-number" id="txtNewRenTou"> @Model.NewRenTou</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+
+          <!-- fix for small devices only -->
+          <div class="clearfix hidden-md-up"></div>
+
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-success elevation-1"><i class="fa fa-shopping-cart"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text">总计人次</span>
+                <span class="info-box-number" id="txtKeliu"> @Model.Keliu</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+          <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+              <span class="info-box-icon bg-warning elevation-1"><i class="fa fa-users"></i></span>
+
+              <div class="info-box-content">
+                <span class="info-box-text" title="订单总额">消费金额</span>
+                <span class="info-box-number" id="txtPrice"> @Model.Price</span>
+              </div>
+              <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+              @*  <h5 class="card-title">营业额</h5>*@
+ 
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-8" style="max-width:100%;">
+                   @* <p class="text-center">
+                      <strong>5月营业额</strong>
+                    </p>*@
+
+                    <div class="chart">
+                      <!-- Sales Chart Canvas -->
+                   
+                       <div id="salesChart" style="min-width: 1000px;max-width:100%;height: 300px; ">
+                        </div>
+                    </div>
+                    <!-- /.chart-responsive -->
+                  </div>
+                  <!-- /.col -->
+                   
+                  <!-- /.col -->
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- ./card-body -->
+              <div class="card-footer">
+                <div class="row">
+                  <div class="col-sm-3 col-6">
+                    <div class="description-block border-right">
+                     <span class="description-percentage text-danger"><i class="fa fa-caret-down"></i></span>
+                      <h5 class="description-header" id="txtRenTou"> @Model.RenTou</h5>
+                      <span class="description-text">本月人数</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  <div class="col-sm-3 col-6">
+                    <div class="description-block border-right">
+                     <span class="description-percentage text-danger"><i class="fa fa-caret-down"></i></span>
+                         <h5 class="description-header" id="txtInMoney"> @Model.InMoney</h5>
+                      <span class="description-text">累计未消耗</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  <div class="col-sm-3 col-6">
+                    <div class="description-block border-right">
+                      <span class="description-percentage text-danger"><i class="fa fa-caret-down"></i></span>
+                         <h5 class="description-header" id="txtChuzhika"> @Model.Chuzhika</h5>
+                      <span class="description-text" title="储值卡支付金额">储值金额</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                  <!-- /.col -->
+                  <div class="col-sm-3 col-6">
+                    <div class="description-block">
+                      <span class="description-percentage text-danger"><i class="fa fa-caret-down"></i></span>
+                          <h5 class="description-header" id="txtQiankuan"> @Model.Qiankuan</h5>
+                      <span class="description-text">累计欠款</span>
+                    </div>
+                    <!-- /.description-block -->
+                  </div>
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- /.card-footer -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+      
+      </div><!--/. container-fluid -->
+    </section>
+            <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3 id="txtXianjin"> @Model.Xianjin</h3>
+
+                <p>现金收款</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-bag"></i>
+              </div>
+              <a href="@Url.Content("~/CashManage/OrderList")" target="_parent" class="small-box-footer">查看更多 <i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3 id="txtYinlianka"> @Model.Yinlianka</h3>
+
+                <p>刷卡收款</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-stats-bars"></i>
+              </div>
+              <a href="@Url.Content("~/CashManage/OrderList")" target="_parent" class="small-box-footer">查看更多<i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3 id="txtWeixin"> @Model.Weixin</h3>
+
+                <p>微信收款</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-person-add"></i>
+              </div>
+              <a href="@Url.Content("~/CashManage/OrderList")" target="_parent" class="small-box-footer">查看更多<i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3 id="txtZhifubao"> @Model.Zhifubao</h3>
+
+                <p>支付宝收款</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-pie-graph"></i>
+              </div>
+              <a href="@Url.Content("~/CashManage/OrderList")" target="_parent" class="small-box-footer">查看更多<i class="fa fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+        </div>
+        <!-- /.row -->
+       
+      </div><!-- /.container-fluid -->
+    </section>
+        </div>
+    </div>
+    <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      $("#salesChart").css("width",document.documentElement.clientWidth+"px");
+      
+        var articles;
+        $(function(){
+            articles=  new Highcharts.Chart({
+            chart: {
+             renderTo: "salesChart",
+                type: 'column'
+            },
+            title: {
+                text: '本月营业额'
+            },
+          
+            subtitle: {
+                text: ''
+            },
+            xAxis: {
+                categories: [
+               "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"
+            ],
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: '营业额'
+                } ,
+            labels: {
+                    formatter: function() {
+                        return this.value/10000  + '万';
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<table>',
+                pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} 元</b></td></tr>',
+                footerFormat: '</table>',
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: '.',
+                data: []
+
+            }]
+        });
+
+        $.ajax({
+                type: "post",
+                dataType: "json",
+                url:"@Url.Content("~/Statistics/GetStatisticsBusinesChartPage")",
+                data:$("#searchForm").serialize(),
+                async:false,
+                success: function (data) {
+                    if(data!=null)
+                    {
+                    //设置标题
+                  
+                        articles.series[0].setData(eval(data.OutputHtml));
+                        $("#salesChart .highcharts-subtitle").text("总业绩："+data.AllPrice);
+
+                    }
+                },
+                error:function(){
+                    alert("服务器错误！");
+                }
+            });
+        });
+     $("#btnsumbit").click(function () {
+
+            $("#txtTime").val(Math.random());
+            $("#showmessage").css("display", "");
+            var HospitalID = $("#s_HospitalID").val();
+            var StartTime = $("#s_StareTime").val();
+            var EndTime = $("#s_EndTime").val();
+             $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "@Url.Content("~/Statistics/GetStatisticsBusinesChart")",
+            data:{"HospitalID":HospitalID,"StartTime":StartTime,"EndTime":EndTime},
+            success: function (data) {
+                if (data != null) {
+                      $("#txtSumMoney").text(data.SumMoney);
+                      $("#txtNewRenTou").text(data.NewRenTou);
+                      $("#txtXianjin").text(data.Xianjin);
+                      $("#txtZhifubao").text(data.Zhifubao);
+                      $("#txtWeixin").text(data.Weixin);
+                      $("#txtYinlianka").text(data.Yinlianka);
+                      $("#txtKeliu").text(data.Keliu);
+                      $("#txtPrice").text(data.Price);
+                      $("#txtRenTou").text(data.RenTou);
+                      $("#txtInMoney").text(data.InMoney);
+                      $("#txtChuzhika").text(data.Chuzhika);
+                      $("#txtQiankuan").text(data.Qiankuan);
+
+                }
+            }
+
+            });
+
+
+             $.ajax({
+                type: "post",
+                dataType: "json",
+                url:"@Url.Content("~/Statistics/GetStatisticsBusinesChartPage")",
+                data:$("#searchForm").serialize(),
+                async:false,
+                success: function (data) {
+                   // $("#articles").empty();
+                    if(data!=null)
+                    {
+                    //设置标题
+                   
+                    // articles.series[0].name=$('#selHospitalID option:selected').text();
+                     articles.series[0].setData(eval(data.OutputHtml));
+                     $("#salesChart .highcharts-subtitle").text("总业绩："+data.AllPrice);
+
+                    }
+                },
+                error:function(){
+                    alert("服务器错误！");
+                }
+            });
+        })
+
+        
+    </script>
+</body>
+</html>

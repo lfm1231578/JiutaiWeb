@@ -1,0 +1,107 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "AccountPage";
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<body style="background-color: #fff;">
+    <div class="mainContentRight_bottom" style="margin-top: 0px;">
+        <form action="@Url.Content("~/CashManage/OrderList")" method="post"   id="submitform" >
+        <table class="gridTable" style="margin-top: 0px; width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>
+                        卡项名称
+                    </th>
+                    <th>
+                        项目名称
+                    </th>
+                    <th>
+                        购买单价
+                    </th>
+                    <th>
+                        消耗单价
+                    </th>
+                    <th>
+                        总次数
+                    </th>
+                    <th>
+                        消费次数
+                    </th>
+                    <th>
+                        结余
+                    </th>
+                    <th>
+                        购卡时间
+                    </th>
+                    <th>
+                        备注
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.Name
+                        </td>
+                        <td>
+                            @entity.ProjectName
+                        </td>
+                        <td>@entity.Price
+                        </td>
+                        <td>
+                            @entity.ConsumePrice
+                        </td>
+                        <td>
+                            @entity.AllTiems
+                        </td>
+                        <td>
+                            <a href="#" onclick="openthis(@entity.ID)" class="">@(entity.AllTiems - entity.Tiems)</a>
+                        </td>
+                        <td>
+                            @entity.Tiems
+                        </td>
+                        <td>
+                            @entity.BuyCardTime.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="4">
+                    </td>
+                    <td>@ViewBag.allcount
+                    </td>
+                    <td>@ViewBag.allxiaohao
+                    </td>
+                    <td>@ViewBag.allcishu
+                    </td>
+                    <td colspan="2">
+                    </td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+            </tbody>
+        </table>
+        </form>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        $(".aui_close").css("display", "none");
+    })
+
+    function openthis(obj) {
+        art.dialog.open("/PatientManage/TreatmentCard_Out?ID=" + obj, { title: "储值卡充值消费列表", width: 450, height: 360 });
+    }
+</script>

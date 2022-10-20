@@ -1,0 +1,181 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using EYB.ServiceEntity.ReservationEntity;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@{
+    ViewBag.Title = "本月预约";
+    var Hid = ViewBag.HospitalID;//门店ID
+    var Year = Request["Year"];//年份
+    var Month = Request["Month"];//
+    var M = Month;
+    if (Year == "" || Year == null)
+    {
+        Year = DateTime.Now.Year.ToString();
+    }
+    if (Month == "" || Month == null)
+    {
+        M = DateTime.Now.Month.ToString();
+
+        if (DateTime.Now.Month < 10)
+        {
+            Month = "0" + DateTime.Now.Month;
+        }
+
+    }
+    else
+    {
+        if (Convert.ToInt32(Month) < 10)
+        {
+            Month = "0" + Month;
+        }
+    }
+    var YearMonth = Year + "-" + Month + "-01";
+    ViewBag.Title = "PatientMonthReserve";
+    IReservationDoctorManageBLL resBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var depList = personbll.GetAllUserByHospitalID(Hid, 1);
+   
+}
+<div id="mainContentBody">
+    @Html.Partial("_ReservationControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            本月预约 (<span id="weekreservationcount"></span>)</div>
+        <div class="mainContentRight_bottom  clearfix" style="position: relative; overflow: auto;">
+            <div class="reservationblock">
+                <select name="Year" id="Year" onchange="goPage()">
+                    <option @(Year == "2014" ? "selected=selected" : "") value="2014">2014</option>
+                    <option  @(Year == "2015" ? "selected=selected" : "") value="2015">2015</option>
+                    <option  @(Year == "2016" ? "selected=selected" : "") value="2016">2016</option>
+                    <option  @(Year == "2017" ? "selected=selected" : "") value="2017">2017</option>
+                    <option  @(Year == "2018" ? "selected=selected" : "") value="2018">2018</option>
+                </select>
+                年
+                <select name="Month" id="Month" onchange="goPage()">
+                    <option @(M == "1" ? "selected=selected" : "") value="1">1</option>
+                    <option @(M == "2" ? "selected=selected" : "") value="2">2</option>
+                    <option @(M == "3" ? "selected=selected" : "")  value="3">3</option>
+                    <option @(M == "4" ? "selected=selected" : "") value="4">4</option>
+                    <option @(M == "5" ? "selected=selected" : "")  value="5">5</option>
+                    <option @(M == "6" ? "selected=selected" : "") value="6">6</option>
+                    <option @(M == "7" ? "selected=selected" : "")  value="7">7</option>
+                    <option @(M == "8" ? "selected=selected" : "") value="8">8</option>
+                    <option @(M == "9" ? "selected=selected" : "")  value="9">9</option>
+                    <option @(M == "10" ? "selected=selected" : "") value="10">10</option>
+                    <option @(M == "11" ? "selected=selected" : "") value="11">11</option>
+                    <option @(M == "12" ? "selected=selected" : "") value="12">12</option>
+                </select>月
+            </div>
+            <table id="weekTable" border="0" class="monthrevertion">
+                <tr>
+                    <th style="width: 60px;">
+                    </th>
+                    @{
+                        var days = DateTime.DaysInMonth(Convert.ToInt32(Year), Convert.ToInt32(M));
+                        //获取当前月份的天数
+                        for (var i = 1; i <= days; i++)
+                        {
+                        <th>
+                            @i 日
+                        </th>
+                        }
+                    }
+                </tr>
+                @{
+   
+                    foreach (var D in depList)
+                    {
+                    <tr>
+                        <td style="text-align: center;">@D.UserName
+                        </td>
+                        @{
+             
+                                                   var resList = resBLL.GetReservationMontList(Convert.ToDateTime(YearMonth), Hid, D.UserID);
+
+
+                                                   foreach (var R in resList)
+                                                   {
+
+                                                       //获取排班记录
+                                                       var listXiuxi = resBLL.GetPaiBanDayByUserID(new PaiBanEntity { HospitalID = Hid, UserID = D.UserID, MonthDay = R.D, Month = Year + "-" + Month });
+
+                                                       var name = R.UserName + "";
+                                                       //日期组装
+                                                       var Dates = Year + "-" + Month + "-" + R.D;
+                                                       DateTime dt = Convert.ToDateTime(Dates);
+                            <td style="padding:10px;">
+                                @{
+                                                       //判断是否休假
+                                                       if (listXiuxi.PaiBanSetID == 0)
+                                                       {
+                                    <label style="color: Red;">
+                                        休息</label>
+                            
+                                                       }
+                                                       else
+                                                       {
+                                    <div style="position: relative; min-width: 60px; min-height: 110px;">
+                                        @{    //分割名称
+                                                           var list = name.Split(',');
+
+                                                           if (name != "")
+                                                           {
+                                                               foreach (var p in list)
+                                                               {
+                                            <a style=" font-size:12px;"  onclick="openReservation(@p.Split('-')[1])"  href="###"   class="weekreservation" id="@p.Split('-')[1]">@p.Split('-')[0]<br />
+                                                <span style="font-size: 12px; color: #65727f;">@p.Split('-')[2]</span> </a>
+                                            <br />
+                                                               }
+                                                               //比当日大的 可加预约
+                                                               if (Convert.ToDateTime(Dates) >= DateTime.Now.Date)
+                                                               {
+                                            <a class="reservationlink"  title="@D.UserID" code="@Dates"  onclick="AddReservation(this)" href="#">
+                                                添加</a>  
+                                                               }
+
+                                                           }
+                                                           else
+                                                           {
+                                                               //比当日大的 可加预约
+                                                               if (Convert.ToDateTime(Dates) >= DateTime.Now.Date)
+                                                               {
+                                            <a class="reservationlink"  title="@D.UserID" code="@Dates"  onclick="AddReservation(this)" href="#">
+                                                添加</a>  
+                                                               }
+                                                           }
+                                        }
+                                    </div>
+                                                       }
+                                }
+                            </td>
+                                                   }
+
+                        }
+                    </tr>
+                    }
+         
+                }
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function goPage() {
+        location.href = "@Url.Content("~/ReservationDoctorManage/ReservationMonth")?Year="+$("#Year").val()+"&Month="+$("#Month").val()      ;
+    }
+       function AddReservation(obj) {
+       var date=$(obj).attr("code");
+         art.dialog.open("@Url.Content("~/ReservationDoctorManage/ReservationAdd")?Date="+date+"&DocID="+$(obj).attr("title"), { title: "预约", width: 800, height: 470 });
+       
+     }
+        //打开预约详情
+      function openReservation(obj) {
+         art.dialog.open("@Url.Content("~/ReservationDoctorManage/ReservationDetail")?ID="+obj, { title: "预约详情", width: 800, height: 470 });
+     }
+     //统计预约人数
+     $("#weekreservationcount").text($(".weekreservation").length);
+     //隔行换色
+     $("#weekTable").find("td:odd").css("background-color", "#d8eff8");
+</script>

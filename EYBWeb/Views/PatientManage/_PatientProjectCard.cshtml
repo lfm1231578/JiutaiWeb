@@ -1,0 +1,90 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@{
+    ViewBag.Title = "_PatientProjectCard";
+    Layout = null;
+    decimal JieyuSum = 0;
+    int KouTimes = 0;
+    int Tiems = 0;
+}
+<form action="@Url.Content("~/CashManage/OrderList")" method="post"   id="submitform" >
+<table class="gridTable" style="margin-top: 0px; width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>
+                卡项名称
+            </th>
+            <th>
+                项目名称
+            </th>
+            <th>
+                购买单价
+            </th>
+            <th>
+                消耗单价
+            </th>
+            <th>
+                消费次数
+            </th>
+            <th>
+                结余
+            </th>
+            <th>
+                结余金额
+            </th>
+            <th>
+                购卡时间
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            JieyuSum += entity.ConsumePrice * entity.Tiems;
+            KouTimes = entity.KouTimes + KouTimes;
+            Tiems = entity.Tiems + Tiems;
+            <tr>
+                <td>
+                    @entity.Name
+                </td>
+                <td>
+                    @entity.ProjectName
+                </td>
+                <td>@entity.Price
+                </td>
+                <td>
+                    @entity.ConsumePrice
+                </td>
+                <td>
+                    <a href="#" onclick="openthis(@entity.ID)" class="">@(entity.KouTimes)</a>
+                </td>
+                <td>
+                    <a href="#" onclick="Openall('@entity.ID','@entity.UserID')">@entity.Tiems</a>
+                </td>
+                <td>
+                    @(entity.ConsumePrice * entity.Tiems)
+                </td>
+                <td>
+                    @entity.AddTime.ToString("yyyy-MM-dd")
+                </td>
+              
+            </tr>
+        }
+        <tr>
+            <td colspan="3">
+            </td>
+            <td>
+                合计
+            </td>
+            <td>@KouTimes
+            </td>
+            <td>@Tiems
+            </td>
+            <td style="border-right:1px solid #d6d6d6;">@JieyuSum
+            </td>
+           
+        </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+    </tbody>
+</table>
+</form>

@@ -1,0 +1,132 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using PersonnelManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@model PagedList<HospitalUserEntity>
+    @{
+        ViewBag.Title = "员工选择";
+        Layout = null;
+        IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+        var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+        //获取区域门店
+        var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    }
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+        <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+        <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    </head>
+    <body style="background: #fff;">
+        @using (Ajax.BeginForm("PersonList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+            {
+            <div class="accountdiv ullist" style="margin-bottom: 0px; margin-top: 0px;">
+                <ul>
+
+                    <li>
+                        <label style="font-weight: normal;">
+                            所属分店:
+                        </label>
+                        <select name="HospitalID" class="select">
+                            <option value="0">请选择分店</option>
+                            @if (RegionhospitalList.Count > 0)
+                            {
+                                foreach (var info in RegionhospitalList)
+                                {
+                                    <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "")=) value="@info.HospitalID">@info.Name</option>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var info in hospitalList)
+                                {
+                                    <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "")=) value="@info.ID">@info.Name</option>
+                                }
+                            }
+                        </select>
+                    </li>
+
+                    <li>
+                        <label style="font-weight: normal;">
+                            员工名称：
+                        </label>
+                        <input type="text" name="UserName" id="UserName" class="text-input " style="height:20px;" value="" />
+                    </li>
+
+
+                    <li>
+                        <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                        <input type="submit" class="submitbutton2" id="btnsearch" style="float: none;" value="查 询" />
+                    </li>
+                </ul>
+            </div>
+        }
+        <div id="articles" style="margin-top: 5px;">
+            @Html.Partial("_PersonnelManagePage", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="确 定" onclick="FullValue()" />
+            <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" />
+        </div>
+
+    </body>
+</html>
+<script type="text/javascript">
+    $("#articles").delegate("tr.ableclick", "click", function () {
+        var $chekbox = $(this).find("input:checkbox");
+        if ($chekbox.prop("checked") == false) {
+            $chekbox.attr("checked", "checked");
+            $(this).css("background", "#E7F6FF");
+        } else {
+            $chekbox.attr("checked", false);
+            $(this).css("background", "");
+        }
+
+    });
+    $("#articles").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+
+    $("#articles").delegate("tr.ableclick", "dblclick", function () {
+        $(this).find("input:checkbox").attr("checked", "checked");
+        FullValue();
+    });
+    //确定选择按钮
+    function FullValue() {
+        var value = "";
+        if ($("input[name='radioList']:checked").length > 1) {
+            alert("请选择一个员工");
+            return false;
+        }
+        $("input[name='radioList']:checked").each(function (i) {
+
+            value += $(this).val();
+        });
+        var usernmae = $("input[name='radioList']:checked").attr("code");
+        if (value == undefined) {
+            alert("请选择员工");
+            return false;
+        }
+        art.dialog.data('bValueProduct', value); // 存储数据
+        art.dialog.data('bValueProductusernmae', usernmae); // 存储数据
+        art.dialog.close();
+    }
+    //关闭
+    function closeed() {
+        art.dialog.data('bValueProduct', ''); // 存储数据
+        art.dialog.data('bValueProductusernmae', ''); // 存储数据
+        art.dialog.open.api.close();
+    }
+</script>
+</HospitalUserEntity>

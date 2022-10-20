@@ -1,0 +1,183 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+    @{
+        ViewBag.Title = "疗程卡销售明细";
+        Layout = null;
+    }
+    <div id="showmessage" style="display: none; width: 220px; height: 140px; position: fixed;
+    top: 300px; left: 650px; color: Red; margin: 0 auto; text-align: center;">
+        <img src="../../Content/themes/images/loading.gif" width="100" />
+        <p style="text-align: center; height: 30px; line-height: 30px;">
+            正在努力查询中，请稍后...
+        </p>
+    </div>
+    <form action="" method="post" id="submitform">
+        <table class="gridTable" style="border-collapse: collapse; ">
+            <thead style="position:absolute; width:98%;">
+                <tr>
+                    <th @(ViewBag.orderField == "HospitalName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalName">
+                        店名
+                    </th>
+                    <th @(ViewBag.orderField == "AddTime" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AddTime">
+                        时间
+                    </th>
+                    <th @(ViewBag.orderField == "BrandName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="BrandName">
+                        品牌
+                    </th>
+                    <th @(ViewBag.orderField == "ProductTypeName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProductTypeName">
+                        分类
+                    </th>
+                    <th @(ViewBag.orderField == "CardName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CardName">
+                        卡名称
+                    </th>
+                    <th @(ViewBag.orderField == "ProjectName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProjectName">
+                        项目
+                    </th>
+                    <th @(ViewBag.orderField == "OldPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="OldPrice">
+                        单价
+                    </th>
+                    <th @(ViewBag.orderField == "Price" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Price">
+                        优惠价
+                    </th>
+                    <th @(ViewBag.orderField == "Quantity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quantity">
+                        数量
+                    </th>
+                    <th>
+                        剩余
+                    </th>
+                    <th @(ViewBag.orderField == "AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllPrice">
+                        合计
+                    </th>
+                    <th @(ViewBag.orderField == "SendAmount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="SendAmount">
+                        赠送
+                    </th>
+                    <th @(ViewBag.orderField == "DiscountAmount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="DiscountAmount">
+                        折让
+                    </th>
+                    <th>
+                        折率
+                    </th>
+                    <th>
+                        单号
+                    </th>
+                    <th style="display:none;" @(ViewBag.orderField == "MemberNo" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MemberNo">
+                        会员卡号
+                    </th>
+                    <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                        顾客
+                    </th>
+                    <th>
+                        说明
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.HospitalName
+                        </td>
+                        <td>
+                            @entity.AddTime.ToString("yyyy-MM-dd HH:mm:ss")
+                        </td>
+                        <td>
+                            @entity.BrandName
+                        </td>
+                        <td>
+                            @entity.ProductTypeName
+                        </td>
+                        <td>
+                            @entity.CardName
+                        </td>
+                        <td>
+                            @entity.ProjectName
+                        </td>
+                        <td>
+                            @entity.OldPrice
+                        </td>
+                        <td>
+                            @entity.Price
+                        </td>
+                        <td>
+                            @entity.Quantity
+                        </td>
+                        <td>
+                            @entity.Tiems
+                        </td>
+                        <td>
+                            @entity.AllPrice
+                        </td>
+                        <td>
+                            @entity.SendAmount
+                        </td>
+                        <td>
+                            @((entity.OldPrice - entity.Price) * entity.Quantity)
+                        </td>
+                        <td>
+                            @(String.Format("{0:F}", entity.OldPrice * entity.Quantity != 0 ? entity.AllPrice / (entity.OldPrice * entity.Quantity) * 100 : 0))%
+                        </td>
+                        <td>
+                            <a href="javascript:OpenOrderDetail('@entity.OrderNo');">
+                                @entity.OrderNo
+                            </a>
+                        </td>
+                        <td style="display: none;">
+                            <a href="javascript:OpenOrderDetail('@entity.OrderNo');">
+                                @entity.MemberNo
+                            </a>
+                        </td>
+                        <td>
+                            <a id="labUserName" style="color: Blue;" href="javascript:OpenPatientDetail(@entity.UserID,1)">@entity.UserName</a>
+                        </td>
+                        <td>
+                            @entity.Memo
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="7">
+                    </td>
+                    <td>
+                        合计:
+                    </td>
+                    <td id="txtQuatity">
+                        @ViewBag.Quatity
+                    </td>
+                    <td id="txtSumPrice">
+                        @*@ViewBag.SumPrice*@
+                    </td>
+                    <td id="txtZengSong">
+                        @*@ViewBag.ZengSong*@
+                        @ViewBag.SumPrice
+                    </td>
+                    <td id="txtZheRang">
+                        @ViewBag.ZheRang
+                    </td>
+                    <td colspan="4">
+                    </td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 16))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <div style="height:100px;"></div>
+    <script >
+          $(function () {
+ 
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / (thlen-1)) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+        
+      })
+    </script>
+
+

@@ -1,0 +1,158 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+    @{
+        ViewBag.Title = "_Patientlist";
+        Layout = null;
+        int cardCount = 0;
+        decimal sumconsumer = 0;
+        decimal Zhexian = 0;
+    }
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead style="position:absolute;width:98%;">
+                <tr>
+                    <th @(ViewBag.orderField == "HospitalID" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalID">
+                        门店名称
+                    </th>
+                    <th>
+                        卡号
+                    </th>
+                    <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                        用户名称
+                    </th>
+                    @if (ViewBag.Type == 2)
+                    {
+                        <th>
+                            品牌
+                        </th>
+                    }
+                    @if (ViewBag.Type == 2)
+                    {
+                        <th @(ViewBag.orderField == "ProdcuitName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProdcuitName">
+                            项目名称
+                        </th>
+                    }
+                    else
+                    {
+                        <th @(ViewBag.orderField == "ProdcuitName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProdcuitName">
+                            卡项名称
+                        </th>
+
+                    }
+                    <th @(ViewBag.orderField == "Tiems" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Tiems">
+                        余次
+                    </th>
+                    <th @(ViewBag.orderField == "Price" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Price">
+                        储值卡余额
+                    </th>
+                    <th>
+                        购买价折现
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px"></tr>
+                @foreach (var entity in Model)
+                {
+
+                    if (entity.UserID == 5727) {
+                        
+                    } else {
+                    //  @if (entity.Type == 2)
+                    // {
+                    cardCount += entity.Tiems;
+
+                    if (entity.Type==1)
+                    {
+                        sumconsumer += entity.Price;
+                        Zhexian += entity.Price;
+                    }
+                    else
+                    {
+                        Zhexian += entity.Tiems * entity.Price;
+                    }
+
+                    
+                    // }
+            <tr>
+                <td>
+                    @entity.HospitalName
+                </td>
+                <td>
+                    @entity.MemberNo
+                </td>
+                <td>
+                    @entity.UserName
+                </td>
+                @if (ViewBag.Type == 2)
+                {
+
+                    <td>
+
+                        @entity.BrandName
+                    </td>
+                }
+                @{
+                    var differDay = (entity.ExpireTime - DateTime.Now).Days;
+                    var cardExpireColor = (differDay < 90) ? "red" : "#000";
+                }
+                <td style="color:@cardExpireColor">
+                    @(entity.Type == 2 ? entity.ProdcuitName : entity.CardName)
+                </td>
+                <td>
+                    @(entity.Type == 2 ? entity.Tiems : 0)
+
+                </td>
+                <td>
+                    @(entity.Type == 2 ? 0 : entity.Price)
+                </td>
+                <td>
+                    @(entity.Type == 2 ? entity.Tiems * entity.Price : (entity.IsGive == 1 ? 0 : entity.Price))
+                </td>
+              
+
+            </tr> }
+}
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    @if (ViewBag.Type == 2)
+                    {
+                        <td>
+                        </td>
+                    }
+                    <td>
+                        合计
+                    </td>
+                    <td id="txtcardCount">
+                        @cardCount
+                        @*@ViewBag.sumcard*@
+                    </td>
+                    <td id="txtsumconsumer">
+                        @sumconsumer
+                        @*@ViewBag.sumconsumer*@
+                    </td>
+            <td id="txtZhexian">
+                @Zhexian
+                @*@ViewBag.Zhexian*@
+        </td>
+    </tr>
+    @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 6))
+</tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<div style="height:100px;"></div>
+    <script src="/Scripts/ymx/commonTable.js">
+         $(function () {
+        $("#sp").text('@ViewBag.AllCount');
+       //计算head高度，宽度 计算articles高度
+
+    })
+    </script>

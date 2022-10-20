@@ -1,0 +1,10 @@
+﻿@{
+    ViewBag.Title = "授权管理--数据访问权限";
+}
+@section head
+{
+    <link type="text/css" rel="Stylesheet" href="@Url.Content("~/Content/Css/tree.css")" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.tree.js")"></script>
+}
+@RenderPage("~/Views/SystemManage/Controls/DataRight_Tree.cshtml")
+<script type="text/javascript" src="@Url.Content("~/Scripts/Controls/SystemManage/DataRight.js")"></script>

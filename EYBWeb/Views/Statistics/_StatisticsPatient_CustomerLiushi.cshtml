@@ -1,0 +1,57 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PatientEntity.PatientEntity>
+@{
+    ViewBag.Title = "_PatientChuzhiCard";
+    Layout = null;
+    
+}
+<form action="@Url.Content("~/CashManage/OrderList")" method="post"   id="submitform" >
+<table class="gridTable" style="margin-top: 0px; width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>
+                会员卡号
+            </th>
+            <th>
+                姓名
+            </th>
+     <th>
+                会员级别
+            </th>
+            <th>
+                尊贵级别
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr>
+                <td>
+                    @entity.MemberNo
+                </td>
+                <td>
+                    @entity.UserName
+                </td>
+               <td>
+                    @entity.ArchivesType
+                </td>
+                <td>
+                    @entity.Category
+                </td>
+            </tr>
+        }
+   <tr>
+                <td>
+                    总数：@ViewBag.Count
+                </td>
+                <td>
+                    
+                </td>
+               
+            </tr>
+
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 2))
+    </tbody>
+</table>
+</form>

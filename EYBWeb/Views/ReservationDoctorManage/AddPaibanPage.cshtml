@@ -1,0 +1,255 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using ReservationDoctorManage.Factory.IBLL;
+@{
+    ViewBag.Title = "AddPaibanPage";
+    Layout = null;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    IReservationDoctorManageBLL resBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    //获取员工
+    var persoList = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    //获取本月天数
+    DateTime dtNow = DateTime.Now;
+    int days = DateTime.DaysInMonth(dtNow.Year, dtNow.Month);
+    //获取班次
+    var Paibanlist = resBLL.GetPaiBanSetList(new EYB.ServiceEntity.ReservationEntity.PaiBanSetEntity() { HospitalID = ViewBag.HospitalID }).Where(c => c.Statu == 1).ToList();
+    string[] colorstr = { "#f5940b", "#15d415", "#0fbaec", "#0d83e8", "#ef0b07", "#730aec", "blue", "red", "yellow", "gray" };
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="../../Content/bootstrap/bootstrap.css" rel="stylesheet" />
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <style type="text/css">
+        body { background: #fff; overflow-x: hidden; }
+    </style>
+</head>
+<body>
+    <div class="mainContentRight_bottom " style="margin: 0px;">
+        <div class="box-wrap toolbar" style="min-height: auto; overflow: hidden;">
+            <div class="accountdiv l-list ullist" style="margin: 0px auto; padding: 0px; width: 99%;  ">
+                <ul id="tdul">
+
+                    <li>
+                        <label style="font-weight: normal;">
+                            月份：
+                        </label>
+                        <input type="text" class="text-input Wdate input130" name="Month" value="@DateTime.Now.ToString("yyyy-MM")" onclick="WdatePicker({dateFmt:'yyyy-MM'})" id="txtMonth" style="width: 130px" />
+
+                    </li>
+
+                    <li>
+                        <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                        <input type="button" id="btnsumbit" class="submitbutton3" style="float: none;" value="保存" />
+                        <input type="button" onclick="location.reload()" class="submitbutton3" style="float: none;" value="刷新" />
+                        <input type="button" onclick="history.go(-1)" class="submitbutton3" style="float: none;"
+                               value="返回" />
+                    </li>
+
+
+                </ul>
+                <div style="clear: both;">
+                </div>
+            </div>
+        </div>
+        <div id="articles" style="">
+            <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
+                <div class="list-group">
+                    <a href="#" id="btnall" class="list-group-item active">全部</a>
+                    <div id="usercontainer">
+                        @foreach (var info in persoList)
+                        {
+                            <a href="javascript:;" code="@info.UserID" check="" class="list-group-item">@info.UserName</a>
+                        }
+                    </div>
+                    <br />
+                    操作步骤：<br /><br />
+                    1、选择员工》指定班次<br /><br />
+                    2、 选择员工：点击员工姓名，可以多选<br /><br />
+                    3、 指定班次：选中右边表格中对应日期和班别的单元格，双击取消选择班次
+                </div>
+            </div>
+            <div style="float: left; width: 40%;">
+                <table class="gridTable" style="border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th>
+                                日期
+                            </th>
+                            @foreach (var info in Paibanlist)
+                            {
+                                <th code="@info.ID">
+                                    @info.Name
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        @for (int i = 1; i <= days; i++)
+                        {
+                            int j = -1;
+                            <tr code="@i" codevalue="0">
+                                <td style="border: 1px solid #ccc;" disabled="disabled">
+                                    @i
+                                </td>
+                                @foreach (var info in Paibanlist)
+                                {
+                                    j = j + 1;
+                                    if (j > 9) {
+                                        j = 9;
+                                    }
+                                    <td style="border: 1px solid #ccc;" code="@info.ID" color="@colorstr[j]"></td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="showmessage" style="display:none;width:280px; height:140px; position:fixed; top:300px; left:650px; color:Red;  margin:0 auto; text-align:center;">
+            <img src="../../Content/themes/images/loading.gif" width="100" />
+            <p style="text-align:center; height:30px;line-height:30px;font-size:18px; font-weight:bold;">
+                正在保存排班设置，请稍后...
+            </p>
+        </div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    //班次选择
+    $("#tbody").delegate("td",
+        "click",
+        function () {
+
+            $(this).parent().find("td").css("background-color", "");
+            $(this).css("background-color", $(this).attr("color"));
+            $(this).parent().attr("codevalue", $(this).attr("code"));
+        });
+    $("#tbody").delegate("td",
+        "dblclick",
+        function () {
+
+            $(this).parent().find("td").css("background-color", "");
+            $(this).parent().attr("codevalue", "0");
+        });
+    //用户选择
+    $("#btnall").toggle(function () {
+        $("#usercontainer a").css("background-color", "#00B0DE");
+        $("#usercontainer a").attr("check", "check");
+    }, function () {
+        $("#usercontainer a").css("background-color", "");
+        $("#usercontainer a").attr("check", "");
+    });
+    $("#usercontainer a").toggle(function () {
+        $(this).css("background-color", "#00B0DE");
+        $(this).attr("check", "check");
+    },
+        function () {
+            $(this).css("background-color", "");
+            $(this).attr("check", "");
+        });
+    //月份改变事件
+    function cMonthFunc() {
+        var year = $dp.cal.newdate["y"];
+        var month = $dp.cal.newdate["M"];
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "text", //返回json格式的数据
+            url: getControllerUrl("ReservationDoctorManage", "GetPaibanListbyMonth"),
+            data: { "Month": year + "-" + month },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $("#tbody").html(data);
+                }
+            },
+            error: function (e) {
+                //alert(e.responseText);
+                artdialogfail("获取失败！");
+            }
+        });
+    }
+    //获取每个员工的排班情况
+    $("#usercontainer a").click(function () {
+        var userID = $(this).attr("code");
+        var txtMonth = $("#txtMonth").val();
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "text", //返回json格式的数据
+            url: getControllerUrl("ReservationDoctorManage", "GetPaibanList"),
+            data: { "UserID": userID, "Month": txtMonth },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $("#tbody").html(data);
+                }
+            },
+            error: function (e) {
+                //alert(e.responseText);
+                artdialogfail("获取失败！");
+            }
+        });
+    });
+
+
+    //保存排班
+    $("#btnsumbit").click(function () {
+        var userarr = new Array();
+        //获取选中的用户
+        $("#usercontainer a").each(function (i) {
+
+            if ($(this).attr("check") == "check") {
+                userarr[i] = $(this).attr("code");
+            }
+        });
+
+        if (userarr.toString() == "") {
+            alert("请选择员工！");
+            return;
+        }
+
+        //获取班次
+        var paibanarr = new Array();
+        $("#tbody tr").each(function (i) {
+            paibanarr[i] = $(this).attr("code") + "-" + $(this).attr("codevalue") + ",";
+        });
+
+        var txtMonth = $("#txtMonth").val();
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "json", //返回json格式的数据
+            url: getControllerUrl("ReservationDoctorManage", "SavePaiban"),
+            beforeSend: function (XHR) { $("#showmessage").css("display", "block"); },
+            data: { "userarr": userarr.toString(), "paibanarr": paibanarr.toString(), "txtMonth": txtMonth },
+            success: function (data) {
+                if (data > 0) {
+                    $("#showmessage").css("display", "none");
+                    artdialog("保存成功！");
+                }
+            },
+            error: function (e) {
+                //alert(e.responseText);
+                artdialogfail("保存失败！");
+            }
+        });
+    });
+</script>

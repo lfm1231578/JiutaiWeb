@@ -1,0 +1,188 @@
+﻿@model EYB.Web.Models.ShareShop.ShareholderIndexModel
+@{
+    var activeDomain =  System.Configuration.ConfigurationManager.AppSettings["ActiveDomain"];
+}
+<div id="mainContentBody">
+    @Html.Partial("_ShareShopControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●
+            </label>股东管理(<span id="sp"></span>) &nbsp;<a style="width:100px;" href="javascript:OpenDailogDetail('ADD',0);" class="addbutton">新建股东</a>
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;" id="">
+
+            <div id="tabbox" style="overflow-x: hidden; overflow-y: auto;">
+                <ul class="tabs" id="tabs">
+                    <li><a href="#" tab="tab1">入股申请</a></li>
+                    <li class="thistab"><a href="#" tab="tab2">股东列表</a></li>
+                    <li><a href="#" tab="tab3">入股申请二维码</a></li>
+                </ul>
+                <ul id="tab_conbox" class="tab_conbox">
+                    <li id="tab1" class="tab_con" style="display: none;">
+                        <div class="mainContentRight">
+                            @using (Ajax.BeginForm("ShareholderAuditIndex", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles1", HttpMethod = "Get" }, new RouteValueDictionary { { "id", "searchForm1" } }))
+                            {
+                            @*<input type="hidden" value="@Model.Result.orderDirection" name="orderDirection" id="orderDirection" />
+                                <input type ="hidden" value="@Model.Result.orderField" name="orderField" id="orderField" />*@
+                            <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                                <label style="font-weight: normal; margin-left: 20px">
+                                    客户姓名
+                                </label>
+                                <input type="text" name="UserName" id="Name" class="text-input input130" style="height: 20px;" value="@Model.Audit.UserName" />
+                                <select name="AuditState" class="select">
+                                    <option value="1" @(Model.Audit.AuditState == 1 ? "selected=\"selected\"" : "")>待审核</option>
+                                    <option value="2" @(Model.Audit.AuditState == 2 ? "selected=\"selected\"" : "")>已通过</option>
+                                    @*<option value="3" @(Model.Audit.AuditState == 3 ? "selected=\"selected\"" : "")>已拒绝</option>*@
+                                </select>
+                                <input type="submit" id="btnsumbit1" class="submitbutton2" style="float: none;" value="查询" />
+                            </div>
+
+                            <div id="articles1" class="" style="height: 100%; overflow: hidden; margin-top: 5px; width: 100%;">
+                                @Html.Partial("_ShareholderAuditIndex", Model)
+                            </div>
+                            }
+                            @{Html.RegisterMvcPagerScriptResource();}
+                        </div>
+                    </li>
+                    <li id="tab2" class="tab_con">
+                        <div class="mainContentRight">
+                            @using (Ajax.BeginForm("ShareShopGudongGuanli", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                            {
+                            <input type="hidden" value="@Model.Result.orderDirection" name="orderDirection" id="orderDirection" />
+                            <input type="hidden" value="@Model.Result.orderField" name="orderField" id="orderField" />
+                            <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                                <label style="font-weight: normal; margin-left: 20px">
+                                    股东姓名：
+                                </label>
+                                <input type="text" name="UserName" id="Name" class="text-input input130" style="height: 20px;" value="@Model.Result.UserName" />
+                                <label style="font-weight: normal;">
+                                    状态：
+                                </label>
+                                <select name="State" id="State" class="select" style="">
+                                    <option value="0">状态</option>
+                                    <option value="1" selected="selected">启用</option>
+                                    <option value="2">已删除</option>
+                                </select>
+                                <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                            </div>
+
+                            <div id="articles" class="" style="height: 100%; overflow: hidden; margin-top: 5px; width: 100%;">
+                                @Html.Partial("_ShareShopGudongGuanli", Model.ShareholderResults)
+                            </div>
+                            }
+                            @{Html.RegisterMvcPagerScriptResource();}
+                        </div>
+                    </li>
+                    <li id="tab3" class="tab_con" style="display: none;">
+                        <div class="mainContentRight">
+                            <div style="width: 100%; margin-left: 20px;">
+                                <p style="margin: 20px 0; font-size: 16px;">用户扫描二维码后，提交申请成为股东</p>
+                                <div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
+
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/Scripts/Jquery/plugins/qrcode.min.js"></script>
+<script type="text/javascript">
+    //Tab切换
+    $(function () {
+
+        $("#tabs li").click(function () {
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            var index = $(this).parent().find("li").index(this);
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+
+            if (index == 0) {
+                $("#tab_conbox").find(".tab_con").eq(index).find(':submit').click();
+            }
+        });
+
+        var qrcode = new QRCode(document.getElementById("qrcode"), {
+            width : 100,
+            height : 100
+        });
+
+        qrcode.makeCode("@activeDomain/Activity/Loginauthorize?ParentHospitalId=@Model.Result.ParentHospitalId&HospitalId=@Model.Result.HospitalId");
+        //$("#tabs li:first").addClass("thistab").show();
+//        $('#qrCode').qrcode({
+//            render: "table", //也可以替换为table
+//            width: 120,
+//            height: 120,
+//            text:   encodeURI('@activeDomain/Activity/Loginauthorize?ParentHospitalId=@Model.Result.ParentHospitalId&HospitalId=@Model.Result.HospitalId')
+//        });
+    });
+
+
+    if (@Model.IsAudit === 1) {
+        $("#tabs li").removeClass("thistab");
+        $("#tabs li").eq(0).addClass("thistab");
+        $(".tab_con").hide();
+        $("#tab_conbox").find(".tab_con").eq(0).show();
+
+        $("#sp").text('@Model.Audits.TotalItemCount');
+    } else {
+        $("#sp").text('@Model.ShareholderResults.TotalItemCount');
+    }
+
+    function OpenDailogDetail(type, obj) {
+        var title = "";
+        if (type == "ADD") {
+            title = "新增股东";
+        } else {
+            title = "修改股东";
+        }
+        art.dialog.open("/ShareShop/AddGudong?Type=" + type + "&ID=" + obj, { title: title, width: 460, height: 420,clsose:function (){ $("#tab_conbox").find(".tab_con").eq(1).show();
+            $("#btnsumbit").click();
+        } });
+    }
+
+    function OpenNew(id) {
+        var title = "保证金充值";
+        art.dialog.open("/ShareShop/AddBaozhengjin?id=" + id, { title: title, width: 460, height: 240 });
+    }
+
+    function deltetproduct(obj, isshow) {
+        var id = obj;
+        if (id <= 0) artdialogfailTwo("请选择股东", "", "250", "100");
+        if (confirm("确认操作吗？")) {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "@Url.Action("_DeleteShareholder")?id=" + id+"&State="+isshow,
+                async: false,
+                error: function (request) {
+                    artdialogfailTwo("操作失败！", "", "250", "100");
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        alert("操作成功！");
+                        $("#btnsumbit").click();
+                    } else {
+                        artdialogfailTwo("操作失败,！", "", "250", "100");
+                    }
+                }
+            });
+        }
+    }
+
+    function audit(type, id) {
+        art.dialog.open("@Url.Action("AuditShareholder")?id=" + id + '&type=' + type, { title: '入股审核', width: 460, height: (type == 2 ? 400 : 180) });
+
+
+        @*$.post('@Url.Action("_AuditShareholder")',{ type:type,id:id},function(data) {
+            if (data.IsError) {
+                artdialogfailTwo(data.Message, "", "250", "100");
+            } else {
+                $('#btnsumbit1').click();
+            }
+        });*@
+    }
+</script>

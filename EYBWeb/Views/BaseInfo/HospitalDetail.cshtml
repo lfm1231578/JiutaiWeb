@@ -1,0 +1,151 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "HospitalDetail";
+    IPersonnelManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var entity = systemBLL.HospitalEntityByID(ViewBag.HospitalID);
+    string busiesstime1 = "";
+    string busiesstime2 = "";
+    if (!String.IsNullOrEmpty(entity.BusinessHours))
+    {
+        busiesstime1 = entity.BusinessHours.Split('-')[0];
+        busiesstime2 = entity.BusinessHours.Split('-')[1];
+    }
+    string ImgPath = System.Configuration.ConfigurationManager.AppSettings["ImgPath"];
+}
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.js"></script>
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.handlers.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //头像
+//        $(".upload-img").each(function () {
+//            $(this).InitSWFUpload({ btntext: "上传门店照片", btnwidth: 119, single: true, water: false, thumbnail: false, filesize: "2048", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+//        });
+    });
+</script>
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            门店信息</div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomHospital">
+            <form id="myform" action="@Url.Content("~/BaseInfo/UpdateHospital")" class="formular" method="post"  style="position:relative;"  enctype="multipart/form-data"  >
+            <table class="mainContentRight_bottomnewdepart" style="z-index: 0px;">
+                <tr>
+                    <td style="width: 110px;">
+                        门店名称：
+                    </td>
+                    <td>
+                        @entity.Name
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        联系人：
+                    </td>
+                    <td>
+                        @entity.ContanctName
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        联系方式：
+                    </td>
+                    <td>
+                        @entity.Phone
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        门店地址：
+                    </td>
+                    <td>
+                        @entity.Address
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        营业时间：
+                    </td>
+                    <td>
+                        @busiesstime1-@busiesstime2
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        周边交通：
+                    </td>
+                    <td>
+                        @entity.Traffic
+                    </td>
+                </tr>
+                <tr style="height: 80px; ">
+                    <td style=" vertical-align:top; padding-top:10px;">
+                        门店特色：
+                    </td>
+                    <td  style=" vertical-align:top;padding-top:10px;">
+                        @entity.Characteristic
+                    </td>
+                </tr>
+                <tr>
+                    <td  style=" vertical-align:top;">
+                        门店介绍：
+                    </td>
+                    <td>
+                        @entity.Memo
+                    </td>
+                </tr>
+                <tr style="height: 80px; margin: 10px;">
+                    <td>
+                    </td>
+                    <td>
+                        <div style="height: 40px;">
+                            
+                                <input class="submitbutton2" type="button" style=" margin-left:0px; *margin-top: 12px;" onclick="GoForwardPage()"
+                                    value="编 辑" />
+                           
+                          <input class="submitbutton2" type="button" style="*margin-top: 12px;"
+                                onclick="history.go(-1)" value="返 回" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="imgupload" style="top: 5px; right: 40px; height: 120px; width: 120px;">
+                <input type="hidden" name="hidFocusPhoto" id="hidFocusPhoto1" runat="server" class="focus-photo" />
+                <div class="photo-list">
+                    <ul id="photolistul">
+                        <li>
+                            <input type="hidden" name="hid_photo_name" value="@entity.UserID|@entity.Img|@entity.Img" />
+                            <div onclick="setFocusImg(this);" style="border: 0px;">
+                                @if (String.IsNullOrEmpty(entity.Img))
+                                {
+                                    <img src="/Content/themes/default/images/noface.jpg" width="120" height="120" />
+                                }
+                                else
+                                {
+                                    <img src="@(ImgPath + entity.Img)"  width="120" height="120"/>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+               @* <div class="upload-box upload-img">
+                </div>
+                <label style="color: Red;font-size:12px; ">
+                    建议大小390x390</label>*@
+            </div>
+            @* <img onerror="this.src='/Content/themes/default/images/noface.jpg'" src="/@entity.Img" width="100%" />
+            <input type="file" name="Photo" style="width: 100%; height: 27px; bottom: 0px;" /><label style="color:Red;">建议尺寸：150x150</label></div>*@
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+function GoForwardPage()
+{
+ location.href="@Url.Content("~/BaseInfo/HospitalUpdate")";
+}
+    $("#mainContentRight_bottomHospital").height(getDocumentHeight() - $("#header").height() - $("#footer").height());
+</script>

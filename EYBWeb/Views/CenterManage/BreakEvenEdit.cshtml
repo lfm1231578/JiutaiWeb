@@ -1,0 +1,230 @@
+﻿@using EYB.ServiceEntity.CenterEntity;
+@{
+    Layout = null;
+    ViewBag.Title = "";
+    var id = Request["ID"];
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+
+    CenterManage.Factory.IBLL.ICenterManageBLL centBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CenterManage.Factory.IBLL.ICenterManageBLL>();
+    var entity = new BreakEvenEntity();
+    if (!String.IsNullOrEmpty(id))
+    {
+        entity = centBLL.GetBreakEvenModel(Convert.ToInt32(id));
+    }
+    else  
+    {
+        //如果没有传进来ID,则默认为前一个月的数据填充
+        int row = 0;
+        int pagecount = 0;
+        var dt = DateTime.Now.AddMonths(-1);
+        BreakEvenEntity be = new BreakEvenEntity();
+        be.HospitalID = ViewBag.HospitalID;
+        be.Years = dt.Year;
+        be.Months = dt.Month;
+        be.numPerPage = 5000;
+        var list = centBLL.GetBreakEvenList(be, out row, out pagecount);
+        if (list.Count > 0)
+        {
+            entity = list[0];
+        }
+    }
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+        type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <style type="text/css">
+        body
+        {
+            background: #fff;
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body style="background: #fff;">
+    <div class="mainContentRight" style="margin-top: 20px;">
+        <form id="myform" action="@Url.Content("~/CenterManage/BreakEvenEdit")" class="clearfix" method="post"  >
+        <input type="hidden" value="@entity.ID" name="ID" />
+        <table class="mainContentRight_table ">
+            <tr>
+                <td class="tdright">
+                    时间
+                </td>
+                <td>
+                    <select name="Years" id="Years">
+                        @for (int i = DateTime.Now.Year - 2; i <= DateTime.Now.Year; i++)
+                        {
+                            <option @(i == entity.Years ? "selected=selected" : "")  value="@i">@i</option>
+                        }
+                    </select>年&nbsp;
+                    <select name="Months" id="Months">
+                        <option @("1" == entity.Months.ToString() ? "selected=selected" : "") value="01">01</option>
+                        <option @("2" == entity.Months.ToString() ? "selected=selected" : "") value="02">02</option>
+                        <option @("3" == entity.Months.ToString() ? "selected=selected" : "") value="03">03</option>
+                        <option @("4" == entity.Months.ToString() ? "selected=selected" : "") value="04">04</option>
+                        <option @("5" == entity.Months.ToString() ? "selected=selected" : "") value="05">05</option>
+                        <option @("6" == entity.Months.ToString() ? "selected=selected" : "") value="06">06</option>
+                        <option @("7" == entity.Months.ToString() ? "selected=selected" : "") value="07">07</option>
+                        <option @("8" == entity.Months.ToString() ? "selected=selected" : "") value="08">08</option>
+                        <option @("9" == entity.Months.ToString() ? "selected=selected" : "") value="09">09</option>
+                        <option @("10" == entity.Months.ToString() ? "selected=selected" : "") value="10">10</option>
+                        <option @("11" == entity.Months.ToString() ? "selected=selected" : "") value="11">11</option>
+                        <option @("12" == entity.Months.ToString() ? "selected=selected" : "") value="12">12</option>
+                    </select>月
+                </td>
+                <td class="tdright">
+                    租金物管
+                </td>
+                <td>
+                    <input type="text" name="Zujin" id="Zujin" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.Zujin" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdright">
+                    水电
+                </td>
+                <td>
+                    <input type="text" name="ShuiDian" id="ShuiDian" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.ShuiDian" />
+                </td>
+                <td class="tdright">
+                    生活开支
+                </td>
+                <td>
+                    <input type="text" name="ShenghuoKaizhi" style=" width:150px;" id="ShenghuoKaizhi" class="text-input input200 validate[custom[number]]" value="@entity.ShenghuoKaizhi" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdright">
+                    营运费用
+                </td>
+                <td>
+                    <input type="text" name="Yunying" id="Yunying" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.Yunying" />
+                </td>
+                <td class="tdright">
+                    装修折旧
+                </td>
+                <td>
+                    <input type="text" name="Zhuangxiu" id="Zhuangxiu" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.Zhuangxiu" />
+                </td>
+            </tr>
+            <tr>
+                <td class="tdright">
+                    工资
+                </td>
+                <td>
+                    <input type="text" name="Dixin" id="Dixin" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.Dixin" />
+                </td>
+                <td class="tdright">
+                    其他费用
+                </td>
+                <td>
+                    <input type="text" name="OtherCost" id="OtherCost" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.OtherCost" />
+                </td>
+            </tr>
+           @* <tr>
+                <td class="tdright">
+                    现金比例
+                </td>
+                <td>
+                    <input type="text" name="XianjinBili" id="XianjinBili" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.XianjinBili" />
+                </td>
+                <td class="tdright">
+                    实操比例
+                </td>
+                <td>
+                    <input type="text" name="ShihaoBili" id="ShihaoBili" style=" width:150px;" class="text-input input200 validate[custom[number]]" value="@entity.ShihaoBili" />
+                </td>
+            </tr>*@
+            <tr>
+               
+                <td colspan="4">
+                <div style=" display:block; margin:0 auto; width:206px; padding-top:15px; ">
+                    <input type="button" onclick="saveAs()" id="btnsave" class="submitbutton2" style=" margin-right:10px;" value="保 存" />   
+                    <input type="reset" onclick="closeedNorefresh()" class="submitbutton2"style=" margin-right:10px;" value="返 回" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+        </form>
+    </div>
+</body>
+<script type="text/javascript">
+   //提交操作
+    function saveAs() {                                   
+        
+        $("#btnsave").attr("disabled", "disabled");
+        if(VerificationTxt())
+        {
+         $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/CenterManage/EditBreakEven")",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+                 $("#btnsave").attr("disabled", false); 
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("保存成功！");
+                closeed();
+               }
+               else{
+                artdialogfailTwo("操作失败！请检查数据的有效性","","250","100");
+                $("#btnsave").attr("disabled", false); 
+               }
+            }
+        });
+
+        }else
+        {
+            alert("请检查目标值是否有误!");
+          $("#btnsave").attr("disabled", false);  
+        }
+     }  
+
+     function VerificationTxt(){
+//     var Zujin=$("#Zujin").val();
+//     var ShuiDian=$("#ShuiDian").val();
+//     var ShenghuoKaizhi=$("#ShenghuoKaizhi").val();
+//     var Yunying=$("#Yunying").val();
+//     var Zhuangxiu=$("#Zhuangxiu").val();
+//     var Dixin=#("#Dixin").val();
+     var XianjinBili=$("#XianjinBili").val();     var  ShihaoBili=$("#ShihaoBili").val();
+//     if(isNan(Zujin)||isNan(ShenghuoKaizhi)||isNan(ShuiDian)||isNan(Yunying)||isNan(Zhuangxiu)||isNan(Dixin)||isNan(XianjinBili)||isNaN(ShihaoBili))
+//     {
+//        alert("请输入数字!");
+//        return false;
+//     }
+//     else
+     if( parseFloat(XianjinBili)>1|| parseFloat(XianjinBili)<=0)
+         {
+            alert("现金比例请填写0-1之间的小数");
+            return false;
+         }
+     else if( parseFloat(ShihaoBili)>1|| parseFloat(ShihaoBili)<=0)
+         {
+            alert("实操比例请填写0-1之间的小数");
+            return false;
+         }
+     else{ return true;}
+        
+
+     }
+</script>

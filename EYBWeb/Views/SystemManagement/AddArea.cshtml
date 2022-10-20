@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "AddAdSlot";
+    Layout = "~/Views/Shared/Header.cshtml";
+}
+<div class="pad_10">
+    <form action="@Url.Content("~/BaseInfoManagement/AddArea")" method="post" name="myform" id="myform">
+    <table width="100%" cellpadding="2" cellspacing="1" class="table_form">
+        <tr>
+            <th width="70">
+                地区编码:
+            </th>
+            <td>
+                <input type="text" name="AreaCode" id="AreaCode" class="input-text" />
+            </td>
+        </tr>
+         <tr>
+            <th width="70">
+                父地区编码:
+            </th>
+            <td>
+                <input type="text" name="ParentAreaCode" id="ParentAreaCode" class="input-text" />
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                地区类型:
+            </th>
+            <td>
+               <select name="AreaType">
+                 <option value="1">州</option>
+                 <option value="2">国家</option>
+                 <option value="3" selected="selected">省</option>
+                 <option value="4">市</option>
+                 <option value="5">区县</option>
+               </select>
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                地区名称:
+            </th>
+            <td>
+                <input type="text" name="AreaName" id="AreaName" class="input-text"/>
+            </td>
+        </tr>
+         <tr>
+            <th width="70">
+                中文拼音:
+            </th>
+            <td>
+                <input type="text" name="AreaNamePinyin" id="AreaNamePinyin" class="input-text"/>
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                权重
+            </th>
+            <td>
+                <input type="text" name="SortID" value="" />
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                是否启用
+            </th>
+            <td>
+                <select name="IsActive">
+                    <option value="1">启用</option>
+                    <option value="0">禁用</option>
+                </select>
+            </td>
+        </tr>
+          <tr>
+            <th width="70">
+                经度
+            </th>
+            <td>
+                <input type="text" name="Jingdu" value="" />
+            </td>
+        </tr>
+          <tr>
+            <th width="70">
+                纬度
+            </th>
+            <td>
+                <input type="text" name="Weidu" value="" />
+            </td>
+        </tr>
+    </table>
+    <input type="submit" name="dosubmit" id="dosubmit" class="dialog" style="display: none;"
+        value=" " />
+    </form>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        $.formValidator.initConfig({ formid: "myform", autotip: true, onerror: function (msg, obj) { window.top.art.dialog({ content: msg, lock: true, width: '250', height: '50', show: true }, function () { this.close(); $(obj).focus(); }) } });
+        $("#AreaCode").formValidator({ onshow: "", onfocus: " 内容不能为空" }).inputValidator({ min: 1, onerror: "内容不能为空" }).regexValidator({ regexp: regexEnum.num1, onerror: "请输入正整数！" });
+        $("#ParentAreaCode").formValidator({ onshow: "", onfocus: " 内容不能为空" }).inputValidator({ min: 1, onerror: "内容不能为空" }).regexValidator({ regexp: regexEnum.num1, onerror: "请输入正整数！" });
+        $("#AreaName").formValidator({ onshow: "", onfocus: " 内容不能为空" }).inputValidator({ min: 1, onerror: "内容不能为空" });
+        $("#AreaNamePinyin").formValidator({ onshow: "", onfocus: " 内容不能为空" }).inputValidator({ min: 1, onerror: "内容不能为空" });
+    })
+</script>

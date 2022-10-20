@@ -1,0 +1,146 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "办卡界面";
+    Layout = null;
+    var UserID = Request["UserID"];
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<style>
+    .mainContentRight_bottomnewdepart1 tr
+    {
+        height: 40px;
+        line-height: 40px;
+    }
+    .mainContentRight_bottomnewdepart1 td
+    {
+        text-align: left;
+        padding-left: 50px;
+    }
+</style>
+</head>
+
+<body style="background: #fff;">
+    <div style="width: 96%; float: left;">
+        <div class="accountdiv">
+            当前办理的业务是：<label style="font-size: 20px; color: Red;">变更会员卡密码</label></div>
+        <div>
+            <table class="mainContentRight_bottomnewdepart1">
+                <tr>
+                    <td>
+                        请输入原始密码
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="password" id="txtoldpwd" class="text-input " style="height: 40px; width: 300px;
+                            color: Blue; font-size: 20px;" />
+                        <a href="javascript:;" onclick="ResetPwd()">忘记密码？</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        请输入新密码
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="password" id="txtnewpwd" class="text-input " style="height: 40px; width: 300px;
+                            color: Blue; font-size: 20px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label style="color: Red;">
+                            提示：系统将重新设置新的客户卡密码！</label>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div style="margin: 20px; margin-left: 50px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="办 理" onclick="CheckCard()" />
+            <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" /></div>
+    </div>
+</body>
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script type="text/javascript">
+   $(function(){
+      $(".aui_outer").css("display","none");
+    });
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+    function ResetPwd()
+    {
+      if(confirm("是否重置密码？"))
+      {
+         $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: "/PatientManage/ResetUpdatePwd",
+            data: {"UserID":@UserID},
+            async: false,
+            success: function (data) {
+
+                if (data > 0) {
+                   alert("操作成功");
+                  // closeed();
+                   //top.location.reload();
+                }
+            },
+            error: function (e) {
+                alert("操作失败！");
+            }
+        });
+      }
+    }
+    function CheckCard() {
+        var txtoldpwd = $("#txtoldpwd").val();
+        if(txtoldpwd=="")
+        {
+        alert("请输入原始密码！");return;
+        }
+         var txtnewpwd = $("#txtnewpwd").val();
+        if(txtnewpwd=="")
+        {
+        alert("请输入新密码！");return;
+        }
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: "/PatientManage/UpdatePwd",
+            data: {"UserID":@UserID,"oldPassword":txtoldpwd,"Password":txtnewpwd},
+            async: false,
+            success: function (data) {
+               if(data==-9)
+               {
+                alert("原始密码输入错误！");
+               }
+                if (data > 0) {
+                   alert("操作成功");
+                   closeed();
+                   top.location.reload();
+                }
+            },
+            error: function (e) {
+                alert("操作失败！");
+            }
+        });
+    }
+ 
+</script>
+</html>

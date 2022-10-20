@@ -1,0 +1,111 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.RemarkEntity>
+@{
+    ViewBag.Title = "顾客信息管理";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    int y = DateTime.Now.Year - 5;
+}
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+             </label>
+            满意度点评 (<span id="sp">@Model.TotalItemCount</span>)</div>
+        <div class="mainContentRight_bottom"  style="overflow:hidden;" >
+            @using (Ajax.BeginForm("manyidu", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" }, { "class", "form-inline well well-sm" } }))
+            {
+                <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+                
+                <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                    <ul>
+                        @if (HasPermission)
+                        {
+                            <li>
+                                <label style="font-weight: normal;">
+                                    所属分店：
+                                </label>
+                                <select id="HospitalID" name="HospitalID" class="select ymxSelect" style="">
+                                    <option value="0">请选择分店</option>
+                                    @if (RegionhospitalList.Count > 0)
+                                    {
+                                        foreach (var info in RegionhospitalList)
+                                        {
+                                        <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var info in hospitalList)
+                                        {
+                                        <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </li>
+                        }
+                       <li>
+                        <label style="font-weight: normal;">
+                            年：
+                        </label>
+                        <select name="Years" id="years" >
+                            @for (int i = y; i < y + 7; i++)
+                            {
+                                <option value="@i" @(i == ViewBag.Years ? "selected='selected'" : "")=)>@i 年</option>
+                            }
+                        </select>
+                    </li>
+                    <li>
+                        <label style="font-weight: normal;">
+                            月：</label>@*<input type="text" style="width:80px;" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'MM'})"
+                        name="EndTime1" id="EndTime1" value="@DateTime.Now.ToString("MM")" />*@
+                        <select name="Months" id="months" >
+                            <option value="0" >请选择</option>
+                             @for (int i = 1; i <=12; i++)
+                            {
+							<option value="@i" @(ViewBag.Months==i?"selected":"")>@i 月</option>
+                            }
+                        </select>
+                        </li>
+
+                        <li>
+                            <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                            <input type="submit" id="btnsumbit" class="submitbutton2 ymxButtonMT" style="float: none;" value="查询" />
+                        </li>
+                    </ul>
+                    <div style="clear: both;">
+                    </div>
+                </div>
+            }
+            <div id="articles" style="margin-top: 5px;overflow:auto;">
+                @Html.Partial("_Manyidu", Model)
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+        $(function () {
+            $("th[orderField='@orderField']").addClass("@orderDirection");
+            if (window.PIE) {
+                $('.rounded').each(function () {
+                    PIE.attach(this);
+                });
+            }
+        });
+      
+ 
+    </script>
+    <script>
+        $(function () {
+            let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+            $("#articles").css("height", acHeight + "px");
+           
+        })
+    </script>

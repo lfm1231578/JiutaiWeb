@@ -1,0 +1,61 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.SupplierEntity>
+    @{
+        Layout = null;
+        var no = 1;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+    width: 100%; margin-left: 5px;" cellpadding="0" cellspacing="0">
+            <thead style="position:absolute;">
+                <tr>
+                    <th>
+                        序号
+                    </th>
+                    <th orderfield="">
+                        供应商名称
+                    </th>
+                    <th orderfield="">
+                        供应商电话
+                    </th>
+                    <th>
+                        供应商地址
+                    </th>
+                    <th>
+                        编辑
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;"></tr>
+
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @(no++)
+                        </td>
+                        <td>
+                            @entity.Name
+                        </td>
+                        <td>
+                            @entity.Phone
+                        </td>
+                        <td>
+                            @entity.Address
+                        </td>
+                        <td>
+                            <a href="@Url.Content("~/WarehouseManage/SupplierListEdit?ID=" + entity.ID)">编辑</a>
+                        </td>
+                    </tr>
+
+                }
+              
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+   
+    <script src="../../Scripts/ymx/commonTable.js"></script>

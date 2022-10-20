@@ -1,0 +1,72 @@
+﻿@{
+    Layout = null;
+    var roleid = Request["roleID"];
+    var roleName =Server.UrlDecode(Request["roleName"]); 
+    
+}
+<div class="pageContent">
+<h1 style=" font-size:16px;color:blue; margin:10px;">您正在设置的菜单权限角色：@roleName </h1>
+    <div id="setMenuRightContent" layouth="70">
+    </div>
+</div>
+<div class="formBar">
+    <ul>
+        <li>
+            <div class="buttonActive" id="btnSetMenuRight">
+                <div class="buttonContent">
+                    <button type="button">
+                        保存</button></div>
+            </div>
+        </li>
+        <li>
+            <div class="button">
+                <div class="buttonContent">
+                    <button type="button" class="close">
+                        关闭</button></div>
+            </div>
+        </li>
+    </ul>
+</div>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery.treeRight.js")"></script>
+<script type="text/javascript">
+    $(function () {
+       
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            data: { roleid: "@roleid" },
+            url: getControllerUrl("SystemManagement", "GetMenuTree"),
+            success: function (data) {
+                load(data);
+            },
+            error: function (xhr) {
+                alertMsg.warn('数据没有加载成功！');
+            }
+        });
+    });
+    function load(data) {
+        var o = { showcheck: false };
+        o.data = data;
+        $("#setMenuRightContent").treeview(o);
+        $("#btnSetMenuRight").click(function () {
+            var menuid = $("#setMenuRightContent").getCkOperat();
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: getControllerUrl("SystemManagement", "SaveMenuRight"),
+                data: { "menuId": menuid.toString(), "roleId": "@roleid" },
+                success: function (d) {
+                    if (d == null || d.IsSuccess == false)
+                        alertMsg.error("角色授权失败！");
+                    else
+                        alertMsg.correct('角色授权成功！');
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                    alertMsg.warn('数据没有加载成功！');
+                }
+            });
+        });
+    }
+
+</script>

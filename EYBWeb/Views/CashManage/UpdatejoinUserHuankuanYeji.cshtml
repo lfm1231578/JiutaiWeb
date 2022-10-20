@@ -1,0 +1,293 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using CashManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@using SystemManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.MoneyEntity.StaffPerformanceEntity>
+@{
+    ViewBag.Title = "审核还款单业绩";
+    Layout = null;
+    var orderNo = Request["OrderNo"];
+    ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    BaseinfoManage.Factory.IBLL.IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<BaseinfoManage.Factory.IBLL.IBaseinfoBLL>();
+    var uname = ViewBag.Username;
+    var opentemcard = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "ISOpenCourseTreatment");       //是否开启疗程卡打印 1开启 2关闭
+    //获取订单详情
+    var entity = cashBll.GetOrderModel(new OrderEntity { OrderNo = orderNo });
+    //获取订单支付方式
+    // var payList = cashBll.GetPaymentOrderProductList(orderNo);
+    //获取订单支付方式
+    var payList = cashBll.GetAllPaymentOrder(new PaymentOrderEntity { OrderNo = orderNo });
+    string paystr = "";
+    //获取订单产品详情
+    var orderList = cashBll.GetOrderinfoAndJoinUser(new OrderinfoEntity { OrderNo = orderNo }).OrderByDescending(i => i.CardType).ToList();
+    var newlist = Model.GroupBy(i => i.UserID).ToList();
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <style type="text/css">
+        .droptab
+        {
+            width: 99%;
+            border: 1px solid #ccc;
+            border-collapse: collapse;
+        }
+
+        .droptab thead
+        {
+            background: #e7f6ff;
+            border: 1px solid #ccc;
+        }
+
+        .droptab thead tr
+        {
+            height: 18px;
+        }
+
+        .droptab thead tr th
+        {
+            border: 1px solid #ccc;
+        }
+
+        .droptab tbody
+        {
+        }
+
+        .droptab tbody tr
+        {
+            border-bottom: 1px dashed #ccc;
+            line-height: 26px;
+            height: 26px;
+        }
+
+        .droptab tbody tr td
+        {
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+
+        .droptab tbody tr td input
+        {
+            border: 0px solid #ccc;
+            width: 60px;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+
+        .trusername
+        {
+            background: #D4E8E3;
+        }
+
+        .changebg
+        {
+            background: #C2FAE6;
+        }
+    </style>
+</head>
+<body style="background: #fff;">
+    <form id="submitform" action="" method="post">
+    <div id="mainContentRight" style="width: 960px;">
+        <div style="width: 98%;">
+            <fieldset style="width: 100%;">
+                <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;员工业绩列表&nbsp;&nbsp;</legend>
+                <form id="myform2" action="" class="clearfix" method="post">
+                <input type="hidden" name="OrderNo" value="@orderNo" />
+                <table class="droptab">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">
+                                类型
+                            </th>
+                            <th rowspan="2">
+                                金额
+                            </th>
+                            <th rowspan="2">
+                                现金业绩
+                            </th>
+                            <th rowspan="2">
+                                卡扣业绩
+                            </th>
+                            <th rowspan="2">
+                                奖励
+                            </th>
+                            <th colspan="7">
+                                现金业绩
+                            </th>
+                            <th colspan="6">
+                                卡扣业绩
+                            </th>
+                        </tr>
+                        <tr>
+                            <th style="border-right: 1px solid #fff;">
+                                储值卡
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                疗程卡
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                常规产品
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                特殊产品
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                单次项目
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                大项目
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                特殊项目
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                疗程卡
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                常规产品
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                特殊产品
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                单次项目
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                大项目
+                            </th>
+                            <th style="border-right: 1px solid #fff;">
+                                特殊项目
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        @foreach (var ninfo in newlist)
+                        {
+                            <tr class="trusername">
+                                <td colspan="17" style="text-align: left; line-height: 27px; color: Blue; font-size: 18px; padding-left: 10px;"  userid="@ninfo.Key">
+                                    @EYB.Web.Code.PageFunction.GetHospitalName(ninfo.Key)
+                                </td>
+                            </tr>
+                               foreach (var info in Model)
+                               {
+                                   if (ninfo.Key == info.UserID)
+                                   {
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="ID" value="@info.ID" />
+                                    <input type="hidden" name="InfoBuyType" value="@info.InfoBuyType" />
+                                    @info.TypeName
+                                </td>
+                                <td>@info.Price
+                                </td>
+                                <td>
+                                    <input type="text" name="XianJin" onkeyup="CheckInputIntFloat(this)" value="@info.XianJin" />
+                                </td>
+                                <td>
+                                    <input type="text" name="KaKou" onkeyup="CheckInputIntFloat(this)" value="@info.KaKou" />
+                                </td>
+                                <td>
+                                    <input type="text" name="Reward" onkeyup="CheckInputIntFloat(this)" value="@info.Reward" />
+                                </td>
+                                <td>
+                                    <input type="text" name="Yeji_Chuzhika" onkeyup="CheckInputIntFloat(this)" value="@info.Yeji_Chuzhika" />
+                                </td>
+                                <td>
+                                    <input type="text" name="Yeji_Liaochengka" onkeyup="CheckInputIntFloat(this)" value="@info.Yeji_Liaochengka"/>
+                                </td>
+                                <td>
+                                    <input type="text" name="Yeji_Chanpin" onkeyup="CheckInputIntFloat(this)" value="@info.Yeji_Chanpin" />
+                                </td>
+                                <td>
+                                    <input type="text" name="Yeji_TeshuChanpin" onkeyup="CheckInputIntFloat(this)" value="@info.Yeji_TeshuChanpin"/>
+                                </td>
+                                <td>
+                                    <input type="text" name="Yeji_Xiangmu" onkeyup="CheckInputIntFloat(this)" value="@info.Yeji_Xiangmu"/>
+                                </td>
+                                <td>
+                                    <input type="text" name="Yeji_Daxiangmu" onkeyup="CheckInputIntFloat(this)" value="@info.Yeji_Daxiangmu"/>
+                                </td>
+                                <td>
+                                    <input type="text" name="Yeji_Teshuxiangmu" onkeyup="CheckInputIntFloat(this)" value="@info.Yeji_Teshuxiangmu" />
+                                </td>
+                                <td>
+                                    <input type="text" name="KakouYeji_Liaocheng" class="XianJin" onkeyup="CheckInputIntFloat(this)" value="@info.KakouYeji_Liaocheng" />
+                                </td>
+                                <td>
+                                    <input type="text" name="KakouYeji_Chanpin" onkeyup="CheckInputIntFloat(this)" value="@info.KakouYeji_Chanpin" />
+                                </td>
+                                <td>
+                                    <input type="text" name="KakouYeji_TeshuChanpin" onkeyup="CheckInputIntFloat(this)" value="@info.KakouYeji_TeshuChanpin" />
+                                </td>
+                                <td>
+                                    <input type="text" name="KakouYeji_Xiangmu" onkeyup="CheckInputIntFloat(this)" value="@info.KakouYeji_Xiangmu" />
+                                </td>
+                                <td>
+                                    <input type="text" name="KakouYeji_Daxiangmu" onkeyup="CheckInputIntFloat(this)" value="@info.KakouYeji_Daxiangmu" />
+                                </td>
+                                <td>
+                                    <input type="text" name="KakouYeji_Teshuxiangmu" onkeyup="CheckInputIntFloat(this)" value="@info.KakouYeji_Teshuxiangmu" />
+                                </td>
+                            </tr>
+                                   }
+                               }
+                        }
+                    </tbody>
+                </table>
+                </form>
+            </fieldset>
+        </div>
+        <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="保 存" onclick="SubmitYeji()" />
+            <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" /></div>
+    </div>
+    </form>
+</body>
+</html>
+<script type="text/javascript">
+
+   function CheckInputIntFloat(oInput) {
+        if ('' != oInput.value.replace(/^[-]?\d{1,}\.{0,1}\d{0,}/, '')) {
+            oInput.value = oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/) == null ? '' : oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/);
+        }
+    }
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+    function SubmitYeji() {
+
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "json", //返回json格式的数据
+            url: "@Url.Content("~/CashManage/ShenheYeji")",
+            data: $('#submitform').serialize(),
+            async: false,
+            success: function (data) {
+                if (data >0) {
+                    alert("保存成功！");
+                    art.dialog.open.api.close();
+                    var win = art.dialog.open.origin; //来源页面
+                    // 如果父页面重载或者关闭其子对话框全部会关闭
+                    win.location.reload();
+                }
+            },
+            error: function (e) {
+                alert("操作失败！");
+            }
+        });
+    }
+</script>

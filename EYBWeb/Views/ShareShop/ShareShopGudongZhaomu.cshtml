@@ -1,0 +1,94 @@
+﻿@using EYB.ServiceEntity.BaseInfo;
+@using BaseinfoManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.Statistics.StatisticsShareholderBonus>
+    @{
+
+        IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+        IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+        var orderName = ViewBag.orderName;
+        var orderField = ViewBag.orderField;
+        var orderDirection = ViewBag.orderDirection;
+        var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+
+        //获取区域门店
+        var regionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+
+        bool hasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    }
+    <div id="mainContentBody">
+        @Html.Partial("_ShareShopControl")
+        <div id="mainContentRight">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                    ●
+                </label>股东招募报表(<span id="sp">@Model.TotalItemCount</span>) @*&nbsp;<a href="javascript:OpenDailogDetail('ADD',0);"style="width:100px;"   class="addbutton"> 新建活动</a>*@
+            </div>
+            <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;"
+                 id="">
+                <div class="mainContentRight">
+                    @using (Ajax.BeginForm("ShareShopGudongZhaomu", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                    {
+                        <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                        <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+
+                        <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                            <ul>
+                                @if (hasPermission)
+                                {
+                                    <li>
+                                        <label style="font-weight: normal;">
+                                            关键字：
+                                        </label>
+                                        <input type="text" class="inputtext" name="UserName" id="txtUserName" value="" style="width: 140px;height:20px;" />
+                                    </li>
+                                }
+                                <li>
+                                    入股时间：
+                                    <input type="text" class="text-input Wdate" style=" width:85px;" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd' })"
+                                           name="STime" id="STime" value="@ViewBag.StartTime" />
+                                    <label style="font-weight: normal;">
+                                        至
+                                    </label><input type="text" class="text-input Wdate" style=" width:85px;" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd' })"
+                                                   name="ETime" id="ETime" value="@ViewBag.EndTime" />
+                                </li>
+                                <li>
+                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                                    @*<input type="button" id="btnsend" class="submitbutton4" style="float: none;width: 150px;" value="发送积客活动" />*@
+                                </li>
+                            </ul>
+                            <div style="clear: both;">
+                            </div>
+                        </div>
+                    }
+                    <div id="articles" class="" style="height: 100%; overflow: hidden; margin-top: 5px;
+                    width: 100%;">
+                        @Html.Partial("_ShareShopGudongZhaomu", Model)
+                    </div>
+                    @{Html.RegisterMvcPagerScriptResource();}
+                    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+
+        $("#btnsearch").click(function () {
+            $("#txtTimehid").val(Math.random());
+        })
+        $("#btnsend").click(function () {
+            if ($("input[name='checkbox']:checked").length == 0) {
+                alert("请选择发送的顾客!"); return;
+            }
+            var chkbox = new Array();
+            $("input[name='checkbox']:checked").each(function (i) {
+                chkbox[i] = $(this).val();
+            });
+            art.dialog.open("/Activity/ActivitySendPage?UserID=" + chkbox.toString(), { title: "发送积客活动", width: 400, height: 500 });
+        })
+
+    </script>

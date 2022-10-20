@@ -1,0 +1,153 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using EYB.ServiceEntity.SystemEntity
+@{
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    ISystemManageBLL systemBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    //查询员工
+    IList<HospitalUserEntity> personList = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    personList = personList.Where(i => i.IsSys != 1).ToList();
+    //费用项目名称
+    var currentPxpenseslist = systemBll.GetBaseInfoTreeByType("CurrentPxpenses", 1, ViewBag.ParentHospitalID) as IList<BaseinfoEntity>;
+}
+<div id="mainContentBody">
+       @Html.Partial("~/Views/CenterManage/_CenterInfoControl.cshtml")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>
+            新增日常费用收支单</div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <form action="" method="post" class="clearfix" id="myform" style="position: relative;">
+            <div class="mainContentRight_bottomContent">
+                <table class="mainContentRight_table">
+                    <tr>
+                        <td class="tdright">
+                            来往单位名称
+                        </td>
+                        <td>
+                            <input type="text" class="text-input input200" name="CompanyName" id="UserName"
+                                value="" />
+                        </td>
+                        <td class="tdright">
+                            责任人
+                        </td>
+                        <td>
+                            <select class="select" name="UserID">
+                                @foreach (var info in personList)
+                                {
+                                    <option value="@info.UserID">@info.UserName</option>
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            费用项目名称
+                        </td>
+                        <td>
+                            <select class="select" name="Name">
+                                <option value="">请选择项目类别</option>
+                                @foreach (var info in currentPxpenseslist.Where(x => x.IsShow == 1))
+                                {
+                                    <option value="@info.InfoName">@info.InfoName</option>
+                                }
+                            </select>
+                        </td>
+                        <td class="tdright">
+                            支付方式
+                        </td>
+                        <td>
+                            <select class="select" name="PayID">
+                                <option value="现金">现金</option>
+                                <option value="银联卡">银联卡</option>
+                                <option value="支票">支票</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            支出金额
+                        </td>
+                        <td>
+                            <input type="text" onkeyup="CheckInputIntFloat(this)" class="text-input input200"
+                                name="OutMoney" id="txtOutMoney" value="" />
+                        </td>
+                        <td class="tdright">
+                            收入金额
+                        </td>
+                        <td>
+                            <input type="text" onkeyup="CheckInputIntFloat(this)" class="text-input input200"
+                                name="InMoney" id="txtInMoney" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            票据号码
+                        </td>
+                        <td>
+                            <input type="text" class=" text-input input200" name="PiaoNo" />
+                        </td>
+                        <td class="tdright">
+                            业务日期
+                        </td>
+                        <td>
+                            <input type="text"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")" name="CreateTime" class="text-input input200" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            备注
+                        </td>
+                        <td colspan="3">
+                            <textarea name="Memo" style="width: 300px;"></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <div class="mainContentButton clearfix">
+                    <input type="button" id="btnsave" onclick="saveAs()" class=" submitbutton2" value="保 存"
+                        style="margin-left: 180px;" />
+                    <input type="button" class="submitbutton2" onclick="history.go(-1)" value="返 回" />
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+function CheckInputIntFloat(oInput) {
+    if ('' != oInput.value.replace(/\d{1,}\.{0,1}\d{0,}/, '')) {
+        oInput.value = oInput.value.match(/\d{1,}\.{0,1}\d{0,}/) == null ? '' : oInput.value.match(/\d{1,}\.{0,1}\d{0,}/);
+    }
+}
+
+    function saveAs() {
+        var inmoney = $("#txtInMoney").val();
+        var outMoney = $("#txtOutMoney").val();
+
+
+        if(inmoney=="" && outMoney=="")
+        {
+         artdialogfail("收入金额、支出金额必填一项！");return false;
+        }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: '@Url.Content("~/CashManage/AddDayPay")',
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                alert("保存出错");
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("保存成功！","@Url.Content("~/CashManage/DayPayList")");
+                } else {
+                    artdialogfail("保存失败");
+                }
+            }
+        });
+    }
+</script>

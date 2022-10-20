@@ -1,0 +1,46 @@
+﻿@using HWLY.OA.SystemManagement.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    Layout = "~/Views/Shared/Header.cshtml";
+    var curBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManagementBLL>();
+
+    var name = Request["name"];
+    var id =  Request["id"];
+    var infotypeList = curBLL.GetBaseInfoTreeByType("DataRight");
+}
+<div class="pad_10">
+    <form action="@Url.Content("~/SystemManagement/UpdateDataRightNum")" method="post" name="myform" id="myform">
+    <table width="100%" cellpadding="2" cellspacing="1" class="table_form">
+        <tr>
+            <th width="60">
+                角色名称 :
+            </th>
+            <td>
+                <input type="text" name="RoleName" id="name" class="input-text" value="@name" size="25" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                角色 :
+            </th>
+            <td>
+                <select name="DataRightNum">
+                    @foreach (var info in infotypeList)
+                    {
+                        <option value="@info.InfoName">@info.InfoName</option>
+                    }
+                </select>
+            </td>
+        </tr>
+    </table>
+    <input type="hidden" name="RoleID" value="@id" />
+    <input type="submit" name="dosubmit" id="dosubmit" class="dialog" value=" " />
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $.formValidator.initConfig({ formid: "myform", autotip: true, onerror: function (msg, obj) { window.top.art.dialog({ content: msg, lock: true, width: '250', height: '50', show: true }, function () { this.close(); $(obj).focus(); }) } });
+
+            $("#name").formValidator({ onshow: "不能为空", onfocus: "不能为空" }).inputValidator({ min: 1, onerror: "请填写角色名" });
+        })
+    </script>
+</div>

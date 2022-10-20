@@ -1,0 +1,117 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model EYB.ServiceEntity.CenterEntity.ChartConfigEntity
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@{
+    Layout = null;
+    ViewBag.Title = "运营状态";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    ////查询门店美容师
+    //IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    //persoList = persoList.Where(i => i.IsSys != 1).ToList();
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    
+}
+<!--位置不能颠倒，否则影响样式-->
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/Highcharts/highcharts.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/Highcharts/modules/exporting.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/Highcharts/highcharts-more.js" type="text/javascript"></script>
+<style type="text/css">
+    body
+    {
+        background: #fff;
+        overflow-x: hidden;
+    }
+</style>
+<body style="background: #fff;">
+    <div class="box-wrap toolbar">
+        <div class="accountdiv l-list ullist " style="margin: 0px auto; padding: 0px; width: 100%;">
+            <ul id="tdul">
+                @using (Ajax.BeginForm("BreakState", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                {
+                    <li>
+                        <label style="font-weight: normal;">
+                            所属分店：</label>
+                        <select name="HospitalID" id="HospitalID" class="select ymxSelect" >
+                            <option value="0">请选择分店</option>
+                            @if (RegionhospitalList.Count > 0)
+                            {
+                                foreach (var info in RegionhospitalList)
+                                {
+                                <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var info in hospitalList)
+                                {
+                                <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                }
+                            }
+                        </select>
+                    </li>
+                    <li>
+                        <label style="font-weight: normal;">
+                            年份：</label>
+                        <select name="Years" id="Years" style="border:none;">
+                            @for (int i = DateTime.Now.Year - 5; i < DateTime.Now.Year + 3; i++)
+                            {
+                                <option @(i == DateTime.Now.Year ? "selected=selected" : "")  value="@i">@i</option>
+                            }
+                        </select>
+                    </li>
+                    <li>
+                        <label style="font-weight: normal;">
+                            月：</label>
+                        <select name="Months" id="Months" style="border:none;">
+                            <option value="">全部</option>
+                            <option @(DateTime.Now.Month == 1 ? "selected='selected'" : "") value="01">01</option>
+                            <option @(DateTime.Now.Month == 2 ? "selected='selected'" : "") value="02">02</option>
+                            <option @(DateTime.Now.Month == 3 ? "selected='selected'" : "") value="03">03</option>
+                            <option @(DateTime.Now.Month == 4 ? "selected='selected'" : "") value="04">04</option>
+                            <option @(DateTime.Now.Month == 5 ? "selected='selected'" : "") value="05">05</option>
+                            <option @(DateTime.Now.Month == 6 ? "selected='selected'" : "") value="06">06</option>
+                            <option @(DateTime.Now.Month == 7 ? "selected='selected'" : "") value="07">07</option>
+                            <option @(DateTime.Now.Month == 8 ? "selected='selected'" : "") value="08">08</option>
+                            <option @(DateTime.Now.Month == 9 ? "selected='selected'" : "") value="09">09</option>
+                            <option @(DateTime.Now.Month == 10 ? "selected='selected'" : "") value="10">10</option>
+                            <option @(DateTime.Now.Month == 11 ? "selected='selected'" : "") value="11">11</option>
+                            <option @(DateTime.Now.Month == 12 ? "selected='selected'" : "") value="12">12</option>
+                        </select>
+                    </li>
+                    <li>
+                        <input type="submit" id="btnsumbit" class="submitbutton3" style="float: none;margin-top:5px;" value="查询" />
+                    </li>
+                }
+            </ul>
+            <div style="clear: both;">
+            </div>
+        </div>
+    </div>
+    <div id="articles" style="height: 400px; overflow: hidden; margin-top: 5px; width: 100%;">
+        @Html.Partial("_BreakState", Model)
+    </div>
+    @{Html.RegisterMvcPagerScriptResource();}
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+</body>

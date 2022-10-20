@@ -1,0 +1,93 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.BrandProfitEntity>
+    @{
+        ViewBag.Title = "";
+        Layout = null;
+    }
+    <div id="showmessage" style=" display:none;width:220px; height:140px; position:fixed; top:300px; left:650px; color:Red;  margin:0 auto; text-align:center;">
+        <img src="../../Content/themes/images/loading.gif" width="100" />
+        <p style=" text-align:center; height:30px;line-height:30px;">
+            正在努力查询中，请稍后...
+        </p>
+    </div>
+    <form>
+        <table class="gridTable" style="border-collapse: collapse; width: 99%;">
+            <thead>
+                <tr>
+                    <th orderfield="">
+                        门店
+                    </th>
+                    <th orderfield="">
+                        品牌
+                    </th>
+                  
+                    <th orderfield="">
+                        毛利
+                    </th>
+                    <th orderfield="">
+                        01月
+                    </th>
+                    <th orderfield="">
+                        02月
+                    </th>
+                    <th orderfield="">
+                        03月
+                    </th>
+                    <th orderfield="">
+                        04月
+                    </th>
+                    <th orderfield="">
+                        05月
+                    </th>
+                    <th orderfield="">
+                        06月
+                    </th>
+                    <th orderfield="">
+                        07月
+                    </th>
+                    <th orderfield="">
+                        08月
+                    </th>
+                    <th orderfield="">
+                        09月
+                    </th>
+                    <th orderfield="">
+                        10月
+                    </th>
+                    <th orderfield="">
+                        11月
+                    </th>
+
+                    <th orderfield="">
+                        12月
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>@entity.HospitalName</td>
+                        <td>@entity.BrandName</td>
+                        <td>@entity.AllPrice</td>
+                        <td>@entity.Month1</td>
+                        <td>@entity.Month2</td>
+                        <td>@entity.Month3</td>
+                        <td>@entity.Month4</td>
+                        <td>@entity.Month5</td>
+                        <td>@entity.Month6</td>
+                        <td>@entity.Month7</td>
+                        <td>@entity.Month8</td>
+                        <td>@entity.Month9</td>
+                        <td>@entity.Month10</td>
+                        <td>@entity.Month11</td>
+                        <td>@entity.Month12/td>
+                    </tr>
+                }
+
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 14))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager1" })
+    </form>

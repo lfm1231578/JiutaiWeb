@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "新增修改参与员工";
+    Layout = null;
+   var OrderNo=  Request["OrderNo"];
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight" style="width: 650px;">
+   
+        <div id="articles" class="mainContentRight_bottom" style="height: 350px; overflow: auto;
+            margin-top: 5px; width: 100%;">
+            <form id="submitform" action="@Url.Content("~/CashManage/AddUpdateYeji")" method="post">
+              <input type="hidden" name="OrderNo" value="@OrderNo" />
+            <table class="gridTable" style="width: 96%;  border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #c4c4c4;">
+                         
+                        <th>
+                            项目名称
+                        </th>
+                        <th>
+                            单价
+                        </th>
+                       
+                        <th>
+                            数量
+                        </th>
+                        <th>
+                            合计
+                        </th>
+                        <th style="width: 100px;">
+                            操作者 
+                        </th>
+                      
+                    </tr>
+                </thead>
+                <tbody id="gridtbody">
+                  @Html.Raw(Model.ToString())
+                </tbody>
+            </table>
+          </form>
+        </div>
+     
+        <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="保 存" onclick="SubmitYeji()" />
+            <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" /></div>
+    </div>
+</body>
+</html>
+ 
+<script type="text/javascript">
+    //edit by kuangsg  2015-12-28
+    $("#gridtbody").delegate('tr .liHide :checkbox', 'click', function () {
+        var parentcode = $(this).parent().parent().parent();
+
+        parentcode.find(".liMenu").css("display", "none");
+        if ($(this).prop("checked") == true) {
+            var codestr = "<span class='labcode' style='color:blue;' userid='" + $(this).val() + "'>" + $(this).attr("code") + "&nbsp;&nbsp;</span>";
+
+            parentcode.append(codestr);
+        } else {
+            var nowparent = $(this).parent().parent().parent().parent();
+
+            var dsd = nowparent.find(".labcode[userid=" + $(this).val() + "]");
+
+            dsd.remove();
+            if (nowparent.find(".labcode").length == 0) {
+                parentcode.find(".liMenu").css("display", "block");
+            }
+        }
+    });
+    $("#gridtbody").delegate(".liMenu", "click", function () {
+        var curent = $(this).parent().parent().parent().find(".liHide");
+        // curent.css("display", "block");
+        curent.fadeIn("slow");
+    });
+    $("#gridtbody").delegate(".liHide", "mouseleave", function () {
+        $(this).delay(1000).fadeOut("slow");
+    });
+    //其他门店员工选择
+$("#gridtbody").delegate(".selHospitalID", "change", function () {
+    var hospitalid = $(this).val();
+  //  $(this).parent().nextAll().remove();
+    var parent = $(this).parent().parent();
+    $.ajax({
+        type: "post", //使用get方法访问后台 
+        dataType: "text", //返回json格式的数据
+        url: "@Url.Content("~/CashManage/GetAllUserByHospitalID")",
+        data: { "HospitalID": hospitalid },
+        success: function (data) {
+            //赋值下拉框
+            parent.append(data);
+
+        },
+        error: function () {
+            alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+        }
+    });
+});
+    //edit by kuangsg  2015-12-28
+    $("#gridtbody").delegate(".labcode", "click", function () {
+        //var curent = $(this).parent().parent().parent().find(".liHide");
+        var curent = $(this).parent().find(".liHide");
+        //curent.css("display", "block");
+        curent.fadeIn("slow");
+    });
+
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+    function SubmitYeji() {
+        var ischeckedbox = true;
+        //获取每行选中美容师顾问，组装数据
+        $("#gridtbody tr").each(function (i) {
+            var ProjectID = $(this).find("input[name='ProjectID']").val();
+            var Type = $(this).find("input[name='Type']").val();
+            var CardID = $(this).find("input[name='CardID']").val();
+            var useridlist = $(this).find("input:checked");
+            if (useridlist.length == 0) { ischeckedbox = false; return false } else { ischeckedbox = true; }
+            $(this).find("input[name='UserID']").attr("Name", "UserID" + "-" + Type + "-" + CardID + "-" + ProjectID); //UserID+类型+ID组成
+        });
+
+        if (ischeckedbox == false) {
+            alert("请选择参与员工！"); return false;
+        }
+
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: "@Url.Content("~/CashManage/AddUpdateYeji")",
+            data: $('#submitform').serialize(),
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    alert("保存成功！");
+                    art.dialog.open.api.close();
+                    var win = art.dialog.open.origin; //来源页面
+                    // 如果父页面重载或者关闭其子对话框全部会关闭
+                    win.location.reload();
+                }
+            },
+            error: function (e) {
+                alert("操作失败！");
+            }
+        });
+    }
+</script>

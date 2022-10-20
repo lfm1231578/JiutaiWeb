@@ -1,0 +1,49 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PatientEntity.PatientPerformanceGoalsEntity>
+<form action="" method="post" id="myform" name="myform">
+<table class="gridTable">
+    <thead>
+        <tr>
+            <th>
+                姓名
+            </th>
+            <th>
+                所属门店
+            </th>
+            <th>
+                年份
+            </th>
+            <th>
+                月份
+            </th>
+            <th>
+                到店次数
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr>
+                <td>
+                    @entity.UserName
+                </td>
+                <td>
+                    @entity.name
+                </td>
+                <td>
+                    @entity.Years
+                </td>
+                <td>
+                    @entity.Months
+                </td>
+                <td>
+                    @entity.DaodianCount
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 5))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>

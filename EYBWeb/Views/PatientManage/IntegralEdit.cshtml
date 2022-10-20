@@ -1,0 +1,281 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model EYB.ServiceEntity.PatientEntity.IntegralEntity
+@{
+    ViewBag.Title = "积分编辑页面";
+    Layout = null;
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    IList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity> list = new List<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>();
+    list = cashBll.GetMainCardBalanceList(new EYB.ServiceEntity.CashEntity.MainCardBalanceEntity { Type = 1, UserID = int.Parse(ViewBag.UserID) });
+      
+}
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <style type="text/css">
+        .mc_table
+        {
+            width: 98%;
+            text-align: center;
+        }
+        .mc_table tr
+        {
+            line-height: 26px;
+        }
+        .mc_table tr td
+        {
+            height: 26px;
+            line-height: 36px;
+            font-size: 12px;
+            font-size: 16px;
+            text-align: left;
+            margin-left: 10px;
+            width: 150px;
+        }
+        .mc_table tr .tdright
+        {
+            width: 120px;
+            text-align: right;
+        }
+        hr
+        {
+            margin: 10px 0;
+        }
+        .content
+        {
+            width: 90%;
+            margin: 10px 0 0 45px;
+            text-align: left;
+            font-size: 16px;
+            line-height: 36px;
+        }
+        .content span
+        {
+            font-size: 15px;
+            line-height: 40px;
+        }
+        
+        .oneline1
+        {
+            line-height: 30px;
+            font-size: 15px;
+        }
+        .content1
+        {
+            width: 90%;
+            margin: 10px 0 0 45px;
+            text-align: left;
+            font-size: 16px;
+            line-height: 36px;
+        }
+        
+        .hidden
+        {
+            display: none;
+        }
+    </style>
+<body style="background: #fff;">
+    <form action="" method="post" id="myform" class="">
+    <div class="accountdiv" style="margin-top: 10px;width:99%;margin:0 auto;">
+        <table class="mc_table">
+            <tr>
+                <td class="tdright">
+                    用户:
+                </td>
+                <td>@Model.UserName
+                    <input type="hidden" name="UserID" value="@Model.UserID" />
+                </td>
+                <td class="tdright">
+                    剩余积分:
+                </td>
+                <td>
+                    <input type="hidden" id="hidinteg" value="@Model.Integral" />
+                    @Model.Integral
+                </td>
+            </tr>
+        </table>
+    </div>
+    <table class="mainContentRight_table">
+        <tr>
+            <td class="tdright" style="width: 200px;">
+                请选择你要的操作
+            </td>
+            <td>
+                <select id="select" name="OperationType" class="select">
+                    <option selected="selected" value="1">积分兑换</option>
+                    <option value="2">赠送积分</option>
+                </select>
+            </td>
+        </tr>
+        <tr class="DuiHuan">
+            <td class="tdright">
+                积分兑换方式
+            </td>
+            <td>
+                <select id="stype" name="ExchangeType" class="select">
+                    <option value="Divwuping" selected="selected">兑换现实物品</option>
+                    <option value="Divchuzhika">兑换储值卡金额</option>
+                </select>
+            </td>
+        </tr>
+        <tr class="DuiHuan">
+            <td class="tdright">
+                <div id="a" class="oneline Divwuping">
+                    请填写兑换的物品名称
+                </div>
+                <div id="b" class="oneline hidden Divchuzhika">
+                    请选择兑换的储值卡:
+                </div>
+            </td>
+            <td>
+                <div class="Divwuping oneline">
+                    <input type="text" name="Name" class="validate[required] text-input input130" id="NameArticle" />
+                </div>
+                <div class="oneline hidden Divchuzhika">
+                    <select name="CardID" class="select">
+                        @foreach (var info in list)
+                        { 
+                            <option value="@info.ID" >@info.Name（剩余金额 @info.Price )</option>
+                        }
+                    </select>
+                    充值金额&nbsp;<input type="text" name="money" value="0" onkeyup="javascript:CheckInputIntFloatReturn0(this);" class="validate[required] text-input " style="width:80px;" />
+                </div>
+            </td>
+        </tr>
+        <tr class="DuiHuan">
+            <td class="tdright">
+                <div class="oneline1">
+                    扣除:
+                </div>
+            </td>
+            <td>
+                <div class="oneline1">
+                    <input type="text" placeholder="请输入整数" name="kouNumber" class="kouNumber text-input input130" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')"  />
+                    积分
+                </div>
+            </td>
+        </tr>
+        <tr class="Zengsong hidden">
+            <td class="tdright">
+                请输入赠送积分数量
+            </td>
+            <td>
+                <div id="2">
+                    <input type="text" name="ZengNumber" class="ZengNumber text-input input130"/><label style="color:Red;">请输入整数</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                说明:
+            </td>
+            <td>
+                <textarea  style="width:400px;" name="Memo"></textarea>
+            </td>
+        </tr>
+         <tr style="height:60px;">
+            <td class="tdright">
+                
+            </td>
+            <td>
+               <input type="button" id="btnsave" class="submitbutton2" value="提 交" />
+        <input type="reset" onclick="closeedNorefresh()" class="submitbutton2" value="返 回" />
+            </td>
+        </tr>
+    </table>
+   
+    </form>
+    <script type="text/javascript">
+        //积分操作和兑换选项
+        $("#select").change(function () {
+            var thisvar = $(this).val();
+            if (thisvar == "1") {
+                $(".DuiHuan").removeClass("hidden");
+                $(".Zengsong").addClass("hidden");
+            } else {
+                $(".Zengsong").removeClass("hidden");
+                $(".DuiHuan").addClass("hidden");
+            }
+
+        })
+
+        //兑换物品切换
+        $("#stype").change(function () {
+            var val = $(this).val();
+            $(".oneline").addClass("hidden");
+            $("." + val).removeClass("hidden");
+        })
+        //检查输入的数量
+        $(".mainContentRight_table").delegate(".kouNumber", "keyup", function () {
+
+            var hidval = $("#hidinteg").val();
+            //$(this).val(CheckInputIntFloat($(this)));
+            var newval;
+            newval = $(this).val().match(/\d{1,}\.{0,1}\d{0,}/) == null ? '' : $(this).val().match(/\d{1,}\.{0,1}\d{0,}/);
+            $(this).val(newval);
+            if (parseFloat(newval) > parseFloat(hidval)) {
+                $(this).val(0);
+            }
+        })
+
+        //提交
+        $("#btnsave").click(function () {
+            debugger
+            $("#btnsave").attr("disabled", "disabled"); 
+            var kn = $(".kouNumber").val(); //扣除数量
+            var zn = $(".ZengNumber").val(); //赠送数量 
+            var selectval = $("#select").val();
+            var chongzhi = $("#chongzhi").val();
+            var NameArticle = $("#NameArticle").val();
+            var stype = $("#stype").val();
+            if (selectval == 1) {
+                if (NameArticle == "" && stype == "Divwuping") {
+                    alert("请选择物品！");
+                    $("#btnsave").attr("disabled", false);
+                    return false;
+                }
+                if (isNaN(kn) || kn == "") {
+                    alert("请检查你的数量输入");
+                    $("#btnsave").attr("disabled", false);
+                    return false;
+                }
+            }
+            else if (selectval==2) {
+                if ( isNaN(zn) || zn == "") {
+                    alert("请检查你的数量输入");
+                    $("#btnsave").attr("disabled", false);
+                    return false;
+                }
+            }
+         
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("PatientManage", "EditIntegral"),
+                data: $('#myform').serialize(), // 你的formid
+                success: function (data) {
+                    if (data > 0) {
+                        alert("操作成功！");
+                        //art.dialog.open.api.close();
+                        closeed();
+                    }
+                    else if (data == -1) {
+                        alert("请选择储值卡");
+                        $("#btnsave").attr("disabled", false);
+                    }
+                },
+                error: function () {
+                    alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    $("#btnsave").attr("disabled", false);
+                }
+            });
+        })
+
+     
+   
+    </script>
+</body>

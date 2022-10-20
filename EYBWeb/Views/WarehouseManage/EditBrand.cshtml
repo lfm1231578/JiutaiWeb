@@ -1,0 +1,95 @@
+﻿@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@{
+    var type = Request["Type"];
+    var id = Request["ID"];
+    ViewBag.Title = "编辑品牌";
+    IWarehouseManageBLL warehouseBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    BrandEntity Brand=new BrandEntity();
+    if (!String.IsNullOrEmpty(id))
+    {
+        Brand=warehouseBll.GetBrandModel(new BrandEntity{ ID=Convert.ToInt32(id)});
+    }
+}
+
+<div id="mainContentBody">
+    @Html.Partial("_WarehouseManageControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            @(type == "add" ? "添加品牌" : ( type=="Edit"?"编辑品牌":"查看品牌"))
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <form id="myform" action="@Url.Content("~/WarehouseManage/BrandEdit")?type=@type" class="clearfix" method="post"  >
+                <table class="mainContentRight_table ">
+                    <tr>
+                        <td>品牌名称</td>
+                        <td>
+                        <input type="hidden" name="ID" value="@Brand.ID" />  
+                        <input type="text" name="Name" id="Name" value="@Brand.Name" />
+                       </td>
+                    </tr>
+                    <tr>
+                       
+                        @if(type.ToUpper() == "ADD")
+                        {
+                        
+                        }
+                        else
+                        {
+                         <td>添加时间</td>
+                        <td>@Brand.CreatTime.ToString("yyyy-MM-dd hh:MM:ss")</td>
+                        }
+                     </tr>
+                  
+                    <tr>
+                        <td>
+                        </td>
+                        <td class="clearfix">
+                            <input type="button" id="btnsave" class="submitbutton2" value="保 存" /><input type="reset"
+                                onclick="history.go(-1)" class="submitbutton2" value="返 回" />
+                        </td>
+                    </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+
+    //提交操作
+    $("#btnsave").click(function(){
+         if($("#Name").val()=="")
+         {
+            $('#myform').submit();
+            artdialogfail("名称不能为空！","","250");
+            return;
+         }
+
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/WarehouseManage/BrandEdit?Type=")@type",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("保存成功！","@Url.Content("~/WarehouseManage/Brandlist")");
+               }else
+               {
+                artdialogfailTwo("操作失败","","250","100");
+               }
+            }
+        });
+     });
+
+</script>
+

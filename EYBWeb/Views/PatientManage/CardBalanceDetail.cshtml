@@ -1,0 +1,70 @@
+﻿@using EYB.ServiceEntity.CashEntity
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceDetailEntity>
+    @{
+        Layout = null;
+
+        var i = 1;
+        decimal revenueTotal = 0.00m, paymentTotal = 0.00m;
+    }
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+
+    <body style="background: #fff;">
+        <table class="gridTable" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>排序</th>
+                    <th>金额</th>
+                    <th>收入</th>
+                    <th>支出</th>
+                    <th>余额</th>
+                    <th>订单编号</th>
+                    <th>类型</th>
+                    <th>时间</th>
+                </tr>
+            </thead>
+            <tbody id="tb">
+                @foreach (var info in Model)
+                {
+                    decimal revenue = 0.00m, payment = 0.00m;
+                    if (info.Amount > 0) { revenue = info.Amount; }
+                    else { payment = info.Amount; }
+
+                    revenueTotal += revenue;
+                    paymentTotal += payment;
+
+                    <tr>
+                        <td>@(i++)</td>
+                        <td>
+                            <span style="color: @(info.Amount >= 0 ? "red" : "green");">@info.Amount</span>
+                        </td>
+                        <td>
+                            @revenue
+                        </td>
+                        <td>
+                            @payment
+                        </td>
+                        <td>
+                            @info.Balance
+                        </td>
+                        <td>
+                            <a href="#" onclick="OpenOrderDetail('@info.OrderNo')">@info.OrderNo</a>
+                        </td>
+                        <td>@(Enum.Parse(typeof(MainCardBalanceDetailType), info.Type.ToString()).ToString())</td>
+                        <td>@info.CreateTime</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="2">合计:</td>
+                    <td>@revenueTotal</td>
+                    <td>@paymentTotal</td>
+                </tr>
+            </tfoot>
+        </table>
+    </body>

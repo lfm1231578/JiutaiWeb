@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "_DoctorControl";
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Consumer);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Repayment);
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_PurchaseCard);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Exchange);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_OrderList);
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_OrderSummary);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_ReservationDoctorPage);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_MonthSummary);
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_DayPay);
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_CashCheckList);
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_ProductJichun);
+
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+       <span>收银管理</span>
+    </div>
+    @*<div id="mainContentLeft_center">
+            <ul>
+                <li onclick='CheckRight(this,"")'  redirect="@Url.Content("~/CashManage/Consumer")"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart1.png'   /><label>项目产品</label></a></li>
+                <li  onclick='CheckRight(this,"")'  redirect="@Url.Content("~/CashManage/PurchaseCard")" style="margin-left:20px;"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart2.png'   /><label>充值办卡</label></a></li>
+            </ul>
+        </div>*@
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/CashManage/Consumerchangping")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>产品开单
+                    </a>
+                </li>
+            }
+            @if (result1)
+            {
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/CashManage/Consumerdanci")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>单次开单
+                    </a>
+                </li>
+            } 
+            @if (result1)
+            {
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/CashManage/Consumerliaochen")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>疗程开单
+                    </a>
+                </li>
+            }
+            @if (result3)
+            {
+                <li onclick='CheckRight(this,"@result3")' redirect="@Url.Content("~/CashManage/PurchaseCard")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>充值办卡
+
+                    </a>
+                </li>
+            }
+            @if (result2)
+            {
+                <li onclick='CheckRight(this,"@result2")' redirect="@Url.Content("~/CashManage/Repayment")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>还款
+
+                    </a>
+                </li>
+            }
+            @if (result4)
+            {
+                <li onclick='CheckRight(this,"@result4")' redirect="@Url.Content("~/CashManage/Exchange")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>退卡
+
+                    </a>
+                </li>
+            }
+            @if (result5)
+            {
+                <li onclick='CheckRight(this,"@result5")' redirect="@Url.Content("~/CashManage/OrderList")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>单据列表
+
+                    </a>
+                </li>
+            }
+            @if (result6)
+            {
+                <li onclick='CheckRight(this,"@result6")' redirect="@Url.Content("~/CashManage/TodaySummary")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>当天营业汇总
+
+                    </a>
+                </li>
+            }
+            <li onclick='CheckRight(this,"@result6")' redirect="@Url.Content("~/CashManage/StoreDataSummary")">
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>门店客流
+
+                </a>
+            </li>
+            @if (result11)
+            {
+                <li onclick='CheckRight(this,"@result11")' redirect="@Url.Content("~/CashManage/ProductJichun")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>寄存欠货
+
+                    </a>
+                </li>
+            }
+            @*      <li  onclick='CheckRight(this,"@result7")' style=" display:none;" redirect="@Url.Content("~/ReservationDoctorManage/ReservationDoctorPage")" >
+        <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -90px no-repeat;">
+        </span><a style="cursor: pointer; ">预约
+            <label>
+            </label>
+        </a></li>*@
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+
+        //定义权限列表，主要为了显示默认有权限的页面
+        var TheArray = [["@result1", "@Url.Content("~/CashManage/Consumer")"],["@result2", "@Url.Content("~/CashManage/PurchaseCard")"], ["@result3","@Url.Content("~/CashManage/Repayment")"],["@result4","@Url.Content("~/CashManage/Exchange")"],["@result5","@Url.Content("~/CashManage/OrderList")"],["@result6","@Url.Content("~/CashManage/TodaySummary")"],["@result7","@Url.Content("~/CashManage/ReservationDoctorPage")"],["@result8","@Url.Content("~/CashManage/MonthSummary")"],["@result8","@Url.Content("~/CashManage/DayPayList")"]];
+
+</script>

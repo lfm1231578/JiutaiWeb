@@ -1,0 +1,111 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ReservationEntity.ReservationEntity>
+    @{
+        Layout = null;
+    }
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead style="position:absolute;">
+                <tr>
+                    <th orderfield="">
+                        顾客姓名
+                    </th>
+                    <th orderfield="">
+                        顾客卡号
+                    </th>
+                    <th orderfield="">
+                        预约日期
+                    </th>
+                    <th orderfield="">
+                        预约时间
+                    </th>
+                    <th>
+                        美容师
+                    </th>
+                    <th style="display:none;">
+                        来临方式
+                    </th>
+                    <th>状态</th>
+                    <th>详情</th>
+                    <th>
+                        备注
+                    </th>
+                    @* <th>
+                            操作
+                        </th>*@
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;"></tr>
+                  @foreach (var entity in Model)
+                  {
+                    <tr>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.MemberNo
+                        </td>
+                        <td>
+                            @Convert.ToDateTime(entity.ApplyTime).ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            @(entity.StartTime)
+                        </td>
+                        <td>
+                            @entity.ReservationUserName
+                        </td>
+                    <td style="display:none;">
+                        @(entity.ComingWay == 1 ? "主动" : "被动")
+                </td>
+                <td>
+                    @(entity.Statu == 1 ? "预约中" : (entity.Statu == 2 ? "护理中" : (entity.Statu == 3 ? "已完成" : (entity.Statu == 5 ?"待审核":"已取消"))))
+                </td>
+                <td>
+                    <a style="font-size:12px;" class="weekreservation" onclick="openReservation(@entity.ID)">
+                        详情
+                    </a>
+                </td>
+                <td style=" min-width:120px; max-width:180px;">
+                    @entity.Memo
+                </td>
+                @*<td>
+                    <a href="javascript:OpenOrderDetail('@entity.ID');" >详情</a>
+                </td>*@
+        </tr>
+    }
+
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+
+
+    </form>
+    <div style="height:80px;"></div>
+    <script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+    })
+    </script>
+
+    <script type="text/javascript">
+    $(function () {
+       $("#sp").text('@Model.TotalItemCount');
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / (thlen-1)) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+    </script>
+

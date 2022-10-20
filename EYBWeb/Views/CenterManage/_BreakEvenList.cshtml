@@ -1,0 +1,117 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model  List<EYB.ServiceEntity.CenterEntity.BreakEvenEntity>
+    @{
+        ViewBag.Title = "";
+        Layout = null;
+    }
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead style="position:absolute;">
+                <tr>
+                    <th>
+                        记录序号
+                    </th>
+                    <th>
+                        年
+                    </th>
+                    <th>
+                        月
+                    </th>
+                    <th>
+                        租金物管
+                    </th>
+                    <th>
+                        水电
+                    </th>
+                    <th>
+                        生活开支
+                    </th>
+                    <th>
+                        营运费用
+                    </th>
+                    <th>
+                        装修折旧
+                    </th>
+                    <th>
+                        工资
+                    </th>
+                    <th>
+                        其它费用
+                    </th>
+                    @* <th>
+                            现金比例
+                        </th>
+                        <th>
+                            实操比例
+                        </th>*@
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="hieght:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.ID
+                        </td>
+                        <td>
+                            @(entity.Years + "年")
+                        </td>
+                        <td>
+                            @(entity.Months + "月")
+                        </td>
+                        <td>
+                            @entity.Zujin
+                        </td>
+                        <td>
+                            @entity.ShuiDian
+                        </td>
+                        <td>
+                            @entity.ShenghuoKaizhi
+                        </td>
+                        <td>
+                            @entity.Yunying
+                        </td>
+                        <td>
+                            @entity.Zhuangxiu
+                        </td>
+                        <td>
+                            @entity.Dixin
+                        </td>
+                        <td>
+                            @entity.OtherCost.ToString("F2")
+                        </td>
+                        @*       <td>
+                                @entity.XianjinBili.ToString("F2")
+                            </td>
+                            <td>
+                                @entity.ShihaoBili.ToString("F2")
+                            </td>*@
+
+                        <td>
+                            <a href="#" target="_self" onclick="redirectEditUrl('@entity.ID')">编辑</a>
+                            @* &nbsp;&nbsp; <a href="#" onclick="redirectProgressUrl('@entity.ID')">进度</a>*@
+                        </td>
+                    </tr>
+
+                }
+                @*       @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 10))*@
+            </tbody>
+        </table>
+    </form>
+    <script type="text/javascript">
+       function redirectEditUrl(id) {
+            art.dialog.open("@Url.Content("~/CenterManage/BreakEvenEdit")?Type=Edit&ID="+id, { title: "盈亏平衡设置", width: 560, height: 300})
+        }
+
+        function redirectProgressUrl(id) {
+            location.href = "@Url.Content("~/CenterManage/BreakEvenProgress")?ID="+id;
+        }
+
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

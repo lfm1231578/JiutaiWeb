@@ -1,0 +1,12 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "_PatientSelect";
+    //顾客ID
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+    //获取用户账户信息
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+
+    var entity = cashBll.GetAllBalance(new EYB.ServiceEntity.CashEntity.MainCardBalanceEntity { UserID = UserID });
+}
+

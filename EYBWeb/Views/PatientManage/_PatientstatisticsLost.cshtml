@@ -1,0 +1,138 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PatientEntity.PatientstatisticsLostEnrity>
+    @{
+        ViewBag.Title = "_PatientstatisticsLost";
+    }
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+
+    <form action="" method="post" id="searchForm">
+
+        <table class="gridTable" style="width: 100%; border-collapse: collapse;">
+            <thead style="position:absolute;width:99%;">
+                <tr>
+                    <th @(ViewBag.orderField == "HospitalID" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalID" style="width: 10%;">
+                        门店
+                    </th>
+                    <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName" style="width: 10%;">
+                        姓名
+                    </th>
+                    <th @(ViewBag.orderField == "Phone" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Phone" style="width: 15%;">
+                        手机
+                    </th>
+                    <th @(ViewBag.orderField == "FollowUpUserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="FollowUpUserName" style="width: 10%;">
+                        顾问
+                    </th>
+                    <th @(ViewBag.orderField == "FollowUserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="FollowUserName" style="width: 10%;">
+                        美容师
+                    </th>
+                    <th @(ViewBag.orderField == "Category" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Category" style="width:20%;">等级</th>
+                    <th @(ViewBag.orderField == "LastTime" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="LastTime" style="width:15%">最后到店时间</th>
+                    <th @(ViewBag.orderField == "LeaveDays" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="LeaveDays" style="width:10%;">几天未到店</th>
+                </tr>
+            </thead>
+            <tbody class="gridTable1">
+               <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr class="clickclass">
+                        <td>
+                            @entity.HospitalName
+                        </td>
+                        <td>
+                            @*<a href="###" onclick="OpenPatientDetail('@entity.UserID',1)"> @entity.UserName</a>*@ @*onclick 时间会使控制器重新加载一遍，且用的以前页值，所以会跳页*@
+                            <a href="javascript:OpenPatientDetail('@entity.UserID')">@entity.UserName</a>
+                        </td>
+                        <td>
+                            @entity.Phone
+                        </td>
+                        <td>
+                            @entity.FollowUpUserName
+
+                        </td>
+                        <td>
+                            @entity.FollowUserName
+                        </td>
+                        <td>
+                            @entity.Category
+                        </td>
+                        <td>
+                            @entity.LastTime.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            @entity.LeaveDays
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td>合计人数:</td>
+                    <td colspan="6" style=" text-align:left;">@Model.TotalItemCount 人</td>
+                </tr>
+
+                @*@Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 7))*@
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+    //打开顾客详情1
+    function OpenPatientDetail(obj, type) {
+        art.dialog.open("/PatientManage/PatientDetailControl?type=" + type + "&UserID=" + obj, { title: "顾客详情", width: 960, height: 640 });
+    }
+    $("#showmessage").css("display", "none");
+    $('#s_StareTime').val('@ViewBag.s_StareTime');
+    $('#s_Endtime').val('@ViewBag.s_Endtime');
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            tableTileChange();
+            $(window).resize(function () {
+                tableTileChange();
+            })
+        })
+
+        function tableTileChange() {
+            $("#sp").text('@Model.TotalItemCount');
+            //计算head高度，宽度 计算articles高度
+            var theadheight = $("#header").height() + 50 + $(".accountdiv").height();
+            let topHeight = $(".ullist").height();
+               $(".gridTable thead").css("top", topHeight+"px");
+                var gridtablewidth = $(".gridTable").width();
+                var thlen = $(".gridTable thead th").length;
+                $(".gridTable thead th").css("width", (parseInt((gridtablewidth / thlen))) + "px");
+               $(".gridTable tr td").css("width", (parseInt((gridtablewidth / thlen))) + "px");
+            $('.mainContentRight_bottom').on('scroll', function () {
+                    console.log("123")
+                let scrollHeight = $('.mainContentRight_bottom').scrollTop();
+                let topHeight = $(".ullist").height();
+               if (scrollHeight >= topHeight) {
+                    $(".gridTable thead").css("top", topHeight+"px");
+
+                } else {
+                     $(".gridTable thead").css("top",topHeight+"px");
+                }
+              })
+
+        }
+
+    </script>
+    <script type="text/javascript">
+    $(function () {
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+    </script>

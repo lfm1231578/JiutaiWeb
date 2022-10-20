@@ -1,0 +1,145 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.StockOrderEntity>
+    @{
+        Layout = null;
+        //bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_进出仓汇总成本价);
+        bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_进出仓汇总成本价);
+        decimal lss = 0;
+        decimal cbs = 0;
+    }
+    <style>
+        /*******表格********/
+        .gridTable tbody {
+            display: block;
+        }
+
+        .gridTable tr {
+            display: block;
+        }
+
+        .gridTable th {
+            width: 200px;
+            line-height: 40px;
+        }
+
+        .gridTable td {
+            width: 200px;
+        }
+    </style>
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;"
+               cellpadding="0" cellspacing="0">
+            <thead style="display: block; position: absolute;width:100%;">
+                <tr>
+                    <th orderfield="">
+                        仓库名称
+                    </th>
+                    <th>
+                        类别
+                    </th>
+                    <th>
+                        品牌
+                    </th>
+                    <th orderfield="">
+                        产品名称
+                    </th>
+                    <th>
+                        数量
+                    </th>
+                    <th orderfield="">
+                        零售价
+                    </th>
+                    <th orderfield="">
+                        零售总价
+                    </th>
+                    @if (HasPermission)
+                    {
+                        <th>
+                            成本总额
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height: 40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    lss += entity.AllMoney;
+                    if (HasPermission)
+                    {
+                        cbs += @entity.AllChengBen;
+                    }
+
+                    <tr>
+                        <td>
+                            @entity.HouseName
+                        </td>
+                        <td>
+                            @EYB.Web.Code.PageFunction.OrderType(entity.Type)
+                        </td>
+                        <td>
+                            @entity.BrandName
+                        </td>
+                        <td>
+                            @entity.ProductName
+                        </td>
+                        <td>
+                            @entity.AllQuatity
+                        </td>
+                        <td>
+                            @entity.RetailPrice
+                        </td>
+                        <td>
+                            @entity.AllMoney
+                        </td>
+                        @if (HasPermission)
+                        {
+                            <td>
+                                @entity.AllChengBen
+                            </td>
+                        }
+                    </tr>
+
+                }
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        合计
+                    </td>
+                    <td>
+                        @lss   @*@ViewBag.ls*@
+                    </td>
+                    @if (HasPermission)
+                    {
+                        <td>
+                            @cbs  @*@ViewBag.cb*@
+                        </td>
+                    }
+                </tr>
+                </tbody>
+            </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        $("#showmessage").css("display", "none");
+        //计算head高度，宽度 计算articles高度
+        var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+        //$(".gridTable thead").css("top", theadheight + "px");
+        //$(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+
+    })
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

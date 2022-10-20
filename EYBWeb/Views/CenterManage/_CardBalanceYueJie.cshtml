@@ -1,0 +1,72 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MaincardBalanceYuejieEntity>
+    @{
+        ViewBag.Title = "_Patientlist";
+        Layout = null;
+        int Times = 0;
+        decimal Price = 0;
+    }
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead style="position:absolute;">
+                <tr>
+                    <th @(ViewBag.orderField == "HospitalID" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalID">
+                        门店名称
+                    </th>
+                    <th @(ViewBag.orderField == "ProdcuitName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProdcuitName">
+                        卡项名称(项目名称)
+                    </th>
+                    <th @(ViewBag.orderField == "Times" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Times">
+                        余次
+                    </th>
+                    <th>
+                        余额
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    Times += entity.Times;
+                    Price += entity.Price;
+                    <tr>
+                        <td>
+                            @entity.HospitalName
+                    </td>
+                    <td>
+                        @(entity.Type == 1 ? entity.CardName : entity.CardName + "(" + entity.ProjectName + ")")
+                </td>
+                <td>
+                    @(entity.Times)
+            </td>
+            <td>
+                @(entity.Price)
+        </td>
+    </tr>
+}
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                        合计
+                    </td>
+                    <td>
+                        @Times
+                    </td>
+                    <td>
+                        @Price
+                    </td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 4))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <div style="height:120psx"></div>
+    <script type="text/javascript">
+    $("#sp").html("@ViewBag.Count");
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

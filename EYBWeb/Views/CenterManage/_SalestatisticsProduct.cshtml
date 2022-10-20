@@ -1,0 +1,137 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "产品销售汇总";
+    Layout = null;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+
+}
+@*<link href="../../Content/bootstrap/bootstrap.css" rel="stylesheet" />*@
+
+
+<script type="text/javascript">
+    $(function () {
+        $("#showmessage").css("display", "none");
+        $("#searchresult").html("");
+    });
+</script>
+
+<form action="" method="post" id="submitform">
+    @*<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+    <input type="hidden" value="" name="orderField" id="orderField" />*@
+    <table class="gridTable" style="border-collapse: collapse;width:100%;">
+        <thead>
+            <tr>
+                <th @(ViewBag.orderField == "HospitalName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalName">
+                    门店
+                </th>
+                <th>
+                    产品名称
+                </th>
+                <th @(ViewBag.orderField == "RetailPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="RetailPrice">
+                    零售价
+                </th>
+
+                <th @(ViewBag.orderField == "RetailPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="RetailPrice">
+                    购买单价
+                </th>
+
+                <th @(ViewBag.orderField == "Quantity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quantity">
+                    数量
+                </th>
+                <th @(ViewBag.orderField == "AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllPrice">
+                    合计
+                </th>
+                <th @(ViewBag.orderField == "SendAmount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="SendAmount">
+                    赠送
+                </th>
+                <th @(ViewBag.orderField == "DiscountAmount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="DiscountAmount">
+                    折让
+                </th>
+                <th @(ViewBag.orderField == "CostPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CostPrice">
+                    成本
+                </th>
+                <th>
+                    毛利
+                </th>
+                <th @(ViewBag.orderField == "AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllPrice">
+                    销售占比
+                </th>
+                @*<th style="display:none;">*@
+                <th>
+                    毛利占比
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entity in Model)
+            {
+            <tr>
+                <td>
+                    @entity.HospitalName
+                </td>
+                <td>
+                    @entity.ProdcuitName
+                </td>
+                <td>
+                    @entity.RetailPrice
+                </td>
+
+                <td>
+                    @Math.Round(entity.Price, 2).ToString()
+                </td>
+                <td>
+                    @entity.Quantity
+                </td>
+                <td>
+                    @entity.AllPrice
+                </td>
+                <td>
+                    @entity.SendAmount
+                </td>
+                <td>
+                    @Math.Round(entity.DiscountAmount, 2).ToString()
+                </td>
+                <td>
+                    @entity.CostPrice
+                </td>
+                <td>
+                    @entity.Maoli
+                </td>
+                <td>
+                    @(ViewBag.XiaoShouAmount != 0 ? ((entity.AllPrice / (ViewBag.XiaoShouAmount == 0 ? 1 : ViewBag.XiaoShouAmount)) * 100).ToString("0.00") + "%" : "0%")
+                </td>
+
+                @*<td style="display:none;">*@
+                <td>
+                    @((entity.MaoliZhanbi * 100).ToString("0.00") + "%")
+                </td>
+            </tr>
+
+            }
+            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 11))
+        </tbody>
+
+        <tr>
+            <td colspan="4" style=" text-align:right">合计:</td>
+            <td class="txtQuatity">@ViewBag.Quatity</td>
+            <td class="txtheji">@ViewBag.XiaoShouAmount</td>
+            <td class="txtzengsong">@ViewBag.ZengSong</td>
+            <td class="txtzherang">@ViewBag.ZheRang</td>
+            <td class="txtchengben">@ViewBag.ChengBen</td>
+            <td class="txtmaoli">@ViewBag.Summaoli</td>
+            @*<td>@ViewBag.Quatity</td>
+            <td>@ViewBag.XiaoShouAmount</td>
+            <td>@ViewBag.ZengSong</td>
+            <td>@ViewBag.ZheRang</td>
+            <td>@ViewBag.ChengBen</td>
+            <td>@ViewBag.Summaoli</td>*@
+            <td colspan="2"></td>
+        </tr>
+
+    </table>
+</form>
+
+<script src="/Scripts/ymx/commonTable.js"></script>

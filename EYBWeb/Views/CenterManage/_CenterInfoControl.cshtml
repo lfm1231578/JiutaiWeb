@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "_CenterControl";
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_ReceptionManager);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_CardBalanceManager);
+
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_MonthSummary);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_CashCheckList);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_DayPay);
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_Pujilv);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_Yuyue);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalsList);
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalScheduleList);
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalsStatistics);
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_BreakEvenList);
+    bool result12 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_CustomerRecommendation);
+    bool result13 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_CardBalanceYueJie);
+    bool result14 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_PatientFuzhaiOrder);
+    bool result15 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsBusinesChart);
+    bool result16 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_Statisticsyijianzhenduan); 
+    
+    
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+       <span>财务管理</span></div>
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li  onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/CenterManage/ReceptionManager")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;前台消费管理
+
+                    </a></li>
+            }
+            @if (result11)
+            {
+                @*<li  onclick='CheckRight(this,"@result11")' style="" redirect="@Url.Content("~/CenterManage/BreakManage")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;盈利平衡管理
+
+                    </a></li>*@
+            }
+          @*  @if (result1)
+            {
+                <li   onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/MoneyManage/PerformanceReports")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">营收分析
+                        <label>
+                        </label>
+                    </a></li>
+            }*@
+            @if (result3)
+            {
+                <li  onclick='CheckRight(this,"@result3")' redirect="@Url.Content("~/CashManage/MonthSummary")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;月营业报表
+
+                    </a></li>
+            }
+            @if (result4)
+            {
+                <li  onclick='CheckRight(this,"@result4")' redirect="@Url.Content("~/CashManage/CashCheckList")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;收银对账表
+
+                    </a></li>
+            }
+            @if (result5)
+            {
+                <li  onclick='CheckRight(this,"@result5")' redirect="@Url.Content("~/CashManage/DayPayList")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;日常费用收支
+
+                    </a></li>
+            }
+         @*   @if (result14)
+            {
+                <li  onclick='CheckRight(this,"@result14")' style="" redirect="@Url.Content("~/CenterManage/Pinxiangmaoli")" >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -145px no-repeat;">
+                    </span><a style="cursor: pointer; ">品项毛利率明细
+                        <label>
+                        </label>
+                    </a></li>
+            }*@
+            @if (result15)
+            {
+                <li   onclick='CheckRight(this,"@result15")'  redirect="@Url.Content("~/Statistics/StatisticsBusinesChart")"  >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;营业统计图表
+
+                    </a></li>
+            }
+            @if (result16)
+            {
+                <li   onclick='CheckRight(this,"@result16")' redirect="@Url.Content("~/MoneyManage/HospitalZhenduan")"  >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;店务一键诊断表
+
+                    </a></li>
+            }
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    //定义权限列表，主要为了显示默认有权限的页面
+    var TheArray = [["@result1", "@Url.Content("~/CenterManage/ReceptionManager")"],
+
+        ["@result11", "@Url.Content("~/CenterManage/BreakManage")"],
+        ["@result3", "@Url.Content("~/CashManage/MonthSummary")"],
+        ["@result4", "@Url.Content("~/CashManage/CashCheckList")"],
+        ["@result5", "@Url.Content("~/CashManage/DayPayList")"],
+        ["@result15", "@Url.Content("~/Statistics/StatisticsBusinesChart")"],
+        ["@result16", "@Url.Content("~/MoneyManage/HospitalZhenduan")"]];
+
+</script>

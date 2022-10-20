@@ -1,0 +1,184 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.PersonnelEntity;
+@{
+    
+    Layout = null;
+    ViewBag.Title = "权限编辑";
+    SystemManage.Factory.IBLL.ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL PersonnelManageBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    var ID = Request["ID"];
+    var VersionID = ViewBag.VersionID;
+    
+    // Layout = null;
+    //获取所有的菜单
+    var list = PersonnelManageBLL.SelectVersionRightList(VersionID);
+    var menulist = systemBLL.GetMenuList(1, 999);
+    var newmenulist = new List<EYB.ServiceEntity.SystemEntity.UIControlEntity>();
+    foreach (var info in list)
+    {
+        var menlist = menulist.Where(i => i.UIControlID.ToString().ToUpper() == info.UIControlID).ToList();
+        if (menlist.Count > 0)
+        {
+            newmenulist.Add(menlist[0]);
+        }
+    }
+    //获取员工的权限
+    var rightlist = PersonnelManageBLL.SelectVersionRightList(Convert.ToInt32(ID)).Select(s => s.UIControlID).ToList();
+
+}
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="/Content/themes/default/style.css?v=1.22" rel="stylesheet" type="text/css" media="screen" />
+<link href="/Content/themes/css/core.css?v=1.22" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+      type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="/Scripts/Common/common.js" type="text/javascript"></script>
+<!--Panel-->
+<script src="/Scripts/Common/dwz.panel.js" type="text/javascript"></script>
+<script src="/Scripts/Common/dwz.effects.js" type="text/javascript"></script>
+<!--表格-->
+<script src="/Scripts/Common/table.js" type="text/javascript"></script>
+<!--表单验证-->
+<script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+@*<div id="mainContentBody">*@
+    @*@Html.Partial("_BaseInfoControl")*@
+<div id="mainContentRight" style="width:100%">
+    <div class="mainContentRight_top">
+        <label class="Soliddots"></label>
+        PC端权限编辑
+    </div>
+    <div class="mainContentRight_top">
+        <input type="checkbox" class="selectboxchildall" )="" value="全选" name="UIControlID" style="float:left;height: 40px;line-height:10px;">全选/取消
+
+    </div>
+    <div class="mainContentRight_bottom">
+        <form action="@Url.Content("~/BaseInfo/EditCompetence")" method="post" id="submitform">
+            <input type="hidden" value="@ID" name="ID" />
+            @foreach (var menu in menulist.Where(c => c.ParentUIControlID == new Guid("BEF5CCF2-18C0-46a6-9B91-E984BEB9BFEF")))
+            {
+                <div class="container">
+                    <div style="margin-top: 5px;">
+                        <input type="checkbox" @(rightlist.Contains(menu.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") class="selectbox" value="@menu.UIControlID" name="UIControlID" style="float:left;height:10px;line-height:10px;" />@menu.UIControlName
+                    </div>
+                    <div class="menuDiv clearfix">
+                        <ul>
+                            @foreach (var menuinfo in newmenulist.Where(c => c.ParentUIControlID == menu.UIControlID))
+                            {
+                                <li>
+                                    <input type="checkbox" class="selectboxchild" @(rightlist.Contains(menuinfo.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") value="@menuinfo.UIControlID" name="UIControlID" style="float:left;" />@menuinfo.UIControlName
+                                    @{
+                                        var childsubList1 = newmenulist.Where(c => c.ParentUIControlID == menuinfo.UIControlID).ToList();
+                                        foreach (var childmenuinfo in childsubList1.Where(c => c.ParentUIControlID == menuinfo.UIControlID))
+                                        {
+                                        <li>
+                                            (
+                                            <input type="checkbox" value="@childmenuinfo.UIControlID" @(rightlist.Contains(childmenuinfo.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") name="UIControlID" style="float:left;" />@childmenuinfo.UIControlName
+                                            )
+                                        </li>
+                                    }
+                                    }
+                                    </li>
+                                }
+                        </ul>
+                    </div>
+                </div>
+            }
+            @foreach (var menu in menulist.Where(c => c.ParentUIControlID == new Guid("BEF5CCF2-18C0-46a6-9B91-E984BEB9BEEE")))
+            {
+                <div class="container" style="display:none;">
+                    <div style="margin-top: 5px;">
+                        <input type="checkbox" @(rightlist.Contains(menu.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") class="selectbox" value="@menu.UIControlID" name="UIControlID" style="float:left;height:10px;line-height:10px;" />@menu.UIControlName
+                    </div>
+                    <div class="menuDiv clearfix">
+                        <ul>
+                            @foreach (var menuinfo in newmenulist.Where(c => c.ParentUIControlID == menu.UIControlID))
+                            {
+                                <li>
+                                    <input type="checkbox" class="selectboxchild" @(rightlist.Contains(menuinfo.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") value="@menuinfo.UIControlID" name="UIControlID" style="float:left;" />@menuinfo.UIControlName
+                                    @{
+                                        var childsubList1 = newmenulist.Where(c => c.ParentUIControlID == menuinfo.UIControlID).ToList();
+                                        foreach (var childmenuinfo in childsubList1.Where(c => c.ParentUIControlID == menuinfo.UIControlID))
+                                        {
+                                        <li>
+                                            (
+                                            <input type="checkbox" value="@childmenuinfo.UIControlID" @(rightlist.Contains(childmenuinfo.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") name="UIControlID" style="float:left;" />@childmenuinfo.UIControlName
+                                            )
+                                        </li>
+                                    }
+                                    }
+                                    </li>
+                                }
+                        </ul>
+                    </div>
+                </div>
+            }
+            <div class="clearfix" style="margin-top:10px; margin-bottom:30px;">
+                <input style="margin-bottom: 20px;" type="button" class="submitbutton2" id="btnsave"
+                       value="保 存" />
+                <input type="button" style="margin-bottom: 20px;" class="submitbutton2"
+                       onclick="history.go(-1)" value="取 消" />
+            </div>
+        </form>
+    </div>
+</div>
+@*</div>*@
+<script type="text/javascript">
+    //复选框选择事件
+    $(".selectbox").click(function () {
+        if ($(this).prop("checked") == false) {
+            $(this).parent().parent().find("input").each(function () {
+                this.checked = false;
+            });
+
+        } else {
+            $(this).parent().parent().find("input").each(function () {
+                this.checked = true;
+            });
+        }
+    });
+    
+    $(".selectboxchildall").click(function () {
+        if ($(this).prop("checked") == true) {
+            $("input[type='checkbox']").prop("checked", true);
+        } else {
+            $("input[type='checkbox']").prop("checked", false);
+        }
+    });
+    // 子类选择事件
+    $(".selectboxchild").click(function () {
+        if ($(this).prop("checked") == true) {
+            $(this).parent().parent().parent().parent().find(".selectbox").attr("checked", "checked");
+        }
+    });
+
+    $("#btnsave").click(function () {
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("BaseInfo", "EditCompetence"),
+            //async: false,
+            data: $('#submitform').serialize(), // 你的formid
+            error: function (request) {
+                artdialogfailTwo("操作失败！", "", "250", "100");
+            },
+            success: function (data) {
+
+                if (data != null) {
+                    artdialog("操作成功！", "@Url.Content("~/BaseInfo/CompetenceManage")", "250", "100");
+                } else {
+                    artdialogfailTwo("操作失败,！", "", "250", "100");
+                }
+            }
+        });
+    });
+
+</script>

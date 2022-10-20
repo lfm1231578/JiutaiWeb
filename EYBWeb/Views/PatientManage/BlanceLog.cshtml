@@ -1,0 +1,78 @@
+﻿@model PagedList<EYB.ServiceEntity.PatientEntity.ArchivesChangeLogEntity>
+@{
+    ViewBag.Title = "BlanceLog";
+    Layout = null;
+    int i = 1;
+    var LogType = HS.SupportComponents.ConvertValueHelper.ConvertIntValue(Request["LogType"]);
+    
+}
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+
+<body style="background: #fff;">
+    <table class="gridTable" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>排序</th>
+                <th>订单编号</th>
+                <th>金额/次数</th>
+                <th>时间</th>
+
+            </tr>
+        </thead>
+        <tbody id="tb">
+            @foreach (var info in Model)
+            { 
+                <tr>
+                    <td>@(i++)</td>
+                    <td>
+                        @if (info.ChangeClass > 0)
+                        {
+                            <label>变更ID:@info.ID</label>
+                        }
+                        else
+                        { 
+                            <a href="javascript:OpenOrderDetail('@info.OrderNo')">@info.OrderNo</a>
+                        }
+                        </td>
+                   
+                    <td>@if (info.ChangeClass > 0)
+                        {
+                            if(LogType==1)
+                            { 
+                                <label>@(info.newConsumptionUnitPrice - info.ConsumptionUnitPrice)</label>
+                            }else
+                            {
+                                <label>@( Convert.ToInt32(info.newResidualFrequency-info.ResidualFrequency))</label>
+                            }
+                            
+                        }
+                        else
+                        {
+                            if(LogType==1)
+                            { 
+                                @info.ConsumptionUnitPrice
+                            }else
+                            {
+                               @Convert.ToInt32(info.ConsumptionUnitPrice)
+                            }
+                            
+                        }
+                        </td>
+                     <td>@info.CreateTime.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">合计:</td>
+                <td>@ViewBag.SumNum</td>
+                <td colspan="1"></td>
+            </tr>
+        </tfoot>
+    </table>
+</body>

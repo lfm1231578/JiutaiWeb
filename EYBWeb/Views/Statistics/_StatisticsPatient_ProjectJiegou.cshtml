@@ -1,0 +1,62 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PatientManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.PatientEntity.PatientEntity>
+@{
+    ViewBag.Title = "_PatientChuzhiCard";
+    Layout = null;
+    IPatientManageBLL patientBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPatientManageBLL>();//顾客
+
+    string username = "";
+}
+<form action="@Url.Content("~/CashManage/OrderList")" method="post"   id="submitform" >
+<table class="gridTable" style="margin-top: 0px; width: 100%; border-collapse: collapse;">
+    <thead>
+        <tr>
+            <th>
+                会员卡号
+            </th>
+            <th>
+                姓名
+            </th>
+            <th>
+                项目分类
+            </th>
+            <th>
+                占比
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+        
+            <tr>
+                <td>
+                    @entity.MemberNo
+                </td>
+                <td>
+                    @entity.UserName
+                </td>
+                <td>
+                    @entity.Name
+                </td>
+                <td>
+                    @entity.StartCount
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                总数：@ViewBag.Count
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 4))
+    </tbody>
+</table>
+</form>

@@ -1,0 +1,196 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.PersonnelEntity;
+@{
+    Layout = null;
+    ViewBag.Title = "添加回访";
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    IList<HospitalUserEntity> List = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    List = List.Where(i => i.IsSys != 1).ToList();
+    //获取回访主题分类
+    ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+
+    List<EYB.ServiceEntity.SystemEntity.BaseinfoEntity> typelist = new List<EYB.ServiceEntity.SystemEntity.BaseinfoEntity>();
+    typelist = sysBll.GetBaseInfoTreeByType("ReturnThemeType", 1, ViewBag.ParentHospitalID);//疗程卡类型分类
+    
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.js"></script>
+    <script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.queue.js"></script>
+    <script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.handlers.js"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/lhgdialog/lhgdialog.js?skin=idialog")"></script>
+    <script type="text/javascript">
+        $(function () {
+            //头像
+            $(".upload-album").each(function () {
+                $(this).InitSWFUpload({ btntext: "上传护理照片", btnwidth: 140, single: false, water: false, thumbnail: false, filesize: "9948", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+            });
+        });
+    </script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight">
+        <form action="@Url.Content("~/PatientManage/AddPatientFollowInfo")" class="formular" method="post" name="myform" id="myform">
+        <div class="mainContentRight_bottom" style="overflow-y: hidden;">
+            <input type="hidden" name="CustomerUserID" id="CustomerUserID" value="0" />
+            <table class="mainContentRight_bottomnewdepart">
+                <tr>
+                    <td style="width: 120px;">
+                        <span class="red">*&nbsp;</span>顾客姓名
+                    </td>
+                    <td>
+                        <input type="text" name="UserName" id="UserName" class="text-input" style="float: left;" />
+                        <input type="button" id="btnAddHSUserID" style="float: left;" class="addsame" onclick="PatientListOnly()"
+                            value="点击选择顾客" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        跟进人
+                    </td>
+                    <td>
+                        <select name="UserID" class="select">
+                            @foreach (var D in List)
+                            {
+                                <option value="@D.UserID">@D.UserName</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        护理时间
+                    </td>
+                    <td>
+                        <input type="text" class="text-input Wdate input130" name="ReturnTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                   id="ReturnTime" style="width: 130px" />
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        回访主题
+                    </td>
+                    <td>
+                        <select name="ReturnTheme" class="select">
+                            @foreach (var info in typelist)
+                            { 
+                                <option value="@info.ID">@info.InfoName</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        沟通内容
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="Evaluate" class="textarea"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        护理描述
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="Memo" class="textarea"></textarea>
+                    </td>
+                </tr>
+                <tr style="">
+                    <td>
+                        下次护理时间
+                    </td>
+                    <td>
+                        <input type="text" class="text-input Wdate input130" name="LastTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                   id="" style="width: 130px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        下次护理内容
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="LastMemo" class="textarea"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        图片
+                    </td>
+                    <td>
+                        <div class="upload-box upload-album">
+                        </div>
+                        <input type="hidden" name="hidFocusPhoto" id="hidFocusPhoto" runat="server" class="focus-photo" />
+                        <div class="photo-list">
+                            <ul>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                <tr style="height: 80px;">
+                    <td>
+                    </td>
+                    <td>
+                        <input style="margin-left: 0px;" type="button" onclick="SaveData()" class="submitbutton2"
+                            value="保 存" /><input class="submitbutton2" onclick="closeed()" type="button" value="取 消" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+      
+        </form>
+    </div>
+    </form> </div>
+</body>
+<script type="text/javascript">
+    //打开顾客列表
+    function PatientListOnly() {
+        art.dialog.open("/ReservationDoctorManage/ReservationPatientList", { title: "顾客列表", width: 690, height: 470 })
+    }
+    //选择顾客赋值
+    function InFoDate(obj) {
+
+        $("#CustomerUserID").val(obj.split("|")[0]);
+        $("#UserName").val(obj.split("|")[1] + "-" + obj.split("|")[10]);
+    }
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+    //保存数据
+    function SaveData() {
+        if ($("#UserName").val() == "" || $("#CustomerUserID").val() == "0") {
+            alert("请选择顾客"); return;
+        }
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: getControllerUrl("PatientManage", "AddPatientFollowInfo"),
+            data: $('#myform').serialize(),
+            async: false,
+            success: function (data) {
+
+                if (data > 0) {
+                    alert("添加成功！");
+                    window.top.location.reload();
+                }
+            },
+            error: function (e) {
+                //alert(e.responseText);
+                alert("操作失败！");
+            }
+        });
+    }
+</script>
+</html>

@@ -1,0 +1,96 @@
+﻿@{
+    var UserID = Request["UserID"];
+    var type = Request["type"];
+}
+<div id="mainContentBody">
+  @if (type == "1")
+  {
+    @Html.Partial("_CashControl")
+  }
+  else
+  { 
+   @Html.Partial("_BaseInfoControl")
+  }
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+        <input type="hidden" name="UserID" id="UserID" value="@UserID"/><!-- 顾客ID-->
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>
+            顾客详情</div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <div class="mainContentRight_bottomContent">
+                <div id="tabbox">
+                    <ul class="tabs" id="tabs">
+                        <li><a href="###" tab="tab1">账户信息</a></li>
+                        <li><a href="###" tab="tab2">档案详情</a></li>
+                        <li><a href="###" tab="tab3">消费记录</a></li>
+                        <li><a href="###" tab="tab4">购买记录</a></li>
+                        <li><a href="###" tab="tab5">回访记录</a></li>
+                        <li><a href="###" tab="tab6">欠款</a></li>
+                        <li><a href="###" tab="tab7">储值卡</a></li>
+                        <li><a href="###" tab="tab8">疗程卡</a></li>
+                    </ul>
+                    <ul id="tab_conbox" class="tab_conbox">
+                        <li id="tab1" class="tab_con">
+                             <iframe src="@Url.Content("~/PatientManage/AccountPage?UserID=")@UserID" href="@Url.Content("~/PatientManage/AccountPage?UserID=")@UserID" frameborder="0" style="width:100%; ">
+                            </iframe>
+                        </li>
+                        <li id="tab2" class="tab_con" style="display: none;">
+                          
+                             <iframe id="PatientDetailPage" src="" href="@Url.Content("~/PatientManage/PatientDetailPage?UserID=")@UserID" frameborder="0" style="width:100%;  ">
+                            </iframe>
+                        </li>
+                        <li id="tab3" class="tab_con"  style="display: none;">
+                         <iframe src="" href="@Url.Content("~/PatientManage/PatientOrderList?UserID=")@UserID" frameborder="0" style="width:100%; ">
+                            </iframe>
+                        </li>
+
+                         <li id="tab4" class="tab_con"  style="display: none;">
+                         <iframe src="" href="@Url.Content("~/PatientManage/BuyOrderList?UserID=")@UserID" frameborder="0" style="width:100%; ">
+                            </iframe>
+                        </li>
+
+
+                        <li id="tab5" class="tab_con"  style="display: none;">
+                         <iframe src="" href="@Url.Content("~/PatientManage/PatientFollowPage?UserID=")@UserID" frameborder="0" style="width:100%; ">
+                            </iframe>
+                        
+                        </li>
+                        <li id="tab6" class="tab_con"  style="display: none;">
+                         <iframe href="@Url.Content("~/PatientManage/PatientQianPrice?UserID=")@UserID" src="" frameborder="0" style="width:100%; ">
+                            </iframe>
+                        </li>
+                         <li id="tab7" class="tab_con"  style="display: none;">
+                         <iframe href="@Url.Content("~/PatientManage/PatientChuzhiCard?UserID=")@UserID" src="" frameborder="0" style="width:100%; ">
+                            </iframe>
+                        </li>
+                         <li id="tab8" class="tab_con"  style="display: none;">
+                         <iframe href="@Url.Content("~/PatientManage/PatientProjectCard?UserID=")@UserID" src="" frameborder="0" style="width:100%; ">
+                            </iframe>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+        $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 130);
+        //Tab切换
+        $("#tabs  li").click(function () {
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            var index = $(this).parent().find("li").index(this);
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+            var iframe1= $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+            iframe1.attr("src", iframe1.attr("href"));
+        });
+        $("#tabs li:first").addClass("thistab").show();
+    });
+  
+</script>

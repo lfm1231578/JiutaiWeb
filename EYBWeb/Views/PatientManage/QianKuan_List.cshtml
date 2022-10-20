@@ -1,0 +1,44 @@
+﻿@model PagedList<EYB.ServiceEntity.CashEntity.HuanKuanEntity>
+@{
+    ViewBag.Title = "QianKuan_List";
+    Layout = null;
+    int i = 1;
+}
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<body style="background: #fff;">
+    <div>
+        <table class="gridTable"  style="border-collapse:collapse ;width:100%; ">
+            <thead>
+                <tr>
+                    <th>
+                        时间
+                    </th>
+                    <th>
+                        还款金额
+                    </th>
+                    <th>
+                        美容师
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tb">
+                @foreach (var info in Model)
+                { 
+                    <tr>
+                        <td>@info.CreateTime.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>@info.HuanKuanPrice
+                        </td>
+                        <td>@info.UserName
+                        </td>
+                    </tr>
+                }
+                 @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 3))
+            </tbody>
+        </table>
+    </div>
+</body>

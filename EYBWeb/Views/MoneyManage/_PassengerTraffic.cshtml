@@ -1,0 +1,229 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model List<EYB.ServiceEntity.MoneyEntity.PassengerTrafficEntity>
+@{
+    Layout = null;
+    var allCustomerService = 0;
+    var customerService = 0;
+    var headCount = 0;
+    var passengerTraffic = 0;
+    decimal projectNumber = 0;
+    //var fuwuPassengerTraffic = 0;
+    decimal fuwuPassengerTraffic = 0;
+    decimal kuadianKeliu = 0;
+    var buyCount = 0;
+    decimal keliu = 0;
+    int hospitalBuyCount = 0;
+
+    decimal youxiaokeliu = 0;
+    var youxiaokezongRenTou = 0;
+}
+<form action="" method="post" id="submitform">
+<table class="gridTable" style="border-collapse: collapse;">
+    <thead style="position:absolute;">
+        <tr>
+            <th orderfield="">
+                门店
+            </th>
+            <th orderfield="">
+                员工姓名
+            </th>
+            <th orderfield="">
+                组别
+            </th>
+            <th @(ViewBag.orderField == "AllCustomerService" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllCustomerService">
+                管理客数
+            </th>
+            <th @(ViewBag.orderField == "CustomerService" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CustomerService">
+                新增客数
+            </th>
+            <th>
+                买单人头
+            </th>
+            <th @(ViewBag.orderField == "HeadCount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HeadCount">
+                护理人头数
+                @*(护理人头)*@
+            </th>
+
+            @*汪*@
+            <th style="display:none">
+                <span title="店有效人头数=正式会员和非正式会员的员工服务人头数">店有效人头数</span>
+            </th>
+            @*汪*@
+
+            <th @(ViewBag.orderField == "fuwuPassengerTraffic" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="fuwuPassengerTraffic">
+                护理客流量
+                @*（护理人次）*@
+            </th>
+
+            <th @(ViewBag.orderField == "kuadianKeliu" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="kuadianKeliu">
+                跨店客流量
+                @*（跨店客流量）*@
+            </th>
+            <th @(ViewBag.orderField == "Keliu" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Keliu">
+                多人客流量
+                @*(单据审核)*@
+            </th>
+            @*<th @(ViewBag.orderField == "PassengerTraffic" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="PassengerTraffic">
+            客流量<br />
+            (客流人次)
+        </th>*@
+            <th style="display:none">
+                <span title="门店有效客流量=正式会员和非正式会员的门店服务客流量">店有效客流量</span>
+            </th>
+            <th @(ViewBag.orderField == "projectNumber" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="projectNumber">
+                项目数
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:40px;"></tr>
+        @foreach (var entity in Model)
+        {
+            
+            allCustomerService += entity.AllCustomerService;
+            customerService += entity.CustomerService;
+            headCount += entity.HeadCount;
+            buyCount += entity.BuyCount;
+            passengerTraffic += entity.PassengerTraffic;
+            projectNumber += entity.projectNumber;
+            //fuwuPassengerTraffic += (entity.fuwuPassengerTraffic - (int)entity.JianquKeliu);
+            fuwuPassengerTraffic += (entity.fuwuPassengerTraffic - entity.JianquKeliu)<0?0:(entity.fuwuPassengerTraffic - entity.JianquKeliu);
+            kuadianKeliu += entity.kuadianKeliu;
+            keliu += entity.Keliu;
+            hospitalBuyCount = entity.HospitalBuyCount;
+            youxiaokezongRenTou += entity.HsopitalHeadCount;
+            youxiaokeliu += entity.fuwuliuliang;
+    <tr>
+        <td>
+            @entity.HospitalName
+        </td>
+        <td>
+            @entity.UserName
+        </td>
+        <td>
+            @entity.DepartmentName
+        </td>
+        <td>
+            @entity.AllCustomerService
+        </td>
+        <td>
+            @entity.CustomerService
+        </td>
+        <td>
+            @entity.BuyCount
+        </td>
+        <td style="color:red;">
+            @entity.HeadCount
+        </td>
+
+        @*汪*@
+        <td style="display:none">
+            @entity.HsopitalHeadCount
+        </td>
+        @*汪*@
+        @*@if (entity.UserID == 7658)
+        {
+            <td>
+                @(entity.fuwuPassengerTraffic + 1 - entity.JianquKeliu )
+            </td>
+
+        }
+        else
+        {*@
+        @*<td>
+            @(entity.fuwuPassengerTraffic - entity.JianquKeliu)
+        </td>*@
+        <td>
+            @((entity.fuwuPassengerTraffic - entity.JianquKeliu) < 0 ? 0 : (entity.fuwuPassengerTraffic - entity.JianquKeliu))
+        </td>
+        @*}*@
+        <td>
+            @entity.kuadianKeliu
+        </td>
+        <td>
+            @entity.Keliu
+        </td>
+        @*<td>
+            @entity.PassengerTraffic
+        </td>*@
+        <td style="display:none">
+            @entity.fuwuliuliang
+        </td>
+        <td>
+            @entity.projectNumber
+        </td>
+    </tr>
+        }
+    <tr>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+            合计：
+        </td>
+        <td>
+            @allCustomerService
+        </td>
+        <td>
+            @customerService
+        </td>
+        <td>
+            @buyCount
+        </td>
+        <td>
+            @headCount  @*店人头数：@hospitalBuyCount*@
+        </td>
+
+        @*汪*@
+        <td style="display:none">
+            <span title="店有效人头数=正式会员和非正式会员的员工服务人头数">店有效人头数：</span>@youxiaokezongRenTou
+        </td>
+        @*汪*@
+
+        <td>
+            @fuwuPassengerTraffic
+        </td>
+        <td>
+            @kuadianKeliu
+        </td>
+        <td>
+            @keliu
+        </td>
+        @*<td>
+            @passengerTraffic
+        </td>*@
+        <td style="display:none">
+            <span title="门店有效客流量=正式会员和非正式会员的门店服务客流量">门店有效客流量：</span>@youxiaokeliu
+        </td>
+        <td>
+            @projectNumber
+        </td>
+    </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 11))
+    </tbody>
+</table>
+@*@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })*@
+</form>
+    <div style="height:60px;"></div>
+<script type="text/javascript">
+    $(function () {
+        $("#showmessage").css("display", "none");
+    })
+</script>
+<script type="text/javascript">
+    $(function () {
+    
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / (thlen-2)) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+</script>

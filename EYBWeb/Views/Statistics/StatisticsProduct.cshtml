@@ -1,0 +1,59 @@
+﻿@{
+    var UserID = Request["UserID"]; 
+}
+<div id="mainContentBody">
+    @Html.Partial("_StatisticsControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+        <input type="hidden" name="UserID" id="UserID" value="@UserID"/><!-- 顾客ID-->
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            品项分析报表</div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <div class="mainContentRight_bottomContent">
+                <div id="tabbox">
+                    <ul class="tabs" id="tabs">
+                        <li><a href="###" tab="tab2">畅销品项分析</a></li>
+                        <li><a href="###" tab="tab3">品项分析</a></li>
+                        @*  <li><a href="###" tab="tab3">品牌毛利分析月报</a></li>*@
+                    </ul>
+                    <ul id="tab_conbox" class="tab_conbox">
+                        <li id="tab2" class="tab_con" style=" width: 100%;">
+                            <iframe id="PatientDetailPage" src="@Url.Content("~/Statistics/SellingProductAndProject?UserID=")@UserID" href="@Url.Content("~/Statistics/SellingProductAndProject?UserID=")@UserID" frameborder="0"  style="width:100%;_border:none;border:none;  border:0px; _border:0px;  ">
+                            </iframe>
+                        </li>
+                        <li id="tab3" class="tab_con" style="display: none; width: 100%;">
+                            <iframe src="" href="@Url.Content("~/Statistics/StatisticsProductAlayise")" frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px;  ">
+                            </iframe>
+                        </li>
+                        @*  <li id="tab3" class="tab_con" style="display: none; width:100%;">
+                            <iframe src="" href="@Url.Content("~/Statistics/BrandProfitList")" frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px;  ">
+                            </iframe>
+                        </li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+    jQuery(document).ready(function () {
+        $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 110);
+        //Tab切换
+        $("#tabs  li").click(function () {
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            var index = $(this).parent().find("li").index(this);
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+            var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+            iframe1.attr("src", iframe1.attr("href"));
+        });
+        $("#tabs li:first").addClass("thistab").show();
+    });
+  
+</script>

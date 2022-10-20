@@ -1,0 +1,144 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<ProductStockEntity>
+@{
+    ViewBag.Title = "库存查询";
+    //  var ProductType = Request["ProductType"];
+    //IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseinfoBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var parentHospitalID = ViewBag.ParentHospitalID;//获取当前用户的父点ID
+    var cangku = wareBll.GetAllWarehouseListByParentHospitalID(new EYB.ServiceEntity.WarehouseEntity.WarehouseEntity { ParentHospitalID = ViewBag.ParentHospitalID });//获取仓库列表
+    //获取品牌列表
+    IList<BrandEntity> brandlist = new List<BrandEntity>();
+    brandlist = wareBll.GetBrandListNoPage(parentHospitalID);
+
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    var Name = ViewBag.Name;
+    var HouseID = ViewBag.HouseID;
+    var EndTime = ViewBag.EndTime;
+    var StartTime = ViewBag.StartTime;
+    //var lingshou = ViewBag.LingshouPrice;
+    //var chengben = ViewBag.Chengbenprice;
+    //var allnumber = ViewBag.allnumber;
+
+
+    var data = new ViewDataDictionary();
+    data.Add("lingshou", ViewBag.LingshouPrice);
+    data.Add("chengben", ViewBag.Chengbenprice);
+    data.Add("allnumber", ViewBag.allnumber);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_HaveSelectCompetence);
+    var caretypelist = wareBll.GetProductTypeNoPage(ViewBag.ParentHospitalID, 2);//获取项目分类列表
+
+  
+}
+<div id="mainContentBody">
+    @Html.Partial("_WarehouseManageControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>库存查询(<span id="sp">@Model.TotalItemCount</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <div class="toolbar">
+                    <div class="box-wrap">
+                        <div class="l-list">
+                            @using (Ajax.BeginForm("WarehouseList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                            {
+                                 <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                                 <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+                                <div class="accountdiv" style="margin:0px auto; width:100%;">
+                                @if(HasPermission)
+                                {
+                                    <label>仓库:</label>
+                                    <select name="HouseID" id="HouseID" class="select ymxSelect">
+                                        <option value="0">请选择仓库</option>
+                                        @foreach (var house in cangku)
+                                        {
+                                            if (house.IsActive == 1)
+                                            {
+                                            <option @(ViewBag.HouseID == house.ID ? "selected=selected" : "") value="@house.ID">@house.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                               产品类别:
+                                <select name="ProductType" id="ProductType"  class="ymxSelect">
+                                    <option value="0">=选择分类=</option>
+                                    @foreach (var info in caretypelist)
+                                    {
+                                        <option  value="@info.ID">@info.Name</option>
+                                    }
+                                </select>
+                           
+                                    品牌:
+                                    <select name="BrandID" id="BrandID" class="select ymxSelect">
+                                        <option value="0">=选择品牌=</option>
+                                        @foreach (var info in brandlist)
+                                        {
+                                            <option value="@info.ID">@info.Name</option>
+                                        }
+                                    </select>
+                                    产品名称：
+                                    <input type="text" name="ProductName" id="ProductName" class="text-input ymxInput "  value="@Name" />
+                                     <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" class="submitbutton2 ymxButtonMT" id="btnsumbit" style="float: none;" value="查 询" />
+                                    <input type="button" class="submitbutton2 ymxButtonMT" id="btnSave" style="float: none;" value="导 出" />
+                                </div>
+                    
+                    
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div id="articles" class="" style="overflow:auto; margin-top: 5px; width: 100%;">
+                    @Html.Partial("_WarehouseList", Model, data)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+</div>
+<script type="text/javascript">
+    $("#Name").keyup(function () {
+        $("#btnsearch").click();
+        //document.getElementById("searchForm").submit();
+    });
+
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        //定义高度
+        var docheight = getDocumentHeight() - $("#header").height() - $("#footer").height() + 15;
+        $("#articles").height(docheight - 150);
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+    //导出
+    $("#btnSave").click(function () {
+        //var HouseID = $("#HouseID").val();
+        if ($("#HouseID").val() == "" || $("#HouseID").val() == null) {
+            var HouseID =@HouseID;
+        }
+        else { var HouseID = $("#HouseID").val(); }
+        var BrandID = $("#BrandID").val();
+        var ProductType = $("#ProductType").val();
+        var ProductName = $("#ProductName").val();
+        var url = getControllerUrl("WarehouseManage", "ExportWarehouseList") + "?pageNum=1&numPerPage=10000&ProductName=" + ProductName + "&HouseID=" + HouseID + "&BrandID=" + BrandID + "&ProductType=" + ProductType;
+        window.location.href = url;
+
+    });
+
+
+</script>

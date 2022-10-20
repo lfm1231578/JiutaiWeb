@@ -1,0 +1,94 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "AccountPage";
+    Layout = null;
+   var qk=  ViewBag.QianPrice;
+    var hk= ViewBag.HuanKuan;
+    var wh=ViewBag.Price ;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background-color: #fff;">
+    <div class="mainContentRight_bottom" style="margin-top: 0px;">
+        <form action="@Url.Content("~/CashManage/OrderList")" method="post"   id="submitform" >
+        <table class="gridTable" style="margin-top: 0px; width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th orderfield="">
+                        流水号
+                    </th>
+                    <th orderfield="">
+                        业务类别
+                    </th>
+                    <th orderfield="">
+                        欠款金额
+                    </th>
+                    <th orderfield="">
+                        已还金额
+                    </th>
+                    <th>
+                        未还金额
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            <a href='javascript:;' onclick="OpenOrderDetail('@entity.OrderNo')">@entity.DocumentNumber</a>
+                        </td>
+                        <td>
+                            @EYB.Web.Code.PageFunction.GetorderType(entity.OrderType)
+                        </td>
+                        <td>
+                            @entity.QianPrice
+                        </td>
+                        <td>
+                           <a href="#" class="" onclick="OpenOrderHuanKuan('@entity.OrderNo')">@entity.HuanPrice</a>
+                        </td>
+                        <td>
+                        @(-entity.QianPrice-entity.HuanPrice)
+                        </td>
+                    </tr>
+                }
+                <tr>
+                  <td></td>
+                    <td >合计</td>
+                    <td>@qk</td>
+                    <td>@hk</td>
+                    <td>@wh</td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 5))
+            </tbody>
+        </table>
+        </form>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $(function () {
+        $(".aui_close").css("display", "none");
+    })
+
+    function OpenOrderHuanKuan(obj) {
+        art.dialog.open("/PatientManage/QianKuan_List?OrderNo=" + obj, { title: "欠费还款列表", width: 450, height: 360 });
+     }
+     
+</script>

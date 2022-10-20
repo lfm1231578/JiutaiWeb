@@ -1,0 +1,119 @@
+﻿@{
+    var UserID = Request["UserID"];
+    var type = Request["type"];
+    var ShowAll = Request["s"];
+    Layout = null;
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_pageView_Add);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.workrecordManager_todayyuyue);
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<body style="background: #fff;">
+    <div id="mainContentRight" style="width: 98%;">
+        <div id="tabbox">
+            <ul class="tabs" id="tabs">
+                <li><a href="###" tab="tab0">客户信息</a></li>
+                <li><a href="###" tab="tab7">顾客档案</a></li>
+                <li><a href="###" tab="tab1">疗程卡</a></li>
+                <li><a href="###" tab="tab2">储值卡</a></li>
+                @*<li><a href="###" tab="tab10">寄存欠货</a></li>*@
+                <li><a href="###" tab="tab3">欠款</a></li>
+                @if (result4)
+                {
+                    <li><a href="###" tab="tab4">购买记录</a></li>
+                    <li><a href="###" tab="tab5">消费记录</a></li>
+                }
+                @if (HasPermission)
+                {
+                    <li><a href="###" tab="tab6">护理日志</a></li>
+                }
+            </ul>
+            <ul id="tab_conbox" class="tab_conbox">
+                <li id="tab0" class="tab_con">
+                    <iframe href="@Url.Content("~/PatientManage/AccountPage?s=n&UserID=")@UserID" src="" frameborder="0" style="width:100%;  height:570px;">
+                    </iframe>
+                </li>
+                <li id="tab7" class="tab_con" style="display: none;">
+                    <iframe src="" href="@Url.Content("~/PatientManage/PatientDetailPage?UserID=")@UserID" frameborder="0" style="width:100%; height:400px; ">
+                    </iframe>
+                </li>
+                <li id="tab1" class="tab_con">
+                    <iframe href="@Url.Content("~/PatientManage/PatientProjectCard?UserID=")@UserID" src="" frameborder="0" style="width:100%;  height:570px;">
+                    </iframe>
+                </li>
+                <li id="tab2" class="tab_con" style="display: none;">
+                    <iframe href="@Url.Content("~/PatientManage/PatientChuzhiCard?UserID=")@UserID" src="" frameborder="0" style="width:100%; height:570px; ">
+                    </iframe>
+                </li>
+                @*<li id="tab10" class="tab_con" style="display: none;">
+                    <iframe href="@Url.Content("~/PatientManage/PatientChuzhiCard?UserID=")@UserID" src="" frameborder="0" style="width:100%; height:570px; ">
+                    </iframe>
+                </li>*@
+                <li id="tab3" class="tab_con" style="display: none;">
+                    <iframe href="@Url.Content("~/PatientManage/PatientQianPrice?UserID=")@UserID" src="" frameborder="0" style="width:100%; height:570px; ">
+                    </iframe>
+                </li>
+                @if (result4)
+                {
+                    <li id="tab4" class="tab_con" style="display: none;">
+                        <iframe src="" href="@Url.Content("~/PatientManage/BuyOrderList?UserID=")@UserID" frameborder="0" style="width:100%;  height:570px;">
+                        </iframe>
+                    </li>
+                    <li id="tab5" class="tab_con" style="display: none;">
+                        <iframe src="" href="@Url.Content("~/PatientManage/PatientOrderList?UserID=")@UserID" frameborder="0" style="width:100%; height:570px; ">
+                        </iframe>
+                    </li>
+                }
+                @if (HasPermission)
+                {
+                    <li id="tab6" class="tab_con" style="display: none;">
+                        <iframe src="" href="@Url.Content("~/PatientManage/PatientFollowPage?UserID=")@UserID" frameborder="0" style="width:100%; height:570px; ">
+                        </iframe>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</body>
+@*   <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+      
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <div class="mainContentRight_bottomContent">
+            </div>
+        </div>
+        </form>
+    </div>*@
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+
+        //Tab切换
+        $("#tabs  li").click(function () {
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            var index = $(this).parent().find("li").index(this);
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+            var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+            iframe1.attr("src", iframe1.attr("href"));
+        });
+        $("#tabs li:first").addClass("thistab").show();
+    });
+
+    $(function() {
+        var thetype = "@type";
+        if (thetype != "0") {
+            $("#tabs").find("li").eq(parseInt(thetype) - 1).click();
+        }
+    });
+
+  
+
+  
+</script>

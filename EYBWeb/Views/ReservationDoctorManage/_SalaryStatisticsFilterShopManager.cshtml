@@ -1,0 +1,97 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@using SystemManage.Factory.IBLL;
+@model List<EYB.ServiceEntity.ReservationEntity.DakaRecordEntity>
+    @{
+        Layout = null;
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+        var YingxianggongxiuDay = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "YingxianggongxiuDay");
+        var gongxiuday = ConvertValueHelper.ConvertIntValue(YingxianggongxiuDay.AttributeValue);
+        gongxiuday= gongxiuday == 0 ? 4 : gongxiuday;
+
+    }
+    <style type="text/css">
+   .th1 {
+    font-size: 11px;
+        }
+    </style>
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th orderfield="" style="font-size: 11px">
+                        员工职位
+                    </th>
+                    <th orderfield="" style="font-size: 11px">
+                        员工姓名
+                    </th>
+                    <th style="font-size: 11px">
+                        底薪（1）【店基础现金业绩】
+                    </th>
+                    <th style="font-size: 11px">
+                        底薪（2）【月人头数】
+                    </th>
+                    <th style="font-size: 11px">
+                        同比上月人头数扣【人头差】
+                    </th>
+                    <th style="font-size: 11px">
+                        业绩提成【店基础业绩现金/综合业绩/大项目】
+                    </th>
+                    <th style="font-size: 11px">
+                        责任【月基础现金/客流量/新客数量】
+                    </th>
+                    <th style="font-size: 11px">
+                        月请假超过6天扣【月请假超过6天差】
+                    </th>
+                    <th style="font-size: 11px">
+                        全勤奖
+                    </th>
+                    <th style="font-size: 11px">
+                        手工费
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                <tr>
+                    <td>
+                        @entity.UserPost
+                    </td>
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @entity.MrsDixin1【@entity.Mrssumshichao】
+                    </td>
+                    <td>
+                        @entity.MrsDixin2【@entity.MrsDixin2keliu】
+                    </td>
+                    <td>
+                        @entity.BijiaoRentouKoukuang【@entity.BijiaoRentou】
+                    </td>
+                    <td>
+                        @entity.MrsshicaoStr【@entity.MrsHospitalYeji/@entity.HospitalRewardALL/@entity.XiangmuYeji】
+                    </td>
+                    <td>
+                        @entity.JiangliDuty【@entity.MrsHospitalYeji/@entity.sumkeliu/@entity.newkeliu】
+                    </td>
+                    <td>
+                        @entity.ChaoxiuKoukuang【@entity.ChaoxiuQingjiaDay】
+                    </td>
+                    <td>
+                        @entity.Mrsquangqingjiang
+                    </td>
+                    <td>@entity.ShouGongFei</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+      
+    </form>
+    <script type="text/javascript">
+        
+    </script>

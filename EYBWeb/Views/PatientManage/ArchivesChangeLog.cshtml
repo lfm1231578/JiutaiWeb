@@ -1,0 +1,119 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.PatientEntity.ArchivesChangeLogEntity>
+@{
+    ViewBag.Title = "变更日志";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+}
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+              </label>
+            档案变更日志(<span id="sp">@Model.TotalItemCount</span>)
+        </div>
+        <div class="mainContentRight_bottom" style="overflow:hidden;">
+            @using (Ajax.BeginForm("ArchivesChangeLog", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+            {
+         
+                <div class="accountdiv ullist" style="margin-bottom: 0px; width: 100%;">
+                    <ul>
+                        @if (HasPermission)
+                        {
+                            <li>
+                                <label style="font-weight: normal;">
+                                    所属分店：</label>
+                                <select id="HospitalID" name="HospitalID" class="select ymxSelect" style="">
+                                    <option value="0">请选择分店</option>
+                                    @if (RegionhospitalList.Count > 0)
+                                    {
+                                        foreach (var info in RegionhospitalList)
+                                        {
+                                        <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var info in hospitalList)
+                                        {
+                                        <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </li>
+                        }
+                        <li>
+                            <label style="font-weight: normal;">
+                                变更时间：</label>
+                            <input type="text" autocomplete="off" class="text-input Wdate input130"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="StareTime" id="StareTime" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" />
+                            <label style="font-weight: normal;">
+                                -</label>
+                            <input type="text" autocomplete="off" class="text-input Wdate input130"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="EndTime" id="EndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                变更模块：</label>
+                            <select name="ChangeClass" class="select ymxSelect">
+                                <option value="0">请选择</option>
+                                <option value="1">疗程卡变更</option>
+                                <option value="2">储值卡变更</option>
+                                <option value="3">欠款变更</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                变更分类：</label>
+                            <select name="ChangeType" class="select ymxSelect">
+                                <option value="">请选择</option>
+                                <option value="Add">添加</option>
+                                <option value="Update">修改</option>
+                                <option value="Delete">删除</option>
+                            </select>
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                顾客姓名：</label>
+                            <input type="text" name="UserName" class="ymxInput" style="width: 85px;" />
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                操作者名称：</label>
+                            <input type="text" name="UpdateStaffName" class="ymxInput" style="width: 85px;" />
+                        </li>
+                        <li>
+                            <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                            <input type="submit" class="submitbutton2 ymxButtonMT" id="btnsearch" style="float: none;" value="查询" />
+                        </li>
+                    </ul>
+                    <div style="clear: both">
+                    </div>
+                </div>
+                
+               
+            }
+            <div id="articles" style="margin-top: 5px; overflow: auto;">
+                @Html.Partial("_ArchivesChangeLog", Model)
+              
+            </div>
+            @{Html.RegisterMvcPagerScriptResource();}
+            <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        var docheight = getDocumentHeight() - $("#header").height() - $("#footer").height() + 15;
+        $("#articles").height(docheight - 150);
+    });
+   
+</script>

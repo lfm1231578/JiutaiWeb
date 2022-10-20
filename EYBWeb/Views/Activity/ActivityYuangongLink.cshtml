@@ -1,0 +1,37 @@
+﻿@using System
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "ActivityYuangongLink";
+    var Type = Request["Type"];
+    var ID = Request["ID"];
+    var UserId = Request["UserId"];
+    Layout = null;
+    string ActiveDomain = System.Configuration.ConfigurationManager.AppSettings["ActiveDomain"];
+}
+
+ @if (Type == "1")
+ {
+    //链接
+     <span> @(ActiveDomain+"/activity/ActivityList?uid="+UserId+"&aid="+ID)</span>
+
+ 
+ }
+ else
+ {
+
+     string url = ActiveDomain + "/activity/ActivityList?uid=" + UserId + "&aid=" + ID;
+     //二维码
+     QRCodeHandler qr = new QRCodeHandler();
+     string path = AppDomain.CurrentDomain.SetupInformation.ApplicationBase + @"Uploads\QRCode\";    //文件目录                      //二维码字符串  
+     string logoFilePath = path + "myLogo.jpg";
+     string now = DateTime.Now.ToString("yyyymmddhhmmss");
+     //Logo路径50*50  
+     string filePath = path + UserId + now + "myCode.jpg";                                        //二维码文件名  
+     qr.CreateQRCode(url, "Byte", 8, 0, "H", filePath, false, null);   //生成 
+ 
+    string  newurl = "/Uploads/QRCode/" + UserId +now+ "myCode.jpg?v=" + Common.Helper.RandomHelper.CreateVersion();
+
+
+     <img style="width:297px; height:297px; display:block; margin:0 auto;" src="@newurl" />
+ }
+

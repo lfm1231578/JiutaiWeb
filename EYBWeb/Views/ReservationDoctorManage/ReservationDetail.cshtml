@@ -1,0 +1,265 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using DepartmentManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@using EYB.ServiceEntity.ReservationEntity;
+@using HS.SupportComponents;
+@{ 
+    var HID = ViewBag.HospitalID;
+    var UserID = ConvertValueHelper.ConvertLongValue(Request["UserID"]);
+    var ID = ConvertValueHelper.ConvertIntValue(Request["ID"]);
+    IReservationDoctorManageBLL reserBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    var entity = reserBLL.ReservationEntityByID(ID);// ID and 门店ID 获取对象
+    Layout = null;
+    ViewBag.Title = "ReservationDetail";
+    var url = Request.UrlReferrer;
+    var UserID1 = entity.UserID;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="../../Content/themes/css/core.css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+</head>
+<body style="background: #fff;">
+    <div class="mainContentRight_bottom formular">
+        <table class="mainContentRight_bottomnewdepart">
+           @* <tr style="display:none;">
+                <td style="width: 110px;">
+                    顾客编号：
+                </td>
+                <td>@entity.UserID
+                </td>
+            </tr>
+            <tr style="display:none;">
+                <td>
+                    预约编号：
+                </td>
+                <td>@entity.Reservationnumber
+                </td>
+            </tr>*@
+            <tr>
+                <td style="width: 110px;">
+                    顾客姓名：
+                </td>
+                <td>@entity.UserName
+                </td>
+            </tr>
+         @*   <tr style="display:none;">
+                <td>
+                    性别：
+                </td>
+                <td>@(entity.Sex == 0 ? "男" : "女")
+                </td>
+            </tr>
+            <tr style="display:none;">
+                <td>
+                    年龄：
+                </td>
+                <td>
+                    @entity.Age
+                </td>
+            </tr>
+            <tr style="display:none;">
+                <td>
+                    联系方式：
+                </td>
+                <td>
+                    @entity.Mobile
+                </td>
+            </tr>
+            <tr style="display:none;">
+                <td>
+                    家庭地址：
+                </td>
+                <td>
+                    @entity.Address
+                </td>
+            </tr>
+            <tr style="display:none;">
+                <td>
+                    电子邮箱：
+                </td>
+                <td>
+                    @entity.Email
+                </td>
+            </tr>*@
+            <tr>
+                <td>
+                    预约美容师：
+                </td>
+                <td>
+                    @entity.DepartmentName
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    预约到店日期：
+                </td>
+                <td>
+                   @(entity.ApplyTime.Value == null ? "" : entity.ApplyTime.Value.ToString("yyyy-MM-dd"))
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    预约到店时段：
+                </td>
+                <td>
+                    @entity.StartTime 
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    服务内容：
+                </td>
+                <td>
+                    @entity.InfoName
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    预约房号：
+                </td>
+                <td>
+                    @entity.RoomNo
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    备注：
+                </td>
+                <td>
+                    @entity.Memo
+                </td>
+            </tr>
+             <tr>
+                <td>
+                    状态：
+                </td>
+                <td style="color:Red;">
+                @(entity.Statu == 1 ? "预约中" : entity.Statu == 2 ? "护理中" : entity.Statu == 3 ? "已完成" :( entity.Statu == 5?"待审核":"已取消"))
+                    
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    @if (entity.Statu == 5)
+                    {
+                        <input class="submitbutton2" type="button" value="审核" code="@entity.ID" uid="@entity.UserID" id="btnExamine" />
+
+                    }
+                    @if (entity.Statu == 1)
+                    {
+                        <input type="button" value="修改预约" class="submitbutton2" onclick="GoPage('@entity.ID','@(entity.ApplyTime != null ? entity.ApplyTime.Value.ToString("yyyy-MM-dd") : "")','@entity.ReservationUserID','@entity.StartTime','@entity.EndTime')" />
+                        <input class="submitbutton2" type="button" value="开始护理" code="@entity.ID" id="btnhuli" />
+                        <input class="submitbutton2" type="button" value="取消预约" code="@entity.ID" uid="@entity.UserID" id="btndelete" />
+
+                    }
+                    else if (entity.Statu == 2)
+                    {
+                        <input class="submitbutton2" type="button" value="护理完成" code="@entity.ID" uid="@entity.UserID" id="btnover" isInitiative="@entity.IsInitiative" />
+                    }
+                    <input type="button" value="关 闭" onclick="closeed()" class="submitbutton2" />
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+   
+    //修改预约   
+    function GoPage(ID, Date,DocID,StatrTime,EndTime)
+     {  
+    // alert("/PatientManage/PatientMonthReserve" + "?ID=" + ID+"&Date="+Date+"&DocID="+DocID+"&StatrTime="+StatrTime+"&EndTime="+EndTime );
+    art.dialog.open("/ReservationDoctorManage/ReservationAdd" + "?ID=" + ID+"&Date="+Date+"&DocID="+DocID+"&StatrTime="+StatrTime+"&EndTime="+EndTime ,{title:"修改预约", width:900, height:560})
+    }
+     //取消预约
+    $("#btndelete").click(function () {
+    if(confirm("确认取消订单吗？"))
+    {
+        var ID = $(this).attr("code");
+        var uid = $(this).attr("uid");
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "@Url.Content("~/ReservationDoctorManage/UpReservationStatu")",
+            data: { "Statu": 4, "ID": ID},
+            success: function (data) {
+                if (data > 0) {
+                    location.reload();
+                }
+
+            }
+
+        });
+    };
+    });
+
+    //开始护理
+    $("#btnhuli").click(function () {
+    var ID = $(this).attr("code");
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "@Url.Content("~/ReservationDoctorManage/UpReservationStatu")",
+            data: { "Statu": 2, "ID": ID },
+            success: function (data) {
+                if (data > 0) {
+                     
+                    location.reload();
+                }
+
+            }
+
+        });
+    });
+    $("#btnExamine").click(function () {
+        var ID = $(this).attr("code");
+        var uid = $(this).attr("uid");
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "@Url.Content("~/ReservationDoctorManage/UpReservationStatu")",
+            data: { "Statu": 1, "ID": ID},
+            success: function (data) {
+                if (data > 0) {
+                     
+                    location.reload();
+                }
+
+            }
+
+        });
+    });
+   
+
+        //护理完成
+        $("#btnover").click(function () {
+            var ID = $(this).attr("code");
+            var uid = $(this).attr("uid");
+            var isInitiative = $(this).attr("isInitiative");
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url: "@Url.Content("~/ReservationDoctorManage/UpReservationStatu1")",
+                data: { "Statu": 3, "ID": ID, "UserID": uid, "IsInitiative": isInitiative },
+             success: function (data) {
+                 if (data > 0) {
+                      location.reload();
+                 }
+
+             }
+             })
+         });
+  
+    
+   
+</script>

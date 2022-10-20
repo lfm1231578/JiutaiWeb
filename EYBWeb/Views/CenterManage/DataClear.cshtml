@@ -1,0 +1,116 @@
+﻿@{
+    ViewBag.Title = "数据初始化";
+ 
+}
+<div id="mainContentBody">
+  
+    @Html.Partial("~/Views/BaseInfo/_BaseInfoControl.cshtml")
+    <div id="mainContentRight">
+        @*<div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            数据初始化</div>*@
+        @*<div class="mainContentRight_bottom">
+            <div class="accountdiv">
+                仓库</div>
+            <div style="padding-left: 20px;">
+                <input type="button" value="清空仓库数据" id="btnClearcangku" />
+            </div>*@
+          @*<div class="accountdiv">
+                会员</div>
+            <div style="padding-left: 20px;">
+                <input type="button" value="清空会员数据" id="btnClearmenber" />
+            </div>*@
+            @* 
+            <div class="accountdiv">
+                员工</div>
+            <div style="padding-left: 20px;">
+                <input type="button" value="清空员工数据" id="btnClearyuangong" />
+            </div>*@
+            @*<div class="accountdiv">
+                业务单据</div>
+            <div style="padding-left: 20px;">
+                <input type="button" value="清空业务单据数据" id="btnClearyewu" />
+            </div>*@
+        </div>
+    </div>
+    <script type="text/javascript">
+        //清空仓库数据
+        $("#btnClearcangku").click(function () {
+            if (confirm("确定初始化仓库么?初始化后数据将被清除!!")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "text", //返回json格式的数据
+                    url: getControllerUrl("CenterManage", "ClearWarnhouse"),
+                    data: {},
+                    success: function (data) {
+                        if (data != null) {
+                            alert(data);
+                        }
+                    },
+                    error: function () {
+                        alert("对不起！初始化失败！");
+                    }
+                });
+            }
+
+        })
+        //清空会员数据
+        $("#btnClearmenber").click(function () {
+
+            PatientList("delete");
+            //if (confirm("确定初始化会员数据么?初始化后数据将被清除!!")) {
+//            $.ajax({
+//                type: "post", //使用get方法访问后台 
+//                dataType: "text", //返回json格式的数据
+//                url: getControllerUrl("CenterManage", "ClearPatient"),
+//                data: {},
+//                success: function (data) {
+//                    if (data != null) {
+//                        alert(data);
+//                    }
+//                },
+//                error: function () {
+//                    alert("对不起！初始化失败！");
+//                }
+//            });
+        })
+        //清空员工数据
+        $("#btnClearyuangong").click(function () {
+            if (confirm("确定初始化员工数据么?初始化后数据将被清除!!")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "text", //返回json格式的数据
+                    url: getControllerUrl("CenterManage", "ClearMember"),
+                    data: {},
+                    success: function (data) {
+                        if (data != null) {
+                            alert(data);
+                        }
+                    },
+                    error: function () {
+                        alert("对不起！初始化失败！");
+                    }
+                });
+            }
+        })
+        //清空业务单据数据
+        $("#btnClearyewu").click(function () {
+            if (confirm("确定初始化业务数据么?初始化后数据将被清除!!")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "text", //返回json格式的数据
+                    url: getControllerUrl("CenterManage", "ClearBusiness"),
+                    data: {},
+                    success: function (data) {
+                        if (data != null) {
+                            alert(data);
+                        }
+                    },
+                    error: function () {
+                        alert("对不起！初始化失败！");
+                    }
+                });
+            }
+        })
+    </script>

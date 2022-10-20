@@ -1,0 +1,158 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.RemarkEntity>
+@{
+    ViewBag.Title = "_Patientlist";
+    Layout = null;
+}
+<style>
+    /*******表格********/
+    .gridTable tbody
+    {
+        display: block;
+    }
+    
+    .gridTable tr
+    {
+        display: block;
+    }
+    
+    .gridTable th
+    {
+        width: 200px;
+        line-height: 40px;
+    }
+    
+    .gridTable td
+    {
+        width: 200px;
+    }
+</style>
+<form action="" method="post" id="submitform">
+    <table class="gridTable" style="border-collapse: collapse;">
+        <thead style="position:absolute;width:99%;">
+            <tr>
+                <th>
+                    <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')" />
+                </th>
+                <th>
+                    客户姓名
+                </th>
+                <th orderfield="AllPingjia">
+                    评星
+                </th>
+                <th orderfield="jishiPingjia">
+                    美容师评价
+                </th>
+                <th orderfield="HuanjingPingjia">
+                    环境评价
+                </th>
+                <th orderfield="FuwuPingjia">
+                    服务评价
+                </th>
+                <th>
+                    服务改进建议
+                </th>
+                <th>
+                    环境改进建议
+                </th>
+                <th>
+                    服务美容师
+                </th>
+                <th>
+                    服务项目
+                </th>
+                <th>
+                    时间
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="height:40px;"></tr>
+            @foreach (var entity in Model)
+            {
+                <tr style="height:auto;">
+                    <td>
+                        <input type="checkbox" name="checkbox" class="checkbox" value="@entity.ID" />
+                    </td>
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @entity.AllPingjia
+                    </td>
+                    <td>
+                        @entity.jishiPingjia
+                    </td>
+                    <td>
+                        @entity.HuanjingPingjia
+                    </td>
+                    <td>
+                        @entity.FuwuPingjia
+                    </td>
+                    <td>
+                        @entity.Memo
+                    </td>
+                    <td>
+                        @entity.Memo1
+                    </td>
+                    <td>
+                        @entity.HospitalUserName
+                    </td>
+                    <td>
+                        @entity.ProjectName
+                    </td>
+                    <td>
+                        @entity.CreateTime
+                    </td>
+
+                </tr>
+
+            }
+
+            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 7))
+
+        </tbody>
+        
+    </table>
+    
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+    <div style="height:100px;"></div>
+<script type="text/javascript">
+    $(function () {
+
+        //计算head高度，宽度 计算articles高度
+      
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+        $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+        $('.mainContentRight_bottom').on('scroll', function () {
+            let scrollHeight = $('.mainContentRight_bottom').scrollTop();
+            let topHeight = $(".ullist").height();
+            if (scrollHeight >= topHeight) {
+                $(".gridTable thead").css("top", topHeight+"px");
+
+            } else {
+                 $(".gridTable thead").css("top", topHeight+50+"px");
+            }
+           
+        })
+    })
+</script>
+<script type="text/javascript">
+    $(function () {
+   
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+</script>

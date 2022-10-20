@@ -1,0 +1,254 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+@{
+    ViewBag.Title = "储值卡销售汇总";
+    Layout = null;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+}
+
+<link href="../../Content/bootstrap/bootstrap.css" rel="stylesheet" />
+
+
+<div data-example-id="contextual-panels" class="bs-example">
+@if (ViewBag.al)
+{
+    foreach (var info in hospitalList)
+    {
+        int shuliang = 0;
+        decimal heji = 0;
+        decimal zengsong = 0;
+        decimal zherang = 0;
+        decimal chengben = 0;
+        decimal maoli = 0;
+        <div class="panel panel-info" style="border-color:#FB9294;">
+            <div class="panel-heading" style="border-color:#FB9294;background-color:rgba(251,195,196,0.5);">
+                <h3 class="panel-title">@info.Name</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th style="width:10%;">
+                                    门店
+                                </th>
+                                <th style="width:30%;">
+                                    名称
+                                </th>
+                                <th>
+                                    数量
+                                </th>
+                                <th>
+                                    合计
+                                </th>
+                                <th>
+                                    赠送
+                                </th>
+                                <th>
+                                    销售占比
+                                </th>
+         
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entity in Model)
+                            {
+                                if (entity.HospitalID == info.ID)
+                                {
+                            <tr>
+                                <td>
+                                    @entity.HospitalName
+                                </td>
+                                <td>
+                                    @entity.ProdcuitName
+                                </td>
+                                <td>
+                                    @entity.Quantity
+                                    <label style="display:none;">@(shuliang += entity.Quantity)</label>
+                                </td>
+                                <td>
+                                    @entity.AllPrice
+                                    <label style="display:none;">@(heji += entity.AllPrice)</label>
+                                </td>
+                                <td>
+                                        @entity.SendAmount
+                                    <label style="display:none;">@(zengsong += entity.SendAmount)</label>
+                                </td>
+                                <td>
+                                    @((entity.AllPrice / (Convert.ToDecimal(ViewBag.AllPrice) == 0 ? 1 : Convert.ToDecimal(ViewBag.AllPrice)) * 100).ToString("#0.00") + "%")
+                                </td>
+                            </tr>
+                                }
+                            }
+                        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 15))
+                        </tbody>
+                        <tfoot>
+                           <tr style=" line-height:30px;  height:30px;">
+                                <td colspan="2" style=" text-align:right;">总计:</td>
+                                <td class="txtshuliang">@shuliang</td>
+                                <td class="txtheji">@heji</td>
+                                <td class="txtzengsong">@zengsong</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    }
+}
+else
+{
+        <div class="panel panel-info" style="border-color:#FB9294;">
+            <div class="panel-heading" style="border-color:#FB9294;background-color:rgba(251,195,196,0.5);">
+                <h3 class="panel-title">@ViewBag.hname</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                           <tr>
+                                <th style="width:10%;">
+                                    门店
+                                </th>
+                                <th style="width:30%;">
+                                    名称
+                                </th>
+                                <th>
+                                    数量
+                                </th>
+                                <th>
+                                    合计
+                                </th>
+                                <th>
+                                    赠送
+                                </th>
+                                <th>
+                                    销售占比
+                                </th>
+                            </tr>
+                        </thead>
+                    <tbody>
+                        @foreach (var entity in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @entity.HospitalName
+                                </td>
+                                <td>
+                                    @entity.ProdcuitName
+                                </td>
+                                <td>
+                                    @entity.Quantity
+                                </td>
+                                <td>
+                                    @entity.AllPrice
+                                </td>
+                                <td>
+                                        @entity.SendAmount
+                                </td>
+                                <td>
+                                    @((entity.AllPrice / (Convert.ToDecimal(ViewBag.AllPrice) == 0 ? 1 : Convert.ToDecimal(ViewBag.AllPrice)) * 100).ToString("#0.00") + "%")
+                                </td>
+                            </tr>
+                        }
+                        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 15))
+                    </tbody>
+
+                        <tfoot>
+                             <tr style=" line-height:30px;  height:30px;">
+                                <td colspan="2" style=" text-align:right;">总计:</td>
+                                <td class="txtshuliang">@ViewBag.AllQuantity</td>
+                                <td class="txtheji">@ViewBag.AllPrice</td>
+                                <td class="txtzengsong">@ViewBag.AllZengsong</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+}
+
+</div>
+
+        <script type="text/javascript">
+            $(function () {
+                $("#showmessage").css("display", "none");
+                $("#searchresult").html("");
+            });
+</script>
+
+
+@*<form action="" method="post" id="submitform">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="border-collapse: collapse;width:99%;">
+    <thead>
+        <tr>
+            <th orderfield="">
+                门店
+            </th>
+            <th>
+                名称
+            </th>
+            <th>
+                数量
+            </th>
+            <th>
+                合计
+            </th>
+            <th>
+                赠送
+            </th>
+            <th>
+                销售占比
+            </th>
+         
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr>
+                <td>
+                    @entity.HospitalName
+                </td>
+                <td>
+                    @entity.ProdcuitName
+                </td>
+                <td>
+                    @entity.Quantity
+                </td>
+                <td>
+                    @entity.AllPrice
+                </td>
+                <td>
+                      @entity.SendAmount
+                </td>
+                <td>
+                    @((entity.AllPrice/(Convert.ToDecimal(ViewBag.AllPrice)==0?1:Convert.ToDecimal(ViewBag.AllPrice))*100).ToString("#0.00")+"%")
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 15))
+    </tbody>
+    <tfoot>
+        <tr style=" line-height:30px;  height:30px;">
+            <td colspan="2" style=" text-align:right;">总计:</td>
+            <td>@ViewBag.AllQuantity</td>
+            <td>@ViewBag.AllPrice</td>
+            <td>@ViewBag.AllZengsong</td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>*@

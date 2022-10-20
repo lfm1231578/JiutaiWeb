@@ -1,0 +1,172 @@
+﻿@{
+
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityIndex);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityYuangong);
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivitySend);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivitySendRecord);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityUseRecord);
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityJiangli);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityFenhong);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityFenhongPaihang);
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityFenhongHuizong);
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityFenhongMingxi);
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Activity_ActivityTixianRecord);
+
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <a style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+        </a><span>活动管理</span>
+    </div>
+
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityIndex")" onclick='CheckRight(this, "@result1")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        活动管理
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result2)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityYuangong")" onclick='CheckRight(this, "@result2")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        员工活动
+                        <label>
+                        </label>
+                    </a>
+
+                </li>
+            }
+            @if (result3)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivitySend")" onclick='CheckRight(this, "@result3")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        发送活动
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result4)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivitySendRecord")" onclick='CheckRight(this, "@result4")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        发送记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result5)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityUseRecord")" onclick='CheckRight(this, "@result5")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        使用记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result6)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityJiangli")" onclick='CheckRight(this, "@result6")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        奖励记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result7)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityFenhong")" onclick='CheckRight(this, "@result7")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        分红设置
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result8)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityFenhongPaihang")" onclick='CheckRight(this, "@result8")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        分红排行
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result9)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityFenhongHuizong")" onclick='CheckRight(this, "@result9")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        分红汇总
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result10)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityFenhongMingxi")" onclick='CheckRight(this, "@result10")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        分红明细
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result11)
+            {
+                <li redirect="@Url.Content("~/Activity/ActivityTixianRecord")" onclick='CheckRight(this, "@result11")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        提现记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    //登录回车事件
+    $(document).keydown(function (event) {
+        if (event.keyCode == 13 || event.keyCode == 32) {
+            if ($.trim($(".searchInput").val()) != "" && $(".searchInput").val() != "搜索") {
+                document.getElementById("submitform").submit();
+            }
+        }
+    });
+
+
+</script>

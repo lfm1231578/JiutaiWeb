@@ -1,0 +1,76 @@
+﻿@using Webdiyer.WebControls.Mvc;
+ @using CashManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.BaseInfo.MainCardEntity>
+          
+@{
+    Layout = null;
+    var Type =Request["Type"];
+      ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+}
+<form  action="" method="post" id="searchForm"  >
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="height: auto; border-collapse: collapse; margin: 0px;width:100%; " cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                选择
+            </th>
+            <th>
+                卡名称
+            </th>
+            <th>
+                价格
+            </th>
+            <th>
+                所属类别
+            </th>
+            @if (Type == "1")
+            {
+            <th>
+               是否赠卡 
+            </th>
+            }
+            @if (Type == "3")
+            { 
+                <th>方案详细</th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            //37|1|168.00|168.00|168.00,38|1|1980.00|1980.00|1980.00,35|1|298.34|298.34|298.34
+            var listValue = entity.ID + "|" + entity.Name + "|" + entity.Price + "|" + entity.CardType + "|" + entity.CardTypename+"|"+entity.IsGive+"|"+entity.Discount+"|"+entity.ProjectProductQualtity+"|"+entity.ProjectProductPrice  +"|"+entity.ConsumptionPrice  + "$";
+
+            <tr class="ableclick">
+                <td>
+                    <input name="radioList" type="checkbox" value="@listValue" />
+
+                </td>
+                <td>
+                     @entity.Name
+                </td>
+                <td>
+                    @entity.Price
+                </td>
+                <td>
+                    @entity.CardTypename
+                </td>
+                 @if (Type == "1")
+                 {
+                     <td>
+                       @(entity.IsGive == 1 ? Html.Raw("<label style='color:red;'>赠卡</label>") : Html.Raw("<label style='color:green;'>非赠卡</label>"))
+                </td>
+                 }
+                 @if (Type == "3")
+                 { 
+                    <td><a href="#" onclick="info(@entity.ID)">详细</a></td>
+                 }
+            </tr>
+        }
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+

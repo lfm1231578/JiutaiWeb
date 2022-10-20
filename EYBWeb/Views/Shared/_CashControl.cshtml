@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "_DoctorControl";
+    //新建科室
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Consumer);
+    //科室列表
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Repayment);
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_PurchaseCard);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Exchange);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_OrderList);
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_OrderSummary);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_ReservationDoctorPage);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_MonthSummary);
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <a style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -116px no-repeat;">
+        </a><span>收银管理</span>
+    </div>
+    @*<div id="mainContentLeft_center">
+            <ul>
+                <li onclick='CheckRight(this,"")'  redirect="@Url.Content("~/CashManage/Consumer")"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart1.png'   /><label>项目产品</label></a></li>
+                <li  onclick='CheckRight(this,"")'  redirect="@Url.Content("~/CashManage/PurchaseCard")" style="margin-left:20px;"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart2.png'   /><label>充值办卡</label></a></li>
+            </ul>
+        </div>*@
+    <div id="mainContentLeft_bottom">
+        <ul>
+            <li  onclick='CheckRight(this,"@result1")'  redirect="@Url.Content("~/CashManage/Consumer")"  >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">项目产品
+                    <label>
+                    </label>
+                </a></li>
+            <li   onclick='CheckRight(this,"@result2")'  redirect="@Url.Content("~/CashManage/PurchaseCard")"  >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">充值办卡
+                    <label>
+                    </label>
+                </a></li>
+            <li   onclick='CheckRight(this,"@result3")'  redirect="@Url.Content("~/CashManage/Repayment")"  >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">还款
+                    <label>
+                    </label>
+                </a></li>
+            <li   onclick='CheckRight(this,"@result4")' redirect="@Url.Content("~/CashManage/Exchange")"  >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">退卡
+                    <label>
+                    </label>
+                </a></li>
+            <li   onclick='CheckRight(this,"@result5")' redirect="@Url.Content("~/CashManage/OrderList")"  >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">单据列表
+                    <label>
+                    </label>
+                </a></li>
+            <li  onclick='CheckRight(this,"@result6")' redirect="@Url.Content("~/CashManage/TodaySummary")" >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">当天营业汇总
+                    <label>
+                    </label>
+                </a></li>
+                  <li  onclick='CheckRight(this,"@result8")' redirect="@Url.Content("~/CashManage/MonthSummary")" >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">月营业报表
+                    <label>
+                    </label>
+                </a></li>
+                
+            <li  onclick='CheckRight(this,"@result7")' redirect="@Url.Content("~/ReservationDoctorManage/ReservationDoctorPage")" >
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">预约
+                    <label>
+                    </label>
+                </a></li>
+        </ul>
+    </div>
+</div>

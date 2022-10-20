@@ -1,0 +1,358 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using EYB.ServiceEntity.ReservationEntity;
+@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "本月记录";
+    var hid = ViewBag.HospitalID;//门店ID
+    var year = Request["Year"];//年份
+    var month = Request["Month"];//
+    var m = month;
+    if (string.IsNullOrEmpty(year))
+    {
+        year = DateTime.Now.Year.ToString();
+    }
+    if (string.IsNullOrEmpty(month))
+    {
+        m = DateTime.Now.Month.ToString();
+    }
+
+    IReservationDoctorManageBLL resBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    var mendianyuangong = personbll.GetAllUserByHospitalID(hid, 0);
+    //员工考勤
+    DakaRecordEntity entity = new DakaRecordEntity();
+    entity.HospitalID = hid;
+    entity.Years = DateTime.Now.Year;
+    entity.Months = DateTime.Now.Month;
+    var persoList = resBLL.GetUserByHospitalIDListMonth(entity).GroupBy(c => c.UserID).Select(g => g.First()).ToList();
+
+    //导出
+    bool hasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_导出);
+
+    bool result17 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_Dakarecode_Add); //添加考勤
+    bool result18 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_Dakarecode_Update); //修改考勤
+}
+<div id="mainContentBody">
+
+    @Html.Partial("~/Views/MoneyManage/_MoneyControl.cshtml")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots"></label>
+            打卡记录 &nbsp;
+            @if (result17)
+            {
+                <a href="javascript:goPage(@DateTime.Now.Day,'@DateTime.Now.ToString("hh:mm")','@DateTime.Now.ToString("hh:mm")',0,'add');" class="addbutton">
+                    修改
+                </a>
+            }
+        </div>
+        <div class="mainContentRight_bottom  clearfix" style="position: relative; overflow: auto;">
+            <div class="reservationblock">
+                @if (HasPermission)
+                {
+
+                    <label style="font-weight: normal;">
+                        所属分店：
+                    </label>
+                    <select name="HospitalID" id="HospitalID" class="" style="width: 100px;">
+                        <option value="0">请选择分店</option>
+                        @if (RegionhospitalList.Count > 0)
+                        {
+                            foreach (var info in RegionhospitalList)
+                            {
+                                <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID">@info.Name</option>
+                            }
+                        }
+                        else
+                        {
+                            foreach (var info in hospitalList)
+                            {
+                                <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID">@info.Name</option>
+                            }
+                        }
+                    </select>
+
+                }
+                <select name="Years" id="Years">
+                    @for (int i = 2019; i <= DateTime.Now.Year; i++)
+                    {
+                        <option @(year == i + "" ? "selected=selected" : "") value="@i">@i</option>
+                    }
+                </select>
+                年
+                <select name="Months" id="Months">
+                    <option @(m == "1" ? "selected=selected" : "") value="1">1</option>
+                    <option @(m == "2" ? "selected=selected" : "") value="2">2</option>
+                    <option @(m == "3" ? "selected=selected" : "") value="3">3</option>
+                    <option @(m == "4" ? "selected=selected" : "") value="4">4</option>
+                    <option @(m == "5" ? "selected=selected" : "") value="5">5</option>
+                    <option @(m == "6" ? "selected=selected" : "") value="6">6</option>
+                    <option @(m == "7" ? "selected=selected" : "") value="7">7</option>
+                    <option @(m == "8" ? "selected=selected" : "") value="8">8</option>
+                    <option @(m == "9" ? "selected=selected" : "") value="9">9</option>
+                    <option @(m == "10" ? "selected=selected" : "") value="10">10</option>
+                    <option @(m == "11" ? "selected=selected" : "") value="11">11</option>
+                    <option @(m == "12" ? "selected=selected" : "") value="12">12</option>
+                </select>月
+                <input type="button" class="submitbutton2" id="btnsearch" style="float: none;" value="查 询" />
+                @if (hasPermission1)
+                {
+                    <input type="button" id="btnSave" class="submitbutton2" style="float: none;" value="导出" />
+                }
+            </div>
+            <table id="weekTable" class="gridTable" style="height: auto; border-collapse: collapse; margin: 0px;"
+                   cellpadding="0" cellspacing="0">
+                <tr class="ymxkaoqingTr">
+                    <th>@m 月考勤</th>
+
+                    @{
+                        var days = DateTime.DaysInMonth(Convert.ToInt32(year), Convert.ToInt32(m));
+                        //获取当前月份的天数
+                        for (var i = 1; i <= days; i++)
+                        {
+                            <th>@i</th>
+                        }
+                    }
+                </tr>
+
+
+                @{
+                    foreach (var info in mendianyuangong)
+                    {
+                        <tr>
+                            <td style="text-align: center;border-right:1px solid #ccc;width:25px;border-bottom:1px dashed #ccc;height:45px;">
+                                @info.UserName
+                            </td>
+
+                            @{
+                                for (var i = 1; i <= days; i++)
+                                {
+                                    //  var Dates = Year + "-" + DateTime.Now.Month + "-" + i;
+                                    var years = entity.Years;
+                                    var months = entity.Months;
+                                    var day = i;
+                                    var hm = "";
+                                    var hm2 = "";
+                                    var list = resBLL.SelectDaka(entity.HospitalID, years, months, day, info.UserID);
+                                    var qingjia = resBLL.SelectQingjiaList(entity.HospitalID, years, months, day, info.UserID);
+
+                                    // 休息/缺卡/请假/
+                                    int con = 0;
+                                    if (qingjia.Count > 0)
+                                    {
+                                        foreach (var item in qingjia)
+                                        {
+                                            if (item.leixing == "请假")
+                                            {
+                                                con += 1;
+                                                if (qingjia.Count != 1)
+                                                {
+                                                    if (con == 1)
+                                                    {
+                                                        <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                            <div style="border-bottom:1px dashed #ccc; padding-bottom:5px;color: red;">@item.category</div>
+                                                            <div style="padding-top:5px;color: red;">@item.category</div>
+                                                        </td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    if (item.AfternoonTime == "am")
+                                                    {
+
+                                                        DateTime dt = string.IsNullOrEmpty(list.EndTime) ? Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 00:00:01")) : Convert.ToDateTime(list.EndTime);
+                                                        hm2 = dt.ToString("HH:mm");
+                                                        <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                            <div style="border-bottom:1px dashed #ccc;color: red; padding-bottom:5px;color: red;">@item.category</div>
+                                                            <a href="javascript:goPage(@day,'@hm','@hm2',@info.UserID);">
+                                                                <div style="padding-top:5px;">@hm2</div>
+                                                            </a>
+                                                        </td>
+                                                    }
+                                                    else
+                                                    {
+
+                                                        DateTime dd = string.IsNullOrEmpty(list.StartTime) ? Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 00:00:01")) : Convert.ToDateTime(list.StartTime);
+                                                        hm = dd.ToString("HH:mm");
+                                                        <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                            <a href="javascript:goPage(@day,'@hm','@hm2',@info.UserID);">
+                                                                <div style="border-bottom:1px dashed #ccc; padding-bottom:5px">@hm</div>
+                                                            </a>
+                                                            <div style="padding-top:5px;color: red;">@item.category</div>
+                                                        </td>
+                                                    }
+                                                }
+                                            }
+                                            else if (item.leixing == "休息")
+                                            {
+                                                <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                    <div style="border-bottom:1px dashed #ccc; padding-bottom:5px;color:green;">休息</div>
+                                                    <div style="padding-top:5px;color:green;">休息</div>
+                                                </td>
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (list.UserID > 0)
+                                        {
+                                            DateTime dd = string.IsNullOrEmpty(list.StartTime) ? Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 00:00:01")) : Convert.ToDateTime(list.StartTime);
+                                            hm = dd.ToString("HH:mm");
+                                            DateTime dt = string.IsNullOrEmpty(list.EndTime) ? Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 00:00:01")) : Convert.ToDateTime(list.EndTime);
+                                            hm2 = dt.ToString("HH:mm");
+                                            if (hm == "00:00")
+                                            {
+                                                <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                    <div style="border-bottom:1px dashed #ccc; padding-bottom:5px;color: red;"><a href="javascript:goPage(@day,'@hm','@hm2',@info.UserID);">缺卡</a></div>
+                                                    <a href="javascript:goPage(@day,'@hm','@hm2',@info.UserID);">
+                                                        <div style="padding-top:5px;">@hm2</div>
+                                                    </a>
+                                                </td>
+                                            }
+                                            else if (hm2 == "00:00")
+                                            {
+                                                <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                    <a href="javascript:goPage(@day,'@hm','@hm2',@info.UserID);">
+                                                        <div style="border-bottom:1px dashed #ccc; padding-bottom:5px">@hm</div>
+
+                                                        <div style="padding-top:5px;color: red;">缺卡</div>
+                                                    </a>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                    <a href="javascript:goPage(@day,'@hm','@hm2',@info.UserID);">
+                                                        <div style="border-bottom:1px dashed #ccc; padding-bottom:5px">@hm</div>
+                                                        <div style="padding-top:5px;">@hm2</div>
+                                                    </a>
+                                                </td>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (Convert.ToDateTime(year + "-" + m + "-" + i) > DateTime.Now)
+                                            {
+                                                <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                    <div style="border-bottom:1px dashed #ccc; padding-bottom:5px"> </div>
+                                                    <div style="padding-top:5px;"> </div>
+                                                </td>
+                                            }
+                                            else
+                                            {
+                                                <td style='text-align: center;border-right:1px solid #ccc;height:45px;border-bottom:1px dashed #ccc;font-size:10px;width:30px;'>
+                                                    <a href="javascript:goPage(@day,'','',@info.UserID);">
+                                                        <div style="border-bottom:1px dashed #ccc; padding-bottom:5px;color: red;">缺卡</div>
+                                                        <div style="padding-top:5px;color: red;">缺卡</div>
+                                                    </a>
+                                                </td>
+                                            }
+
+                                        }
+                                    }
+                                }
+
+                            }
+                        </tr>
+
+                     }
+
+                }
+            </table>
+        </div>
+    </div>
+</div>
+<div id="showmessage" style="display: none; width: 220px; height: 140px; position: fixed;
+    top: 300px; left: 650px; color: Red; margin: 0 auto; text-align: center;">
+    <img src="../../Content/themes/images/loading.gif" width="100" />
+    <p style="text-align: center; height: 30px; line-height: 30px;">
+        正在努力查询中，请稍后...
+    </p>
+</div>
+<script type="text/javascript">
+    function goPage(day, am, pm, userid, type) {
+        var years = $("#Years").val();
+        var months = $("#Months").val();
+
+        if (type == "add") {
+            if ("@result17" == "True") {
+                art.dialog.open("@Url.Content("~/ReservationDoctorManage/DakaAdd")?Year=" +
+                    years +
+                    "&months=" +
+                    months +
+                    "&Day=" +
+                    day +
+                    "&Am=" +
+                    am +
+                    "&Pm=" +
+                    pm +
+                    "&userid=" +
+                    userid,
+                    { title: "新增打卡记录", width: 600, height: 400 });
+            }
+        } else if (type==undefined || type==null) {
+            if ("@result18" == "True") {
+                art.dialog.open("@Url.Content("~/ReservationDoctorManage/DakaAdd")?Year=" +years+"&months="+months + "&Day="+day+"&Am="+am+"&Pm="+pm+"&userid="+userid, { title: "修改打卡记录", width: 600, height: 400 });
+            }
+        }
+    }
+    $("#btnSave").click(function () {
+        if ($("#HospitalID").val() == "" || $("#HospitalID").val() == null) {
+            var HospitalID =@hid;
+        }
+        else { var HospitalID = $("#HospitalID").val(); }
+        var txtUserName = $("#txtUserName").val();
+        var Birthday = $("#Birthday").val();
+        var IsChecked = 0;
+        if ($("#IsChecked").is(':checked')) {
+            IsChecked = 1;
+        } else {
+            IsChecked = 0;
+        }
+        var years = $("#Years").val();
+        var months = $("#Months").val();
+        var url = "/ReservationDoctorManage/DakaMonth?HospitalID=" + HospitalID + "&years=" + years + "&months=" + months+"&operareType="+1;
+        window.location.href = url;
+
+    });
+
+    $("#btnsearch").click(function () {
+        $("#showmessage").css("display", "");
+        var FollowUpUserID = $("#FollowUpUserID").val();
+        var Years = $("#Years").val();
+        var Months = $("#Months").val();
+        //var HospitalID = $("#HospitalID").val();
+        @*if ($("#HospitalID").val() == "" || $("#HospitalID").val() == null) {
+            var HospitalID =@hid;
+        }*@
+        //var HospitalID =@hid;
+        
+        if ($("#HospitalID").val() == "" || $("#HospitalID").val() == null) {
+            var HospitalID =@hid;
+        }
+        else { var HospitalID = $("#HospitalID").val(); }
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "text", //返回json格式的数据
+            url: getControllerUrl("ReservationDoctorManage", "DakaMonth"),
+            data: { "HospitalID": HospitalID, "FollowUpUserID": FollowUpUserID, "Years": Years, "Months": Months },
+            success: function (data) {
+                //赋值下拉框
+                $("#weekTable").html("");
+                $("#weekTable").append(data);
+                // alert($("tr:gt(0)").find(".selHospitalID").length);
+                //隔行换色
+                //$("#weekTable").find("tr:odd").css("background-color", "#d8eff8");
+                $("#showmessage").css("display", "none");
+            },
+            error: function () {
+                alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+            }
+        });
+    })
+</script>

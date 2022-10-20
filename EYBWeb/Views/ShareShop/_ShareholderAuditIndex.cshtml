@@ -1,0 +1,84 @@
+﻿@model EYB.Web.Models.ShareShop.ShareholderIndexModel
+@{
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+    <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+    <input type="hidden" value="" name="orderField" id="orderField" />
+    <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+           cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th>
+                    客户姓名
+                </th>
+                <th>
+                    手机号码
+                </th>
+                <th>
+                    微信昵称
+                </th>
+                <th>
+                    申请时间
+                </th>
+                <th>
+                    备注
+                </th>
+                @if (Model.Audit.AuditState > 1)
+                {
+                    <th>
+                        审核时间
+                    </th>
+                    <th>
+                        操作人
+                    </th>
+                }
+                else
+                {
+                    <th>
+                        操作
+                    </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entity in Model.Audits)
+            {
+                <tr class="ableclick">
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @entity.Mobile
+                    </td>
+                    <td>
+                        @entity.WxNickname
+                    </td>
+                    <td>
+                        @entity.CreateTime
+                    </td>
+                    <td>
+                        @entity.Remarks
+                    </td>
+                    @if (Model.Audit.AuditState > 1)
+                    {
+                        <td>
+                            @entity.AuditTime
+                        </td>
+                        <td>
+                            @entity.Creator
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <a href="javascript:audit(2,@entity.Id);">通过</a>
+
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    @Html.Pager(Model.Audits, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+</form>

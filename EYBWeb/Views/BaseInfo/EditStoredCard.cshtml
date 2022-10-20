@@ -1,0 +1,377 @@
+﻿@using BaseinfoManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@using EYB.ServiceEntity.BaseInfo;
+@using EYB.ServiceEntity.SystemEntity;
+@{
+    var type = Request["Type"];
+    var id = Request["ID"];
+    Layout = null;
+    MainCardEntity entity = new EYB.ServiceEntity.BaseInfo.MainCardEntity();
+    IList<ProjectProductEntity> ppentity = new List<ProjectProductEntity>();
+    string[] ksuser = new string[] { };
+    string[] hsuser = new string[] { };
+    IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseinfoBLL>();
+    ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL icashBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    if (!String.IsNullOrEmpty(id))
+    {
+        entity = baseinfoBLL.GetPrePayCardModel(ConvertValueHelper.ConvertIntValue(id));
+        ppentity = icashBLL.getProjectProductNopage(new ProjectProductEntity { ProgrammeID = entity.ID });
+
+    }
+    var ParentHospitalID = Common.Manager.LoginHospitalUserManager.GetLoginInfo().ParentHospitalID;
+    List<BaseinfoEntity> caretypelist = new List<BaseinfoEntity>();
+    caretypelist = sysBll.GetBaseInfoTreeByType("StoredCardType", 1, ParentHospitalID);//储值卡类型分类
+    ViewBag.Title = "编辑储值卡";
+    if (type.ToUpper() == "ADD")
+    {
+        entity.Discount = 1;
+        entity.MultiplyingPower = 1;
+        entity.VaildityDay = 3650;
+    }
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentBody">
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <form id="myform" action="@Url.Content("~/BaseInfo/StoredCardAddOrEdit")" class="clearfix" method="post">
+                    <table class="mainContentRight_table ">
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>名称
+                            </td>
+                            <td>
+                                <input type="hidden" value="@entity.ID" name="ID" />
+                                <input type="text" name="Name" id="txtName" value="@entity.Name" class="validate[required] text-input input200" />
+                            </td>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span> 金额:
+                            </td>
+                            <td>
+                                <input type="text" name="Price" id="txtPrice" value="@entity.Price" class="validate[custom[number]] text-input input200" />
+                            </td>
+                        </tr>
+                        <tr style="display: none;">
+                            <td class="tdright">
+                                消耗折率
+                            </td>
+                            <td>
+                                <input type="text" name="Discount" id="txtDiscount" value="@entity.Discount" class="validate[custom[number]] text-input input200" />
+                            </td>
+                            <td class="tdright">
+                                折扣比例
+                            </td>
+                            <td>
+                                <input type="text" name="MultiplyingPower" id="txtMultiplyingPower" value="@entity.MultiplyingPower" class="validate[custom[number]] text-input input200" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                有效期
+                            </td>
+                            <td>
+                                <input type="text" name="VaildityDay" id="txtVaildityDay" value="@entity.VaildityDay" class="validate[custom[number]] text-input input200" style=" width:100px;"=width:100px;" />&nbsp;天
+                            </td>
+                            <td class="tdright">
+                                是否可以消费开单
+                            </td>
+                            <td>
+                                <div id="selectIsBuyProduct" style="min-width: 120px; float: left;">
+                                    @if (!String.IsNullOrEmpty(id))
+                                    {
+
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="IsBuyProduct" class="select">
+                                                <option @(entity.IsBuyProduct == 1 ? "selected=selected" : "")=) value="1">是</option>
+                                                <option @(entity.IsBuyProduct == 0 ? "selected=selected" : "")=) value="0">否</option>
+                                            </select>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="IsBuyProduct" class="select">
+                                                <option value="1">是</option>
+                                                <option value="0">否</option>
+                                            </select>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>是否赠卡
+                            </td>
+                            <td>
+                                <div id="selectisGive" style="min-width: 120px; float: left;">
+                                    @if (!String.IsNullOrEmpty(id))
+                                    {
+
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="isGive" class="select validate[required]">
+                                                <option value="">--请选择--</option>
+                                                <option @(entity.IsGive == 1 ? "selected=selected" : "")=) value="1">是</option>
+                                                <option @(entity.IsGive == 2 ? "selected=selected" : "")=) value="2">否</option>
+                                            </select>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="isGive" class="select validate[required]">
+                                                <option value="">--请选择--</option>
+                                                <option value="2">否</option>
+                                                <option value="1">是</option>
+                                            </select>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                            <td class="tdright">
+                                是否可以充值办卡
+                            </td>
+                            <td>
+                                <div id="selectISBuyCard" style="min-width: 120px; float: left;">
+                                    @if (!String.IsNullOrEmpty(id))
+                                    {
+
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="ISBuyCard" class="select">
+                                                <option @(entity.ISBuyCard == 1 ? "selected=selected" : "")=) value="1">是</option>
+                                                <option @(entity.ISBuyCard == 0 ? "selected=selected" : "")=) value="0">否</option>
+                                            </select>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="ISBuyCard" class="select">
+                                                <option value="1">是</option>
+                                                <option value="0">否</option>
+                                            </select>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>套盒疗程折扣
+                            </td>
+                            <td>
+
+                                <input type="text" name="Taohezhekou" id="txtTaohezhekou" onkeyup="CheckInputIntFloat0and1(this)" value="@(entity.Taohezhekou==0?1:entity.Taohezhekou)" class="validate[required] text-input input200" style="width:100px;" /><label style="color:Red;">0-1之间</label>
+                            </td>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span> 院用疗程折扣:
+                            </td>
+                            <td>
+                                <input type="text" name="Yuanyongzhekou" id="txtYuanyongzhekou" onkeyup="CheckInputIntFloat0and1(this)" value="@(entity.Yuanyongzhekou == 0 ? 1 : entity.Yuanyongzhekou)" class="validate[required] text-input input200" style="width:100px;" /><label style="color:Red;">0-1之间</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>家居折扣
+                            </td>
+                            <td>
+
+                                <input type="text" name="Jiajuzhekou" id="txtJiajuzhekou" onkeyup="CheckInputIntFloat0and1(this)" value="@(entity.Jiajuzhekou == 0 ? 1 : entity.Jiajuzhekou)" class="validate[required] text-input input200" style="width:100px;" /><label style="color:Red;">0-1之间</label>
+                            </td>
+                            <td class="tdright"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="tdright hidden">
+                                类别名称
+                            </td>
+                            <td class="hidden">
+                                <div id="selectdepart" style="min-width: 120px; float: left;">
+                                    @if (!String.IsNullOrEmpty(id))
+                                    {
+
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="CardType" class="select">
+                                                @foreach (var info in caretypelist)
+                                                {
+                                                    <option @(info.ID == entity.CardType ? "selected=selected" : "")=) value="@info.ID">@info.InfoName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="selectdiv" style="min-width: 120px; float: left;">
+                                            <select name="CardType" class="select">
+                                                @foreach (var info in caretypelist)
+                                                {
+                                                    <option value="@info.ID">@info.InfoName</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    }
+                                </div>
+                            </td>
+                            <td class="tdright">
+                                说明
+                            </td>
+                            <td colspan="3">
+                                <textarea name="Memo" cols="40" class=" textarea"=textarea" style="height: 60px; line-height: 20px;">@entity.Memo</textarea>
+                            </td>
+                        </tr>
+                        <tr></tr>
+                        <tr>
+                            <td></td>
+                            <td class="clearfix">
+                                <input type="submit" id="btnsave" class="submitbutton2" value="保 存" />
+                                <input type="button" onclick="closeedNorefresh()" class="submitbutton2" value="关 闭" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+
+    //选择顾客赋值
+    function InFoDate(obj) {
+        $("#Cardtable").append('<tr><td><input type="hidden" name="GiveIDList" value="' + obj.split("|")[0] + '" />' + obj.split("|")[1] + '</td><td>' + obj.split("|")[3] + '</td><td><a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>')
+    }
+    //删除功能
+    $(function () {
+        $("#Cardtable").delegate('.deletebtn', 'click', function () {
+            $(this).parent().parent().remove();
+        })
+
+    });
+    $('#txtName').keyup(function () {
+        var re = /[\\\/:\*\?"\<\>\|]/; //只允许输入数字和大小写字母
+        if (re.test($("#txtName").val())) {
+            alert("请勿输入非法字符");
+            $("#txtName").val("");
+            return false;
+        }
+    });
+    //提交操作
+    function saveAs() {
+        $("#btnsave").attr("disabled", "disabled");
+       // $("#txtName").val($("#txtName").val().trim());
+        //if ($("#txtName").val() == "" || $("#txtPrice").val() == "" || $("#txtVaildityDay").val() == "" || $("#txtDiscount").val() == "" || $("#txtMultiplyingPower").val() == "") {
+        //    $('#myform').submit();
+        //    artdialogfail("名称\金额\有效期\消耗折率\折扣比率不能为空！", "", "250");
+        //    $("#btnsave").attr("disabled", false);
+        //    return false;
+        //}
+        if ($("#txtName").val()=="") {
+            artdialogfail("名称必须不能为空！", "", "250");
+            $("#btnsave").attr("disabled", false);
+            return false;
+        }
+        
+        if ($("#txtVaildityDay").val() > 3651) {
+            artdialogfail("有效期必须小于3651", "", "250");
+            $("#btnsave").attr("disabled", false);
+            return false;
+        }
+        //if ($("#txtPrice").val()<=0) {
+        //    artdialogfail("金额不能小于0！", "", "250");
+        //    $("#btnsave").attr("disabled", false);
+        //    return false;
+        //}
+        var reg = /^\d+$|^\d*\.\d+$/g;
+        if (!reg.test($("#txtPrice").val()) || $("#txtPrice").val() < 0) {
+            artdialogfail("金额必须为整数和合法字符", "", "250");
+            $("#btnsave").attr("disabled", false);
+            return false;
+        }
+        var reg = /^[0-9]*[0-9][0-9]*$/;
+        if (!reg.test($("#txtVaildityDay").val())) {
+            artdialogfail("有效期必须为整数！", "", "250");
+            $("#btnsave").attr("disabled", false);
+            return false;
+        }
+        else {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "@Url.Content("~/BaseInfo/StoredCardAddOrEdit?Type=")@type",
+                data: $('#myform').serialize(), // 你的formid
+                async: false,
+                error: function (request) {
+                    artdialogfailTwo("操作失败！", "", "250", "100");
+                    $("#btnsave").attr("disabled", false);
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        alert("保存成功!");
+                        closeed();
+                        //closeedNorefresh();
+                    } else if (data = -1) {
+                        artdialogfail("名称重复,请重新填写名称", "", "250", "100");
+                        $("#btnsave").attr("disabled", false);
+                    } else {
+                        artdialogfailTwo("操作失败,员工不能相同！", "", "250", "100");
+                        $("#btnsave").attr("disabled", false);
+                    }
+                }
+            });
+        }
+
+    }
+
+    jQuery(document).ready(function () {
+        jQuery('#myform').validationEngine('attach', {
+            promptPosition: "topLeft",
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: ".mainContentRight",
+            onValidationComplete: function (form, status) {
+                if (status) {
+                    saveAs();
+                }
+            }
+        });
+
+    });
+
+
+
+</script>
+</html>

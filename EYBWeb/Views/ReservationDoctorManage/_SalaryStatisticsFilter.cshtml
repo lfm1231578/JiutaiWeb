@@ -1,0 +1,104 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@using SystemManage.Factory.IBLL;
+@model List<EYB.ServiceEntity.ReservationEntity.DakaRecordEntity>
+    @{
+        Layout = null;
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+        var YingxianggongxiuDay = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "YingxianggongxiuDay");
+        var gongxiuday = ConvertValueHelper.ConvertIntValue(YingxianggongxiuDay.AttributeValue);
+        gongxiuday= gongxiuday == 0 ? 4 : gongxiuday;
+    }
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead>
+                <tr>
+
+                    <th orderfield="">
+                        员工职位
+                    </th>
+                    <th orderfield="">
+                        员工姓名
+                    </th>
+                    <th>
+                        底薪(1)【实操业绩】
+                    </th>
+                    <th>
+                        底薪(2)【客流】
+                    </th>
+                    <th>
+                        新客数提成【月客流量】
+                    </th>
+                    <th>
+                        实操提成【月实操业绩】
+                    </th>
+                    <th>
+                        单次项目实操业绩提成
+                    </th>
+                    <th>
+                        店基础现金总收入提成【店基础现金总收入】
+                    </th>
+                    <th>
+                        家居产品售后服务返单【本月家居业绩】
+                    </th>
+                    <th>
+                        平均客流项目奖【平均客流/平均项目】
+                    </th>
+                    <th>
+                        全勤奖
+                    </th>
+                    <th>
+                        手工费
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                <tr>
+                    <td>
+                        @entity.UserPost
+                    </td>
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @entity.MrsDixin1【@entity.Mrssumshichao】
+                    </td>
+                    <td>
+                        @entity.MrsDixin2【@entity.MrsDixin2keliu】
+                    </td>
+                    <td>
+                        @entity.NewCusReward【@entity.CustomerService】
+                    </td>
+                    <td>
+                        @entity.Mrstichengzhidingke【@entity.MrsMouthShicao】
+                    </td>
+                    <td>
+                        @entity.Mrsdanxiangmu
+                    </td>
+                    <td>
+                        @entity.MrsshicaoStr【@entity.MrsHospitalYeji】
+                    </td>
+                    <td>
+                        @entity.MrsFangdang【@entity.MrsFangdangBenyue】
+                    </td>
+                    <td>
+                        @entity.Mrsqqklxmj【@entity.Mrspingjukeliu/@entity.Mrsxiangmu】
+                    </td>
+                    <td>
+                        @entity.Mrsquangqingjiang
+                    </td>
+                    <td>@entity.ShouGongFei</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+      
+    </form>
+    <script type="text/javascript">
+        
+    </script>

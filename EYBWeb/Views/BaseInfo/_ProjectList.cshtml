@@ -1,0 +1,64 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.BaseInfo.ProjectEntity>
+@{
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+    cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                选择
+            </th>
+            <th>
+                项目名称
+            </th>
+            <th>
+                品牌
+            </th>
+            <th>
+                零售价
+            </th>
+           
+            <th>
+                服务时长
+            </th>
+            <th>
+                所属类别
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            var listValue = entity.ID + "|" + entity.Name + "|" + entity.RetailPrice + "|" + entity.CostPrice + "|" + entity.ServiceTime + "|" + entity.TypeName  +"|" + entity.ISKit + "$";
+            <tr class="ableclick">
+                <td>
+                    <input name="radioList" type="checkbox" value="@listValue" />
+                </td>
+                <td>
+                    @entity.Name
+                </td>
+                <td>
+                    @entity.BrandName
+                </td>
+                <td>
+                    @entity.RetailPrice
+                </td>
+                 
+                <td>
+                    @entity.ServiceTime
+                </td>
+                <td>
+                    @entity.TypeName
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+</form>
+

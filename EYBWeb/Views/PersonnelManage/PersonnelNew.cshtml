@@ -1,0 +1,411 @@
+﻿@using SystemManage.Factory.IBLL;
+@using DepartmentManage.Factory.IBLL;
+@using HS.SupportComponents;
+@model PagedList<EYB.ServiceEntity.PersonnelEntity.HospitalEntity>
+    @{
+        ViewBag.Title = "PersonnelManage";
+        var id = ConvertValueHelper.ConvertIntValue(Request["ID"]);
+        var InfoType = Request["InfoType"];
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+        IDepartmentManageBLL DepartmentManageBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IDepartmentManageBLL>();
+        PersonnelManage.Factory.IBLL.IPersonnelManageBLL perBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+        //获取基础字典
+        var baseinfolist = systemBLL.GetBaseInfoTreeByType("Job", 1, ViewBag.ParentHospitalID);
+        //获取部门选择框
+        var departList = DepartmentManageBLL.GetDepartmentListByHospitalID(ViewBag.HospitalID, 1);
+        //获取所有的菜单
+        var menulist = systemBLL.GetMenuList(1, 1);
+
+        EYB.ServiceEntity.PersonnelEntity.VersionEntity ve = new EYB.ServiceEntity.PersonnelEntity.VersionEntity();
+        ve.HospitalID = ViewBag.HospitalID;
+        var list = perBll.SelectVersionList(ve);
+        //  int row;
+        //int pagecount;
+        // var allmendian = perBll.GetOtherHospitallist(new EYB.ServiceEntity.PersonnelEntity.HospitalEntity { ID = ViewBag.ParentHospitalID }, out row, out pagecount);
+
+        //var albumlist = systemBLL.GetAlbumsEntityList(0, 6);
+
+    }
+    <script type="text/javascript" src="../../Scripts/swfupload/swfupload.js"></script>
+    <script type="text/javascript" src="../../Scripts/swfupload/swfupload.queue.js"></script>
+    <script type="text/javascript" src="../../Scripts/swfupload/swfupload.handlers.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            //头像
+            $(".upload-img").each(function () {
+                $(this).InitSWFUpload({ btntext: "上传头像", btnwidth: 119, single: true, water: false, thumbnail: false, filesize: "2048", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+            });
+            //初始化上传控件
+            $(".upload-album").each(function () {
+                $(this).InitSWFUpload({ btntext: "批量上传", btnwidth: 66, single: false, water: false, thumbnail: false, filesize: "2048", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+            });
+        });
+    </script>
+    <div id="mainContentBody">
+        @Html.Partial("~/Views/BaseInfo/_BaseInfoControl.cshtml")
+        <div id="mainContentRight">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                    ●
+                </label>
+                新建员工
+            </div>
+            <div class="mainContentRight_bottom" style="position: relative;">
+                <form id="myform" action="@Url.Content("~/PersonnelManage/AddPersonnel")" class="formular" method="post" enctype="multipart/form-data">
+                    <table class="mainContentRight_bottomnewdepart">
+                        <tr>
+                            <td style="width: 110px;">
+                                <span class="red">*&nbsp;</span>姓名
+                            </td>
+                            <td>
+                                <input type="text" name="UserName" id="txtName" value="" class="validate[required] text-input" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                性别
+                            </td>
+                            <td>
+                                <select class="select" name="Sex">
+                                    <option value="女">女</option>
+                                    <option value="男">男</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="red">*&nbsp;</span> 出生年月
+                            </td>
+                            <td>
+                                <input type="text" style=" display:inline-block;" name="Birthday" id="txtBirthday" value="@DateTime.Now.ToString("yyyy-MM-dd")" class="validate[required] text-input Wdate"
+                                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+                                <input id="Calendar" name="Calendar" type="checkbox" style="display: inline-block;" value="1" />农历
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                联系方式
+                            </td>
+                            <td>
+                                <input type="text" name="Phone" id="txtPhone" value="" class="validate[custom[phone]] text-input" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                家庭地址
+                            </td>
+                            <td>
+                                <input type="text" name="Address" id="txtAddress" value="" class="text-input" />
+                            </td>
+                        </tr>
+                        <tr style="display:none">
+                            <td>
+                                <span class="red">*&nbsp;</span> 电子邮件
+                            </td>
+                            <td>
+                                <input type="text" name="Email" id="txtEmail" value="" class="validate[custom[email]] text-input" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                所属组别
+                            </td>
+                            <td>
+                                <select class="select" name="DepartmentID">
+                                    <option value="0">请选择分组</option>
+                                    @foreach (var info in departList)
+                                    {
+                                        <option value="@info.ID">@info.Name</option>
+                                    }
+                                </select>
+                                <a href="javascript:SetGroup();" style="float:left;margin-top:12px;margin-left:5px;color:Blue;">
+                                    添加组别
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="red">*&nbsp;</span>职务
+                            </td>
+                            <td>
+                                <select class="select" name="DutyName">
+                                    @foreach (var info in baseinfolist)
+                                    {
+                                        <option value="@info.InfoName">@info.InfoName</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr style="display:none">
+                            <td>
+                                员工介绍
+                            </td>
+                            <td>
+                                <textarea rows="7" cols="60" name="Memo" class=" textarea"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                学历
+                            </td>
+                            <td>
+                                <select name="Educational" class="select">
+                                    <option value="小学">小学</option>
+                                    <option value="初中">初中</option>
+                                    <option value="中专">中专</option>
+                                    <option value="高中">高中</option>
+                                    <option value="大专">大专</option>
+                                    <option value="本科">本科</option>
+                                    <option value="硕士">硕士</option>
+                                    <option value="博士">博士</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                身份证
+                            </td>
+                            <td>
+                                <input type="text" name="IdentityNo" class="text-input" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                所属门店
+                            </td>
+                            <td>
+                                <select class="select" name="HospitalID">
+                                    @foreach (var info in Model)
+                                    {
+                                        <option value="@info.ID" @(info.ID == ViewBag.HospitalID ? "selected='selected'" : "")>@info.Name</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="red">*&nbsp;</span> 入职日期
+                            </td>
+                            <td>
+                                <input type="text" style="display:inline-block;" name="EntryDate" id="txtEntryDate" value="" class="text-input Wdate"
+                                       onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+                            </td>
+                        </tr>
+
+                        <tr style="display: none;">
+                            <td>
+                                员工账号
+                            </td>
+                            <td>
+                                <input type="text" id="txtLoginAccount" name="LoginAccount" class="text-input" /><label style="color: Green;" id="labloginaccount">*手机/微信端登录账号*</label>
+                            </td>
+                        </tr>
+
+                        <tr style="display: none;">
+                            <td>
+                                员工权限
+                            </td>
+                            <td>
+                                <select class="select" name="Version">
+                                    @foreach (var io in list)
+                                    {
+                                        <option value="@io.ID">@io.VersionName</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr style="height: 80px;">
+                            <td></td>
+                            <td>
+                                <input type="button" id="btnsave" class="submitbutton2" value="保 存" /><input type="button"
+                                                                                                             onclick="history.go(-1)" class="submitbutton2" value="取 消" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="imgupload" style="top: 50px; right: 40px; height: 149px; width: 120px;">
+                        @*  <img src="/Content/themes/default/images/noface.jpg" width="100%" />
+                             <label style="color:Red;">建议大小：165x110</label>
+                            <input type="file" name="Photo" style="width: 100%; height: 27px; bottom: 0px;" />*@
+                        <input type="hidden" name="hidFocusPhoto" id="hidFocusPhoto1" runat="server" class="focus-photo" />
+                        <div class="photo-list">
+                            <ul id="photolistul">
+                                <li>
+                                    <div>
+                                        <img src="/Content/themes/default/images/noface.jpg" height="117" width="120" />
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="upload-box upload-img">
+                        </div>
+                        <label style="color: Red;">
+                            建议大小150x210
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @*<script src="../../../Scripts/Controls/CashManage/email.js"></script>*@
+   
+    <script type="text/javascript">
+        //设置组别
+        function SetGroup() {
+            art.dialog.open("/DepartmentManage/SetDepartment", { title: "添加组别", width: 600, height: 500 });
+        }
+
+        jQuery(document).ready(function () {
+            jQuery("#myform").validationEngine('attach',
+                {
+                    relative: true,
+                    showOneMessage: true,
+                    overflownDIV: "#mainContentBody",
+                    promptPosition: "bottomLeft"
+                });
+            //复选框选择事件
+            $(".selectbox").click(function () {
+                if ($(this).prop("checked") == false) {
+                    $(this).parent().parent().find("input").each(function () {
+                        this.checked = false;
+                    });
+
+                } else {
+                    $(this).parent().parent().find("input").each(function () {
+                        this.checked = true;
+                    });
+                }
+            });
+            // 子类选择事件
+            $(".selectboxchild").click(function () {
+                if ($(this).prop("checked") == true) {
+                    $(this).parent().parent().parent().parent().find(".selectbox").attr("checked", "checked");
+                }
+            });
+            //检查账号
+            $("#txtLoginAccount").blur(function () {
+                var mobile = $("#txtLoginAccount").val();
+                if (mobile == "") {
+                    $("#labloginaccount").text("请输入账号");
+                    $("#labloginaccount").css("color", "red");
+                    return;
+                }
+
+                if ($("#Calendar").prop("checked") == true) {
+                    $("#Calendar").val("农历");
+                } else {
+                    $("#Calendar").val("公历");
+                }
+
+                $.ajax({
+                    type: "post",
+                    url: "/PersonnelManage/GetUserEntityByAccount",
+                    data: { "loginAccount": mobile },
+                    dataType: "json",
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert("检查错误!");
+                    },
+                    success: function (data) {
+                        if (data > 0) {
+                            // alert("该账号已经被占用！");
+                            $("#txtLoginAccount").val("");
+                            $("#txtLoginAccount").focus();
+                            $("#labloginaccount").text("该账号不可用");
+                            $("#labloginaccount").css("color", "red");
+                            return false;
+                        } else {
+                            $("#labloginaccount").text("该账号可用");
+                            $("#labloginaccount").css("color", "green");
+                            return true;
+                        }
+                    }
+                });
+            });
+
+            $('#txtName').keyup(function () {
+                var re = /[\\\/:\*\?"\<\>\|]/; //只允许输入数字和大小写字母
+                if (re.test($("#txtName").val())) {
+                    alert("请勿输入非法字符");
+                    $("#txtName").val("");
+                    return false;
+                }
+            });
+
+            //保存
+            $("#btnsave").click(function () {
+                if ($("#txtName").val() == "" || $("#txtBirthday").val() == ""||$("#txtEntryDate").val()=="") {
+
+                    //$('#myform').submit();
+                 
+                    //isEmailAvailable();
+                    //if ( isEmailAvailable()) {
+
+                    //}
+                    artdialogfail("姓名、出生年月电子邮箱入职日期不能为空！", "", "250");
+                    return false;
+                }
+                if ($("#txtEmail").val() != "") {
+                    if (isEmailAvailable() == false) {
+                        artdialogfail("电子邮箱格式不对！", "", "250");
+                        return false;
+                    }
+
+                   
+                }
+
+
+
+                $.ajax({
+                    cache: true,
+                    type: "POST",
+                    url: '@Url.Content("~/PersonnelManage/AddPersonnel")',
+                    data: $('#myform').serialize(), // 你的formid
+                    async: false,
+                    error: function (request) {
+                        alert("Connection error");
+                    },
+                    success: function (data) {
+                        if (data > 0) {
+                            artdialog("保存成功！", "@Url.Content("~/PersonnelManage/PersonnelManagePage")")
+                        } else if (data == -1) {
+                            artdialogfail("操作失败,该账号无效！");
+                        } else {
+                            artdialogfail("保存失败！");
+                        }
+                    }
+                });
+
+            });
+        });
+
+
+
+
+        //$(function () {
+
+        //   //默认加载有权限的
+        //    for (var i = 0; i < TheArray.length; i++) {
+        //            if (TheArray[i][0] == "True") {
+        //                if ("/BaseInfo/TheProject" == TheArray[i][1]) {
+        //                    return;
+        //                } else {
+        //                    self.location = "/PersonnelManage/PersonnelNew"[1];
+        //                    return;
+        //                }
+        //            }
+        //        }
+        //});
+    </script>
+    @*<script type="text/javascript">
+        function isEmailAvailable(emailInput) {
+               var reg = /^[0-9a-zA-Z_.-]+[@][0-9a-zA-Z_.-]+([.][a-zA-Z]+){1,2}$/;
+            if (!reg.test(emailInput)) {
+                alert("请输入正确电子邮箱地址！");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+            </script>*@
+

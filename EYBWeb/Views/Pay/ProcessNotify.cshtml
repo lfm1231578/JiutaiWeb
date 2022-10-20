@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "ParientBindingWeixin";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>会员中心</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta content="telephone=no" name="format-detection">
+    <link href="../../Content/css/weui.min.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+    <div class="page">
+        <div class="weui_msg">
+            @if (ViewBag.Statu == 1)
+            {
+
+                <div class="weui_icon_area"><i class="weui_icon_success weui_icon_msg"></i></div>
+            }
+            else
+            {
+
+                <div class="weui_icon_area"><i class="weui_icon_warn weui_icon_msg"></i></div>
+            }
+            <div class="weui_text_area">
+                @*<h2 class="weui_msg_title">@ViewBag.ContentTitle</h2>*@
+                <p class="weui_msg_desc">智能店务续费中心</p>
+            </div>
+
+            @if (ViewBag.Statu == 1)
+            {
+
+                <div class="weui_opr_area">
+                    <p class="weui_btn_area">
+                        <a href="javascript:;" class="weui_btn weui_btn_primary" onclick="closewindow()">确定</a>
+                        @* <a href="javascript:;" class="weui_btn weui_btn_default">直接登录</a>*@
+                    </p>
+                </div>
+            }
+            else
+            {
+
+                <div class="weui_opr_area">
+                    <p class="weui_btn_area">
+                        <a href="javascript:;" class="weui_btn weui_btn_default" onclick="closewindow()">关闭页面</a>
+                    </p>
+                </div>
+            }
+            <div class="weui_extra_area">
+                <a href="">微信服务端提供</a>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript">
+    function closewindow() {
+
+        WeixinJSBridge.call('closeWindow');
+    }
+    
+</script>
+
+</body>
+
+</html>

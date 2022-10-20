@@ -1,0 +1,148 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.WarehouseAnalysisEntity>
+    @{
+        Layout = null;
+        IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+
+        var houselist = wareBll.GetAllWarehouseListByParentHospitalID(new WarehouseEntity { ParentHospitalID = ViewBag.ParentHospitalID });
+        var con = houselist.Count();
+        con = con * 180 + 500;
+        bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_进出仓汇总成本价);
+    }
+    <style>
+        /*******表格********/
+        .gridTable tbody {
+            display: block;
+        }
+        .gridTable tr {
+            display: block;
+        }
+        .gridTable th {
+            width: 200px;
+            height: 40px;
+            overflow: hidden;
+        }
+        .gridTable td {
+            width: 200px;
+        }
+    </style>
+    <form action="" method="post" id="searchForm">
+        <div>
+            <table class="gridTable" id="proudectList" style="border-collapse: collapse; overflow: scroll;"
+                   cellpadding="0" cellspacing="0">
+                <thead style="display: block; position: fixed;">
+                    <tr>
+                        <th>
+                            品牌
+                        </th>
+                        <th orderfield="">
+                            名称
+                        </th>
+                        @foreach (var info in houselist)
+                        {
+                            <th>
+                               1 @*@info.getValueOneLength()*@
+                            </th>
+                        }
+                        <th>
+                            合计数量
+                        </th>
+                        <th orderfield="">
+                            销售金额
+                        </th>
+                        <th orderfield="">
+                            合计金额
+                        </th>
+                        @if (HasPermission)
+                        {
+                            <th orderfield="">
+                                合计成本
+                            </th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="height:40px;"></tr>
+                    @*<tr style="height: 40px;">
+                            <td colspan="@(houselist.Count + 5)">
+                            </td>
+                        </tr>*@
+                    @*<tr style="height: 40px;line-height: 40px;">
+                            <td colspan="7">
+                            </td>
+                        </tr>*@
+                    @foreach (var entity in Model)
+                    {
+                        <tr>
+                            <td>
+                                @entity.BrandName
+                            </td>
+                            <td>
+                                @entity.ProdcuitName
+                            </td>
+                            @foreach (var info in entity.Quatity)
+                            {
+                                <td>
+                                    @info.Value
+                                </td>
+                            }
+                            <td>
+                                @entity.AllQuatity
+                            </td>
+                            <td>
+                                @entity.Price
+                            </td>
+                            <td>
+                                @entity.AllMoney
+                            </td>
+                            @if (HasPermission)
+                            {
+                                <td>
+                                    @entity.AllChengben
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        @*<td colspan="@(houselist.Count + 2)" >
+                            </td>*@
+                        @for (int i = 0; i < houselist.Count + 1; i++)
+                        {
+                            <td>
+                            </td>
+                        }
+                        <td style="color: #00B0DE;">
+                            本页统计:
+                        </td>
+                        <td id="txtAllQuatity">
+                            @Model.Sum(i => i.AllQuatity)
+                        </td>
+                        <td>
+                        </td>
+                        <td id="txtAllMoney">
+                            @Model.Sum(i => i.AllMoney)
+                        </td>
+                        @if (HasPermission)
+                        {
+                            <td id="txtAllChengben">
+                                @Model.Sum(i => i.AllChengben)
+                            </td>
+                        }
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+    $("#sp").text('@Model.TotalItemCount');
+    //计算head高度，宽度 计算articles高度
+    var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+    //$(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+    $("#showmessage").css("display", "none");
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

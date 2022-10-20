@@ -1,0 +1,10 @@
+﻿@{
+    ViewBag.Title = "用户授权配置";    
+}
+@section head
+{
+    <link type="text/css" rel="Stylesheet" href="@Url.Content("~/Content/Css/tree.css")" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.treeRight.js")"></script>
+}
+@RenderPage("~/Views/SystemManage/Controls/PageRight_Tree.cshtml")
+<script type="text/javascript" src="@Url.Content("~/Scripts/Controls/SystemManage/PageUserRight.js")"></script>

@@ -1,0 +1,141 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using GXW.ServiceInterface.ServiceEntity.Entity.SystemEntity;
+@using GXW.ServiceInterface.ServiceEntity.Entity.GxwOaEntity.DepartmentEntity;
+@using HWLY.OA.SystemManagement.Factory.IBLL;
+@model PagedList<UserEntity>
+@{
+    ViewBag.Title = "用户管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var sysBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManagementBLL>();
+    var deptList = sysBLL.GetDepartmentList();
+}
+@section head
+{
+    <link type="text/css" rel="Stylesheet" href="@Url.Content("~/Content/Css/tree.css")" />
+
+}
+<div class="mains">
+@using (Html.BeginForm("UserManageSech", "SystemManagement", new { id = "" }, FormMethod.Post, new { id = "searchForm" }))
+{
+    <ul class="pro_ul" style="width:100%;margin-top:20px;margin-bottom:20px;">  
+        <li class="pro_txt" style="width:42px;margin-left:0;">姓名：</li>
+        <li>
+            <input type="text" id="UserName" value="" style="width:90px; height:20px; float:left;" />
+            <input type="hidden" name="UserID" id="hiddendepartment" value=""  /> 
+        </li>
+        <li class="pro_txt" style="width:42px;margin-left:14px;">部门：</li>
+        <li>
+            <select name="DeptCode" id="DeptCode" class="x_select" style="margin-left:0;height:25px;">
+                <option value="">全部</option> 
+                @foreach (var e in deptList)
+                {
+                    <option value="@e.DeptCode">@e.DeptName</option>    
+                }
+            </select>
+        </li>
+        <li><input class="serchBoxWorkBtn" type="submit" value="查询"  style="float:left;"/></li>
+        <div class="mb_add" style="float:right;margin-bottom:10px; margin-top:0px;" onclick="javascript:window.top.art.dialog({id:'add',iframe:'@Url.Content("~/SystemManagement/UserManageAdd")', title:'添加人员', width:'900', height:'480', lock:true,show:true,show:true}, function(){var d = window.top.art.dialog({id:'add'}).data.iframe;var form = d.document.getElementById('dosubmit');form.click();return false;}, function(){window.top.art.dialog({id:'add'}).close() });void(0);">
+        <span class="mba_txt">新增人员</span>
+    </div>
+    </ul>
+}
+    
+    <table class="gxw_table" style="clear:both;" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr style=" height:32px;">
+                <td width="10%">
+                    工号
+                </td>
+                <td width="10%">
+                    姓名
+                </td>
+                <td width="5%">
+                    年龄
+                </td>
+                <td width="10%">
+                    部门
+                </td>
+                <td width="10%">
+                    职务
+                </td>
+                <td width="12%">
+                    入职时间
+                </td>
+                <td width="10%">
+                    工龄
+                </td>
+                <td width="10%">
+                    工作年限
+                </td>
+                <td width="13%">
+                    联系方式
+                </td>
+                <td width="10%">
+                    操作
+                </td>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entity in Model)
+            {
+                <tr>
+                    <td>
+                        @entity.WorkNumber
+                    </td>
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @{
+                            TimeSpan t = DateTime.Now.Subtract(entity.BirthDate);
+                            @Html.Raw(t.Days/365 + "岁");
+                         }
+                    </td>
+                    <td>
+                        @entity.DeptName
+                    </td>
+                    <td>
+                        @entity.DutyName
+                    </td>
+                    <td>
+                        @entity.DutyTime.ToString("yyyy/MM/dd")
+                    </td>
+                    <td>
+                        @{
+                            TimeSpan ts = DateTime.Now.Subtract(entity.DutyTime);
+                            @Html.Raw(ts.Days / 30 + "个月");     
+                         }
+                    </td>
+                    <td>
+                        @entity.WorkRecord
+                    </td>
+                    <td>
+                       @entity.Mobile
+                    </td>
+                    <td>        
+                        <a href="javascript:window.top.art.dialog({id:'show',iframe:'@Url.Content("~/WorkModule/PersonnelManageInfo?UserID=" + @entity.UserID)', title:'@entity.UserName 人事信息', width:'800', height:'500', lock:true,show:false}, function(){var d = window.top.art.dialog({id:'show'}).data.iframe;var form = d.document.getElementById('dosubmit');form.click();return false;}, function(){window.top.art.dialog({id:'show'}).close() });void(0);">查看</a> 
+                    </td>
+                </tr>
+            }
+            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 10))
+        </tbody>
+    </table>
+
+
+<div id="dialogareaDepartment" style="text-align: left;">
+        <div id="treeContent" style="width:150px;float:left;">
+        </div>
+        <div class="pageContent" style="width: 590px; float: left; border: 1px solid  #eeeeee;
+            height: 260px;">
+            <table id="tableDepartmentManage">
+            </table>
+            <div id="pagerDepartmentManage">
+            </div>
+        </div>
+ </div>
+ </div>
+<script type="text/javascript" src="@Url.Content("~/Scripts/Controls/Public/DepartmentUser.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.tree.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/Controls/SystemManage/UserManage.js")"></script>
+@Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageindex", PagerItemsSeperator = "", ShowPageIndexBox = true, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })

@@ -1,0 +1,206 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.PersonnelEntity;
+@{
+    Layout = null;
+    ViewBag.Title = "修改回访";
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    IList<HospitalUserEntity> List = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    List = List.Where(i => i.IsSys != 1).ToList();
+    //获取回访主题分类
+    ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    
+    List<EYB.ServiceEntity.SystemEntity.BaseinfoEntity> typelist = new List<EYB.ServiceEntity.SystemEntity.BaseinfoEntity>();
+    typelist = sysBll.GetBaseInfoTreeByType("ReturnThemeType", 1, ViewBag.ParentHospitalID);//疗程卡类型分类
+    string ImgPath = System.Configuration.ConfigurationManager.AppSettings["ImgPath"];
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.handlers.js"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgdialog/lhgdialog.js?skin=idialog")"></script>
+<script type="text/javascript">
+    $(function () {
+        //头像
+        $(".upload-album").each(function () {
+            $(this).InitSWFUpload({ btntext: "上传护理照片", btnwidth: 140, single: false, water: false, thumbnail: false, filesize: "9948", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+        });
+    });
+</script>
+
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight">
+        <form  class="formular" method="post" name="myform" id="myform">
+        <div class="mainContentRight_bottom">
+            <input type="hidden" name="CustomerUserID" id="CustomerUserID" value="@Model.CustomerUserID" />
+            <input type="hidden" name="ID" value="@Model.ID" />
+            <table class="mainContentRight_bottomnewdepart">
+                <tr>
+                    <td style="width: 110px;">
+                        <span class="red">*&nbsp;</span>顾客姓名
+                    </td>
+                    <td>
+                        <input type="text" name="UserName" id="UserName" readonly="readonly" value="@Model.CustomerUsername" class="text-input" style="float: left;" />
+                        @* <input type="button" id="btnAddHSUserID" style="float: left;" class="addsame" onclick="PatientListOnly()"
+                            value="点击选择顾客" />*@
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        回访人
+                    </td>
+                    <td>
+                        <select name="UserID" class="select">
+                            @foreach (var D in List)
+                            { 
+                                <option @(Model.UserID == D.UserID?"selected='selected'":"")  value="@D.UserID" >@D.UserName</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        回访日期
+                    </td>
+                    <td>
+                        <input type="text"  class="text-input Wdate input130" name="ReturnTime" value="@Model.ReturnTime.ToString("yyyy-MM-dd")" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                            id="ReturnTime" style="width: 130px" />
+                    </td>
+                </tr>
+                @*<tr>
+                    <td>
+                        回访主题
+                    </td>
+                    <td>
+                        <select name="ReturnTheme" class="select">
+                            @foreach (var info in typelist)
+                            { 
+                                <option @(Model.ReturnTheme == info.ID?"selected='selected'":"") value="@info.ID">@info.InfoName</option>
+                            }
+                        </select>
+                    </td>
+                </tr>*@
+                <tr>
+                    <td>
+                        评价
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="Evaluate" class=" textarea">@Model.Evaluate</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        描述
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="Memo" class=" textarea">@Model.Memo</textarea>
+                    </td>
+                </tr>
+                  <tr>
+                    <td>
+                        下次护理时间
+                    </td>
+                    <td>
+                         <input type="text"  class="text-input Wdate input130" name="LastTime" value="@Model.LastTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                            id="" style="width: 130px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        下次护理内容
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="LastMemo" class=" textarea">@Model.LastMemo</textarea>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        图片
+                    </td>
+                    <td>
+                        <div class="upload-box upload-album">
+                        </div>
+                        <input type="hidden" name="hidFocusPhoto" id="hidFocusPhoto" runat="server" class="focus-photo" />
+                        <div class="photo-list">
+                            <ul>
+                                 @foreach (var info in ViewData["img"] as List<EYB.ServiceEntity.PatientEntity.FollowImgEntity>)
+                                    {
+                                        <li>
+                                            <input type="hidden" name="hid_photo_name" value="@info.ID|@info.Url|@info.Url" />
+                                            <input type="hidden" name="hid_photo_remark" value="@info.Remark" />
+                                            <div class="img-box" onclick="setFocusImg(this);">
+                                                <img src="@(ImgPath + info.Url)" bigsrc="@(ImgPath + info.Url)" />
+                                                <span class="remark"><i>@info.Remark</i></span>
+                                            </div>
+                                            <a href="javascript:;" onclick="setRemark(this);">描述</a> <a href="javascript:;" onclick="delImg(this);">
+                                                删除</a> </li>
+                                    }
+
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr style="height: 80px;">
+                    <td>
+                    </td>
+                    <td>
+                        <input style="margin-left: 0px;" type="button" onclick="SaveData()" class="submitbutton2"
+                            value="保 存" /><input class="submitbutton2" onclick="closeed()" type="button" value="取 消" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </form>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+
+
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+    //保存数据
+    function SaveData() {
+        if ($("#UserName").val() == "" || $("#CustomerUserID").val() == "0") {
+            alert("请选择顾客"); return;
+        }
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: getControllerUrl("PatientManage", "UpdatePatientFollowInfo"),
+            data: $('#myform').serialize(),
+            async: false,
+            success: function (data) {
+
+                if (data > 0) {
+                    alert("操作成功！");
+                    window.top.location.reload();
+                }
+            },
+            error: function (e) {
+                //alert(e.responseText);
+                alert("操作失败！");
+            }
+        });
+    }
+</script>

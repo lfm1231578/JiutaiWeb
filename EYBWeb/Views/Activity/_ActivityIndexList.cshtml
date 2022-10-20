@@ -1,0 +1,108 @@
+﻿@using System
+@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.ActivityEntity>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')" />
+                    </th>
+                    @*<th>
+                        所属门店
+                    </th>*@
+                    <th>
+                        活动名称
+                    </th>
+                    <th>
+                        有效期
+                    </th>
+                    <th>
+                        可使用数量/张
+                    </th>
+
+                    <th>
+                        可分享数量/张
+                    </th>
+                    <th>
+                        金额/面值
+                    </th>
+                    <th>
+                        创建时间
+                    </th>
+                    <th>
+                        创建人
+                    </th>
+                    <th>
+                        状态
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+
+                    <tr class="ableclick">
+
+                        <td>
+                            <input type="checkbox" name="checkbox" class="checkbox" value="@entity.Id" />
+                        </td>
+                        @*<td>
+                            @entity.HospitalName
+                        </td>*@
+                        <td>
+                            @entity.ActivityName
+                        </td>
+                        <td>
+                            @(entity.ValidityType == 1 ? "领取后" + entity.Validity + "天" : entity.ValidityStartTime.ToString("yyyy-MM-dd") + "至" + entity.ValidityStartEnd.ToString("yyyy-MM-dd"))
+                        </td>
+                        <td>
+                            @entity.EnableCount
+                        </td>
+                        <td>
+                            @entity.ShareCount
+                        </td>
+                        <td>
+                            @entity.Amount
+                        </td>
+                        <td>
+                            @entity.CreateTime
+                        </td>
+                        <td>
+                            @entity.Creator
+                        </td>
+                        <td>
+                            @Enum.GetName(typeof(EYB.ServiceEntity.ActivityEntity.ActivityStatu), entity.State)
+                        </td>
+                        <td>
+                            <a href="javascript:OpenDailogDetail('Edit',@entity.Id);">编辑</a>
+                            @if (entity.State == 2)
+                            {
+                                <a href="javascript:;" onclick="DeleteData(@entity.Id,1)">启用</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:;" style="color: red;" onclick="DeleteData(@entity.Id,2)">删除</a>
+                            }
+                        </td>
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>

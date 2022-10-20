@@ -1,0 +1,66 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PersonnelEntity.VersionEntity>
+    @{
+        ViewBag.Title = "权限管理";
+        var i = 1;
+    }
+    <div id="mainContentBody">
+        @Html.Partial("_BaseInfoControl")
+        <div id="mainContentRight">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                </label>
+                权限列表(<span>@Model.TotalItemCount</span>)<a href="##" class="addbutton">
+                    新建
+                </a>
+            </div>
+            <div class="mainContentRight_bottom">
+                <form action="@Url.Content("~/BaseInfo/CompetenceManage")" method="post" id="submitform">
+                    <table class="gridTable">
+                        <thead>
+                            <tr>
+                                <th orderfield="" style="">
+                                    序号
+                                </th>
+                                <th orderfield="" style="">
+                                    名称
+                                </th>
+                                <th>
+                                    操作
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entity in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @(i++)
+                                    </td>
+                                    <td>
+                                        @entity.VersionName
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Content("~/BaseInfo/CompetenceEdit?ID=")@entity.ID">编辑权限</a>
+                                        @*<a href="@Url.Content("~/BaseInfo/CompetenceEditP?ID=")@entity.ID">编辑权限</a>*@
+                                    </td>
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(".addbutton").click(function () {
+            art.dialog.open("/BaseInfo/AddCompetence?Type=Add", { title: "添加权限", width: 300, height: 180 })
+        })
+
+        function OpenDetail(obj) {
+
+        }
+
+
+    </script>

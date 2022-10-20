@@ -1,0 +1,335 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using CashManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@using SystemManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "支付界面";
+    Layout = null;
+    var orderNo = Request["orderNo"];
+    ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    BaseinfoManage.Factory.IBLL.IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<BaseinfoManage.Factory.IBLL.IBaseinfoBLL>();
+    var uname = ViewBag.Username;
+    var opentemcard = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "ISOpenCourseTreatment");       //是否开启疗程卡打印 1开启 2关闭
+    //获取订单详情
+    var entity = cashBll.GetOrderModel(new OrderEntity { OrderNo = orderNo });
+    //获取订单支付方式
+    var payList = cashBll.GetAllPaymentOrder(new PaymentOrderEntity { OrderNo = orderNo });
+    //获取订单产品详情
+    var orderList = cashBll.GetOrderinfoAndJoinUser(new OrderinfoEntity { OrderNo = orderNo }).OrderByDescending(i => i.CardType).ToList();
+
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div style="width: 100%;" class="clearfix ">
+        <div style="width: 48%; overflow: hidden; float: left; margin: 0px; margin-left: 10px;">
+            <fieldset style="border-color: #ccc;">
+                <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;订单详情&nbsp;&nbsp;</legend>
+                <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;">
+                    <table class="mainContentRight_bottomnewdepart" id="mainContentRight_bottomnewdepart">
+                        <tr>
+                            <td>
+                                订单类型：
+                            </td>
+                            <td style="color: Blue; font-size: 20px;">
+                                @EYB.Web.Code.PageFunction.GetorderType(entity.OrderType)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 80px;">
+                                订单编号：
+                            </td>
+                            <td>
+                                @entity.OrderNo
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                订单时间：
+                            </td>
+                            <td>
+                                @entity.CreateTime
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                订单总额：
+                            </td>
+                            <td>
+                                @entity.Price
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                欠款：
+                            </td>
+                            <td>
+                                <label style="color: Red;">
+                                    @entity.QianPrice</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                客户名称：
+                            </td>
+                            <td>
+                                @entity.UserName
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                备注：
+                            </td>
+                            <td>
+                                @entity.Name
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+        <div style="width: 48%; overflow: hidden; float: left; margin: 0px; margin-left: 10px;">
+            <fieldset style="border-color: #ccc;">
+                <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;支付方式&nbsp;&nbsp;</legend>
+                <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;"
+                    id="">
+                    <table class="gridTable" style="height: auto; border-collapse: collapse;" cellpadding="0"
+                        cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    支付方式
+                                </th>
+                                <th>
+                                    支付金额 /次数
+                                </th>
+                                <th>
+                                    剩余金额/次数
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var info in payList)
+                            {
+                                <tr>
+                                    <td>
+                                        @info.PayName
+                                    </td>
+                                    <td>
+                                        @(info.PayType == 4 ? info.PayTime.ToString() + "次" : info.PayMoney.ToString() + "元")
+                                    </td>
+                                    <td>
+                                        @(info.PayType == 4 ? info.BalanceTiems.ToString() + "次" : info.BalanceMoney.ToString() + "元")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <div id="form2" style="display: none;">
+                    <table class="gridTable" style="height: auto; border-collapse: collapse;" cellpadding="0"
+                        cellspacing="0">
+                        <tbody>
+                            @foreach (var info in payList)
+                            {
+                                if (info.PayType != 4)
+                                {
+                                <tr style="line-height: 16px; height: 16px;">
+                                    <td style="font-size: 12px; line-height: 16px; height: 16px; width: 60px;">
+                                        @info.PayName
+                                    </td>
+                                    <td style="font-size: 12px; line-height: 16px; height: 16px;">
+                                        @(info.PayMoney.ToString() + "元")
+                                    </td>
+                                    <td style="font-size: 12px; line-height: 16px; height: 16px;">
+                                        @(info.BalanceMoney <= 0 ? "" : "(余" + info.BalanceMoney.ToString() + "元)")
+                                    </td>
+                                </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div style="width: 98%;">
+        <fieldset style="width: 100%;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;订单产品详情&nbsp;&nbsp;</legend>
+            <table class="gridTable" style="height: auto; border-collapse: collapse; margin-left: 5px;"
+                cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            名称
+                        </th>
+                        <th>
+                            优惠价格
+                        </th>
+                        <th>
+                            数量
+                        </th>
+                        <th>
+                            合计
+                        </th>
+                        <th>
+                            参与员工
+                        </th>
+                        <th>
+                            职位
+                        </th>
+                        <th>
+                            是否指定
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="gridtdbody">
+                    @foreach (var info in orderList)
+                    {
+                        <tr  Quantity="@info.Quantity" orderinfoid="@info.ID" code="@(String.IsNullOrEmpty(info.ProdcuitName) ? info.ProdcuitName1 : info.ProdcuitName)">
+                            <td>
+                                @(String.IsNullOrEmpty(info.ProdcuitName) ? info.ProdcuitName1 : info.ProdcuitName)
+                            </td>
+                            <td>
+                                @info.Price
+                            </td>
+                            <td>
+                                @info.Quantity
+                            </td>
+                            <td>
+                                @info.AllPrice
+                            </td>
+                            <td></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset style="width: 100%;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;参与员工数据&nbsp;&nbsp;</legend>
+            <form action="" method="post" class="clearfix" name="myform" id="myform">
+            <div class="tab-content clearfix" style="width: 98%; background: #E7F6FF;">
+                <input type="hidden" value="" name="ID" />
+                <table class="gridTable">
+                    <tr>
+                        <td style="width: 100px;">
+                            业绩：
+                        </td>
+                        <td style="width: 200px; font-size: 16px;">
+                            <input type="text" name="Yeji" value="" />
+                        </td>
+                        <td style="width: 100px;">
+                            项目件数：
+                        </td>
+                        <td style="width: 200px; font-size: 16px;">
+                            <input type="text" name="Quantity" value="" disabled="disabled" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px;">
+                            卡扣消耗：
+                        </td>
+                        <td style="width: 200px; font-size: 16px;">
+                            <input type="text" name="XiaoHao" value="" />
+                        </td>
+                        <td style="width: 100px;">
+                            时长（分钟）：
+                        </td>
+                        <td style="width: 200px; font-size: 16px;">
+                            <input type="text" name="ServiceTime" value="" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width: 100px;">
+                            手工费提成：
+                        </td>
+                        <td style="width: 200px; font-size: 16px;">
+                            <input type="text" name="Ticheng" value="" />
+                        </td>
+                        <td style="width: 100px;">
+                            额外奖励：
+                        </td>
+                        <td style="width: 200px; font-size: 16px;">
+                            <input type="checkbox" name="IsZhiding" />是否指定服务
+                            <input type="text" name="OtherTiCheng" value="" style="width: 60px;" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="accountdiv" style="background-color: #fff; text-align: right;">
+                <input type="button" class="submitbutton2" style="float: none;" value="保 存" onclick="SaveData()" />
+            </div>
+            </form>
+        </fieldset>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+
+
+
+    $("#gridtdbody tr").click(function () {
+        var projectname = $(this).attr("code");
+        $("#labname").text(projectname);
+        var Quantity = $(this).attr("Quantity");
+
+        var orderinfoid = $(this).attr("orderinfoid");
+
+        if (orderinfoid == undefined) { return; }
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "text", //返回json格式的数据
+            url: getControllerUrl("CashManage", "GetAllJoinUser"),
+            data: { "orderinfoid": orderinfoid, "projectname": projectname, "Quantity": Quantity },
+            success: function (data) {
+                $("#gridtdbody1").empty();
+                if (data != null) {
+
+                    $("#gridtdbody1").append(data);
+                }
+            },
+            error: function () {
+                alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+            }
+        });
+    })
+    //删除参与用户
+    function DeleteJoinUser(ID) {
+        if (confirm("确认要删除该参与员工吗？")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "text", //返回json格式的数据
+                url: getControllerUrl("CashManage", "DeleteJoinUser"),
+                data: { "ID": ID },
+                success: function (data) {
+                    if (data != null) {
+                        $("#gridtdbody1").find("tr[code='" + ID + "']").remove();
+                    }
+                },
+                error: function () {
+                    alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                }
+            });
+        }
+    }
+    //修改参与用户
+    function UpdateJoinUser(ID, projectname, Quantity) {
+        art.dialog.open("/CashManage/UpdateYeji?ID=" + ID + "&projectname=" + projectname + "&Quantity=" + Quantity, { title: "编辑员工业绩", width: 690, height: 400 })
+    }
+</script>

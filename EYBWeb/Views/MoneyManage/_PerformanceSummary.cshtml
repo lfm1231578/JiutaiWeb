@@ -1,0 +1,447 @@
+﻿@using HS.SupportComponents
+@{
+    ViewBag.Title = "_Patientlist";
+    Layout = null;
+    decimal OtherTiChengSum = 0;
+    decimal shicaosum = 0;
+    float xiangmushu = 0;
+
+    decimal _Yeji_Chuzhika = 0;
+        
+        
+decimal _Yeji_Liaochengka = 0;
+        
+        
+decimal _Yeji_Xiangmu = 0;
+        
+        
+decimal _Yeji_Chanpin = 0;
+        
+        
+decimal _Yeji_TeshuChanpin = 0;
+        
+        
+decimal _Yeji_Teshuxiangmu = 0;
+        
+        
+decimal _Yeji_Daxiangmu = 0;
+        
+        
+decimal _Yeji_Chuzhikasum = 0;
+        
+        
+decimal _KakouYeji_Liaocheng = 0;
+        
+        
+decimal _KakouYeji_Xiangmu = 0;
+        
+        
+decimal _KakouYeji_Chanpin = 0;
+        
+        
+decimal _KakouYeji_TeshuChanpin = 0;
+        
+decimal _KakouYeji_Teshuxiangmu = 0;
+        
+decimal _KakouYeji_Daxiangmu = 0;
+        
+decimal _KakouYeji_Liaochengsum = 0;
+        
+decimal _Ticheng = 0;
+
+}
+<form action="" method="post" id="submitform">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="border-collapse: collapse;">
+    <thead style="position:absolute;">
+        <tr>
+            <th rowspan="2" style="border-right: 1px solid #fff;" id="ygbh">
+                员工编号
+            </th>
+            <th rowspan="2" style="border-right: 1px solid #fff;">
+                员工姓名
+            </th>
+            <th rowspan="2" style="border-right: 1px solid #fff;">
+                组别
+            </th>
+            <th colspan="8" style="border-right: 1px solid #fff; border-bottom: 1px solid #fff;">
+                现金业绩
+            </th>
+            <th colspan="7" style="border-right: 1px solid #fff; border-bottom: 1px solid #fff;">
+                卡扣业绩
+            </th>
+            <th rowspan="2" style="border-right: 1px solid #fff; border-bottom: 1px solid #fff;">
+                实操业绩
+            </th>
+            @*<th rowspan="2" style="border-right: 1px solid #fff; border-bottom: 1px solid #fff;">
+            跨店实操业绩
+        </th>*@
+            <th rowspan="2" style="border-right: 1px solid #fff; border-bottom: 1px solid #fff;">
+                服务项目数
+            </th>
+            <th rowspan="2" style="border-right: 1px solid #fff;">
+                手工
+            </th>
+            <th rowspan="2" style="border-right: 1px solid #fff;">
+                奖励
+            </th>
+        </tr>
+        <tr>
+            <th style="border-right: 1px solid #fff;">
+                储值卡
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                疗程卡
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                单次项目
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                常规产品
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                特殊产品
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                特殊项目
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                大项目
+            </th>
+            <th style="border-right: 1px solid #fff; display: none;">
+                退卡
+            </th>
+            <th style="border-right: 1px solid #fff; display: none;">
+                还款
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                合计
+            </th>
+            <th style="border-right: 1px solid #fff; display: none;">
+                储值卡
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                疗程卡
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                单次项目
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                常规产品
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                特殊产品
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                特殊项目
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                大项目
+            </th>
+            <th style="border-right: 1px solid #fff; display: none;">
+                还款
+            </th>
+            <th style="border-right: 1px solid #fff; display: none;">
+                退卡
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                合计
+            </th>
+            @*  <th style="border-right: 1px solid #fff;">
+                指定
+            </th>
+            <th style="border-right: 1px solid #fff;display:none;">
+                非指定
+            </th>
+            <th style="border-right: 1px solid #fff;display:none;">
+                合计
+            </th>
+            <th style="border-right: 1px solid #fff;">
+                指定
+            </th>
+            <th style="border-right: 1px solid #fff;display:none;">
+                非指定
+            </th>
+            <th style="border-right: 1px solid #fff;display:none;">
+                合计
+            </th>*@
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:81px;" id="kongbai"></tr>
+        @foreach (var entity in Model)
+        {
+            OtherTiChengSum += entity.OtherTiCheng;
+            shicaosum += entity.ShiCao_zhiding;
+            xiangmushu += entity.KeShu_zhiding;
+
+            _Yeji_Chuzhika +=   entity.Yeji_Chuzhika;
+        
+        
+_Yeji_Liaochengka +=   entity.Yeji_Liaochengka;
+        
+        
+_Yeji_Xiangmu +=   entity.Yeji_Xiangmu;
+        
+        
+_Yeji_Chanpin +=   entity.Yeji_Chanpin;
+        
+        
+_Yeji_TeshuChanpin+=   entity.Yeji_TeshuChanpin;
+        
+        
+_Yeji_Teshuxiangmu+=   entity.Yeji_Teshuxiangmu;
+        
+        
+_Yeji_Daxiangmu +=   entity.Yeji_Daxiangmu;
+        
+        
+ _Yeji_Chuzhikasum +=  (entity.Yeji_Chuzhika + entity.Yeji_Liaochengka + entity.Yeji_Chanpin + entity.Yeji_TeshuChanpin + entity.Yeji_Xiangmu + entity.Yeji_Daxiangmu + entity.Yeji_Teshuxiangmu);
+        
+        
+_KakouYeji_Liaocheng +=  (entity.KakouYeji_Liaocheng);
+        
+        
+_KakouYeji_Xiangmu +=   entity.KakouYeji_Xiangmu;
+        
+        
+_KakouYeji_Chanpin +=   entity.KakouYeji_Chanpin;
+        
+        
+_KakouYeji_TeshuChanpin +=   entity.KakouYeji_TeshuChanpin;
+        
+_KakouYeji_Teshuxiangmu +=   entity.KakouYeji_Teshuxiangmu;
+        
+_KakouYeji_Daxiangmu +=   entity.KakouYeji_Daxiangmu;
+        
+_KakouYeji_Liaochengsum +=  (entity.KakouYeji_Liaocheng + entity.KakouYeji_Chanpin + entity.KakouYeji_TeshuChanpin + entity.KakouYeji_Xiangmu + entity.KakouYeji_Daxiangmu + entity.KakouYeji_Teshuxiangmu);
+        
+_Ticheng +=   entity.Ticheng;
+    <tr>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.UserID
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.UserName
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.DepartmentName
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Yeji_Chuzhika
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Yeji_Liaochengka
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Yeji_Xiangmu
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Yeji_Chanpin
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Yeji_TeshuChanpin
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Yeji_Teshuxiangmu
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Yeji_Daxiangmu
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.Yeji_tuika
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.Yeji_huankuan
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @(entity.Yeji_Chuzhika + entity.Yeji_Liaochengka + entity.Yeji_Chanpin + entity.Yeji_TeshuChanpin + entity.Yeji_Xiangmu + entity.Yeji_Daxiangmu + entity.Yeji_Teshuxiangmu)
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.KakouYeji_Chuzhika
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @(entity.KakouYeji_Liaocheng)
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.KakouYeji_Xiangmu
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.KakouYeji_Chanpin
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.KakouYeji_TeshuChanpin
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.KakouYeji_Teshuxiangmu
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.KakouYeji_Daxiangmu
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.KakouYeji_Huankuan
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.KakouYeji_tuika
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @(entity.KakouYeji_Liaocheng + entity.KakouYeji_Chanpin + entity.KakouYeji_TeshuChanpin + entity.KakouYeji_Xiangmu + entity.KakouYeji_Daxiangmu + entity.KakouYeji_Teshuxiangmu)
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.ShiCao_zhiding
+        </td>
+        @*<td style="border-right: 1px solid #f1eaea;">
+            @entity.kuadianShiCao_zhiding  99
+        </td>*@
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.ShiCao_feizhiding
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.kuadianShiCao_feizhiding
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @(entity.ShiCao_zhiding + entity.ShiCao_feizhiding)
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.KeShu_zhiding
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @entity.KeShu_feizhiding
+        </td>
+        <td style="border-right: 1px solid #f1eaea; display: none;">
+            @(entity.KeShu_zhiding + entity.KeShu_feizhiding)
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.Ticheng
+        </td>
+        <td style="border-right: 1px solid #f1eaea;">
+            @entity.OtherTiCheng
+        </td>
+    </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td style="border-right: 1px solid #f1eaea;">
+                合计:
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_Chuzhika  @*@ViewBag.Yeji_Chuzhika*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_Liaochengka  @*@ViewBag.Yeji_Liaochengka*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_Xiangmu      @*@ViewBag.Yeji_Xiangmu*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_Chanpin  @*@ViewBag.Yeji_Chanpin*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_TeshuChanpin   @*@ViewBag.Yeji_TeshuChanpin*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_Teshuxiangmu  @*@ViewBag.Yeji_Teshuxiangmu*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_Daxiangmu  @*@ViewBag.Yeji_Daxiangmu*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @ViewBag.Yeji_tuika
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @ViewBag.Yeji_huankuan
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Yeji_Chuzhikasum  @*@(ViewBag.Yeji_Chuzhika + ViewBag.Yeji_Liaochengka + ViewBag.Yeji_Chanpin + ViewBag.Yeji_TeshuChanpin + ViewBag.Yeji_Xiangmu + ViewBag.Yeji_Daxiangmu + ViewBag.Yeji_Teshuxiangmu)*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @ViewBag.KakouYeji_Chuzhika
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_KakouYeji_Liaocheng @*@ViewBag.KakouYeji_Liaocheng*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_KakouYeji_Xiangmu  @*@ViewBag.KakouYeji_Xiangmu*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_KakouYeji_Chanpin   @*@ViewBag.KakouYeji_Chanpin*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_KakouYeji_TeshuChanpin   @*@ViewBag.KakouYeji_TeshuChanpin*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_KakouYeji_Teshuxiangmu  @*@ViewBag.KakouYeji_Teshuxiangmu*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_KakouYeji_Daxiangmu   @*@ViewBag.KakouYeji_Daxiangmu*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @ViewBag.KakouYeji_Huankuan
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @ViewBag.KakouYeji_tuika
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_KakouYeji_Liaochengsum  @*@(ViewBag.KakouYeji_Liaocheng + ViewBag.KakouYeji_Chanpin + ViewBag.KakouYeji_TeshuChanpin + ViewBag.KakouYeji_Xiangmu + ViewBag.KakouYeji_Daxiangmu + ViewBag.KakouYeji_Teshuxiangmu)*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @shicaosum  @*@ViewBag.ShiCao_zhiding*@
+            </td>
+            @*<td style="border-right: 1px solid #f1eaea;">
+                @ViewBag.kuadianShiCao_zhiding
+            </td>*@
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @xiangmushu  @*@ViewBag.ShiCao_feizhiding*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @ViewBag.kuadianShiCao_feizhiding
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @(ViewBag.ShiCao_zhiding + ViewBag.ShiCao_feizhiding)
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @xiangmushu   @*@ViewBag.KeShu_zhiding*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @ViewBag.KeShu_feizhiding
+            </td>
+            <td style="border-right: 1px solid #f1eaea; display: none;">
+                @(ViewBag.KeShu_feizhiding + ViewBag.KeShu_zhiding)
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @_Ticheng @*@ViewBag.Ticheng*@
+            </td>
+            <td style="border-right: 1px solid #f1eaea;">
+                @OtherTiChengSum
+            </td>
+        </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 17))
+    </tfoot>
+</table>
+</form>
+<div style="height:120px;"></div>
+<script>
+
+    $(function () {
+      window.setTimeout(function () {
+            var gridtablewidth = $(".gridTable").width();
+            var thlen = $(".gridTable thead th").length;
+            var ygbhthlen = $("#ygbh").height();
+            $("#kongbai").height(ygbhthlen)
+            let theadWidth = $(".gridTable").width();
+            $(".gridTable thead").css("width", theadWidth + "px")
+            let tdWidth = (theadWidth / 21) + "px";
+            $(".gridTable thead th").css("width", tdWidth);
+            $(".gridTable tr td").css("width", tdWidth);
+        }, 1)
+
+    })
+
+
+</script>

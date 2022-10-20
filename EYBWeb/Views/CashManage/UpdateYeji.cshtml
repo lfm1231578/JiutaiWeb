@@ -1,0 +1,157 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using CashManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "员工业绩";
+    Layout = null;
+    var ID = Request["ID"];
+    var projectname = Request["projectname"];
+    var Quantity = Request["Quantity"];
+    
+    ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    var entity = cashBll.GetJoinUserModel(new JoinUserEntity { ID = ConvertValueHelper.ConvertIntValue(ID) });
+   
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--Panel-->
+<script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <!--Tab内容-->
+    <div class="content-tab-wrap">
+        <div id="floatHead" class="content-tab" style="width: 98%;">
+            <div class="content-tab-ul-wrap">
+                <ul>
+                    <li><a href="javascript:;" onclick="tabsChange(this);" class="selected" style="margin-left: 0px;">
+                        编辑员工的销售业绩数据 服务内容-<label style="font-size: 18px;">【@projectname】</label></a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+     <form action="" method="post" class="clearfix" name="myform" id="myform">
+    <div class="tab-content clearfix" style="width: 98%; background: #E7F6FF;">
+     <input type="hidden" value="@ID" name="ID" />
+        <table class="gridTable">
+            <tr>
+                <td style="width: 100px; font-size: 20px; color: Blue; text-align: left;" colspan="4">
+                    参与员工
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100px;">
+                    员工姓名：
+                </td>
+                <td style="width: 200px; font-size: 16px; color: Black;">
+                    @entity.UserName
+                </td>
+                <td style="width: 100px;">
+                    职位类别：
+                </td>
+                <td style="width: 200px; font-size: 16px; color: Black;">
+                    @entity.DutyName
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 150px; font-size: 20px; color: Blue; text-align: left;" colspan="4">
+                    员工业绩数据
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100px;">
+                    业绩：
+                </td>
+                <td style="width: 200px; font-size: 16px;">
+                    <input type="text" name="Yeji" value="@(entity.Yeji+entity.KakouYeji)" />
+                </td>
+                <td style="width: 100px;">
+                    项目件数：
+                </td>
+                <td style="width: 200px; font-size: 16px;">
+                    <input type="text" name="Quantity" value="@Quantity"  disabled="disabled" />
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100px;">
+                    卡扣消耗：
+                </td>
+                <td style="width: 200px; font-size: 16px;">
+                    <input type="text" name="XiaoHao" value="@entity.XiaoHao" />
+                </td>
+                <td style="width: 100px;">
+                    时长（分钟）：
+                </td>
+                <td style="width: 200px; font-size: 16px;">
+                    <input type="text" name="ServiceTime" value="@entity.ServiceTime" />
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100px;">
+                    手工费提成：
+                </td>
+                <td style="width: 200px; font-size: 16px;">
+                    <input type="text" name="Ticheng" value="@entity.Ticheng" />
+                </td>
+                <td style="width: 100px;">
+                    额外奖励：
+                </td>
+                <td style="width: 200px; font-size: 16px;">
+                    <input type="checkbox" name="IsZhiding" @(entity.IsZhiding == 1 ? "checked=checked" : "") value="@entity.IsZhiding" />是否指定服务
+                    <input type="text" name="OtherTiCheng" value="@entity.OtherTiCheng" style="width:60px;" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="accountdiv" style="background-color:#fff; text-align:right;">
+        <input type="button" class="submitbutton2" style="float:none;" value="保 存" onclick="SaveData()" />
+        <input type="button" id="btnsave" class="submitbutton2" style="float:none;" value="关 闭" onclick="closeed()" />
+    </div>
+    </form>
+</body>
+<script type="text/javascript">
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+    //保存数据
+    function SaveData() {
+        if ($("input[name='IsZhiding']").prop("checked") == false) {
+            $("input[name='IsZhiding']").val("0");
+        } else {
+            $("input[name='IsZhiding']").val("1");
+        }
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: getControllerUrl("CashManage", "SaveJonUser"),
+            data: $('#myform').serialize(),
+            async: false,
+            success: function (data) {
+                if (data > 0) {
+                    alert("操作成功！");
+                    closeed();
+                }
+            },
+            error: function () {
+                alert("操作失败！");
+            }
+        });
+    }
+</script>
+</html>

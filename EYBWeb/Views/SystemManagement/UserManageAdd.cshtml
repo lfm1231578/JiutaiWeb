@@ -1,0 +1,377 @@
+﻿@using HWLY.OA.SystemManagement.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var curBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManagementBLL>();
+    //获取所有角色
+    var list = curBLL.GetAllRole().Where(c => c.IsActive == 1).ToList();
+    //获取职务
+    var infotypeList = curBLL.GetBaseInfoTreeByType("job");
+}
+@section head
+{
+    <link href="@Url.Content("~/Content/Css/tree.css")" rel="stylesheet" type="text/css" />
+}
+
+<div class="dia_Basic" style="margin-bottom: 20px;">
+        <form action="@Url.Content("~/SystemManagement/AddUser")" method="post" name="myform" id="myform">
+    <table class="ml_table" style="margin-left: 20px;margin-top:15px" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    姓名：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="UserName" id="user_name" style="width:120px" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    出生日期：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="BirthDate" id="BirthDate" style="width:120px" value="@DateTime.Now.ToString("yyyy/MM/dd")"/>
+                    <span class="redPoint" style="margin-left:0;">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    性别：
+                </td>
+                <td class="mlt_val">
+                    <select class="x_select" name="Sex" id="Sex" style="margin-left:0;width:60px;height:22px;">
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    联系电话：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="Mobile" id="Mobile" style="width:120px" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    身份证号：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="IDNumber" id="IDNumber" style="width:120px" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    籍贯：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="Hometown" id="Hometown" style="width:120px" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    婚姻状况：
+                </td>
+                <td class="mlt_val">
+                    <select class="x_select" id="IsMarry" name="IsMarry" style="margin-left:0;height:22px;">
+                        <option value="未婚">未婚</option>
+                        <option value="已婚")>已婚</option>
+                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    健康状况：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="Health" id="Health" style="width:120px" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    学历：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="Educational" id="Educational" style="width:120px" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    毕业学校：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="GraduateSchool" id="GraduateSchool" style="width:120px" value=""/>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    专业：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="Specialty" id="Specialty" style="width:120px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    毕业时间：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="GraduateTime" id="GraduateTime" style="width:120px" value="@DateTime.Now.ToString("yyyy/MM/dd")" />
+                    <span class="redPoint" style="margin-left:0;">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    档案存放地点：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="FilesAddress" id="FilesAddress" style="width:120px" value="" />
+                </td>
+            </tr>
+            @*<tr>
+                <td style="height:32px;line-height:32px;">
+                    证件复印件：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="CopyDocuments" id="CopyDocuments" style="width:120px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    个人照片：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="PersonalPhotos" id="PersonalPhotos" style="width:120px" value="" />
+                </td>
+            </tr>*@
+            </table>
+</div>        
+
+<div class="dia_Basic">
+        <table class="ml_table" style="margin-left: 20px;margin-top:15px" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    工号：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="WorkNumber" id="WorkNumber" style="width:120px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    部门：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" id="department" class="pro_input" style="width:120px" value="" />
+                    <input type="hidden" name="DeptCode" id="hiddendepartment" />
+                    <span class="redPoint">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    职务：
+                </td>
+                <td class="mlt_val">
+                    <select class="x_select" id="DutyName" name="DutyName" style="margin-left:0;width:126px;height:22px;">
+                    @foreach (var info in infotypeList)
+                    {
+                        <option value="@info.InfoName">@info.InfoName</option>
+                    }
+                    </select>
+                    <span class="redPoint">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    角色：
+                </td>
+                <td class="mlt_val">
+                    <select class="x_select" id="RoleID" name="RoleID" style="margin-left:0;width:126px;height:22px;">
+                    @foreach (var info in list)
+                    {
+                        <option value="@info.RoleID">@info.RoleName</option>
+                    }
+                    </select>
+                    <span class="redPoint">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    入职时间：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="DutyTime" id="DutyTime" style="width:120px" value="@DateTime.Now.ToString("yyyy/MM/dd")" />
+                    <span class="redPoint" style="margin-left:0;">*</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    离职时间：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="LeaveTime" id="LeaveTime" style="width:120px" value="@DateTime.Now.ToString("yyyy/MM/dd")" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    试用期：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="Probation" id="Probation" style="width:120px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    工作年限：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="WorkRecord" id="WorkRecord" style="width:120px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    在职状态：
+                </td>
+                <td class="mlt_val">
+                     <select class="x_select" id="IsDuty" name="IsDuty" style="margin-left:0;width:126px;height:22px;">
+                        <option value="1">在职</option>
+                        <option value="2">离职</option>
+                     </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    工资卡账号：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="WagesCard" id="WagesCard" style="width:120px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    合同签订时间：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="ContractTime" id="ContractTime" style="width:120px" value="@DateTime.Now.ToString("yyyy/MM/dd")" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    合同到期时间：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="ContractMaturityTime" id="ContractMaturityTime" style="width:120px" value="@DateTime.Now.ToString("yyyy/MM/dd")" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    社保情况：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="SocialSecurity" id="SocialSecurity" style="width:120px" value="" />
+                </td>
+            </tr>
+        </table>
+</div>
+
+
+
+<div class="dia_Basic">
+        <table class="ml_table" style="margin-left: 20px;margin-top:15px" border="0" cellpadding="0" cellspacing="0">
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    配偶姓名：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="SpouseName" id="SpouseName" style="width:130px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    配偶电话：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="SpousePhone" id="SpousePhone" style="width:130px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    工作单位：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="SpouseCompany" id="SpouseCompany" style="width:130px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    父亲姓名：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="FatherName" id="FatherName" style="width:130px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    父亲电话：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="FatherPhone" id="FatherPhone" style="width:130px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    母亲姓名：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="MotherName" id="MotherName" style="width:130px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    母亲电话：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="MotherPhone" id="MotherPhone" style="width:130px" value="" />
+                </td>
+            </tr>
+            <tr>
+                <td style="height:32px;line-height:32px;">
+                    家庭地址：
+                </td>
+                <td class="mlt_val">
+                    <input type="text" class="pro_input" name="Address" id="Address" style="width:130px" value="" />
+                </td>
+            </tr>
+        </table>
+            <div id="dialogareaDepartment" style="text-align: left;">
+                <div id="treeContentArea">
+                </div>
+            </div>
+            <input type="hidden" name = "Password" value="123456"/>
+            <input type="hidden" name = "IsActive" value="1"/>
+            <input type="submit" name="dosubmit" id="dosubmit" style="display:none" value=" " />
+        </form>
+</div>
+
+    <script type="text/javascript" src="@Url.Content("~/Scripts/Controls/Public/Department.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.tree.js")"></script>
+    <script type="text/javascript">
+        $(function () {
+
+            $.formValidator.initConfig({ formid: "myform", autotip: true, onerror: function (msg, obj) { window.top.art.dialog({ content: msg, lock: true, width: '200', height: '50', show: true }, function () { this.close(); $(obj).focus(); }) } });
+
+            $("#user_name").formValidator({ onshow: "填写帐号昵称", onfocus: "填写帐号昵称" }).inputValidator({ min: 1, onerror: "请填写帐号昵称" }).ajaxValidator({ type: "get", url: getControllerUrl("SystemManagement", "GetUserEntityByAccount"), data: "", datatype: "html", async: 'false', success: function (data) { if (data == "1") { return true; } else { return false; } }, buttons: $("#dosubmit"), onerror: "帐号已经被占用", onwait: "正在检测..." });
+            //$("#user_name").formValidator({ onshow: "*", onfocus: "请输入姓名" }).inputValidator({ min: 1, onerror: "请输入姓名" });
+
+            $("#password").formValidator({ onshow: "", onfocus: "填写6位以上密码" }).inputValidator({ min: 6, onerror: "请填写6位以上密码" });
+
+            $("#department").formValidator({ onshow: "", onfocus: "请选择部门" }).inputValidator({ min: 1, onerror: "请选择部门" });
+
+            $("#repassword").formValidator({ onshow: "", onfocus: "确认密码", oncorrect: "填写正确" }).compareValidator({ desid: "password", operateor: "=", onerror: "两次输入密码不一致" });
+
+            $("#DutyTime").formValidator({ onshow: "", onfocus: "请输入入职时间" }).inputValidator({ min: 1, onerror: "请输入入职时间" });
+
+            $("#GraduateTime").formValidator({ onshow: "", onfocus: "请输入毕业时间" }).inputValidator({ min: 1, onerror: "请输入毕业时间" });
+
+        })
+    </script>

@@ -1,0 +1,338 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+@{
+    ViewBag.Title = "划扣销售汇总";
+    Layout = null;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+}
+    <link href="../../Content/bootstrap/bootstrap.css" rel="stylesheet" />
+
+
+
+    <div data-example-id="contextual-panels" class="bs-example">
+    @if (ViewBag.al)
+    {
+        foreach (var info in hospitalList)
+        {
+            int shuliang = 0;
+            decimal heji = 0;
+            decimal zengsong = 0;
+            decimal zherang = 0;
+            decimal chengben = 0;
+            decimal maoli = 0;
+        <div class="panel panel-info" style="border-color:#FB9294;">
+            <div class="panel-heading" style="border-color:#FB9294;background-color:rgba(251,195,196,0.5);">
+                <h3 class="panel-title">@info.Name</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                    <th orderfield="">
+                                    店名
+                                    </th>
+                                    <th>
+                                    名称
+                                    </th>
+                                    <th orderfield="">
+                                    单价
+                                    </th>
+                                    <th>
+                                    优惠价
+                                    </th>
+                                    <th>
+                                    数量
+                                    </th>
+                                    <th>
+                                    合计
+                                    </th>
+                                    <th>
+                                    成本
+                                    </th>
+                                    <th>
+                                    毛利
+                                    </th>
+                                    <th>
+                                    销售占比
+                                    </th>
+                                    <th style="display:none;">
+                                    毛利占比
+                                    </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var entity in Model)
+                            {
+                                if (entity.HospitalID == info.ID)
+                                {
+                                <tr>
+                                    <td>
+                                        @entity.HospitalName
+                                    </td>
+                                    <td>
+                                        @entity.ProdcuitName
+                                    </td>
+                
+                                    <td>
+                                        @entity.RetailPrice
+                                    </td>
+                                    <td>
+                                        @Math.Round(entity.Price, 2).ToString()
+                                    </td>
+                                    <td>
+                                        @entity.Quantity
+                                            <label style="display:none;">@(shuliang += entity.Quantity)</label>
+                                    </td>
+                                    <td>
+                                        @entity.AllPrice
+                                            <label style="display:none">@(heji += entity.AllPrice)</label>
+                                    </td>
+             
+                                    <td>
+                                        @entity.CostPrice
+                                        <label style="display:none">@(chengben += entity.CostPrice)</label>
+                                    </td>
+                                    <td>
+                                        @entity.Maoli
+                                        <label style="display:none">@(maoli += entity.Maoli)</label>
+                                    </td>
+                                    <td>
+                                        @((entity.AllPrice / Convert.ToDecimal(ViewBag.AllPrice) * 100).ToString("#0.00") + "%")
+                                    </td>
+                                    <td style="display:none;">
+                                        @((entity.Maoli / Convert.ToDecimal(ViewBag.AllMaoLi) * 100).ToString("#0.00") + "%")
+                                    </td>
+                                </tr>
+                                }
+                            }
+
+                        
+                            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 12))
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="text-align: right">合计:</td>
+                                <td class="txtshuliang">@shuliang</td>
+                                <td class="txtheji">@heji</td>
+                                <td class="txtchengben">@chengben</td>
+                                <td class="txtmaoli">@maoli</td>
+                                <td colspan="3"></td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+        }
+    }
+    else
+    {
+        <div class="panel panel-info" style="border-color:#FB9294;">
+            <div class="panel-heading" style="border-color:#FB9294;background-color:rgba(251,195,196,0.5);">
+                <h3 class="panel-title">@ViewBag.hname</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead>
+                             <tr>
+                                <th orderfield="">
+                                    店名
+                                </th>
+                                <th>
+                                    名称
+                                </th>
+                                <th orderfield="">
+                                    单价
+                                </th>
+                                <th>
+                                    优惠价
+                                </th>
+                                <th>
+                                    数量
+                                </th>
+                                <th>
+                                    合计
+                                </th>
+                                <th>
+                                    成本
+                                </th>
+                                <th>
+                                    毛利
+                                </th>
+                                <th>
+                                    销售占比
+                                </th>
+                                <th style="display:none;">
+                                    毛利占比
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                           @foreach (var entity in Model)
+                           {
+                                <tr>
+                                    <td>
+                                        @entity.HospitalName
+                                    </td>
+                                    <td>
+                                        @entity.ProdcuitName
+                                    </td>
+                
+                                    <td>
+                                        @entity.RetailPrice
+                                    </td>
+                                    <td>
+                                        @Math.Round(entity.Price, 2).ToString()
+                                    </td>
+                                    <td>
+                                        @entity.Quantity
+                                    </td>
+                                    <td>
+                                        @entity.AllPrice
+                                    </td>
+             
+                                    <td>
+                                        @entity.CostPrice
+                                    </td>
+                                    <td>
+                                        @entity.Maoli
+                                    </td>
+                                    <td>
+                                        @((entity.AllPrice / Convert.ToDecimal(ViewBag.AllPrice) * 100).ToString("#0.00") + "%")
+                                    </td>
+                                    <td style="display:none;">
+                                        @((entity.Maoli / Convert.ToDecimal(ViewBag.AllMaoLi) * 100).ToString("#0.00") + "%")
+                                    </td>
+                                </tr>
+                           }
+                            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 12))
+                        </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style=" text-align:right;">总计:</td>
+                                <td class="txtshuliang">@ViewBag.AllQuantity</td>
+                                <td class="txtheji">@ViewBag.AllPrice</td>
+                                <td class="txtchengben"> @ViewBag.AllChengben</td>
+                                <td class="txtmaoli">@ViewBag.AllMaoLi</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    }
+
+</div>
+
+        <script type="text/javascript">
+            $(function () {
+                $("#showmessage").css("display", "none");
+                $("#searchresult").html("");
+            });
+</script>
+
+
+@*<form action="" method="post" id="submitform">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="border-collapse: collapse;width:99%;">
+    <thead>
+        <tr>
+            <th orderfield="">
+                店名
+            </th>
+            <th>
+                名称
+            </th>
+            <th orderfield="">
+                单价
+            </th>
+            <th>
+                优惠价
+            </th>
+            <th>
+                数量
+            </th>
+            <th>
+                合计
+            </th>
+            <th>
+                成本
+            </th>
+            <th>
+                毛利
+            </th>
+            <th>
+                销售占比
+            </th>
+            <th>
+                毛利占比
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr>
+                <td>
+                    @entity.HospitalName
+                </td>
+                <td>
+                    @entity.ProdcuitName
+                </td>
+                
+                <td>
+                    @entity.RetailPrice
+                </td>
+                <td>
+                    @Math.Round(entity.Price ,2 ).ToString()
+                </td>
+                <td>
+                    @entity.Quantity
+                </td>
+                <td>
+                    @entity.AllPrice
+                </td>
+             
+                <td>
+                    @entity.CostPrice
+                </td>
+                <td>
+                    @entity.Maoli
+                </td>
+                <td>
+                    @((entity.AllPrice/Convert.ToDecimal(ViewBag.AllPrice)*100).ToString("#0.00")+"%")
+                </td>
+                <td>
+                    @((entity.Maoli/Convert.ToDecimal(ViewBag.AllMaoLi)*100).ToString("#0.00")+"%")
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 15))
+    </tbody>
+    <tfoot>
+        <tr style=" line-height:30px;  height:30px;">
+            <td colspan="4" style=" text-align:right;">总计:</td>
+            <td>@ViewBag.AllQuantity</td>
+            <td>@ViewBag.AllPrice</td>
+         
+            <td> @ViewBag.AllChengben</td>
+            <td>@ViewBag.AllMaoLi</td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>*@
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>

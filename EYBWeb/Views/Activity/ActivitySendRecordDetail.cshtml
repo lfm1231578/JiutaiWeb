@@ -1,0 +1,106 @@
+﻿@using EYB.ServiceEntity.BaseInfo;
+@using BaseinfoManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.ActivityJoinEntity>
+    @{
+        Layout = null;
+        IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+        IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+        var orderName = ViewBag.orderName;
+        var orderField = ViewBag.orderField;
+        var orderDirection = ViewBag.orderDirection;
+        var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+
+        //获取区域门店
+        var regionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+
+        bool hasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    }
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="pragma" content="no-cache" />
+        <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+        <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+        <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+        <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+        <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+        <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <!--日期-->
+        <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+        <script src="../../Scripts/Common/table.js"></script>
+        <style type="text/css">
+            body {
+                background: #fff;
+                overflow-x: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="mainContentBody">
+            <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;"
+                 id="">
+                <div class="mainContentRight">
+                    @using (Ajax.BeginForm("ActivitySendRecordDetail", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                    {
+                        <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                        <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+
+                        <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                            <ul>
+                                @if (hasPermission)
+                                {
+                                    @*<li><span id="sp">@Model.TotalItemCount</span></li>*@
+                                    <li>
+                                        <label style="font-weight: normal;">
+                                            所属分店：
+                                        </label>
+                                        <select name="HospitalID" id="HospitalID" class="" style="width: 100px;">
+                                            <option value="0">请选择分店</option>
+                                            @if (regionhospitalList.Count > 0)
+                                            {
+                                                foreach (var info in regionhospitalList)
+                                                {
+                                                    <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "")=) value="@info.HospitalID">@info.Name</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                foreach (var info in hospitalList)
+                                                {
+                                                    <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "")=) value="@info.ID">@info.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </li>
+                                }
+                                <li>
+                                    <label style="font-weight: normal;">
+                                        关键字：
+                                    </label>
+                                    <input type="text" class="inputtext" name="Phone" id="txtPhone" value="" placeholder="卡号、券号或手机号" style="width: 140px;" />
+                                </li>
+                                <li>
+                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                                </li>
+                            </ul>
+                            <div style="clear: both;">
+                            </div>
+                        </div>
+                    }
+                    <div id="articles" class="" style="height: 500px;  margin-top: 5px; overflow-y:scroll; overflow:auto; 
+                    width: 100%;">
+                        @Html.Partial("_ActivitySendRecordDetail", Model)
+                    </div>
+                    @{Html.RegisterMvcPagerScriptResource();}
+                    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

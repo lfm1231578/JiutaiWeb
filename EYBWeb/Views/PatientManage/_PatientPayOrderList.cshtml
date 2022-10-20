@@ -1,0 +1,150 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    
+    Layout = null;
+}
+<style>
+    /*******表格********/
+    .gridTable tbody
+    {
+     
+        display: block;
+       
+    }
+    .gridTable tr
+    {
+        display: block;
+    }
+    .gridTable th
+    {
+        width: 200px;
+        line-height:40px;
+    }
+    .gridTable td
+    {
+        width: 200px;
+    }
+</style>
+<form action="" method="post" id="submitform">
+
+<table class="gridTable" style="border-collapse: collapse; overflow:scroll;">
+    <thead style=" display:block; position:fixed;  ">
+        <tr>
+            <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                客户姓名
+            </th>
+            <th @(ViewBag.orderField == "MemberNo" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MemberNo">
+                会员卡号
+            </th>
+ <th >
+                订单时间
+            </th>
+            <th @(ViewBag.orderField == "DocumentNumber" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="DocumentNumber">
+                流水号
+            </th>
+            <th @(ViewBag.orderField == "OrderType" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="OrderType">
+                业务类别
+            </th>
+            <th @(ViewBag.orderField == "Price" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Price">
+                订单金额
+            </th>
+            <th >
+                现金
+            </th>
+            <th >
+                银联
+            </th>
+            <th >
+                储值卡
+            </th>
+            <th @(ViewBag.orderField == "QianPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="QianPrice">
+                欠款
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style=" height:40px;"><td colspan="10"></td></tr>
+        @foreach (var entity in Model)
+        {
+            <tr   @(entity.IsArchives == 1 ? "style=background:#e7f6ff" : "")>
+                <td>
+                    @entity.UserName @(entity.IsArchives == 1 ? Html.Raw("(<label style='color:red;'>变更</label>)") : null)
+                </td>
+                <td>
+                    @entity.MemberNo
+                </td>
+    <td>
+                    @entity.CreateTime
+                </td>
+                <td>
+                    @entity.DocumentNumber
+                </td>
+                <td>
+                    @EYB.Web.Code.PageFunction.GetorderType(entity.OrderType)
+                </td>
+                <td>
+                    @entity.Price
+                </td>
+                <td>
+                    @entity.Xianjin
+                </td>
+                <td>
+                    @entity.Yinlianka
+                </td>
+                <td>
+                    @entity.Chuzhika
+                </td>
+                <td>
+                    @entity.QianPrice
+                </td>
+                <td>
+                    <a href="javascript:OpenOrderDetail('@entity.OrderNo');" >详情</a>
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 9))
+    </tbody>
+    <tfoot>
+        <tr style="height: 30px; line-height: 30px;">
+             <td></td>
+             <td></td>
+            <td style="text-align: right;">
+                
+            </td>
+            <td>订单总额:@ViewBag.SumPrice
+            </td>
+            <td>当页总额:@ViewBag.PageSum
+            </td>
+            <td>
+                @ViewBag.sumXianjin
+            </td>
+            <td>
+                @ViewBag.yinlian
+            </td>
+            <td>0</td>
+            <td>
+                @ViewBag.qiankuan
+            </td>
+        </tr>
+    </tfoot>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        //计算head高度，宽度 计算articles高度
+        var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+        $(".gridTable thead").css("top", theadheight + "px");
+        $(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+        $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+    })
+</script>

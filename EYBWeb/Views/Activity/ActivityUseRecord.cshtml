@@ -1,0 +1,92 @@
+﻿@using EYB.ServiceEntity.BaseInfo;
+@using BaseinfoManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.ActivityEntity;
+@model PagedList<ActivityUseEntity>
+
+    @{
+        IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+        var orderName = ViewBag.orderName;
+        var orderField = ViewBag.orderField;
+        var orderDirection = ViewBag.orderDirection;
+        var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+
+        //获取区域门店
+        var regionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+
+        bool hasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    }
+    <div id="mainContentBody">
+        @Html.Partial("_ActivityControl")
+        <div id="mainContentRight">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                    ●
+                </label>使用记录(<span id="sp">@Model.TotalItemCount</span>) @*&nbsp;<a href="javascript:OpenDailogDetail('ADD',0);"style="width:100px;"   class="addbutton"> 新建活动</a>*@
+            </div>
+            <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;"
+                 id="">
+                <div class="mainContentRight">
+                    @using (Ajax.BeginForm("ActivityUseRecord", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                    {
+                        <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                        <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+
+                        <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                            <ul>
+                                @if (hasPermission)
+                                {
+                                    <li>
+                                        <label style="font-weight: normal;">
+                                            所属分店：
+                                        </label>
+                                        <select name="HospitalId" id="HospitalId" class="" style="width: 100px;">
+                                            <option value="0">请选择分店</option>
+                                            @if (regionhospitalList.Count > 0)
+                                            {
+                                                foreach (var info in regionhospitalList)
+                                                {
+                                                    <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID">@info.Name</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                foreach (var info in hospitalList)
+                                                {
+                                                    <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID">@info.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    </li>
+                                }
+                                <li>
+                                    <label style="font-weight: normal;">
+                                        关键字：
+                                    </label>
+                                    <input type="text" class="inputtext" name="UserName" id="txtUserName" value="" placeholder="姓名、发送员工名字" style="width: 140px;" />
+                                </li>
+                                <li>
+                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                                    @*<input type="button" id="btnsend" class="submitbutton4" style="float: none;width: 150px;" value="发送积客活动" />*@
+                                </li>
+                            </ul>
+                            <div style="clear: both;">
+                            </div>
+                        </div>
+                    }
+                    <div id="articles" class="" style="height: 100%; overflow: hidden; margin-top: 5px;
+                    width: 100%;">
+                        @Html.Partial("_ActivityUseRecord", Model)
+                    </div>
+                    @{Html.RegisterMvcPagerScriptResource();}
+                    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+
+    </script>

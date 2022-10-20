@@ -1,0 +1,95 @@
+﻿@model EYB.Web.Models.ShareShop.ProShareholderCardModel
+<div id="mainContentBody">
+    @Html.Partial("_ShareShopControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●
+            </label>给股东发送活动(<span id="sp">@Model.Results.TotalItemCount</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;" id="">
+            <div class="mainContentRight" style="background: #fff;">
+                @using (Ajax.BeginForm("ShareShopGudongHuodong", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                {
+                    <input type="hidden" value="@Model.SearchEntity.orderDirection" name="orderDirection" id="orderDirection" />
+                    <input type="hidden" value="@Model.SearchEntity.orderDirection" name="orderField" id="orderField" />
+                    <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                        <label style="font-weight: normal; margin-left:20px">
+                            所属分店：
+                        </label>
+                        <select name="HospitalID" id="HospitalID" class="" style="width: 100px;">
+                            @foreach (var hospital in Model.HospitalList)
+                            {
+                                <option value="@hospital.ID" @(Model.SearchEntity.HospitalId == hospital.ID ? "selected=\"selected\"" : "")>@hospital.Name</option>
+                            }
+                        </select>
+                        <label style="font-weight: normal;">
+                            股东姓名：
+                        </label>
+                        <input type="text" name="Keywords" id="Keywords" class="text-input input130" style="height:20px;" value="@Model.Keywords" />
+                        <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                        <input type="button" id="btnzengka" class="submitbutton2" style="float: none;" value="股东赠卡" />
+                        <input type="button" id="btnfasongjike" class="submitbutton1" style="float: none;" value="发送积客活动" />
+                    </div>
+                }
+                <div id="articles" class="" style="height: 100%; overflow: hidden; margin-top: 5px;width: 100%;">
+                    @Html.Partial("_ShareShopGudongHuodong", Model.Results)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#articles").delegate("tr.ableclick", "click", function () {
+        var $chekbox = $(this).find("input:checkbox");
+        if ($chekbox.prop("checked") == false) {
+            $chekbox.attr("checked", "checked");
+            $(this).css("background", "#E7F6FF");
+        } else {
+            $chekbox.attr("checked", false);
+            $(this).css("background", "");
+        }
+    });
+    $("#articles").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+    $("#btnzengka").click(function() {
+        if ($('#articles tbody [name=checkbox]:checked').length == 0) {
+            alert("请选择发送的股东!");
+            return;
+        }
+        var chkbox = new Array();
+        $('#articles tbody [name=checkbox]:checked').each(function(i) {
+            chkbox[i] = $(this).val();
+        });
+
+        var title = "请选择赠卡活动";
+        art.dialog.open("@Url.Action("SelectShareholderActivity")?shareholderIds=" + chkbox.toString(),
+            { title: title, width: 700, height: 500 });
+    });
+    $("#btnfasongjike").click(function() {
+        if ($('#articles tbody [name=checkbox]:checked').length == 0) {
+            alert("请选择发送的股东!");
+            return;
+        }
+
+        var chkbox = new Array();
+        $('#articles tbody [name=checkbox]:checked').each(function(i) {
+            chkbox[i] = $(this).val();
+        });
+        art.dialog.open("/Activity/ActivitySendPage?UserID=" + chkbox.toString(),
+            { title: "发送积客活动", width: 400, height: 500 });
+    });
+    function OpenAccumlaction(obj) {
+        var id = obj;
+        art.dialog.open("/Activity/ActivityAccumulated?ID=" + id, { title: "积客活动", width: 500, height: 600 });
+    }
+</script>

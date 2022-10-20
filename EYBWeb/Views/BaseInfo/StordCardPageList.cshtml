@@ -1,0 +1,113 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.BaseInfo.MainCardEntity>
+@{
+    ViewBag.Title = "存储卡iframe页面";
+    Layout = null;//不加载主页面
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    var name = ViewBag.orderName;
+  
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff; overflow-x: hidden;">
+    <div class="mainContentRight  condition">
+       <div class="toolbar">
+            <div class="box-wrap">
+                <div class="l-list">
+        @using (Ajax.BeginForm("StordCardPageList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles",HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+        {
+            <div class="accountdiv" style="margin-bottom: 0px; margin-top: 0px; width: 98%;">
+                <ul>
+                    <li style="width: 49%;">名称：
+                        <input type="text" name="Name" id="txtname" class="" value="@name" style="width:130px;margin-top:10px;" />
+                    </li>
+                        </ul>
+                    @*<li style="width: 49%;"><a  target="_top" href="@Url.Content("~/BaseInfo/EditStoredCard")?Type=Add" class="addbutton" style="float:right; margin:0px;margin-top:10px;padding-left:25px;"  >
+                        添加</a></li>*@
+                        
+                     <ul class="icon-list">
+                            <li><a class="add" target="_top" href="@Url.Content("~/BaseInfo/EditStoredCard")?Type=Add" ><i>
+                            </i><span>添加</span></a></li>
+                            <li><a id="btnSave" style="cursor:pointer;" class="save" ><i></i><span>导出</span></a></li>
+                        </ul>
+                         
+            
+            </div>
+        }
+            </div>
+            </div>
+            </div>
+        <div id="articles" class="mainContentRight_bottom" style="height: 350px; overflow: hidden;
+            margin-top: 5px; >
+            @Html.Partial("_StordCardPageList", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    </div>
+    <script type="text/javascript">
+       function delit(obj,thiss) {
+        var id = obj;
+        if(confirm("确认删除?") )
+        {
+            $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/StordCardDel?ID=")"+id,
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("操作成功！","");
+                $(thiss).parent().parent().remove();
+               }else
+               {
+                artdialogfailTwo("操作失败,！","","250","100");
+               }
+            }
+        });
+         }
+    }
+    //导入
+    function ImportStordCard()
+    {
+        art.dialog.open("/BaseInfo/progCardInfo?ID=", { title: "导入", width: 380, height: 250 })
+    }
+
+    $("#txtname").keyup( function(){
+        $("#searchForm").submit();
+    })
+
+      $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+
+         //导出
+        $("#btnSave").click(function () {
+            var Name = $("#txtname").val();
+            var url = getControllerUrl("BaseInfo", "ExportStordCardList") + "?pageNum=1&numPerPage=10000&Name=" + Name;
+             window.location.href=url;
+        });
+
+    </script>
+</body>
+</html>

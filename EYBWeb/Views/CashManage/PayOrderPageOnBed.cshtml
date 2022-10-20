@@ -1,0 +1,176 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+    @using EYB.ServiceEntity.CashEntity;
+    @using HS.SupportComponents;
+    @{
+        ViewBag.Title = "床位-支付界面";
+        Layout = null;
+        var cashamout = Request["cashamout"];//现金总额
+        var cardamout = Request["cardamout"];//卡类支付总额
+        var allamout = Request["allamout"];//所有总额
+        var orderNo = Request["orderNo"];//订单编号
+        var UserID = Request["UserID"];//顾客ID
+        var CardIDstr = Request["CardIDstr"];//卡类ID-集合
+        var ordertimesstr = Request["ordertimesstr"];//卡类ID消费次数 -集合
+        var OldOrderNo = Request["OldOrderNo"];//旧的订单编号
+
+        CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+        var list = cashBll.GetMainCardBalanceList(new MainCardBalanceEntity { UserID = ConvertValueHelper.ConvertIntValue(UserID), Type = 1 });
+        //获取支付方式
+        SystemManage.Factory.IBLL.ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+        var BaseList = systemBLL.GetBaseInfoTreeByType("Payment", 1, ViewBag.ParentHospitalID);
+
+    }
+    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    <html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+        <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+        <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+        <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    </head>
+    <body style="background:#fff;">
+        <div style="width: 395px; height: 420px; float: left;">
+            <fieldset style="width: 395px; height: 300px; overflow:auto;">
+                <legend>&nbsp;&nbsp;储值卡&nbsp;&nbsp;</legend>
+                <table class="gridTable" style="height: auto; border-collapse: collapse; margin-left: 5px;"
+                       cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                选择
+                            </th>
+                            <th>
+                                卡名称
+                            </th>
+                            <th>
+                                可用余额
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodychekbox">
+                        @foreach (var info in list)
+            {
+                //是否过期赠卡
+                var expire = info.IsGive == 1 && info.ExpireTime < DateTime.Now;
+
+                            <tr>
+                                <td>
+                                    <input type="checkbox" value="@info.Price" @(info.Price < 1 || expire ? "disabled=disabled" : "") name="@info.Name" code="@info.ID" />
+                                </td>
+                                <td>
+                                    @info.Name
+                                </td>
+                                <td>
+                                    @info.Price
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset style="width: 395px; height: 115px; " id="otherPayment">
+                <legend>&nbsp;&nbsp;其他支付&nbsp;&nbsp;</legend>
+                <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;">
+                    @foreach (var info in BaseList)
+                    {
+                        if (info.parentID != 0)
+                        {
+                            <div style="float:left;min-width:80px;margin-left:10px;margin-top:10px;">
+                                <input type="checkbox" code="@info.InfoName" name="txt-@info.ID" value="@info.ID" id="txt-@info.ID" iscash="@info.IsCash" /><label for="txt-@info.ID"> @info.InfoName</label>
+                            </div>
+                        }
+                    }
+                </div>
+            </fieldset>
+        </div>
+        <div id="mainContentRight" style="width: 320px; overflow: hidden; float: left; margin: 0px;
+    margin-left: 10px;">
+            <fieldset style="border-color: #ccc; height: 420px;">
+                <legend>&nbsp;&nbsp;订单详情&nbsp;&nbsp;</legend>
+                <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;">
+                    <table class="mainContentRight_bottomnewdepart" id="mainContentRight_bottomnewdepart">
+                        <tr>
+                            <td style="width: 60px;">
+                                订单编号
+                            </td>
+                            <td>
+                                @orderNo
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                订单时间
+                            </td>
+                            <td>
+                                @DateTime.Now
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                订单总额
+                            </td>
+                            <td style="color: Red; font-size: 20px; font-weight: bold;">
+                                @allamout
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                卡扣支付
+                            </td>
+                            <td style="color: Red; font-size: 20px; font-weight: bold;">
+                                @cardamout
+                            </td>
+                        </tr>
+                        <tr style="height: 40px;">
+                            <td style="border-bottom: 1px #ccc dashed;">
+                                实收现金
+                            </td>
+                            <td style="color: Green; font-size: 30px; font-weight: bold; border-bottom: 1px #ccc dashed;">
+                                @cashamout &nbsp;&nbsp;&nbsp;&nbsp;
+                                <label style="color: Red" id="labshangqianrice">
+                                    尚欠:
+                                </label><label id="labshengyuprice" style="color: #02A9D3">-@cashamout</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                现金
+                            </td>
+                            <td>
+                                <input onkeyup="javascript:CheckInputIntFloat(this);" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                                       type="text" style="width: 150px;" name="CashPrice" id="txtCash" value="0" class="CardMoney text-input" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                银联卡
+                            </td>
+                            <td>
+                                <input onkeyup="javascript:CheckInputIntFloat(this);" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                                       type="text" style="width: 150px;" name="CardPrice" id="txtyingliancard" value="0"
+                                       class="CardMoney text-input" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="margin: 20px; margin-left: 50px;" class="clearfix">
+                        <input type="button" class="submitbutton2" value="支 付" onclick="PayMoneyOnBed()" />
+                        <input class="submitbutton2" type="button" onclick="closeedNorefresh()" value="取 消" />
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </body>
+</html>
+<script type="text/javascript">
+    var cashamout = "@cashamout";
+    var UserID = "@UserID";
+    var OrderNo = "@orderNo";
+    var cardamout = "@cardamout";
+    var CardIDstr = "@CardIDstr"; //卡ID集合
+    var ordertimesstr = "@ordertimesstr"; //卡次数
+    var OldOrderNo = "@OldOrderNo";//旧的订单ID
+</script>
+<script src="../../Scripts/Controls/CashManage/PayOrder.js" type="text/javascript"></script>
+</EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>

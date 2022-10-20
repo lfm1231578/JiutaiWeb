@@ -1,0 +1,108 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity>
+@{
+    int y = DateTime.Now.Year - 5;
+    var HospitalID = ViewBag.HospitalID;
+}
+<div id="mainContentBody">
+    @Html.Partial("_MoneyControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+             </label>
+            员工家居业绩统计</div>
+        <div class="mainContentRight_bottom" style="overflow:hidden;">
+            @using (Ajax.BeginForm("HospitalUserProductYeji", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+            {
+                <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+                <input type="hidden" value="" name="orderField" id="orderField" />
+                <div class="accountdiv" style="margin-bottom: 0px; width: 98%;">
+                    <label style="font-weight: normal;">
+                        所属分店：</label>
+                    <select name="s_HospitalID" id="s_HospitalID" class="select ymxSelect" >
+                        <option value="0">请选择分店</option>
+                        @if (ViewBag.RegionhospitalList.Count > 0)
+                        {
+                            foreach (var info in ViewBag.RegionhospitalList)
+                            {
+                            <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                            }
+                        }
+                        else
+                        {
+                            foreach (var info in ViewBag.HospitalList)
+                            {
+                            <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                            }
+                        }
+                    </select>
+                    <label style="font-weight: normal;">
+                        分类：</label>
+                    <select name="ProductType" id="ProductType" class="select ymxSelect" >
+                        <option value="0">请选择分类</option>
+                        <option value="1">常规产品</option>
+                        <option value="2">特殊产品</option>
+                    </select>
+                    <label style="font-weight: normal;">
+                        年：
+                    </label>
+                    <select name="Years" id="years" >
+                        @for (int i = y; i <= y+5; i++)
+                        {
+                            <option value="@i" @(i == y + 5 ? "selected='selected'" : "")>@i 年</option>
+                        }
+                    </select>
+                    <label style="font-weight: normal;">
+                        月：</label>
+                    <select name="Months" id="months" >
+                        <option value="0">请选择</option>
+                        @for (int i = 1; i <= 12; i++)
+                        {
+                            <option value="@i" @(DateTime.Now.Month == i ? "selected" : "")>@i 月</option>
+                        }
+                    </select>
+                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                    <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                    <input type="button" class="submitbutton2" id="btnSave" style="float: none;" value="导出" />
+                </div>
+            }
+            <div id="articles" style="margin-top: 5px;overflow:auto;">
+                @Html.Partial("_HospitalUserProductYeji", Model)
+            </div>
+            @{Html.RegisterMvcPagerScriptResource();}
+            <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        </div>
+    </div>
+    <div id="showmessage" style="display: none; width: 220px; height: 140px; position: fixed;
+        top: 300px; left: 650px; color: Red; margin: 0 auto; text-align: center;">
+        <img src="../../Content/themes/images/loading.gif" width="100" />
+        <p style="text-align: center; height: 30px; line-height: 30px;">
+            正在努力查询中，请稍后...</p>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#btnsumbit").click(function () {
+        $("#showmessage").css("display", "");
+        $("#txtTime").val(Math.random());
+    })
+    //导出
+    $("#btnSave").click(function () {
+        var years=$("#years").val();
+        var months=$("#months").val();
+        if ($("#s_HospitalID").val() == "" || $("#s_HospitalID").val() == null) {
+            var s_HospitalID =@HospitalID;
+        }     
+        else { var s_HospitalID = $("#s_HospitalID").val(); }
+        var ProductType = $("#ProductType").val();
+        var url = "/MoneyManage/ExportHospitalUserProductYeji?pageNum=1&numPerPage=1000000&s_HospitalID=" + s_HospitalID + "&ProductType=" + ProductType+"&years="+years+"&months="+months;
+        window.location.href = url;
+
+    });
+</script>
+<script>
+    $(function () {
+        let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+        $("#articles").css("height", acHeight + "px");
+    })
+</script>

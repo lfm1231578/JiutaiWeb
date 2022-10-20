@@ -1,0 +1,130 @@
+﻿@using PersonnelManage.Factory.IBLL; 
+@{
+ 
+    ViewBag.Title = "选择美容师";
+    Layout = null;
+    var Hid = ViewBag.HospitalID;//门店ID
+    var Type = Request["Type"];// =1 顾客管理的指定美容师 =2 预约管理 初诊预约的指定美容师
+    var UserID = Request["UserID"];
+    var CaseID = Request["CaseID"];
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var Model = personbll.GetAllUserByHospitalID(Hid, 1);
+}
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<div id="mainContentBody" style="background:#fff; width:auto;  margin-top:-17px">
+    <div id="mainContentRight" style="width:500px; margin-left:0px "> 
+        <div class="mainContentRight_bottom" style="height:390px;overflow:auto; max-height:390px;width:100%;">
+        <form action="@Url.Content("~/PatientManage/PatientInfoManage")" method="post" id="submitform"  >
+            <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+            <input type="hidden" value="" name="orderField"  id="orderField"  />
+            
+            <table class="gridTable" style=" height:auto;border-collapse:collapse; margin:0px; " cellpadding="0" cellspacing="0" >
+                <thead >
+                    <tr>
+                        <th>
+                            选择
+                        </th>
+                        <th >
+                            姓名
+                        </th>
+                        <th >
+                            性别
+                        </th>
+                        <th>
+                            主治
+                        </th>
+                        <th>
+                            单日可约（人）
+                        </th>
+                        
+                        
+                    </tr>
+                </thead>
+                <tbody >
+                 @foreach (var entity in Model)
+                 {
+                    <tr>
+                        <td>
+                          <input name="radioList" type="radio" value="@entity.UserID" />  
+                        </td>
+                        <td>
+                             @entity.UserName
+                        </td>
+                        <td>
+                             @entity.Sex
+                        </td>
+                        <td>
+                             @entity.Indications
+                        </td>
+                        <td>
+                             @entity.Amount
+                        </td>
+                      
+                        
+                    </tr>
+                 }
+                </tbody>
+            </table>
+            </form>
+      
+        </div>
+          
+         <div style="margin:15px;margin-left:0px;" class="clearfix"><input type="button" class="submitbutton2"  value="确 定" onclick="FullValue()"   /> <input  class="submitbutton2"  type="button"  onclick="closeed()"   value="取 消"/></div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("body").css("background-color", "#fff");
+    function FullValue() {
+        var value = $("input[name='radioList']:checked").val();
+        if (value == null) {
+         art.dialog({ content:'请选美容师!',height:'80px'});
+  
+            return false;
+        }
+    var type='@Type';
+   
+    if(type=="1"){ //顾客管理 指定美容师 
+            $.ajax({
+                type: "post",
+                dataType: "json",
+                url:"@Url.Content("~/PatientManage/UpdatePatientLinkPage")",
+                data:{CaseID:"@CaseID",UserID:"@UserID",DoctorID:value},
+                error: function (request) {
+                   art.dialog({ content:'指定出错！',height:'80px'  },function(){});
+                },
+                success: function (data) {
+                 if(data>0)
+                 {
+                   art.dialog({ content:'操作成功' , cancelVal: '确定', width:'200px',height:'50px'  },function(){ closeed();}); 
+                 }
+                }
+            });
+       }else //预约管理 指定美容师
+       {    
+        $.ajax({
+                type: "post",
+                dataType: "json",
+                url:"@Url.Content("~/ReservationDoctorManage/AppointDoctor")",
+                data:{CaseID:"@CaseID",ID:"@UserID",DoctorID:value},
+                error: function (request) {
+                   art.dialog({ content:'指定出错！',height:'80px'  },function(){});
+                },
+                success: function (data) {
+                 if(data>0)
+                 {
+                   art.dialog({ content:'操作成功' , cancelVal: '确定', width:'200px',height:'50px'  },function(){ closeed();}); 
+                 }
+                }
+            });
+       
+       }
+    }
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+</script>

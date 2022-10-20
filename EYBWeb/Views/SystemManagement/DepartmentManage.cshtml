@@ -1,0 +1,133 @@
+﻿@{
+    Layout = "~/Views/Shared/Header.cshtml";
+}
+@section head
+{
+ <link href="@Url.Content("~/Content/Css/tree.css")" rel="stylesheet" type="text/css" />
+}
+<div class="pageContent" id="DepartMentManagepageContent" style="width: 20%; float: left;
+    border: 1px solid  #eeeeee; height: 900px;">
+    <div class="menutreemanage" id="treeContent">
+    </div>
+</div>
+<div style="width: 20%; float: left; height: 900px;margin-left:10px;">
+    <p style="height: 40px;margin-top:10px;">
+        <label>
+            操作类型：</label>
+        <select id="SeloptType">
+            <option value="0">新增下级</option>
+            <option value="1">新增同级</option>
+            <option value="2">修改</option>
+            <option value="3">删除</option>
+        </select>
+    </p>
+    <p style="height: 40px;">
+        <label>
+            部门编号：</label>
+        <input class="required" id="txtDepartmentCode" disabled="disabled" type="text" />
+    </p>
+    <p style="height: 40px;">
+        <label>
+            部门名称：</label>
+        <input class="required" id="txtDepartmentName" type="text" />
+    </p>
+    <p style="height: 20px;">
+        <div class="buttonActive" style="margin-left: 70px;" id="btnSaveDepartment">
+            <div class="buttonContent">
+                <button type="button">
+                    保存</button></div>
+        </div>
+    </p>
+    <input type="hidden" id="hiddenparentcode" />
+</div>
+<div class="pageContent" style="width: 58%; float: left; border: 1px solid  #eeeeee;
+    height: 900px;">
+    <table id="tableDepartmentManage">
+        </table>
+        <div id="pagerDepartmentManage">
+        </div>
+</div>
+<script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.tree.js")"></script>
+<script type="text/javascript">
+
+    var getDepartmentListUrl = getControllerUrl("SystemManagement", "GetDepartmentTree");
+    var getDepartmentUrl = getControllerUrl("SystemManagement", "GetDepartment");
+    //---------------------------初始化Ajax请求，查询地区列表-------------------------------------------------
+    $(function () {
+        //获取部门人员信息
+        $('#tableDepartmentManage').jqGrid({
+            url: getControllerUrl("SystemManagement", "GetDepartmentUser"),
+            datatype: "json",
+            mtype: 'POST',
+            search: '',
+            colNames: ['ID', '员工工号', '姓名', '部门', '性别', '岗位','查看详情'],
+            colModel: [
+                            { name: 'ID', index: 'ID', sortable: true, key: true, hidden: true },
+                            { name: 'LoginAccount ', index: 'LoginAccount', sortable: true },
+                            { name: 'UserName', index: 'UserName', sortable: true },
+                            { name: 'Department', index: 'Department', sortable: true },
+                            { name: 'Sex', index: 'Sex', sortable: true },
+                            { name: 'Duty', index: 'Duty', sortable: true },
+                            { name: '', index: '', sortable: true }
+
+                        ],
+            pager: '#pagerDepartmentManage',
+            pagerpos: 'center',
+            rowNum: 100,
+            height: GetJqGridHeight() - 30,
+            multiselect: true,
+            altRows: true,
+            multiboxonly: true,
+            viewrecords: true,
+            pginput: false,
+            emptyrecords: "没有符合查询条件的数据",
+            autowidth: true,
+            altclass: 'tableAltClass',
+            gridComplete: function () {
+                $('#tableDepartmentManage').trigger("gridComplete");
+            }
+        });
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: getDepartmentListUrl,
+            success: function (data) {
+                var o = { onnodeclick: function (item) {
+                    $("#txtDepartmentCode").val(item.value);
+                    $("#txtDepartmentName").val(item.text);
+                    $("#hiddenparentcode").val(item.value);
+                    $('#tableDepartmentManage').setGridParam({
+                        url: getControllerUrl("SystemManagement", "GetDepartmentUser") + "?DeptCode=" + item.value,
+                        page: 1
+                    }).trigger("reloadGrid");
+                }
+                };
+                o.data = data;
+                $("#treeContent").treeview(o);
+            },
+            error: function () {
+            }
+        });
+
+        $("#btnSaveDepartment").click(function () {
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("SystemManagement", "SaveDepartment"),
+                data: { "optype": $("#SeloptType").val(), "code": $("#txtDepartmentCode").val(), "name": $("#txtDepartmentName").val(), "parentcode": $("#hiddenparentcode").val() },
+                success: function (data) {
+                    alert("操作成功！");
+                    location.reload();
+                },
+                error: function () {
+                }
+            });
+        });
+
+    });
+    //查看详情
+    function search_detail(id) {
+        window.top.art.dialog({ id: 'edit' }).close();
+        window.top.art.dialog({ title: "查看详情" + '--' + name, id: 'detail', iframe: getControllerUrl("SystemManagement", "UserDetail") + '?id=' + id, width: '750', height: '550', show: true }, function () { var d = window.top.art.dialog({ id: 'detail' }).data.iframe; d.document.getElementById('dosubmit').click(); return false; }, function () { window.top.art.dialog({ id: 'detail' }).close() });
+    }
+</script>

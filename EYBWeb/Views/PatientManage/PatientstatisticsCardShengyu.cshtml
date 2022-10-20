@@ -1,0 +1,220 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@{
+    ViewBag.Title = "卡项结余统计";
+    Layout = null;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> personList = personbll.GetAllUserByHospitalID(ViewBag.ParentHospitalID, 0);
+    bool hasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var regionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    bool hasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_导出);
+    var HospitalID = ViewBag.HospitalID;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/table.js"></script>
+    <style type="text/css">
+        body
+        {
+            background: #fff;
+           
+        }
+    </style>
+</head>
+<body>
+    @using (Ajax.BeginForm("PatientstatisticsCardShengyu", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+    {
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <div class="accountdiv ullist" style="margin-bottom: 0px; margin-top: 0px; width: 99%;">
+            <ul>
+                @if (hasPermission)
+                {
+                    <li>
+                        <label style="font-weight: normal;">
+                            所属分店：
+                        </label>
+                        <select name="s_HospitalID" id="s_HospitalID" class="select ymxSelect">
+                            <option value="0">请选择分店</option>
+                            @if (regionhospitalList.Count > 0)
+                            {
+                                foreach (var info in regionhospitalList)
+                                {
+                                    <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "")=) value="@info.HospitalID">@info.Name</option>
+                                }
+                            }
+                            else
+                            {
+                                foreach (var info in hospitalList)
+                                {
+                                    <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "")=) value="@info.ID">@info.Name</option>
+                                }
+                            }
+                        </select>
+                    </li>
+                }
+                <li>
+                    <label style="font-weight: normal;">
+                        过期时间：
+                    </label>
+                    <input type="text" class="text-input Wdate input130" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd' })" name="s_StareTime" id="s_StareTime"  autocomplete="off" />-
+                    <input type="text" class="text-input Wdate input130" onclick="WdatePicker({ dateFmt: 'yyyy-MM-dd' })" name="s_Endtime" id="s_Endtime"  autocomplete="off" />
+                </li>
+                <li>
+                    <label style="font-weight: normal;">
+                        关键字
+                    </label>
+                    <input type="text" name="s_Name" id="s_Name" class="input130" />
+                </li>
+                <li>
+                    <label style="font-weight: normal; float: left;">
+                        跟进人：
+                    </label>
+                    <select class="select ymxSelect" name="s_FollowUpUserID" id="s_FollowUpUserID" style="margin-top: 10px;">
+                        <option value="0">请选择跟进人</option>
+                        @foreach (var info in personList)
+                        {
+                            <option value="@info.UserID">@info.UserName</option>
+                        }
+                    </select>
+                </li>
+                <li>
+                    <label style="font-weight: normal;">
+                        结余类型：
+                    </label>
+                    <select name="s_ProductType" id="s_ProductType" class="select ymxSelect" style="width: 100px;">
+                        <option value="0">请选择类型</option>
+                        <option value="1">储值卡</option>
+                        <option value="99">赠卡</option>
+                        <option value="2">项目</option>
+                    </select>
+                </li>
+                <li>
+                    <label style="font-weight: normal;">
+                        结余查询：
+                    </label>
+                    <select name="DepartmentID" id="DepartmentID" class="select ymxSelect" style="width: 70px;">
+                        <option value="0">请选择</option>
+                        <option value="1">次数</option>
+                        <option value="2">金额</option>
+                    </select>
+                </li>
+                <li>
+                    <input type="text" class="text-input input130" name="s_Price" id="s_Price" />-
+                    <input type="text" class="text-input input130" name="s_ePrice" id="s_ePrice" />
+                </li>
+                <li>
+                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                    <input type="submit" class="submitbutton2 ymxButtonMT" style="float: none;" id="btnsumbit" value="查询" />
+                </li>
+                @if (hasPermission1)
+                {
+                    <li>
+                        <input type="button" class="submitbutton2 ymxButtonMT" id="btnSave" style="float: none;" value="导出" />
+                    </li>
+                }
+            </ul>
+            <div style="clear: both">
+            </div>
+        </div>
+
+    }
+    <div class="mainContentRight_bottom" style="margin-top: 0px; overflow-x: hidden;height:600px;">
+        <div id="articles" class="" style="margin-top: 0px; overflow:auto;">
+            @Html.Partial("_ShengyuList", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    </div>
+    <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        $('#s_Name').placeholder({
+            word: '姓名、名称、会员卡号'
+        });
+
+
+        $("#btnselect").click(function () {
+            $("#txtTime").val(Math.random());
+        })
+        //导出
+        $("#btnSave").click(function () {
+            if ($("#s_HospitalID").val() == "" || $("#s_HospitalID").val() == null) {
+                var s_HospitalID =@HospitalID;
+            }
+            else { var s_HospitalID = $("#s_HospitalID").val(); }
+            var s_FollowUpUserID = $("#s_FollowUpUserID").val();
+            var s_Name = $("#s_Name").val();
+            var s_ProductType = $("#s_ProductType").val();
+            var DepartmentID = $("#DepartmentID").val();
+            var s_Price = $("#s_Price").val();
+            var s_ePrice = $("#s_ePrice").val();
+
+            var url = "/PatientManage/ExportPatientstatisticsCardShengyu?pageNum=1&numPerPage=10000&s_HospitalID=" + s_HospitalID + "&s_ePrice=" + s_ePrice + "&s_Price=" + s_Price + "&DepartmentID=" + DepartmentID + "&s_Name=" + s_Name + "&s_ProductType=" + s_ProductType + "&s_FollowUpUserID=" + s_FollowUpUserID;
+            window.location.href = url;
+        });
+
+        $("#articles").delegate(".btnactive", "click", function () {
+
+            var code = $(this).attr("code");
+            var statu = $(this).attr("statu");
+            if (statu == 0) {  //启用状态，改为禁用
+                statu = 1;
+                $.ajax({
+                    type: "post", //使用get方法访问后台
+                    url: "/PatientManage/UpdateMainCardBalanceStatu",
+                    data: { "ID": code, "IsActive": statu },
+                    async: false,
+                    success: function (data) {
+                        if (data > 0) {
+                            //location.href = "/PatientManage/PatientstatisticsCardShengyu";
+                            location.reload();
+
+                        }
+                    },
+                    error: function () {
+                        alert("数据获取失败！");
+                    }
+                });
+            } else { //禁用状态，改为启用
+                statu = 0;
+                $.ajax({
+                    type: "post", //使用get方法访问后台
+                    url: "/PatientManage/UpdateMainCardBalanceStatu",
+                    data: { "ID": code, "IsActive": statu },
+                    async: false,
+                    success: function (data) {
+                        if (data > 0) {
+                            // location.href = "/PatientManage/PatientstatisticsCardShengyu";
+                            location.reload();
+                            // $("#btnsearch").click();
+                        }
+                    },
+                    error: function () {
+                        alert("数据获取失败！");
+                    }
+                });
+            }
+        });
+    </script>
+    <script>
+        $(function () {
+            let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+            $("#articles").css("height", acHeight + "px");
+        })
+    </script>
+</body>
+</html>

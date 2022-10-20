@@ -1,0 +1,95 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    ViewBag.Title = "项目管理";
+    Layout = null;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight" style="width: 650px;">
+        @using (Ajax.BeginForm("PreOrderList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles",HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+        {
+            <table width="100%" cellspacing="0" class="search-form">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="explain-col">
+                                <label class="labelspan" style="width:80px;">
+                                    订单编号</label>
+                                <input type="text" id="OrderNo" name="OrderNo" value=""class="new-input" />
+                                <label class="labelspan" style="width:80px;" >
+                                    所属分类</label>
+                                <input type="text" id="Mobile" name="Mobile" value="" class="new-input" />
+                                <input type="submit" id="btnsearch" name="search" class="searchsubmitton" value="搜 索"
+                                    />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+        <div id="articles" class="mainContentRight_bottom" style="height: 350px; overflow: auto;
+            margin-top: 5px; width: 100%;">
+            @Html.Partial("_PreOrderList", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="确 定" onclick="FullValue()" />
+            <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" /></div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    //确定选择按钮
+    function FullValue() {
+        var value = $("input[name='radioList']:checked").val();
+        if (value == undefined) {
+            alert("请选择订单！");
+            return false;
+        }
+        window.top.SelectOrder(value);
+        closeed();
+    }
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+
+    $(function () {
+       $("#articles").delegate("tr","click",function () {
+            $(this).find("input:radio").attr("checked", "checked");
+           
+        });
+        //删除订单
+        $("#articles").delegate(".BtnDelete","click",function(){
+              var code = $(this).attr("code");
+            if (confirm("确认要取消该订单吗？")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url:"@Url.Content("~/CashManage/DeleteOrder")",
+                    data: { "OrderNo": code, "Statu": 3 },
+                    success: function (data) {
+                        if (data > 0) {
+                            location.reload();
+                        }
+
+                    },
+                    error: function () {
+                        alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+            }
+        });
+       
+    });
+</script>

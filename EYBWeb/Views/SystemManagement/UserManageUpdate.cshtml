@@ -1,0 +1,175 @@
+﻿@using HWLY.OA.SystemManagement.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    Layout = "~/Views/Shared/Header.cshtml";
+
+    var systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManagementBLL>();
+    var list = systemBLL.GetAllRole().Where(c => c.IsActive == 1).ToList();
+    var id = Request["id"];
+    //获取用户实体
+    var entity = systemBLL.GetUserByUserID(ConvertValueHelper.ConvertIntValue(id));
+    //获取职务
+    var infotypeList = systemBLL.GetBaseInfoTreeByType("job");
+}
+@section head
+{
+    <link href="@Url.Content("~/Content/Css/tree.css")" rel="stylesheet" type="text/css" />
+}
+<div class="pad_10">
+    <form action="@Url.Content("~/SystemManagement/UpdateUser")" method="post" name="myform" id="myform">
+     <table width="100%" cellpadding="2" cellspacing="1" class="table_form">
+         
+        <tr>
+            <th width="80">
+                用户名 :
+            </th>
+            <td>
+                <input type="text" name="UserName" id="UserName" class="input-text" value="@entity.UserName" />
+            </td>
+        </tr>    
+        <tr>
+            <th width="80">
+                性别 :
+            </th>
+            <td>
+                <select name="Sex">
+                    <option value="男" @("男"== entity.Sex ? "selected=selected" : "")>男</option>
+                    <option value="女" @("女" == entity.Sex ? "selected=selected" : "")>女</option>
+                </select>
+            </td>
+        </tr> 
+        <tr>
+            <th>
+                所属部门 :
+            </th>
+            <td>
+                <input type="text" id="department" class="input-text"  value="@entity.DeptName" />
+                <input type="hidden" name="DeptCode" id="hiddendepartment"  value="@entity.DeptCode" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                职务 :
+            </th>
+            <td>
+                <select id="selduty" name="DutyName">
+                    @foreach (var info in infotypeList)
+                    {
+                        <option @(info.InfoName == entity.DutyName ? "selected=selected" : "") value="@info.InfoName">@info.InfoName</option>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                角色 :
+            </th>
+            <td>
+              <select name="RoleID">
+                    @foreach (var info in list)
+                    {
+                        <option @(info.RoleID == entity.RoleID ? "selected=selected" : "") value="@info.RoleID">@info.RoleName</option>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                是否为管理员 :
+            </th>
+            <td>
+                 <select name="IsAdmin">
+                    <option value="0") @(0==entity.IsAdmin?"selected=selected":"")>否</option>
+                    <option value="1" @(1==entity.IsAdmin?"selected=selected":"")>是</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                状态 :
+            </th>
+            <td>
+               <input type="radio" name="IsActive" @(1==entity.IsActive?"checked=checked":"") class="radio_style" value="1" checked="checked" />
+                &nbsp;有效&nbsp;&nbsp;&nbsp;
+                <input type="radio" name="IsActive" @(0 == entity.IsActive ? "checked=checked" : "") class="radio_style" value="0" />
+                &nbsp;禁用
+            </td>
+        </tr>
+
+        <tr>
+             <th>
+                是否在职 :
+            </th>
+            <td>
+                 <select name="IsDuty">
+                    <option value="1" @(1== entity.IsDuty ? "selected=selected" : "")>在职</option>
+                    <option value="2" @(0 == entity.IsDuty ? "selected=selected" : "")>离职</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+
+
+    <input type="hidden"  value="@id" name="UserID" />
+                <input type="hidden"  value="@entity.BirthDate" name="BirthDate" />
+                <input type="hidden"  value="@entity.Age" name="Age" />
+                <input type="hidden"  value="@entity.IDNumber" name="IDNumber" />
+                <input type="hidden"  value="@entity.Hometown" name="Hometown" />
+                <input type="hidden"  value="@entity.Address" name="Address" />
+                <input type="hidden"  value="@entity.IsMarry" name="IsMarry" />
+                <input type="hidden"  value="@entity.Health" name="Health" />
+                <input type="hidden"  value="@entity.Educational" name="Educational" />
+                <input type="hidden"  value="@entity.Specialty" name="Specialty" />
+                <input type="hidden"  value="@entity.CopyDocuments" name="CopyDocuments" />
+                <input type="hidden"  value="@entity.PersonalPhotos" name="PersonalPhotos" />
+                <input type="hidden"  value="@entity.WorkNumber" name="WorkNumber" />
+                <input type="hidden"  value="@entity.Probation" name="Probation" />
+                <input type="hidden"  value="@entity.WorkNumber" name="WorkNumber" />
+                <input type="hidden"  value="@entity.WagesCard" name="WagesCard" />
+                <input type="hidden"  value="@entity.ContractTime" name="ContractTime" />
+                <input type="hidden"  value="@entity.ContractMaturityTime" name="ContractMaturityTime" />
+                <input type="hidden"  value="@entity.SocialSecurity" name="SocialSecurity" />
+                <input type="hidden"  value="@entity.SpouseName" name="SpouseName" />
+                <input type="hidden"  value="@entity.SpousePhone" name="SpousePhone" />
+                <input type="hidden"  value="@entity.SpouseCompany" name="SpouseCompany" />
+                <input type="hidden"  value="@entity.LeaveTime" name="LeaveTime" />
+                
+                <input type="hidden"  value="@entity.WorkRecord" name="WorkRecord" />
+                <input type="hidden"  value="@entity.GraduateTime" name="GraduateTime" />
+                <input type="hidden"  value="@entity.GraduateSchool" name="GraduateSchool" />
+                <input type="hidden"  value="@entity.MotherPhone" name="MotherPhone" />
+                <input type="hidden"  value="@entity.MotherName" name="MotherName" />
+                <input type="hidden"  value="@entity.FatherPhone" name="FatherPhone" />
+                <input type="hidden"  value="@entity.FatherName" name="FatherName" />
+                <input type="hidden"  value="@entity.Memo" name="Memo" />
+                <input type="hidden"  value="@entity.FilesAddress" name="FilesAddress" />
+                <input type="hidden"  value="@entity.Mobile" name="Mobile" />
+                <input type="hidden"  value="@entity.DutyTime" name="DutyTime" />
+                <input type="hidden"  value="@entity.NickName" name="NickName" />
+                <input type="hidden"  value="@entity.WorkRecord" name="WorkRecord" /> 
+        <input type="submit" name="dosubmit" id="dosubmit" class="dialog" value=" " />
+    </form>
+</div>
+    
+      <div id="dialogareaDepartment" style="text-align: left;">
+        <div id="treeContentArea">
+        </div>
+    </div>
+
+      <script type="text/javascript" src="@Url.Content("~/Scripts/Controls/Public/Department.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.tree.js")"></script>
+<script type="text/javascript">
+    $(function () {
+
+        $.formValidator.initConfig({ formid: "myform", autotip: true, onerror: function (msg, obj) { window.top.art.dialog({ content: msg, lock: true, width: '200', height: '50', show: true }, function () { this.close(); $(obj).focus(); }) } });
+
+        $("#UserName").formValidator({ onshow: "填写用户名", onfocus: "填写用户名" }).inputValidator({ min: 1, onerror: "填写用户名" });
+
+        $("#password").formValidator({ onshow: "填写密码", onfocus: "填写6位以上密码" }).inputValidator({ min: 6, onerror: "请填写6位以上密码" });
+
+        $("#department").formValidator({ onshow: "选择部门", onfocus: "请选择部门" }).inputValidator({ min: 1, onerror: "请选择部门" });
+
+        $("#repassword").formValidator({ onshow: "确认密码", onfocus: "确认密码", oncorrect: "填写正确" }).compareValidator({ desid: "password", operateor: "=", onerror: "两次输入密码不一致" });
+
+    })
+    </script>

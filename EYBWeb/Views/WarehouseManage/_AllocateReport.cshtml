@@ -1,0 +1,150 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.StockOrderInfo>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+    width: 100%;" cellpadding="0" cellspacing="0">
+            <thead style="position:absolute;">
+                <tr>
+                    <th orderfield="">
+                        调出仓库
+                    </th>
+                    <th>
+                        调入仓库
+                    </th>
+                    <th>
+                        订单编号
+                    </th>
+                    <th orderfield="">
+                        单据时间
+                    </th>
+                    <th orderfield="">
+                        产品名称
+                    </th>
+                    <th>
+                        品牌
+                    </th>
+                    <th>
+                        数量
+                    </th>
+                    <th style="display:none;">
+                        成本价
+                    </th>
+                    <th style="display:none;">
+                        成本总价
+                    </th>
+                    <th>
+                        零售价
+                    </th>
+                    <th>
+                        零售总价
+                    </th>
+                    <th>
+                        订单状态
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.Housename
+                        </td>
+                        <td>
+                            @entity.TransferHouseName
+                        </td>
+                        <td>
+                            <a href="javascript:OpenOrderInfo('@entity.StockOrderNo')">@entity.StockOrderNo</a>
+                        </td>
+                        <td>
+                            @entity.OrderTime.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            @entity.ProductName
+                        </td>
+                        <td>
+                            @entity.BrandName
+                        </td>
+                        <td>
+                            @entity.Number
+                        </td>
+                        <td style="display:none;">
+                            @entity.CostPrice
+                        </td>
+                        <td style="display:none;">
+                            @entity.AllCostPrice
+                        </td>
+                        <td>
+                            @entity.RetailPrice
+                        </td>
+                        <td>
+                            @entity.AllRetailPrice
+                        </td>
+                        <td>
+                            @entity.GetIsVerifyName()
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot style="display:none;">
+                <tr>
+                    <td colspan="5" style="text-align: right;">
+                        合计
+                    </td>
+                    <td>
+                        @ViewBag.SumNumber
+                    </td>
+                    <td style="display:none;">
+                    </td>
+                    <td style="display:none;">
+                        @ViewBag.SumCostPrice
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        @ViewBag.SumRetailPrice
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <div style="height:100px;"></div>
+    <script type="text/javascript">
+    $("#sp").text('@Model.TotalItemCount');
+    $("#showmessage").css("display", "none");
+    function OpenOrderInfo(obj) {
+        art.dialog.open("/WarehouseManage/OrderInfoInOtherPage?OrderNO=" + obj, { title: "单据详情", width: 760, height: 470, close: function () {
+            var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+            if (bValue !== undefined) {
+            }
+        }
+        })
+}
+
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+
+            window.setTimeout(function () {
+                var gridtablewidth = $(".gridTable").width();
+                var thlen = $(".gridTable thead th").length;
+                let theadWidth = $(".gridTable tbody").width()
+                $(".gridTable thead").css("width", theadWidth + "px")
+                let tdWidth = (theadWidth / (thlen - 2)) + "px";
+                $(".gridTable thead th").css("width", tdWidth);
+                $(".gridTable tr td").css("width", tdWidth);
+            }, 100)
+
+        })
+
+    </script>

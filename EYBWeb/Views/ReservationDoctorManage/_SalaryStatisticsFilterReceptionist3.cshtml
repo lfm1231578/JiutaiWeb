@@ -1,0 +1,71 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@using SystemManage.Factory.IBLL;
+@model List<EYB.ServiceEntity.ReservationEntity.DakaRecordEntity>
+    @{
+        Layout = null;
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+        var YingxianggongxiuDay = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "YingxianggongxiuDay");
+        var gongxiuday = ConvertValueHelper.ConvertIntValue(YingxianggongxiuDay.AttributeValue);
+        gongxiuday= gongxiuday == 0 ? 4 : gongxiuday;
+    }
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead>
+                <tr>
+
+                    <th orderfield="" style="font-size:11px">
+                        员工职位
+                    </th>
+                    <th orderfield="" style="font-size:11px">
+                        员工姓名
+                    </th>
+                    <th style="font-size:11px">
+                        底薪【月客流量】
+                    </th>
+                    <th style="font-size:11px">
+                        店业绩提成【店基础现金业绩】
+                    </th>
+                    <th style="font-size:11px">
+                        手工费
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>	姓名	</td>
+                    <td>	出勤	</td>
+                    <td>	应享公休	</td>
+                    <td>	已休	</td>
+                    <td>	超休	</td>
+                    <td>	店客流量	</td>
+                    <td>	底薪	</td>
+
+                    <td>	店基础现金业绩	</td>
+                    <td>	提点	</td>
+                    <td>	店大项目现金业绩	</td>
+                    <td>	提点	</td>
+
+                    <td>	手工	</td>
+                    <td>	奖金	</td>
+                    <td>	合计	</td>
+
+                    <td>	是否全勤	</td>
+                    <td>	全勤奖	</td>
+
+                    <td>	行政扣罚	</td>
+                    <td>	总底薪是否与出勤天数挂钩	</td>
+                    <td>	分数	</td>
+                    <td>	绩效工资是否与职能考评挂钩	</td>
+                    <td>	应发工资	</td>
+                </tr>
+            </tbody>
+        </table>
+      
+    </form>
+    <script type="text/javascript">
+        
+    </script>

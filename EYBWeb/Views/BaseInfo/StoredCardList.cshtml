@@ -1,0 +1,110 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.SystemEntity;
+@model PagedList<EYB.ServiceEntity.BaseInfo.MainCardEntity>
+@{
+    ViewBag.Title = "储值卡列表";
+    var CardType = Convert.ToInt32(Request["CardType"]);
+    Layout = null;
+    ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    List<BaseinfoEntity> caretypelist = new List<BaseinfoEntity>();
+    var ParentHospitalID = Common.Manager.LoginHospitalUserManager.GetLoginInfo().ParentHospitalID;
+    caretypelist = sysBll.GetBaseInfoTreeByType("StoredCardType", 1, ParentHospitalID);//储值卡类型分类
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background:#fff;">
+    <div id="mainContentRight" style="width: 630px;">
+                                 <!--Ajax请求controller方法--->    
+        @using (Ajax.BeginForm("StoredCardList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles",HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+        {
+            <table width="100%" cellspacing="0" class="search-form">
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="explain-col">
+                                <label class="labelspan">
+                                    卡名称</label>
+                                <input type="text" id="Name" name="Name" value="" style="width: 100px; height: 26px;
+                                    line-height: 26px; float: left;" />
+                                <label class="labelspan">
+                                    卡类型</label>
+                                    <select name="CardType" id="CardType">
+                                    <option value="0">所有分类</option>
+                                      @foreach (var info in caretypelist)
+                                        {
+                                                <option @(info.ID == CardType ? "selected=selected" : "") value="@info.ID">@info.InfoName</option>
+                                        }
+                                    </select>
+                                <input type="submit" id="btnsearch" name="search" class="button" value="搜 索" style="height: 26px;" />
+                                <input type="reset" class="button" value="重 置" style="height: 26px;" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+        <div id="articles" class="mainContentRight_bottom" style="height: 350px; overflow: hidden;
+            margin-top: 5px; width: 98%;">
+            @Html.Partial("_StordCardList", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="确 定" onclick="FullValue()" />
+            <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" /></div>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    $("#articles").delegate("tr.ableclick", "click", function () {
+        var $chekbox = $(this).find("input:checkbox");
+        if ($chekbox.prop("checked") == false) {
+            $chekbox.attr("checked", "checked");
+            $(this).css("background", "#E7F6FF");
+        } else {
+            $chekbox.attr("checked", false);
+            $(this).css("background", "");
+        }
+    });
+    $("#articles").delegate("input:checkbox", "click", function () {
+        if ($(this).prop("checked") == false) {
+            $(this).attr("checked", "checked");
+            $(this).parent().parent().css("background", "#E7F6FF");
+        } else {
+            $(this).attr("checked", false);
+            $(this).parent().parent().css("background", "");
+        }
+    });
+    $("#articles").delegate("tr.ableclick", "dblclick", function () {
+        $(this).find("input:checkbox").attr("checked", "checked");
+        FullValue();
+    });
+    function FullValue() {
+
+        var txtvalue = "";
+        $("input[name='radioList']:checked").each(function (i) {
+            txtvalue += $(this).val();
+        });
+        if (txtvalue == undefined) {
+            alert("请选择存储卡");
+            artdialogfail("请选择存储卡");
+            return false;
+        }
+        window.top.InFoDate(txtvalue);
+        closeed();
+    }
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+</script>
+
+

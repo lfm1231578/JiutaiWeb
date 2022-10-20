@@ -1,0 +1,113 @@
+﻿@model PagedList<EYB.ServiceEntity.ShareShopEntity.Pro.ProShareholderCardEntity>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>
+                        <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')" />
+                    </th>
+                    <th>
+                        有效优惠卷数量
+                    </th>
+                    <th>
+                        有效优惠卷总额
+                    </th>
+                    <th>
+                        姓名
+                    </th>
+                    <th>
+                        卡号
+                    </th>
+                    <th>
+                        手机
+                    </th>
+                    <th>
+                        微信昵称
+                    </th>
+                    <th>
+                        卡内余额
+                    </th>
+                    <th>
+                        消费总额
+                    </th>
+                    <th>
+                        总到店次数
+                    </th>
+                    <th>
+                        距离今天几天未到店
+                    </th>
+                    <th>
+                        首次到店时间
+                    </th>
+                    <th>
+                        门店
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="tabled">
+                @foreach (var entity in Model)
+                {
+                    <tr class="ableclick">
+                        <td>
+                            <input type="checkbox" name="checkbox" class="checkbox" value="@entity.ShareholderId" uid="@entity.CustomerUserId" />
+                        </td>
+                        <td>
+                            @entity.CouponCount
+                        </td>
+                        <td>
+                            <a href="javascript:OpenAccumlaction(@entity.Id);">
+                                @entity.CouponAmount
+                            </a>
+
+                        </td>
+                        <td>
+                            @entity.Name
+                        </td>
+                        <td>
+                            @entity.CardNo
+                        </td>
+                        <td>
+                            @entity.Mobile
+                        </td>
+                        <td>
+                            @entity.WxNickname
+                        </td>
+                        <td>
+                            @entity.CardAmount
+                        </td>
+                        <td>
+                            @entity.ExpenseAmount
+                        </td>
+                        <td>
+                            @entity.ExpenseCount
+                        </td>
+                        <td>
+                            @entity.LastDay
+                        </td>
+                        <td>
+                            @entity.FirstExpenseTime.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            @entity.HospitalName
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>
+
+
+
+

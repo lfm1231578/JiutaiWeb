@@ -1,0 +1,140 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.StockOrderEntity>
+    @{
+        Layout = null;
+        var allprice = ViewBag.AllPrice;
+        var allnumber = ViewBag.AllNumber;
+        var myHospitalID = ViewBag.HospitalID;
+        
+        bool result = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_仓库管理调拨操作);
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead style="position:absolute;width:99%;">
+                <tr>
+                    <th>
+                        序号
+                    </th>
+                    <th>
+                        订单序号
+                    </th>
+                    <th>
+                        订单编号
+                    </th>
+                    <th>
+                        调拨类别
+                    </th>
+                    <th orderfield="">
+                        单据生成时间
+                    </th>
+                    <th orderfield="">
+                        调拨数量
+                    </th>
+                    <th>
+                        总计金额
+                    </th>
+                    <th orderfield="">
+                        操作人
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+               <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.ShowDocumentNumber
+                        </td>
+                        <td>
+                            @entity.DocumentNumber
+                        </td>
+                        <td>
+                            @if (result)
+                            {
+                                <a href="javascript:OpenDailogDetail(@entity.ID);">@entity.OrderNo</a>
+                            }
+                            else
+                            {
+                                @entity.OrderNo
+                            }
+                        </td>
+                        <td>
+                            @(entity.HospitalID == myHospitalID ? "调出" : "调入")
+                        </td>
+                        <td>
+                            @entity.OrderTime.ToString("yyyy-MM-dd")
+                        </td>
+                        <td>
+                            @entity.AllQuatity
+                    </td>
+                    <td>
+                        @entity.AllMoney
+                </td>
+                <td>@entity.UserName</td>
+                <td>
+                    @if (result)
+                    {
+                        if (entity.IsVerify == 2)
+                        {
+                            <label>已审核</label>
+                        }
+                        else if (entity.DiaoHospitalID == myHospitalID && entity.IsVerify == 4)
+                        {
+                            <a href="javascript:OpenDailogDetail(@entity.ID);">待确认</a>
+                        }
+                        else if (entity.HospitalID == myHospitalID && entity.IsVerify == 1)
+                        {
+                            <a href="javascript:OpenDailogDetail(@entity.ID);">确认</a>
+                        }
+                        else
+                        {
+                            <a href="javascript:OpenDailogDetail(@entity.ID);">查看</a>
+                        }
+                    }
+                    </td>
+            </tr>
+        }
+                <tr>
+                    <td colspan="4"></td>
+                    <td>统计</td>
+                    <td class="txtallnumber">@allnumber</td>
+                    <td class="txtallprice">@allprice</td>
+                    <td></td>
+                    <td></td>
+
+                </tr>
+            </tbody>
+        </table>
+
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            //计算head高度，宽度 计算articles高度
+
+
+            
+
+            $('.mainContentRight_bottom').on('scroll', function () {
+                let scrollHeight = $('.mainContentRight_bottom').scrollTop();
+                let topHeight = $(".ullist").height() + 5;
+                if (scrollHeight >= topHeight) {
+                    $(".gridTable thead").css("top", topHeight + "px");
+
+                } else {
+                    $(".gridTable thead").css("top", topHeight + "px");
+                }
+
+
+            })
+        })
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

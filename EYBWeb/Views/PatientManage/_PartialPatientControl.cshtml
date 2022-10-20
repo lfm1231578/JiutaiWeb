@@ -1,0 +1,151 @@
+﻿@{
+    //顾客登记
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_page);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_pageView);
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.workrecordManager_todayreg);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.workrecordManager_todayyuyue);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_pageView_button);
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_pageView_Add);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_OrderImport);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_PatientArchivesChange);
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_PatientPatientFollow);//流失客月结
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_PatientArchivesChangeLog);//变更日志
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_PatientFuzai);//顾客未消耗
+    bool result12 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsPatientOrder);
+    bool result13 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_PatientManyidu);
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <span>顾客管理</span></div>
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li redirect="@Url.Content("~/PatientManage/PatientRegister")" onclick='CheckRight(this,"@result1")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;顾客登记
+
+                    </a>
+                </li>
+            }
+            @if (result2)
+            {
+                <li redirect="@Url.Content("~/PatientManage/PatientInfoManage")" onclick='CheckRight(this,"@result2")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;顾客档案
+
+                    </a>
+                </li>
+            }
+            @if (result3)
+            {
+                <li redirect="@Url.Content("~/PatientManage/IntegralManage")" onclick='CheckRight(this,"@result3")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;积分管理
+
+                    </a>
+                </li>
+            }
+            @*  <li redirect="@Url.Content("~/PatientManage/PatientPayOrderList")" onclick='CheckRight(this,"@result4")'>
+        <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+        </span><a style="cursor: pointer; ">消费记录
+            <label>
+            </label>
+        </a></li>*@
+            @if (result5)
+            {
+                <li redirect="@Url.Content("~/PatientManage/Patientanalyse")" onclick='CheckRight(this,"@result5")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;顾客分析
+
+                    </a>
+                </li>
+            }
+            @if (result11)
+            {
+                <li redirect="@Url.Content("~/PatientManage/PatientCardNoxiaohao")" onclick='CheckRight(this,"@result11")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;顾客未消耗统计
+
+                    </a>
+                </li>
+            }
+            @*    @if (result9)
+        {
+            <li redirect="@Url.Content("~/PatientManage/PatientYuejie")" onclick='CheckRight(this,"@result9")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -60px no-repeat;">
+                </span><a style="cursor: pointer; ">流失客月结
+                    <label>
+                    </label>
+                </a></li>
+        }*@
+            @if (result6)
+            {
+                <li redirect="@Url.Content("~/PatientManage/PatientFollow")" onclick='CheckRight(this,"@result6")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;护理日志
+
+                    </a>
+                </li>
+            }
+            @if (result12)
+            {
+                <li redirect="@Url.Content("~/Statistics/StatisticsPatientOrder")" onclick='CheckRight(this,"@result9")'>
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;会员排行表
+
+                    </a>
+                </li>
+
+                @*<li redirect="@Url.Content("~/PatientManage/ArchivesChangeLog1")" onclick='CheckRight(this,"@result10")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;会员排行表
+
+                    </a>
+                </li>*@
+            }
+            @*@if (result8)
+        {*@
+            <li redirect="@Url.Content("~/PatientManage/PatientArchivesChange")" onclick='CheckRight(this,"@result5")'>
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;档案变更
+
+                </a>
+            </li>
+            @*}*@
+            @if (result10)
+            {
+                <li redirect="@Url.Content("~/PatientManage/ArchivesChangeLog")" onclick='CheckRight(this,"@result10")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;变更日志
+
+                    </a>
+                </li>
+            }
+            @if (result5)
+            {
+                <li redirect="@Url.Content("~/CenterManage/CustomerRecommendation")" onclick='CheckRight(this,"@result5")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;顾客转介绍
+
+                    </a>
+                </li>
+            }
+            @if (result13)
+            {
+                <li redirect="@Url.Content("~/PatientManage/manyidu")" onclick='CheckRight(this,"@result13")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;满意度点评
+
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+        //定义权限列表，主要为了显示默认有权限的页面
+
+        var TheArray = [["@result1", "@Url.Content("~/PatientManage/PatientRegister")"],["@result2", "@Url.Content("~/PatientManage/PatientInfoManage")"], ["@result3","@Url.Content("~/PatientManage/IntegralManage")"],["@result4","@Url.Content("~/PatientManage/PatientPayOrderList")"],["@result5","@Url.Content("~/PatientManage/Patientanalyse")"],["@result6","@Url.Content("~/PatientManage/PatientFollow")"], ["@result8","@Url.Content("~/PatientManage/PatientArchivesChange")"]];
+
+</script>

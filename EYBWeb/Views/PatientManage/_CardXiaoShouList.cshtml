@@ -1,0 +1,126 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.BaseInfo.MainCardEntity>
+@{
+    ViewBag.Title = "_CardXiaoFeiList";
+    Layout = null;
+}
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable"  style="width: 100%;border-collapse:collapse ;" >
+    <thead>
+        <tr>
+            <th orderfield="MemberNo" style=" width:10%;" >
+                会员卡号
+            </th>
+            <th orderfield="" style=" width:10%;">
+                姓名
+            </th>
+            <th orderfield="" style=" width:20%;" >
+                储值卡名称
+            </th>
+            <th orderfield="" style=" width:15%;">
+                购买量
+            </th>
+            <th>
+                储值卡金额
+            </th>
+            <th>
+                储值卡总额
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr class="clickclass">
+                <td>@entity.MemberNo
+                </td>
+                <td>@entity.UserName
+                </td>
+                <td>@entity.Name
+                </td>
+                <td>@entity.SellCount
+                </td>
+                <td>
+                    @entity.Price
+                </td>
+                <td>
+                    @(entity.Price*entity.SellCount)
+                </td>
+                <td>
+                <input type="hidden" class="userid" value="@entity.UserID" />
+                    <input type="hidden" class="hidval" value="@entity.ID" />
+                    <input type="hidden" class="price" value="@entity.Price" />
+                    <a href="javascript:;" class="info">详细</a>
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="3"></td>
+            <td>
+             @ViewBag.sq 
+            </td>
+            <td>
+            </td>
+            <td>
+               @ViewBag.sp   
+            </td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+
+<script type="text/javascript">
+
+
+    $(function () {
+
+
+        $("tbody").delegate("tr.clickclass", "click", function () {
+
+            if ($(this).find(".info").is(":hidden")) {
+                $(this).next().remove();
+                $(this).find(".info").show();
+                $(this).find(".hid").remove();
+            }
+            else {
+                $(this).find(".info").parent().append("<a href='javascript:;' class='hid' >关闭</a> ")
+                $(this).find(".info").hide(); //影藏这个标签
+                var ProjectID = $(this).find(".hidval").val();
+                var HospitalID = $(".s_HospitalID").val();
+                var Endtime = $(".s_Endtime").val();
+                var userid = $(this).find(".userid").val();
+
+                var StareTime = $(".s_StareTime").val();
+                var MemberNo = $(".s_MemberNo").val();
+                var price = $(this).find(".price").val();
+                var parent = $(this);
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    url: "/PatientManage/GetPayinfoList",
+                    data: { "UserID": userid, "HospitalID": HospitalID, "ProjectID": ProjectID, "Endtime": Endtime, "StareTime": StareTime, "MemberNo": MemberNo, "Price":price,"Type": 3 },
+                    async: false,
+                    success: function (data) {
+                        if (data != null) {
+                            parent.after("<tr class='newtr' style='background:#E7F6FF;'><td colspan='6'>" + data + "</td></tr>");
+                        }
+                    },
+                    error: function () {
+                        alert("数据获取失败！");
+                    }
+                });
+            }
+        })
+    })
+
+</script>

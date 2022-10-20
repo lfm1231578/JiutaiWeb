@@ -1,0 +1,89 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model EYB.ServiceEntity.CashEntity.OrderEntity
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "档案变更-----欠款列表";
+    Layout = null;
+    var UserID = Request["UserID"];
+    //var theType = Request["Type"].ToUpper();//將類型转换为大写
+}
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<body style="background-color: #fff;">
+    <div class="mainContentRight_bottom" style="margin-top: 0px;">
+        <form id="myform" action="@Url.Content("~/CashManage/EditQiankuan")" class="clearfix" method="post"  >
+        <input type="hidden" id="labuserid" name="txtUserID" value="@UserID" />
+        <div class="clearfix">
+            <div style="margin: 5px;">
+                <table>
+                    <tr style="height: 60px;">
+                        <td style="width: 80px;">
+                            欠款金额
+                        </td>
+                        <td>
+                            <input type="text" style="display: inline-block;" name="QianPrice" id="AddQianPrice"
+                                value="" onkeyup='javascript:CheckInputIntFloat(this);' />
+                        </td>
+                    </tr>
+                    <tr style="height: 60px;">
+                        <td>
+                            备注
+                        </td>
+                        <td>
+                            <textarea name="memo" rows="5" cols="50" id="AddQianPricememo"></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            <input type="button" id="SaveBtn3" class="submitbutton2" value="保存" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        </form>
+    </div>
+</body>
+<script type="text/javascript">
+    $(function () {
+        $(".aui_close").css("display", "none");
+    })
+
+    $("#SaveBtn3").click(function () {
+        var userid = $("#labuserid").val();
+        var price = $("#AddQianPrice").val();
+        var memo = $("#AddQianPricememo").val();
+        if (userid == "0") {
+            alert("请选择客户！");
+            return false;
+        }
+        if (confirm("确认添加？")) {
+            $.ajax({
+                type: "POST",
+                url: getControllerUrl("PatientManage", "EditQiankuan"),
+                async: false,
+                data: { "UserID": userid, "Price": price, "memo": memo }, // 你的formid
+                error: function (request) {
+                    alert("操作失败！");
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        alert("添加成功！");
+                        parent.ChangelabQinakuan(parseFloat(price));
+                        closeed();
+                    } else {
+                        alert("操作失败！");
+                    }
+                }
+            });
+        }
+
+
+    })
+</script>

@@ -1,0 +1,84 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "仓库管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+<div id="mainContentBody">
+    @Html.Partial("_WarehouseManageControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+            </label>仓库管理 
+        </div>
+        <div class="mainContentRight_bottom clearfix">
+                <div id="tabbox">
+                <ul class="tabs" id="tabs">
+                    <li><a href="###" tab="tab1">入库</a></li>
+                    <li><a href="###" tab="tab2">出库</a></li>
+                    <li><a href="###" tab="tab3">调拨</a></li>
+                    <li><a href="###" tab="tab4">盘点</a></li>
+                    <li style="display:none;"><a href="###" tab="tab5">预付</a></li>
+                </ul>
+                <ul id="tab_conbox" class="tab_conbox">
+                    <li id="tab1" class="tab_con" style="padding: 2px;">
+                    <iframe src="@Url.Content("~/WarehouseManage/RukuList")" href="@Url.Content("~/WarehouseManage/RukuList")"  frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px; ">
+                    </iframe>
+                    </li>
+                    <li id="tab2" class="tab_con" style="display: none;">
+                     <iframe src="" href="@Url.Content("~/WarehouseManage/ChukuList")"  frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px; ">
+                    </iframe>
+                    </li>
+                    <li id="tab3" class="tab_con" style="display: none;">
+                       <iframe src="" href="@Url.Content("~/WarehouseManage/DiaoboList")"  frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px; ">
+                       </iframe>           
+                    </li>
+                     <li id="tab4" class="tab_con" style="display: none; padding:0px;">     
+                      <iframe src="" href="@Url.Content("~/WarehouseManage/PandianList")"  frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px; ">
+                       </iframe>      
+                    </li>
+                     <li id="tab4" class="tab_con" style="display: none; padding:0px;">     
+                      <iframe src="" href="@Url.Content("~/WarehouseManage/YufuList")"  frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px; ">
+                       </iframe>      
+                    </li>
+
+                </ul>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+  <script type="text/javascript">
+
+      jQuery(document).ready(function () {
+          $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 110);
+          //Tab切换
+          $("#tabs  li").click(function () {
+              $("#tabs li").removeClass("thistab");
+              $(this).addClass("thistab");
+              $("#tabs li").children("a").css("color","#666","textShadow", "1px 1px 1px #868686")
+              $(this).children("a").css("color","lightsalmon","textShadow", "1px 1px 1px #868686")
+              $(".tab_con").hide();
+              var index = $(this).parent().find("li").index(this);
+              $("#tab_conbox").find(".tab_con").eq(index).show();
+              var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+              iframe1.attr("src", iframe1.attr("href"));
+          });
+          $("#tabs li:first").children("a").css("color", "lightsalmon");
+          $("#tabs li:first").addClass("thistab").show();
+          //默认加载有权限的
+          for (var i = 0; i < TheArray.length; i++) {
+              if (TheArray[i][0] == "True") {
+                  if ("/WarehouseManage/WarehouseManage" == TheArray[i][1]) {
+                      return;
+                  } else {
+                      self.location = TheArray[i][1];
+                      return;
+                  }
+              }
+          }
+      });
+  
+</script>

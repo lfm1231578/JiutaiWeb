@@ -1,0 +1,69 @@
+﻿@using WarehouseManage.Factory.IBLL;
+@{
+    ViewBag.Title = "_AddBrank";
+    Layout = null;
+    IWarehouseManageBLL warehouseBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    int rows, pagenum = 0;
+    var Brlist = warehouseBLL.GetBrandList(new EYB.ServiceEntity.WarehouseEntity.BrandEntity { pageNum = 1, ParentHospitalID = ViewBag.ParentHospitalID, numPerPage = 1000 }, out rows, out pagenum);
+    var list = Brlist.Select(c => c.ParentID).ToList();
+    var name = ViewBag.Name;
+    
+}
+ <body style=" background:#fff;">
+<form action="" id="submitbutton">
+    <div class="clearfix" style=" overflow-y:scroll; height:360px;">
+        <div style="width: 250px; height:360px; float: left;" class="">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="background: #00B0DE; color: #fff;">
+                            可选择的品牌
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="canselect">
+                    @foreach (var info in Model)
+                    {
+                        if (!list.Contains(info.ID))
+                        {
+                        <tr>
+                            <td value="@info.ID">@info.Name
+                            </td>
+                        </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div style="float: left; width: 40px; font-size: 24px; font-weight: bold; color: Green;">
+            =></div>
+        <div style="width: 250px; height:360px; float: left;">
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="2" style="background: #9B9B8C; color: #fff;">
+                            已选择的品牌
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="UseList">
+                    @foreach (var io in Brlist)
+                    {    
+                        <tr>
+                            <td  colspan="1" name="selectID" value="@io.ParentID">@io.Name
+                            </td>
+                            <th class='deltd' style='width:20%;'><a href='#' class='del'>删除</a></th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div style=" margin-left:30%; position:fixed; bottom:0px; text-align:center;" class="clearfix">
+        <input type="button" class="submitbutton2" value="保 存" onclick="FullValue()" />
+        <input class="submitbutton2" type="button" onclick="closeedNorefresh()" value="取 消" />
+    </div>
+    </form>
+
+</body>
+

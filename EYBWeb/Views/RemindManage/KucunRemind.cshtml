@@ -1,0 +1,63 @@
+﻿@using EYB.ServiceEntity.WarehouseEntity;
+@using WarehouseManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.ProductStockEntity>
+@{
+    ViewBag.Title = "CustomerBirthdaysList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var parentHospitalID = ViewBag.ParentHospitalID;//获取当前用户的父点ID
+    var cangku = wareBll.GetAllWarehouseListByParentHospitalID(new EYB.ServiceEntity.WarehouseEntity.WarehouseEntity { ParentHospitalID = ViewBag.ParentHospitalID });//获取仓库列表
+    var HouseID = ViewBag.HouseID;
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+}
+<div id="mainContentBody">
+    @Html.Partial("_RemindManage")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+            </label>
+            库存预警提醒 (<span id="sp">@Model.TotalItemCount</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <div class="toolbar">
+                    <div class="box-wrap">
+                        <div class="l-list">
+                            @using (Ajax.BeginForm("KucunRemind", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                            {
+                                <div class="accountdiv" style="margin: 0px auto; width: 100%;">
+                                    @if (HasPermission)
+                                    {
+                                        <label>
+                                            仓库：</label>
+                                        <select name="HouseID" id="HouseID" class="select ymxSelect" >
+                                            @foreach (var house in cangku)
+                                            {
+                                                if (house.IsActive == 1)
+                                                {
+                                                <option @(HouseID == house.ID ? "selected=selected" : "") value="@house.ID">@house.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    }
+                                    <label>
+                                        库存不足多少：</label>
+                                    <input type="text" name="Quatity" id="Quatity" class="text-input ymxInput " 
+                                        value="" />
+                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" class="submitbutton2" id="btnsumbit" style="float: none;" value="查 询" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div id="articles" class="" style="overflow: auto; margin-top: 5px; width: 100%;">
+                    @Html.Partial("_KucunRemind", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = true, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </div>
+</div>

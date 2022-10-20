@@ -1,0 +1,177 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using EYB.ServiceEntity.SystemEntity
+@model PagedList<EYB.ServiceEntity.CashEntity.DayPayEntity>
+@{
+    var Hid = ViewBag.HospitalID;//门店ID
+    ViewBag.Title = "日常费用收支";
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    bool hasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    bool hasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Addfeiyong);
+
+    //查询员工
+    IList<HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(Hid, 0);
+    PersonList = PersonList.Where(i => i.IsSys != 1).ToList();
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    //费用项目名称
+    var currentPxpenseslist = systemBLL.GetBaseInfoTreeByType("CurrentPxpenses", 1, ViewBag.ParentHospitalID) as IList<BaseinfoEntity>;;
+    var HospitalID = ViewBag.HospitalID;
+}
+<div id="mainContentBody">
+     @Html.Partial("~/Views/CenterManage/_CenterInfoControl.cshtml")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>日常费用收支(<span id="sp">@Model.TotalItemCount</span>)
+                 @if (hasPermission1)
+                 {
+                     <a href="@Url.Content("~/CashManage/DayPay")?Type=Add" class="addbutton">新建</a>
+                 }
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;"
+            id="">
+            <div class="mainContentRight">
+                @using (Ajax.BeginForm("DayPayList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                {
+                    <div class="accountdiv ullist" style="margin-bottom: 0px; width: 100%;">
+                        <ul>
+                            @if (hasPermission)
+                            {   <li>
+                                <label style="font-weight: normal;">
+                                    所属分店：</label>
+                                <select name="HospitalID" id="HospitalID" class="select" >
+                                    <option value="0">请选择分店</option>
+                                    @if (RegionhospitalList.Count > 0)
+                                    {
+                                        foreach (var info in RegionhospitalList)
+                                        {
+                                        <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var info in hospitalList)
+                                        {
+                                        <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </li>
+                            }
+                            <li>
+                                <label style="font-weight: normal;">
+                                    项目类别：</label>
+                                <select class="select" id="Name" name="Name" >
+                                    <option value="">请选择项目类别</option>
+                                    @foreach (var info in currentPxpenseslist.Where(x => x.IsShow == 1))
+                                    {
+                                        <option value="@info.InfoName">@info.InfoName</option>
+                                    }
+                                </select>
+                            </li>
+                            <li>
+                                <label style="font-weight: normal;">
+                                    责任人：</label>
+                                <select class="select" name="UserID" id="s_FollowUpUserID" class="select" >
+                                    <option value="0">选择责任人</option>
+                                    @foreach (var info in PersonList)
+                                    {
+                                        <option value="@info.UserID">@info.UserName</option>
+                                    }
+                                </select>
+                            </li>
+                            <li>
+                                <label style="font-weight: normal;">
+                                    开始时间：</label>
+                                <input type="text" autocomplete="off" class="text-input Wdate input130"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                    name="StartTime" id="StartTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </li>
+                            <li>
+                                <label style="font-weight: normal;">
+                                    至：</label><input type="text" autocomplete="off"  class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                        name="EndTime" id="EndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </li>
+                            <li>
+                                <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                <input type="submit" class="submitbutton2 ymxButtonMT" id="btnsearch" style="float: none;" value="查 询" /></li>
+                            <li>
+                                <input type="submit" class="submitbutton2 ymxButtonMT" id="BtnSave" style="float: none;" value="导出" />
+                            </li>
+                        </ul>
+                        <div style="clear: both;">
+                        </div>
+                    </div>
+                }
+                <div id="articles" class="" style="height: 100%; overflow: auto; margin-top: 5px;
+                    width: 100%;">
+                    @Html.Partial("_DayPayList", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    });
+
+    $(function () {
+        //定义高度
+        var docheight = getDocumentHeight() - $("#header").height() - $("#footer").height() + 15;
+        $("#articles").height(docheight - 150);
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+
+    });
+
+
+    $("#BtnSave").click(function () {
+        if ($("#HospitalID").val() == "" || $("#HospitalID").val() == null) {
+            var HospitalID =@HospitalID;
+        }
+        else { var HospitalID = $("#HospitalID").val(); }
+        //var HospitalID = $("#HospitalID").val();
+        var Name = $("#Name").val();
+        var StartTime = $("#StartTime").val();
+        var EndTime = $("#EndTime").val();
+        var txtShouru = document.querySelector(".txtShouru").innerText;
+        var txtZhichu = document.querySelector(".txtZhichu").innerText;
+        var url = getControllerUrl("CashManage", "DayPayExport") + "?pageNum=1&numPerPage=10000000&Name=" + Name + "&HospitalID=" + HospitalID + "&StartTime=" + StartTime + "&txtShouru=" + txtShouru + "&txtZhichu="+txtZhichu+"&EndTime=" + EndTime;
+        // window.open(url);
+        window.location.href = url;
+    })
+
+    $("#HospitalID").change(function () {
+        var id = $("#HospitalID").val(); //获取所选门店
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "text", //返回json格式的数据
+            url: "/MoneyManage/GetHospltalUser",
+            data: { "HospitalID": id },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $("#s_FollowUpUserID").empty();
+                    $("#s_FollowUpUserID").append(data.toString());
+                }
+            },
+            error: function () {
+                alert("数据请求失败!");
+            }
+        });
+
+    })
+
+
+
+</script>

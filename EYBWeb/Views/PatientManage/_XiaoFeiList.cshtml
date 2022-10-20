@@ -1,0 +1,132 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.PaymentOrderEntity>
+@{
+    ViewBag.Title = "_xiaofeilist";
+    Layout = null;
+    var st = ViewData["st"] == null ? ViewBag.st : ViewData["st"];
+    var et = ViewData["et"] == null ? ViewBag.et : ViewData["et"];
+    //decimal SumPayMoney = 0;
+    //decimal PayMoney = 0;
+    //decimal AllXianJin = 0;
+}
+<form action="" method="post" id="submitform">
+
+<input type="hidden" value="@st" id="st" />
+<input type="hidden" value="@et" id="et" />
+<table class="gridTable" style="width: 100%; border-collapse: collapse;">
+    <thead style="position:absolute;">
+        <tr>
+            <th  style="width: 15%;">
+                会员卡号
+            </th>
+            <th style="width: 20%;">
+                姓名
+            </th>
+            <th @(ViewBag.orderField == "SumPayMoney" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="SumPayMoney" style="width: 20%;">
+                现金消费金额
+            </th>
+            <th @(ViewBag.orderField == "PayMoney" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="PayMoney">
+                实耗业绩
+            </th>
+           <th @(ViewBag.orderField == "AllXianJin" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllXianJin">
+                实操
+            </th>
+            <th  style="display:none;">
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:40px;"></tr>
+        @foreach (var entity in Model)
+        {
+            //SumPayMoney += entity.SumPayMoney;
+            //PayMoney += entity.PayMoney;
+            //AllXianJin += entity.AllXianJin;
+            <tr class="clickclass" name="clickclass">
+                <td>@entity.MemberNo
+                </td>
+                <td><a style="color: Blue;" href="javascript:OpenPatientDetail(@entity.UserID,1)">@entity.UserName</a>
+                </td>
+                <td>@entity.SumPayMoney
+                </td>
+                <td>
+                    @entity.PayMoney
+                </td>
+                <td>
+                    @entity.AllXianJin
+                </td>
+                <td style="display:none;">
+                    <input type="hidden" class="hidval" value="@entity.UserID" />
+                    <a href="#" class="info">详细</a>
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td >合计</td>
+            @*<td>@SumPayMoney</td>
+            <td>@PayMoney</td>
+            <td>@AllXianJin</td>*@
+            <td>@ViewBag.SumPayMoney</td>
+            <td>@ViewBag.PayMoney</td>
+            <td>@ViewBag.AllXianJin</td>
+        </tr>
+    </tfoot>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $("#showmessage").css("display", "none");
+    $("tbody").delegate("tr[name='clickclass']", "click", function () {
+        var st = $("#st").val();
+        var et = $("#et").val();
+        var s_HospitalID = $("#s_HospitalID").val();
+        if ($(this).find(".info").is(":hidden")) {
+            //$(this).next().remove();
+            $(this).find(".info").show();
+            $(this).find(".hid").remove();
+        }
+        else {
+            $(this).find(".info").parent().append("<a href='javascript:;' class='hid' >关闭</a> ")
+            $(this).find(".info").hide(); //影藏这个标签
+            var id = $(this).find(".hidval").val();
+
+            
+            var parent = $(this);
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                url: "/PatientManage/GetuserPaymentinfo",
+                data: { "UserID": id, "st": st.toString(), "et": et.toString(), "s_HospitalID": s_HospitalID },
+                async: false,
+                success: function (data) {
+                    if (data != null) {
+                        parent.after("<tr class='newtr' style='background:#E7F6FF;'><td colspan='6'>" + data + "</td></tr>");
+                    }
+                },
+                error: function () {
+                    alert("数据获取失败！");
+                }
+            });
+        }
+    })
+</script>
+<script type="text/javascript">
+    $(function () {
+
+        window.setTimeout(function () {
+            var gridtablewidth = $(".gridTable").width();
+            var thlen = $(".gridTable thead th").length;
+            let theadWidth = $(".gridTable tbody").width()
+            $(".gridTable thead").css("width", theadWidth + "px")
+            let tdWidth = (theadWidth / (thlen - 1)) + "px";
+            $(".gridTable thead th").css("width", tdWidth);
+            $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+    })
+
+</script>

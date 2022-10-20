@@ -1,0 +1,203 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MaincardBalanceYuejieEntity>
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@{
+    ViewBag.Title = "前台管理";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var brandlist = wareBll.GetBrandListNoPage(ViewBag.ParentHospitalID);//获取品牌列表
+    var caretypelist = wareBll.GetProductTypeNoPage(ViewBag.ParentHospitalID, 1);//获取项目分类列表
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    var HospitalID = ViewBag.HospitalID;
+
+}
+<div id="mainContentBody">
+    @Html.Partial("_CenterControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>门店卡项结余月结(<span id="sp">@ViewBag.Count</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <div class="toolbar" style="padding-top:0;">
+                    <div class="box-wrap">
+                        <div class="l-list">
+                            @using (Ajax.BeginForm("CardBalanceYueJie", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                            {
+                                <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                                <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+                                <div class="accountdiv ullist" style="margin: 0px auto; width: 100%;height:40px;">
+                                    <ul>
+                                        @if (HasPermission)
+                                        {
+                                            <li>
+                                                <label style="font-weight: normal;">
+                                                    所属分店：</label>
+                                                <select name="HospitalID" id="HospitalID" class="select ymxSelect" >
+                                                    <option value="0">请选择分店</option>
+                                                    @if (RegionhospitalList.Count > 0)
+                                                    {
+                                                        foreach (var info in RegionhospitalList)
+                                                        {
+                                                        <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        foreach (var info in hospitalList)
+                                                        {
+                                                        <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                                        }
+                                                    }
+                                                </select>
+                                            </li>
+                                        }
+                                        <li>
+                                            <label style="font-weight: normal;">
+                                                年份：</label>
+                                            <select name="Year" id="Year" >
+                                                @for (int i = DateTime.Now.Year - 5; i < DateTime.Now.Year + 3; i++)
+                                                {
+                                                    <option @(i == DateTime.Now.Year ? "selected=selected" : "")  value="@i">@i</option>
+                                                }
+                                            </select>
+                                        </li>
+                                        <li>
+                                            <label style="font-weight: normal;">
+                                                月：</label>
+                                            <select name="Month" id="Month" >
+                                                <option value="">全部</option>
+                                                <option @(DateTime.Now.Month == 1 ? "selected='selected'" : "") value="01">01</option>
+                                                <option @(DateTime.Now.Month == 2 ? "selected='selected'" : "") value="02">02</option>
+                                                <option @(DateTime.Now.Month == 3 ? "selected='selected'" : "") value="03">03</option>
+                                                <option @(DateTime.Now.Month == 4 ? "selected='selected'" : "") value="04">04</option>
+                                                <option @(DateTime.Now.Month == 5 ? "selected='selected'" : "") value="05">05</option>
+                                                <option @(DateTime.Now.Month == 6 ? "selected='selected'" : "") value="06">06</option>
+                                                <option @(DateTime.Now.Month == 7 ? "selected='selected'" : "") value="07">07</option>
+                                                <option @(DateTime.Now.Month == 8 ? "selected='selected'" : "") value="08">08</option>
+                                                <option @(DateTime.Now.Month == 9 ? "selected='selected'" : "") value="09">09</option>
+                                                <option @(DateTime.Now.Month == 10 ? "selected='selected'" : "") value="10">10</option>
+                                                <option @(DateTime.Now.Month == 11 ? "selected='selected'" : "") value="11">11</option>
+                                                <option @(DateTime.Now.Month == 12 ? "selected='selected'" : "") value="12">12</option>
+                                            </select>
+                                        </li>
+                                        <li>
+                                            <label style="font-weight: normal;">
+                                                结余类型：</label>
+                                            <select name="Type" id="Type" class="select ymxSelect" >
+                                                <option value="0">请选择类型</option>
+                                                <option value="1">储值卡</option>
+                                                <option value="2">项目</option>
+                                            </select>
+                                        </li>
+                                        <li>
+                                            <label style="font-weight: normal;">
+                                                名称：</label>
+                                            <input type="text" id="UserName" name="UserName" class="ymxInput" />
+                                        </li>
+                                        <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                        <input type="submit" class="submitbutton2 ymxButtonMT" id="btnsumbit" style="float: none;" value="查 询" />
+                                        <input type="button" class="submitbutton3 ymxButtonMT" id="btnCaiji" style="float: none;" value="采集月结" />
+                                        @*  <input type="button" class="submitbutton2" id="btnSave" style="float: none;" value="导 出" />*@
+                                    </ul>
+                                </div>
+                    
+                    
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div id="articles" class="" style="overflow: auto; margin-top: 5px; width: 100%;">
+                    @Html.Partial("_CardBalanceYueJie", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+        <div id="showmessage" style="display: none; width: 220px; height: 140px; position: fixed;
+            top: 300px; left: 650px; color: Red; margin: 0 auto; text-align: center;">
+            <img src="../../Content/themes/images/loading.gif" width="100" />
+            <p style="text-align: center; height: 30px; line-height: 30px;">
+                数据采集中，请稍后...</p>
+        </div>
+    </div>
+    <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+</div>
+<script type="text/javascript">
+    $("#Name").keyup(function () {
+        $("#btnsearch").click();
+        //document.getElementById("searchForm").submit();
+    });
+
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        //定义高度
+        var docheight = getDocumentHeight() - $("#header").height() - $("#footer").height() + 15;
+        $("#articles").height(docheight - 150);
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+    //导出
+    $("#btnSave").click(function () {
+        if ($("#HospitalID").val() == "" || $("#HospitalID").val() == null) {
+            var HospitalID =@HospitalID;
+        }
+        else { var HospitalID = $("#HospitalID").val(); }
+        var BrandID = $("#BrandID").val();
+        var ProductName = $("#ProductName").val();
+        var url = getControllerUrl("WarehouseManage", "ExportWarehouseList") + "?pageNum=1&numPerPage=10000&ProductName=" + ProductName + "&HouseID=" + HouseID + "&BrandID=" + BrandID;
+        window.location.href = url;
+
+    });
+
+  //采集月结数据
+    $("#btnCaiji").click(function () {
+        var HospitalID = $("#HospitalID").val();
+        if (HospitalID == "0") {
+            alert("请选择门店"); return;
+        }
+ 
+         var Year = $("#Year").val();
+        var Month = $("#Month").val();
+        if(confirm("确认操作吗？请勿频繁操作"))
+        {
+              $.ajax({
+                cache: true,
+                type: "POST",
+                beforeSend:function(XHR){ $("#showmessage").css("display","block");},
+                url: "@Url.Content("~/PatientManage/AddMaincardBalanceYuejieByHospital?HospitalID=")"+HospitalID+"&Year="+Year+"&Month="+Month,
+                 async:true,
+                error: function (request) {
+                     artdialogfailTwo("操作失败！","","250","100");
+                },
+                success: function (data) {
+                 if(data>0){
+                    alert("操作成功！");
+                    $("#btnsumbit").click()
+                    $("#showmessage").css("display", "none");
+                   }else
+                   {
+                    artdialogfailTwo("操作失败,！","","250","100");
+                   }
+                }
+                });
+        }
+    })
+</script>

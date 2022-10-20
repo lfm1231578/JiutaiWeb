@@ -1,0 +1,108 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.StockOrderEntity>
+@{
+    Layout = null;
+    var allprice = ViewBag.AllPrice;
+    var allnumber = ViewBag.AllNumber;
+    var allchengben = ViewBag.allchengben;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+    width: 100%; margin-left: 5px;" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+        <th>订单序号</th>
+            <th>
+                订单编号
+            </th>
+            <th orderfield="">
+                出库时间
+            </th>
+            <th>
+                顾客姓名
+            </th>
+            <th>
+                产品名称
+            </th>
+            <th orderfield="">
+                出库类别
+            </th>
+            <th>
+                出库数量
+            </th>
+            <th>
+                总计金额
+            </th>
+            <th orderfield="">
+                操作人
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        { 
+            <tr>
+            <td>
+                @entity.DocumentNumber
+            </td>
+                <td>
+                    <a href="@Url.Content("~/WarehouseManage/YufuOrderInfo")?ID=@entity.ID">@entity.OrderNo</a>
+                </td>
+                <td>
+                    @entity.OrderTime.ToString("yyyy-MM-dd")
+                </td>
+                <td>@entity.CustomerName
+                </td>
+                <td>@entity.ProductList
+                </td>
+                <td>@EYB.Web.Code.PageFunction.GetClassName(entity.Class, entity.Type)
+                </td>
+                <td>@entity.AllQuatity
+                </td>
+                <td>@entity.AllMoney
+                </td>
+                <td>@entity.UserName
+                </td>
+                <td>
+                    @if (entity.IsVerify == 2)
+                    {
+                        <label>
+                            已审核</label>
+                    }
+                    else
+                    {
+                        <a href="@Url.Content("~/WarehouseManage/YufuOrderInfo")?ID=@entity.ID">审核</a>
+                    }
+                </td>
+            </tr>
+                    
+        }
+        <tr>
+        <td></td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+                统计:
+            </td>
+            <td>@allnumber
+            </td>
+            <td>@allprice
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>

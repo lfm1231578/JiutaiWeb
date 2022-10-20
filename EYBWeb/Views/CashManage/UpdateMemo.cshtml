@@ -1,0 +1,78 @@
+﻿@using CashManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@{
+    Layout = null;
+    ViewBag.Title = "ReservationNew";
+    var OrderNo = Request["OrderNo"];
+    ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    var entity = cashBll.GetOrderModel(new OrderEntity { OrderNo = OrderNo });
+
+    
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight">
+        <form action="@Url.Content("~/CashManage/UpdateMemoInfo")" class="formular" method="post" name="myform" id="myform">
+        <div class="mainContentRight_bottom">
+            <input type="hidden" name="OrderNo"  value="@OrderNo" />
+            <table class="mainContentRight_bottomnewdepart">
+                <tr>
+                    <td>
+                        备注
+                    </td>
+                    <td>
+                        <textarea style="width: 430px; height: 300px;" name="Name" class=" textarea">@entity.Name</textarea>
+                    </td>
+                </tr>
+                <tr style="height: 80px;">
+                    <td>
+                    </td>
+                    <td>
+                        <input style="margin-left: 0px;" type="button" id="btnsave" class="submitbutton2"
+                            value="保 存" /><input class="submitbutton2" onclick="closeedNorefresh()" type="button"
+                                value="返 回" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </form>
+    </div>
+</body>
+<script type="text/javascript">
+    
+  
+      //保存
+     $("#btnsave").click(function(){
+        
+         
+            $.ajax({
+                cache: true,
+                type: "POST",
+                datatype:"json",
+                url: "@Url.Content("~/CashManage/UpdateMemoInfo")",
+                data: $('#myform').serialize(), // 你的formid
+                async: false,
+                error: function (request) {
+                    alert("哎哟、出错了！");
+                },
+                success: function (data) {
+                 if(data>0){
+                        alert("修改成功！");
+                        closeed();
+                   }
+                }
+            });
+     });
+</script>
+</html>

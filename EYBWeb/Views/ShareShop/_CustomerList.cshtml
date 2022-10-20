@@ -1,0 +1,41 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.CustomerValueCardEntity>
+    @{
+        Layout = null;
+        bool HasPermissionPhone = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_查看手机号);//设置隐藏顾客的也是用这个权限
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="height: auto; border-collapse: collapse; margin: 0px;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>选择</th>
+                    <th>
+                        客户姓名
+                    </th>
+                    <th>
+                        微信昵称
+                    </th>
+                    <th>
+                        手机号码
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var entity in Model)
+                {
+                    var listValue = entity.CustomerUserId + "|" + entity.UserName+"|"+entity.Id+"|"+entity.HospitalId+"|"+entity.ParentHospitalId+"|"+entity.Mobile+"|"+entity.WxNickname+"|"+entity.OpenId+"|"+entity.Remarks;
+                    <tr class="ableclick">
+                        <td><input name="radioList" type="radio" code="@entity.CustomerUserId" value="@listValue" /></td>
+                        <td>@entity.UserName</td>
+                        <td>@entity.WxNickname</td>
+                        <td>@entity.Mobile</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>

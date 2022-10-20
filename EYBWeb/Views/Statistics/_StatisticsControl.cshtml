@@ -1,0 +1,98 @@
+﻿@{
+    ViewBag.Title = "_DoctorControl";
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsPatient);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsHospitalUser);
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsBusinesChart);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsBusiness);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsCaiwu);
+
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsCheckOrderList);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsProduct);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_StatisticsPatientOrder);
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <a style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+        </a><span>运营决策分析</span>
+    </div>
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li   onclick='CheckRight(this,"@result1")'  redirect="@Url.Content("~/Statistics/StatisticsPatient")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">顾客分析报表
+                        <label>
+                        </label>
+                    </a></li>
+            }
+            @if (result2)
+            {
+                <li  onclick='CheckRight(this,"@result2")'  redirect="@Url.Content("~/Statistics/StatisticsHospitalUser")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">员工分析报表
+                        <label>
+                        </label>
+                    </a></li>
+            }
+            @if (result3)
+            {
+                <li   onclick='CheckRight(this,"@result3")' redirect="@Url.Content("~/Statistics/StatisticsProduct")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">品项分析报表
+                        <label>
+                        </label>
+                    </a></li>
+            }
+            @if (result4)
+            {
+                <li   onclick='CheckRight(this,"@result4")'  redirect="@Url.Content("~/Statistics/StatisticsBusinesChart")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">营业统计图表
+                        <label>
+                        </label>
+                    </a></li>
+            }
+            @if (result5)
+            {
+                <li   onclick='CheckRight(this,"@result5")'  redirect="@Url.Content("~/Statistics/StatisticsBusiness")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">营业统计数据
+                        <label>
+                        </label>
+                    </a></li>
+            }
+            @if (result6)
+            {
+                <li   onclick='CheckRight(this,"@result6")'  redirect="@Url.Content("~/Statistics/StatisticsCaiwu")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">财务分析表
+                        <label>
+                        </label>
+                    </a></li>
+            }
+            @if (result7)
+            {
+                <li   onclick='CheckRight(this,"@result7")'  redirect="@Url.Content("~/Statistics/StatisticsCheckOrderList")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">结账收银
+                        <label>
+                        </label>
+                    </a></li>
+            }
+            @if (result8)
+            {
+                <li   onclick='CheckRight(this,"@result8")'  redirect="@Url.Content("~/Statistics/StatisticsPatientOrder")"  >
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -173px no-repeat;">
+                    </span><a style="cursor: pointer; ">会员排行表
+                        <label>
+                        </label>
+                    </a></li>
+            }
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+        //定义权限列表，主要为了显示默认有权限的页面
+        var TheArray = [ ["@result3","@Url.Content("~/MoneyManage/PerformanceAudit")"],["@result1", "@Url.Content("~/MoneyManage/PerformanceDetails")"],["@result2", "@Url.Content("~/MoneyManage/PerformanceSummary")"],["@result4","@Url.Content("~/MoneyManage/ItemDetailsConsumption")"],["@result5","@Url.Content("~/MoneyManage/PerformanceReports")"],["@result6","@Url.Content("~/CenterManage/SalesDetail")"],["@result7","@Url.Content("~/CenterManage/Salestatistics")"],["@result8","@Url.Content("~/CenterManage/PassengerTraffic")"]];
+</script>

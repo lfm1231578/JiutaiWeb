@@ -1,0 +1,204 @@
+﻿@using DepartmentManage.Factory.IBLL;
+@using HS.SupportComponents;
+@using EYB.ServiceEntity.DepartmentEntity;
+@{
+    var type = Request["Type"];
+    var id = Request["ID"];
+    DepartmentEntity entity = new DepartmentEntity();
+    string[] ksuser = new string[] { };
+    string[] hsuser = new string[] { };
+    IDepartmentManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IDepartmentManageBLL>();
+    //
+    if (!String.IsNullOrEmpty(id))
+    {
+        entity = systemBLL.GetDepartmentEntityByID(ConvertValueHelper.ConvertIntValue(id));
+        //部门美容师
+        ksuser = entity.DepartUserID.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+    }
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> list = systemBLL.GetUserListByHospitalID(ViewBag.HospitalID);
+    ViewBag.Title = "新建部门";
+  
+
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            @(type == "add" ? "新建部门" : "部门信息修改")
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight_bottomContent">
+                <form id="myform" action="@Url.Content("~/DepartmentManage/AddDepartment?Type=")@type" class="formular" method="post"  >
+                <input type="hidden" name="Type" value="@type" />
+                <table class="mainContentRight_bottomnewdepart ">
+                    <tr>
+                        <td style="width: 110px;">
+                            <span class="red">*&nbsp;</span>部门名称
+                        </td>
+                        <td>
+                            <input type="hidden" value="@id" name="ID" />
+                            <input type="text" name="Name" id="txtName" value="@entity.Name" class="validate[required] text-input" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            部门房间号
+                        </td>
+                        <td>
+                            <input type="text" name="RoomNo" id="txtRoomNo"  value="@entity.RoomNo" class=" text-input" />
+                        </td>
+                    </tr>
+                    
+                    
+                    <tr>
+                        <td>
+                            部门员工
+                        </td>
+                        <td id="tdDepartmentUserID">
+                            <div id="selectdepart" style="min-width: 120px; float: left;">
+                                @if (!String.IsNullOrEmpty(id))
+                                {
+                                    foreach (var depart in ksuser)
+                                    {
+                                    <div class="selectdiv" style="min-width: 120px; float: left;">
+                                        <select name="DepartUserID" class="select">
+                                            @foreach (var info in list)
+                                            {
+                                                <option @(info.UserID == int.Parse(depart) ? "selected=selected" : "") value="@info.UserID">@info.UserName</option>
+                                            }
+                                        </select>
+                                        <a href="javascript:;" class="deletedepart" style="color:Red;"></a>
+                                    </div>
+                                    }
+                                }
+                                else
+                                { 
+                                    <div class="selectdiv" style="min-width: 120px; float: left;">
+                                        <select name="DepartUserID" class="select">
+                                            @foreach (var info in list)
+                                            {
+                                                <option  value="@info.UserID">@info.UserName</option>
+                                            }
+                                        </select>
+                                        <a href="javascript:;" class="deletedepart" style="color:Red;"></a>
+                                    </div>
+                                }
+                            </div>
+                            <input type="button" id="btnAddDepartUserID" class="addsame" value="添加" />
+                            @*<input type="button" id="btnDeleteDepartUserID" class="addsame" value="删除" />*@
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            部门电话
+                        </td>
+                        <td>
+                            <input type="text" name="Phone"  value="@entity.Phone" class="validate[custom[phone]] text-input" />
+                        </td>
+                    </tr>
+                   
+                    <tr>
+                        <td>
+                            部门介绍
+                        </td>
+                        <td>
+                            <textarea rows="7" name="Memo" cols="60" class=" textarea">@entity.Memo</textarea>
+                        </td>
+                    </tr>
+                  
+                    <tr>
+                        <td>
+                        </td>
+                        <td class="clearfix">
+                            <input type="button" id="btnsave" class="submitbutton2" value="保 存" /><input type="reset" onclick="history.go(-1)"
+                                class="submitbutton2" value="返 回" />
+                        </td>
+                    </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="departmentpeople" style="display:none;">
+    <div class="selectdiv" style="min-width: 120px; float: left;">
+        <select name="DepartUserID" class="select">
+            @foreach (var info in list)
+            {
+                <option  value="@info.UserID">@info.UserName</option>
+            }
+        </select>
+        <a href="javascript:;" class="deletedepart" style="color:Red;"></a>
+    </div>
+</div>
+@*<div id="departmentuserpeople" style="display:none;">
+    <div class="selectdiv" style="min-width: 120px; float: left;">
+        <select name="HSUserID" class="select">
+            @foreach (var info in hushilist)
+            {
+                <option  value="@info.UserID">@info.UserName</option>
+            }
+        </select>
+        <a href="javascript:;" class="deletedepart" style="color:red;"></a>
+    </div>
+</div>*@
+<script type="text/javascript">
+   
+
+    jQuery(document).ready(function () {
+
+        jQuery("#myform").validationEngine('attach', {
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentRight_bottom",
+            promptPosition: "bottomLeft"
+        });
+
+        //添加部门美容师
+        $("#btnAddDepartUserID").click(function () {
+            $("#selectdepart").append($("#departmentpeople").html());
+        })
+
+
+        //添加员工
+        $("#btnAddHSUserID").click(function () {
+            $("#selectdepartuser").append($("#departmentuserpeople").html());
+        })
+        $("#myform").delegate(".deletedepart", 'click', function () {
+
+            $(this).parent().remove();
+        })
+  
+
+         //保存
+     $("#btnsave").click(function(){
+         if($("#txtName").val()=="" || $("#txtRoomNo").val()=="" )
+         {
+            $('#myform').submit();
+            artdialogfail("部门名称不能为空！","","250");
+            return;
+         }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/DepartmentManage/AddDepartment?Type=")@type",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败,员工不能相同！","","250","100");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("保存成功！","@Url.Content("~/DepartmentManage/DepartmentPage")")
+               }else
+               {
+                artdialogfailTwo("操作失败,员工不能相同！","","250","100");
+               }
+            }
+        });
+     });
+    });
+  
+</script>

@@ -1,0 +1,184 @@
+﻿@using EYB.ServiceEntity.SystemEntity;
+@using SystemManage.Factory.IBLL;
+@{
+    ISystemManageBLL sysbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    var type = Request["Type"];
+    var id = Request["ID"];
+    ViewBag.Title = "基础信息处理";
+
+    IList<BaseinfoEntity> Baselist = new List<BaseinfoEntity>();
+    Baselist = sysbll.GetBaseInfoType();//获取分类
+
+    BaseinfoEntity entity = new BaseinfoEntity();
+    if (Convert.ToInt32(id) > 0 && type.ToUpper() == "EDIT")
+    {
+        entity = sysbll.GetBaseinfoEntity(Convert.ToInt32(id));//获取当前ID的实体
+    }
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots"></label>
+            @(type == "add" ? "新建基础信息" : (type == "edit" ? "编辑基础信息" : "基础信息详情"))
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <form id="myform" action="@Url.Content("~/BaseInfo/BaseinfoEdit")" class="clearfix" method="post"  >
+                <table class="mainContentRight_table ">
+                    <tr style="height:30px;">
+                        <td style="width:100px;">
+                            所属分类
+                        </td>
+                        <td>
+                            <input type="hidden" name="parentID" id="txtparentID" />
+                            <input type="hidden" name="IsCash" id="txtIsCash" />
+                            <select name="InfoType" id="txtInfoType">
+                                <option text="" value="">请选择分类</option>
+                                @foreach (BaseinfoEntity baseinfo in Baselist)
+                                {
+                                    if ((baseinfo.InfoType == "会员级别" && baseinfo.InfoCode == "CustomerType") ||(baseinfo.InfoType == "费用项目名称" && baseinfo.InfoCode == "Category")||(baseinfo.InfoCode == "MemberType" && baseinfo.InfoType == "费用项目名称") || (baseinfo.InfoCode == "ProductSpecification" && baseinfo.InfoType == "费用项目名称") )
+                                    {
+
+                                    }
+
+                                    else
+                                    {
+                                        if (baseinfo.InfoCode != null)
+                                        {
+
+
+
+                                            if (!(baseinfo.InfoType == "尊贵级别" || baseinfo.InfoType == "回访主题类别" || baseinfo.InfoType == "出入库操作类型" || baseinfo.InfoType == "积分操作类型") && !string.IsNullOrEmpty(baseinfo.InfoType))
+                                            {
+                                        <option @(entity.InfoCode == baseinfo.InfoCode ? "selected=selected" : "") text="@baseinfo.InfoCode" code="0" mode="@baseinfo.InfoType" value="@baseinfo.InfoType">@baseinfo.InfoType</option>
+                                            }
+                                            if (baseinfo.InfoCode == "Payment")
+                                            {
+                                                var list = sysbll.GetBaseInfoTreeByParentID(0, "Payment", 1, ViewBag.ParentHospitalID);
+                                                foreach (BaseinfoEntity baseinfo1 in list)
+                                                {
+
+                                            <option @(entity.parentID == baseinfo1.ID ? "selected=selected" : "") text="@baseinfo1.InfoCode" mode="@baseinfo1.InfoName" code="@baseinfo1.ID" value="@baseinfo1.InfoType">&nbsp;&nbsp;&nbsp;&nbsp; @baseinfo1.InfoName</option>
+
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            </select>
+                        </td>
+                    </tr>
+                    <tr style="display: none;">
+                        <td>
+                            分类类型
+                        </td>
+                        <td>
+                            <input type="text" readonly="readonly" name="InfoCode" id="txtInfoCode" value="@entity.InfoCode" />
+                        </td>
+                    </tr>
+                    <tr  style="height:30px;">
+                        <td>
+                            分类名称
+                        </td>
+                        <td>
+                            <input type="text" name="InfoName" id="txtInfoName" value="@entity.InfoName" />
+                            <input type="hidden" name="ID" value="@entity.ID" />
+                        </td>
+                    </tr>
+                    <tr  style="height:30px;">
+                        <td>
+                            排序
+                        </td>
+                        <td>
+                            <input type="text" name="SortID" value="@entity.SortID" />
+                        </td>
+                    </tr>
+                    <tr  style="height:30px;">
+                        <td>
+                            是否显示
+                        </td>
+                        <td>
+                            <input type="checkbox" name="IsShow" checked="checked" value="1" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td class="clearfix">
+                            @if (type == "detail")
+                            {
+
+                            }
+                            else
+                            {
+                                <input type="button" id="btnsave" class="submitbutton2" value="保 存" />
+                            }
+                            <input type="reset" onclick="history.go(-1)" class="submitbutton2" value="返 回" />
+                        </td>
+                    </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    
+    //提交操作
+    $("#btnsave").click(function(){
+         if($("#txtInfoName").val()=="")
+         {
+           // $('#myform').submit();
+            artdialogfail("分类名称不能为空！","","250");
+            return;
+         }
+        $("#txtparentID").val($("#txtInfoType").find("option:selected").attr("code"));
+         var mode= $("#txtInfoType").find("option:selected").attr("mode");
+        if(mode=="支付方式")
+        {
+             alert("请选择现金或券类！");return;
+        }
+        if(mode=="现金")
+        {
+            $("#txtIsCash").val("1");
+        }else{
+            $("#txtIsCash").val("2");
+        }
+
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/BaseinfoEdit?Type=")@type",
+            async: false,
+            data: $('#myform').serialize(), // 你的formid
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("保存成功！","@Url.Content("~/BaseInfo/BasicInformation")");
+               }else
+               {
+                artdialogfailTwo("操作失败！","","250","100");
+               }
+            }
+        });
+     });
+
+     $(function(){
+        $("#txtInfoType").change( function(){
+    $("#txtparentID").val($("#txtInfoType").find("option:selected").attr("code"));
+            var selected= $(this).find('option:selected').attr('selected', 'selected');
+            var textvalue=selected.attr("text");
+
+            $("#txtInfoCode").val(textvalue);
+            console.log( $("#txtInfoCode"))
+        } )
+     
+     })
+
+
+
+</script>

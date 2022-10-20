@@ -1,0 +1,176 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+    @{
+        ViewBag.Title = "_Patientlist";
+        Layout = null;
+    }<div id="showmessage" style=" display:none;width:220px; height:140px; position:fixed; top:300px; left:650px; color:Red;  margin:0 auto; text-align:center;">
+        <img src="../../Content/themes/images/loading.gif" width="100" />
+        <p style=" text-align:center; height:30px;line-height:30px;">
+            正在努力查询中，请稍后...
+        </p>
+    </div>
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead style="position:absolute;">
+                <tr>
+                    <th>
+                        日期
+                    </th>
+                    <th>
+                        顾客
+                    </th>
+                    <th>所属门店</th>
+                    <th>
+                        单据编号
+                    </th>
+                    <th>
+                        订单类型
+                    </th>
+                    <th>
+                        品牌
+                    </th>
+                    <th>
+                        分类
+                    </th>
+                    <th>
+                        项目名称
+                    </th>
+
+                    <th>
+                        销售单价
+                    </th>
+                    <th>优惠单价</th>
+                    <th>
+                        数量
+                    </th>
+                    <th>
+                        总额
+                    </th>
+                    <th>
+                        现金
+                    </th>
+                    <th>
+                        券类
+                    </th>
+                    <th>
+                        划卡
+                    </th>
+                    <th>
+                        储值卡划扣
+                    </th>
+                    <th>
+                        赠卡划扣
+                    </th>
+                    <th>
+                        欠款
+                    </th>
+                    @{
+                        if (ViewBag.HospitalID == 2 || ViewBag.HospitalID == 1017)
+                        {
+                            <th>
+                                积分消费
+                            </th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:36px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        @Html.Raw(entity.ids)
+                    </tr>
+                }
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 18))
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="9">
+                        本页用户数量:@ViewBag.ct
+                    </td>
+                    <td>
+                        当页合计:
+                    </td>
+                    <td>
+                        @ViewBag.sl
+                    </td>
+                    <td>
+                        @ViewBag.ze
+                    </td>
+                    <td>
+                        @ViewBag.xj
+                    </td>
+                    <td>
+                        @ViewBag.ylk
+                    </td>
+                    <td>@ViewBag.hk</td>
+                    <td>
+                        @ViewBag.czk
+                    </td>
+                    <td>
+                        @ViewBag.zk
+                    </td>
+                    <td>
+                        @ViewBag.kq
+                    </td>
+                    @{
+                        if (ViewBag.HospitalID == 2|| ViewBag.HospitalID == 1017)
+                        {
+                            <td>@ViewBag.Jifen</td>
+                        }
+                    }
+                </tr>
+                <tr style="display:none;">
+                    <td colspan="9">
+                    </td>
+                    <td>
+                        总合计:
+                    </td>
+                    <td>
+                    </td>
+                    <td>
+                        @ViewBag.Price
+                    </td>
+                    <td>
+                        @ViewBag.XianJin
+                    </td>
+                    <td>
+                        @ViewBag.ShuaKa
+                    </td>
+                    <td>@ViewBag.Huachika</td>
+                    <td>
+                        @ViewBag.DiscountAmount
+                    </td>
+                    <td>
+                        @ViewBag.SendAmount
+                    </td>
+                    <td>
+                        @ViewBag.NeedAllPrice
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <div style="height:120px;"></div>
+    <script type="text/javascript">
+         $(function () {
+        $("#sp").text('@ViewBag.AllCount');
+        //计算head高度，宽度 计算articles高度
+
+    })
+        $(function () {
+
+            //计算head高度，宽度 计算articles高度
+            let uListHeight = $(".ullist").height();
+
+            $(".gridTable thead").css("top", uListHeight + "px");
+
+
+        })
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

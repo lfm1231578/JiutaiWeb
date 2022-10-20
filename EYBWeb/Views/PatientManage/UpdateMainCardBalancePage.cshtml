@@ -1,0 +1,116 @@
+﻿@{
+    Layout = null;
+    var ID = Request["ID"];
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    var entity = cashBll.GetMainCardBalanceModel(new EYB.ServiceEntity.CashEntity.MainCardBalanceEntity { ID = Convert.ToInt32(ID) });
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+ <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    </head>
+<body style="background: #fff;">
+    <div style="width: 100%; float: left;">
+        <div class="accountdiv">
+            卡项名称：<label style="font-size: 20px; color: Red;">@entity.Name</label></div>
+       
+            <table class="mainContentRight_bottomnewdepart1">
+                <tr style="height:40px;">
+                    <td  style="text-align:right;">
+                        余额：
+                    </td>
+                    <td>
+                        <input type="hidden" id="hidprice" value="@entity.Price" />
+                        <input type="text" id="txtmoney" class="text-input " onkeyup="CheckInputIntFloat(this)"  value="@entity.Price" style="height: 30px; width: 200px;
+                            color: Blue; font-size: 20px;" />
+                    </td>
+                </tr>
+                <tr style="height:40px; ">
+                    <td  style="text-align:right;">
+                        有效期：
+                    </td>
+                    <td>
+                        <input type="text" id="txtexpiretime"   class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"  value="@entity.ExpireTime.ToString("yyyy-MM-dd")"  style="height: 30px; width: 200px;
+                            color: Blue; font-size: 20px;" />
+                    </td>
+                </tr>
+                <tr style="height:40px; ">
+                    <td style="text-align:right;">
+                        划扣折率：
+                    </td>
+                    <td>
+                        <input type="text" id="txthuakou"  onkeyup="CheckInputIntFloat0and1(this)" class="text-input " value="@entity.HuaKouZheLv"  style="height: 30px; width: 200px;
+                            color: Blue; font-size: 20px;" />
+                    </td>
+                </tr>
+                 <tr style="height:40px;">
+                    <td>
+                       
+                    </td>
+                    <td>
+                        <input type="button" class="submitbutton2" value="保 存" onclick="CheckCard()" />
+            <input class="submitbutton2" type="button" onclick="closeedNorefresh()" value="取 消" />
+                    </td>
+                </tr>
+            </table>
+       
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    function CheckCard() {
+        var txtmoney = $("#txtmoney").val();
+        var txtexpiretime = $("#txtexpiretime").val();
+        var txthuakou = $("#txthuakou").val();
+        var hidprice=$("#hidprice").val();//原来的余额
+//        if( parseFloat(hidprice)<parseFloat(txtmoney))
+//        {
+//            alert("更改余额不能比以前的余额大!");
+//            return false;
+//        }
+        $.ajax({
+            type: "POST",
+            url: "/PatientManage/UpdateMainCardBalanceMoney",
+            data: { "Price": txtmoney,"ExpireTime":txtexpiretime,"HuaKouZheLv":txthuakou, "ID": @ID,"AddTime":"@entity.AddTime" },
+            async: false,
+            error: function (request) {
+                alert("操作失败！");
+            },
+            success: function (data) {
+                if (data > 0) {
+                       art.dialog.open.api.close();
+                 var win = art.dialog.open.origin; //来源页面
+                // 如果父页面重载或者关闭其子对话框全部会关闭
+                win.InFoDate(data + "|0");
+                } else {
+                    alert("操作失败！");
+                }
+            }
+        });
+    }
+    //只能输入浮点或整数
+function CheckInputIntFloat0and1(oInput) {
+    if ('' != oInput.value.replace(/\d{1,}\.{0,1}\d{0,}/, '')) {
+        oInput.value = oInput.value.match(/\d{1,}\.{0,1}\d{0,}/) == null ? '' : oInput.value.match(/\d{1,}\.{0,1}\d{0,}/);
+    }
+    if (oInput.value > 1 || oInput.value < 0) {
+        oInput.value = 1;
+    }
+}function CheckInputIntFloat(oInput) {
+    if ('' != oInput.value.replace(/^[-]?\d{1,}\.{0,1}\d{0,}/, '')) {
+        oInput.value = oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/) == null ? '' : oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/);
+    }
+}
+</script>

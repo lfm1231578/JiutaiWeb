@@ -1,0 +1,145 @@
+﻿@using EYB.ServiceEntity.BaseInfo;
+@using BaseinfoManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@using PersonnelManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.ActivityUserQrCodeEntity>
+@{
+
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var orderName = ViewBag.orderName;
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    //获取区域门店
+    var regionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    bool hasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+}
+<div id="mainContentBody">
+    @Html.Partial("_ActivityControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>员工活动(<span id="sp">@Model.TotalItemCount</span>) &nbsp;<a href="javascript:OpenDailogDetail('ADD','');"
+                 style="width:150px;"   class="addbutton"> 新增员工二维码</a>
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;"
+            id="">
+            <div class="mainContentRight">
+                @using (Ajax.BeginForm("ActivityYuangong", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                {
+                    <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                    <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+
+                    <div class="accountdiv ullist" style="margin-bottom: 0px; width: 98%;">
+                        <ul>
+                            @if (hasPermission)
+                            {
+                                <li>
+                                    <label style="font-weight: normal;">
+                                        所属分店：</label>
+                                    <select name="HospitalId" id="HospitalID" class="" style="width: 100px;">
+                                        <option value="0">请选择分店</option>
+                                        @if (regionhospitalList.Count > 0)
+                                        {
+                                            foreach (var info in regionhospitalList)
+                                            {
+                                            <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            foreach (var info in hospitalList)
+                                            {
+                                            <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                            }
+                                        }
+                                    </select>
+                                </li>
+                            }
+                            <li>
+                                <label style="font-weight: normal;">
+                                    员工姓名：</label>
+                                <input type="text" class="inputtext"   name="UserName" id="txtUserName" value="" style="width: 140px;" />
+                            </li>
+                            <li>
+                                <label style="font-weight: normal;">
+                                    状态：</label>
+                                <select name="State" id="State" class="select" style="">
+                                    <option value="0">状态</option>
+                                    <option value="1" selected="selected">启用</option>
+                                    <option value="2">已删除</option>
+                                </select>
+                            </li>
+                            <li>
+                                <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                            </li>
+                        </ul>
+                        <div style="clear: both;">
+                        </div>
+                    </div>
+                }
+                <div id="articles" class="" style="height: 100%; overflow: hidden; margin-top: 5px;
+                    width: 100%;">
+                    @Html.Partial("_ActivityYuangong", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#btnsearch").click(function () {
+        $("#txtTimehid").val(Math.random());
+    })
+  function OpenDailogDetail(type, obj) {
+        var title = "";
+        if (type == "ADD") {
+            title = "绑定积客活动";
+        } else {
+            title = "绑定积客活动";
+        }
+        art.dialog.open("/Activity/AddActivityYuangong?Type=" + type + "&ID=" + obj, { title: title, width: 800, height: 600 });
+    }
+    //打开链接
+    function OpenDailogLink(UserId, Id,type) {
+
+        if (type == 1) {
+            title = "打开链接";
+        } else {
+            title = "打开二维码";
+        }
+        art.dialog.open("/Activity/ActivityYuangongLink?Type=" + type + "&ID=" + Id+ "&UserId=" + UserId, { title: title, width: 500, height: 380 });
+    }
+     function DeleteData(obj,isshow) {
+        var id = obj;
+         if(confirm("确认操作吗？"))
+        {
+          $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/Activity/DeleteActivityYuangong?ID=")"+id+"&State="+isshow,
+            async: false,
+            error: function (request) {
+
+                 artdialogfailTwo("操作失败！","","250","100");
+            },
+            success: function (data) {
+             if(data>0){
+                alert("操作成功！");
+               $("#btnsumbit").click();
+               }else
+               {
+                artdialogfailTwo("操作失败,！","","250","100");
+               }
+            }
+        });
+        }
+
+    }
+
+
+
+</script>

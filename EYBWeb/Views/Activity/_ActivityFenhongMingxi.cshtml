@@ -1,0 +1,113 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.BonusRecordsEntity>
+    @{
+        Layout = null;
+        int countNum = 0;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+margin: 0px; width: 100%;" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>序号</th>
+                    <th>
+                        单号
+                    </th>
+                    <th>
+                        营业额
+                    </th>
+                    <th>
+                        分红占比
+                    </th>
+                    <th>
+                        整单分红(元)
+                    </th>
+                    <th>
+                        员工姓名
+                    </th>
+                    <th>
+                        关联分红占比(%）
+                    </th>
+                    <th>
+                        分红金额(元)
+                    </th>
+                    <th>
+                        分红类型
+                    </th>
+                    <th>
+                        关联员工
+                    </th>
+                    <th>
+                        分红时间
+                    </th>
+                    <th>
+                        分红门店
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    countNum = countNum + 1;
+                    //var listValue = entity.Id + "|" + entity.OrderNo + "|" + entity.Revenue + "|" + entity.RewardType + "|" + entity.OrderBonus + "|" + entity.UserName + "|" + entity.ISKit + "$";
+                    <tr class="ableclick">
+                        <td>
+                            @countNum
+                        </td>
+                        <td>
+                            @entity.OrderNo
+                            @(entity.IsRefund ==1 ? "（退单）":"")
+                        </td>
+                        <td>
+                            @entity.Revenue
+                        </td>
+                        <td>
+                            @entity.Reward
+                            @if (entity.RewardType == 1)
+                            {<label>%</label> }
+                            @if (entity.RewardType == 2)
+                            {<label>元</label> }
+                        </td>
+
+                        <td>
+                            @entity.OrderBonus
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @(entity.Percentage + "%")
+                        </td>
+                        <td>
+                            @entity.Bonus
+                        </td>
+                        <td>
+                            @if (@entity.BonusType == 1)
+                            {<label>直接分红</label> }
+                            @if (@entity.BonusType == 2)
+                            {<label>关联分红</label> }
+
+                        </td>
+                        <td>
+                            @entity.ShareUserName   @*关联员工*@
+                        </td>
+                        <td>
+                            @entity.CreateTime
+                        </td>
+                        <td>
+                            @entity.HospitalName
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>

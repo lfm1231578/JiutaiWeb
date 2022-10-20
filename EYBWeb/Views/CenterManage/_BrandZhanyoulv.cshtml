@@ -1,0 +1,116 @@
+﻿@using Webdiyer.WebControls.Mvc;
+
+@{
+
+    Layout = null;
+    int i = 0;
+    var sum = ViewBag.ordersum;
+}
+<form action="" method="post" id="submitform">
+    <table class="gridTable" style="border-collapse: collapse;">
+        <thead style="position:absolute;width:98%;">
+            <tr>
+                <th>
+                    品牌
+                </th>
+                <th>
+                    营业额
+                </th>
+                <th>
+                    占比
+                </th>
+                <th>
+                    排名
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="height:40px;"></tr>
+            @foreach (var entity in Model)
+            {
+                i = i + 1;
+                <tr>
+                    <td>
+                        @entity.Name
+                    </td>
+                    <td>
+                        @entity.Price
+                    </td>
+                    <td>
+                        @*@(Math.Round(entity.ActurePrice, 2, MidpointRounding.AwayFromZero) * 100 + "%")*@
+
+                        @((Convert.ToDouble(entity.Price) <= 0 ? 0.00 : (Convert.ToDouble(entity.Price) * 100 / Convert.ToDouble(sum))).ToString("0.00") + "%")
+                    </td>
+                    <td>
+                        @i
+                    </td>
+
+                </tr>
+
+            }
+            @*       @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 10))*@
+        </tbody>
+    </table>
+
+</form>
+<div style="height:120px;"></div>
+<script type="text/javascript">
+    //打开普及率详情
+    function OpenPopularityDetail(ProdcuitID, Type, HospitalID) {
+        var s_StareTime = $("#s_StareTime").val();
+        var s_Endtime = $("#s_Endtime").val();
+        art.dialog.open("/CenterManage/PopularityRateDetail?ProdcuitID=" + ProdcuitID + "&s_ID=" + Type + "&s_StareTime=" + s_StareTime + "&s_Endtime=" + s_Endtime + "&s_HospitalID=" + HospitalID, { title: "普及率详情", width: 670, height: 500 });
+    }
+
+    var postData = {
+    "username": "heyics",
+    "password": "heyisoftware"
+    };
+     
+     
+    var xhr = new XMLHttpRequest();
+     
+    xhr.open("POST", "http://hy.heyisoftware.net/CashManage/GetAllBalance?UserID=3", true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function(){
+        
+        var XMLHttpReq = xhr;
+        /**
+            XMLHttpReq.readyState
+         0: 请求未初始化
+         1: 服务器连接已建立
+         2: 请求已接收
+         3: 请求处理中
+         4: 请求已完成，且响应已就绪
+        **/
+        if (XMLHttpReq.readyState == 4) {
+            if (XMLHttpReq.status == 200) {                
+                var data = XMLHttpReq.responseText;
+                alert(data)
+                console.log(data);
+                var json = JSON.parse(JSON.parse(data));
+            }else if(XMLHttpReq.status == 100){
+            
+            }else if(XMLHttpReq.status == 300){
+            
+            }else if(XMLHttpReq.status == 400){
+            
+            }else if(XMLHttpReq.status == 500){
+            
+            }else if(XMLHttpReq.status == 0){
+                /** 0不是http协议的状态,关于XMLHttpReq.status的说明:
+                1、If the state is UNSENT or OPENED, return 0.（如果状态是UNSENT或者OPENED，返回0）
+                2、If the error flag is set, return 0.（如果错误标签被设置，返回0）
+                3、Return the HTTP status code.（返回HTTP状态码）
+                第一种情况,例如:url请求的是本地文件,状态会是0
+                第二种情况经常出现在跨域请求中,比如url不是本身网站IP或域名,例如请求www.baidu.com时
+                第三种,正常请求本站http协议信息时,正常返回http协议状态值
+                **/
+            }
+            
+        }
+    };
+    xhr.send(JSON.stringify(postData));
+</script>
+<script src="/Scripts/ymx/commonTable.js"></script>

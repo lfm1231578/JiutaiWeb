@@ -1,0 +1,283 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+    @{
+        ViewBag.Title = "_XiaoFeiList";
+        Layout = null;
+        decimal Sum_AllPrice = 0;
+        decimal Sum_Price = 0;
+        decimal ConsumePrice = 0;
+        int Sum_AllTimes = 0;
+        int Sum_Tiems = 0;
+        decimal shengyu = 0;
+        decimal xiaohao = 0;
+        decimal allprice = 0;
+
+    }
+    <form action="" method="post" id="searchForm">
+        <table class="gridTable" style="width: 100%; border-collapse: collapse;">
+            <thead style="position:absolute;">
+                <tr>
+                    <th @(ViewBag.orderField == "MemberNo" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MemberNo">
+                        会员卡号
+                    </th>
+                    <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                        姓名
+                    </th>
+                    <th @(ViewBag.orderField == "Name" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Name">
+                        卡名称
+                    </th>
+                    <th>
+                        过期时间
+                    </th>
+                    <th @(ViewBag.orderField == "Sum_AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_AllPrice">
+                        总共金额
+                    </th>
+                    <th @(ViewBag.orderField == "Sum_Price" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_Price">
+                        余额或消耗单价
+                    </th>
+                    <th>
+                        剩余消耗金额
+                    </th>
+                    <th @(ViewBag.orderField == "Sum_AllTimes" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_AllTimes">
+                        总共次数
+                    </th>
+                    <th @(ViewBag.orderField == "Sum_Tiems" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_Tiems">
+                        剩余次数
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="gridTable1">
+                <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr class="clickclass">
+                        <td code="@entity.HospitalID">
+                            @entity.MemberNo
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @(entity.Type == 1 ? entity.Name : (entity.ProjectName + "(" + entity.Name + ")"))
+                        </td>
+                        <td>
+                            @entity.ExpireTime
+                        </td>
+                        <td>
+
+                            @if (entity.HospitalID == 449 && entity.UserName == "妞妞" && entity.Name == "500活动卡+")
+                            {
+                                allprice = 1000;
+                            }
+                            else
+                            {
+                                allprice = entity.Sum_AllPrice;
+                            }
+
+                            @allprice.ToString("#0.00")
+                        </td>
+                        <td>
+                            @*@((entity.Sum_AllTimes == 0 ? entity.Sum_Price : entity.Sum_AllPrice / entity.Sum_AllTimes * entity.Sum_Tiems).ToString("#0.00"))*@
+                            @*@if (entity.Sum_AllTimes == 0)
+                                {
+                                    shengyu = entity.Sum_Price;
+                                }
+                                else
+                                {
+                                    shengyu = (entity.Sum_AllPrice / entity.Sum_AllTimes * entity.Sum_Tiems);
+                                }*@
+
+                            @*@((shengyu = entity.Sum_Price).ToString("#0.00"))*@
+                            @entity.ConsumePrice.ToString("#0.00")
+                        </td>
+                        <td>
+                            @*@((entity.Sum_AllTimes == 0 ? entity.Sum_Price : entity.ConsumePrice * entity.Sum_Tiems).ToString("#0.00"))*@
+                            @if (entity.Sum_AllTimes == 0)
+                            {
+                                xiaohao = entity.Sum_Price;
+                            }
+                            else { xiaohao = (entity.ConsumePrice * entity.Sum_Tiems); }
+                            @xiaohao.ToString("#0.00")
+                        </td>
+                        <td>
+                            @entity.Sum_AllTimes
+                        </td>
+                        <td>
+                            @entity.Sum_Tiems
+                        </td>
+                        <td>
+                            <input type="hidden" class="hidval" value="@entity.BID" />
+                            <a href="javascript:;" class="btnactive" code="@entity.BID" statu="@entity.IsActive">@(entity.IsActive == 1 ? "禁用" : "启用")</a>
+                        </td>
+                    </tr>
+                    Sum_AllPrice += entity.Sum_AllPrice;
+                    Sum_Price += entity.ConsumePrice;
+                    ConsumePrice += xiaohao;
+                    Sum_AllTimes += entity.Sum_AllTimes;
+                    Sum_Tiems += entity.Sum_Tiems;
+                }
+                <tr>
+                    <td colspan="3"></td>
+                    <td>
+                        本页合计
+                    </td>
+                    @*<td>@Decimal.Round(ViewBag.Sum_AllPrice, 2)
+                        </td>
+                        <td>@Decimal.Round(ViewBag.Sum_Price, 2)
+                        </td>
+                        <td>@Decimal.Round(ViewBag.ConsumePrice, 2)
+                        </td>
+                        <td>@ViewBag.Sum_AllTimes
+                        </td>
+                        <td>@ViewBag.Sum_Tiems
+                        </td>*@
+                    <td>
+                        @Sum_AllPrice
+                    </td>
+                    <td>
+                        @Sum_Price.ToString("#0.00")
+                    </td>
+                    <td>
+                        @ConsumePrice.ToString("#0.00")
+                    </td>
+                    <td>
+                        @Sum_AllTimes
+                    </td>
+                    <td>
+                        @Sum_Tiems
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="3"></td>
+                    <td>
+                        总合计
+                    </td>
+                    <td>@decimal.Round(ViewBag.Sum_AllPrice, 2)</td>
+                    <td>
+                        @decimal.Round(ViewBag.Sum_Price, 2)
+                    </td>
+                    <td>
+                        @decimal.Round(ViewBag.ConsumePrice, 2)
+                    </td>
+                    <td>
+                        @ViewBag.Sum_AllTimes
+                    </td>
+                    <td>
+                        @ViewBag.Sum_Tiems
+                    </td>
+                    <td></td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+
+        $(function () {
+
+            //        $(".info").click(function () {
+            //            alert("sss");
+            //            $(this).parent().append("<a href='javascript:;' class='hid' >关闭</a> ")
+            //            $(this).hide(); //影藏这个标签
+            //            var id = $(this).parent().find(".hidval").val();
+            //            var parent = $(this).parent().parent();
+            //            $.ajax({
+            //                type: "post", //使用get方法访问后台
+            //                url: "/PatientManage/GetBalanceByUserCardID",
+            //                data: { "UserCardID": id },
+            //                async: false,
+            //                success: function (data) {
+            //                    if (data != null) {
+            //                        parent.after("<tr class='newtr'><td colspan='6'>" + data + "</td></tr>");
+            //                    }
+            //                },
+            //                error: function () {
+            //                    alert("数据获取失败！");
+            //                }
+            //            });
+
+            //        })
+
+            //        $(".gridTable").delegate(".hid", "click", function () {
+
+            //            $(this).parent().parent().next().remove();
+            //            $(this).parent().find(".info").show();
+            //            $(this).hide();
+            //        })
+
+
+            //        $("tbody").delegate("tr.clickclass", "click", function () {
+            //            if ($(this).find(".info").is(":hidden")) {
+            //                $(this).next().remove();
+            //                $(this).find(".info").show();
+            //                $(this).find(".hid").remove();
+            //            }
+            //            else {
+            //                $(this).find(".info").parent().append("<a href='javascript:;' class='hid' >关闭</a> ")
+            //                $(this).find(".info").hide(); //影藏这个标签
+            //                var id = $(this).find(".hidval").val();
+            //                var parent = $(this);
+            //                $.ajax({
+            //                    type: "post", //使用get方法访问后台
+            //                    url: "/PatientManage/GetBalanceByUserCardID",
+            //                    data: { "UserCardID": id },
+            //                    async: false,
+            //                    success: function (data) {
+            //                        if (data != null) {
+            //                            parent.after("<tr class='newtr' style='background:#E7F6FF;'><td colspan='8'>" + data + "</td></tr>");
+            //                        }
+            //                    },
+            //                    error: function () {
+            //                        alert("数据获取失败！");
+            //                    }
+            //                });
+            //            }
+            //        })
+        })
+
+
+    </script>
+    <script type="text/javascript">
+        $(function () {
+
+            //计算head高度，宽度 计算articles高度
+            var theadheight = $("#header").height() + $(".accountdiv").height();
+            $(".gridTable thead").css("top", theadheight + "px");
+            var gridtablewidth = $(".gridTable").width();
+            var thlen = $(".gridTable thead th").length;
+            $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+            $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+            $('.mainContentRight_bottom').on('scroll', function () {
+                let scrollHeight = $('.mainContentRight_bottom').scrollTop();
+                let topHeight = $(".ullist").height();
+                if (scrollHeight >= topHeight) {
+                    $(".gridTable thead").css("top", topHeight + "px");
+
+                } else {
+                    $(".gridTable thead").css("top", topHeight + "px");
+                }
+
+
+            })
+        })
+    </script>
+    <script type="text/javascript">
+    $(function () {
+       window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+    </script>

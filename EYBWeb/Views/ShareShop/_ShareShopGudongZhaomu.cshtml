@@ -1,0 +1,118 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.Statistics.StatisticsShareholderBonus>
+    @{
+        Layout = null;
+        int countNum = 0;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')" />
+                    </th>
+                    <th>
+                        股东姓名
+                    </th>
+                    <th>
+                        手机
+                    </th>
+                    <th>
+                        累计充值
+                    </th>
+                    <th>
+                        累计消费保证金
+                    </th>
+                    <th>
+                        累计分红
+                    </th>
+
+                    <th>
+                        累计介绍分红
+                    </th>
+                    <th>
+                        总计分红
+                    </th>
+
+                    <th>
+                        剩余保证金
+                    </th>
+                    <th>
+                        发展人脉
+                    </th>
+
+                    <th>
+                        人脉消费总额
+                    </th>
+                    <th>
+                        入股时间
+                    </th>
+
+                    <th>
+                        备注
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    countNum = countNum + 1;
+                    //var listValue = entity.Name + "|" + entity.RetailPrice + "|" + entity.CostPrice + "|" + entity.ServiceTime + "|" + entity.TypeName + "$";
+                    <tr class="ableclick">
+                        <td>
+                            @countNum
+                        </td>
+                        <td>
+                            <input type="checkbox" name="checkbox" class="checkbox" value="@entity.Id" />
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.Mobile
+                        </td>
+                        <td>
+                            @entity.RechargeDeposit
+                        </td>
+                        <td>
+                            @entity.ExpenseDeposit
+                        </td>
+                        <td>
+                            @entity.Bonus
+                        </td>
+                        <td>
+                            @entity.ReferrerBonus
+                        </td>
+                        <td>
+                            @(entity.Bonus + entity.ReferrerBonus)
+                        </td>
+                        <td>
+                            @entity.Deposit
+                        </td>
+                        <td>
+                            @entity.NetworkingCount
+                        </td>
+                        <td>
+                            @entity.NetworkingBouns
+                        </td>
+                        <td>
+                            @entity.JoinTime
+                        </td>
+                        <td>
+                            @entity.Remarks
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>

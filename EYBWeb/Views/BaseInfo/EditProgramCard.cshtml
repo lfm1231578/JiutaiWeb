@@ -1,0 +1,693 @@
+﻿@using BaseinfoManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@using EYB.ServiceEntity.BaseInfo;
+@using EYB.ServiceEntity.SystemEntity;
+@{
+    var type = Request["Type"];
+    var id = Request["ID"];
+
+    MainCardEntity entity = new EYB.ServiceEntity.BaseInfo.MainCardEntity();
+    IList<ProjectProductEntity> ppentity = new List<ProjectProductEntity>();
+    IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseinfoBLL>();
+    ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL icashBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    if (!String.IsNullOrEmpty(id))
+    {
+        entity = baseinfoBLL.GetPrePayTreatment(ConvertValueHelper.ConvertIntValue(id));
+        ppentity = icashBLL.getProjectProductNopage(new ProjectProductEntity { ProgrammeID = entity.ID });
+
+    }
+    var ParentHospitalID = Common.Manager.LoginHospitalUserManager.GetLoginInfo().ParentHospitalID;
+
+    List<BaseinfoEntity> caretypelist = new List<BaseinfoEntity>();
+    caretypelist = sysBll.GetBaseInfoTreeByType("ProgramCardType", 1, ParentHospitalID);//疗程卡类型分类
+
+    ViewBag.Title = "编辑方案卡";
+    if (type.ToLower() == "add")
+    {
+        entity.VaildityDay = 3600;
+        entity.MultiplyingPower = 1;
+        entity.Discount = 1;
+    }
+
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            @(type.ToLower() == "add" ? "新建方案卡" : "编辑方案卡")
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <form id="myform" action="@Url.Content("~/BaseInfo/ProgramCardAddOrEdit")" class="clearfix" method="post"  >
+                <input type="hidden" id="hdiPrice" readonly="readonly" name="Price" value="@entity.Price" class="Price" />
+                <table class="mainContentRight_table ">
+                    <tr>
+                        <td class="tdright">
+                            <span class="red">*&nbsp;</span>名称
+                        </td>
+                        <td>
+                            <input type="hidden" value="@entity.ID" name="ID" />
+                            <input type="text" name="Name" id="txtName" value="@entity.Name" class="validate[required] text-input input200" />
+                            <input type="button" id="AddTreatment" class="submitbutton4" value="添加项目" onclick="oppadddisage()" />
+                            <input type="button" id="AddProduct" class="submitbutton4" value="添加产品" onclick="oppnproductdisage()" />
+                            <input type="button" id="AddStord" class="submitbutton4" value="添加储值卡" onclick="oppnStorddisage()" />
+                        </td>
+                        <td colspan="2">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" id="list">
+                            <table id="ProjectTable" class="gridTable">
+                                <thead>
+                                    <tr>
+                                        <th width="120px">
+                                            名称
+                                        </th>
+                                        <th width="100px">
+                                            单价
+                                        </th>
+                                        <th width="60px">
+                                            次数
+                                        </th>
+                                        <th width="105px">
+                                            总价
+                                        </th>
+                                        <th width="100px">
+                                            消耗单价
+                                        </th>
+                                        <th>
+                                            操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ foreach (ProjectProductEntity projprod in ppentity)
+                                       {
+                                           if (projprod.Type == 2)
+                                           {
+                                        <tr>
+                                            <td class="td1" width="120px">
+                                                <input type="hidden" class="hidap" value="@projprod.AllPrice" />
+                                                <input type="hidden" name="HiddenID" value="@projprod.ID" />
+                                                <input type="hidden" class="idandvalue" name="GiveIDList" value="@projprod.ProjectID|@projprod.Qualtity|@projprod.ConsumptionPrice|@projprod.AllPrice|@projprod.Price" />
+                                                @projprod.ProjectName
+                                            </td>
+                                            <td width="100px">
+                                                @projprod.Price
+                                            </td>
+                                            <td width="60px">
+                                                <input type="text" name="txtinput" class="smallinput txtnumber"   value="@projprod.Qualtity" />
+                                            </td>
+                                            <td width="105px">
+                                                <input type="text" name="txtallprice" class="smallinput txtallprice"   value="@projprod.AllPrice" />
+                                            </td>
+                                            <td width="100px">
+                                                <input type="text" name="ConsumptionPrice"  class="smallinput txtconsump"   value="@projprod.ConsumptionPrice" />
+                                            </td>
+                                            <td>
+                                                <a class="deletebtn" href="javascript:;">删除</a>
+                                            </td>
+                                        </tr>
+                                           }
+                                       }                                          
+                                    }
+                                </tbody>
+                            </table>
+                            <table id="ProductTable" class="gridTable">
+                                <tbody>
+                                    @{ foreach (ProjectProductEntity projprod in ppentity)
+                                       {
+                                           if (projprod.Type == 3)
+                                           {
+                                        <tr>
+                                            <td class="td1" width="120px">
+                                                <input type="hidden" name="HiddenID" value="@projprod.ID" />
+                                                <input type="hidden" class="idandvalue" name="prod" value="@projprod.ProjectID|@projprod.Qualtity|@projprod.AllPrice|@projprod.Price" />
+                                                @projprod.ProjectName
+                                            </td>
+                                            <td width="100px">
+                                                @projprod.Price
+                                            </td>
+                                            <td width="60px">
+                                                <input type="text" name="txtinput" class="smallinput txtnumber"   value="@projprod.Qualtity" />
+                                            </td>
+                                            <td width="105px">
+                                                <input type="text" name="txtallprice" class="smallinput txtallprice"   value="@projprod.AllPrice" />
+                                            </td>
+                                            <td width="100px">
+                                            </td>
+                                            <td>
+                                                <a class="deletebtn" href="javascript:;">删除</a>
+                                            </td>
+                                        </tr>
+                                           }
+                                       }                                          
+                                    }
+                                </tbody>
+                            </table>
+                            <table id="Cardtable" class="gridTable">
+                                <tbody>
+                                    @{ foreach (ProjectProductEntity projprod in ppentity)
+                                       {
+                                           if (projprod.Type == 1)
+                                           {
+                                        <tr>
+                                            <td width="120px">
+                                                <input type="hidden" class="hidval" name="hidcal" value="@projprod.Price" />
+                                                <input type="hidden" name="HiddenID" value="@projprod.ID" />
+                                                <input type="hidden" name="stordcardlist" value="@projprod.ProjectID" />
+                                                @projprod.ProjectName
+                                            </td>
+                                            <td width="100px">
+                                                @projprod.Price
+                                            </td>
+                                            <td width="60px">
+                                            </td>
+                                            <td width="105px">
+                                            </td>
+                                            <td width="100px">
+                                            </td>
+                                            <td>
+                                                <a class="deletebtn" href="javascript:;">删除</a>
+                                            </td>
+                                        </tr>
+                                           }
+                                       }                                          
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">
+                            <div class="accountdiv">
+                                <label style="font-weight: normal; height: 40px; line-height: 40px;">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;累计总价：</label><label style="height: 40px; line-height: 40px;"
+                                        name="Price" id="txtPrice">@entity.Price</label>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            <span class="red">*&nbsp;</span>卡项类别
+                        </td>
+                        <td>
+                            <div id="selectdepart" style="min-width: 120px; float: left;">
+                                @if (!String.IsNullOrEmpty(id))
+                                {
+                                    
+                                    <div class="selectdiv" style="min-width: 120px; float: left;">
+                                        <select name="CardType" class="select">
+                                            @foreach (var info in caretypelist)
+                                            {
+                                                <option @(info.ID == entity.CardType ? "selected=selected" : "") value="@info.ID">@info.InfoName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                }
+                                else
+                                { 
+                                    <div class="selectdiv" style="min-width: 120px; float: left;">
+                                        <select name="CardType" class="select">
+                                            @foreach (var info in caretypelist)
+                                            {
+                                                <option  value="@info.ID">@info.InfoName</option>
+                                            }
+                                        </select>
+                                    </div>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            有效期
+                        </td>
+                        <td>
+                            <input type="text" name="VaildityDay" id="txtVaildityDay" value="@entity.VaildityDay" class="validate[custom[number]] text-input" style=" width:100px;" />
+                            &nbsp; 天
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            是否可以正常销售
+                        </td>
+                        <td>
+                            <div class="selectdiv" style="min-width: 120px; float: left;">
+                                @if (!String.IsNullOrEmpty(id))
+                                {
+                                    <select name="IsSale" class="select">
+                                        <option @( entity.IsSale == 1 ? "selected=selected" : "") value="1">是</option>
+                                        <option @( entity.IsSale == 0 ? "selected=selected" : "") value="0">否</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select name="IsSale" class="select">
+                                        <option value="1">是</option>
+                                        <option value="0">否</option>
+                                    </select>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="tdright">
+                            说明
+                        </td>
+                        <td colspan="3">
+                            <textarea rows="4" name="Memo" cols="55" class="textarea">@entity.Memo</textarea>
+                        </td>
+                    </tr>
+                    <tr style="height: 60px;">
+                        <td>
+                        </td>
+                        <td class="clearfix">
+                            <input type="submit" id="btnsave" class="submitbutton2" value="保 存" />
+                            <a href="@Url.Content("~/BaseInfo/CardBusiness")" class="submitbutton3">返 回</a>
+                        </td>
+                    </tr>
+                </table>
+                @*<div class="panel collapse close" minh="500" defh="0" style="display: none;">
+                    <h1>
+                        添加卡项内容</h1>
+                    <div>
+                        <table>
+                            <tr style="height: 60px;">
+                                <td colspan="4">
+                                    <input type="button" id="AddTreatment" class="submitbutton4" value="添加项目" onclick="oppadddisage()" />
+                                    <input type="button" id="AddProduct" class="submitbutton4" value="添加产品" onclick="oppnproductdisage()" />
+                                    <input type="button" id="AddStord" class="submitbutton4" value="添加储值卡" onclick="oppnStorddisage()" />
+                                </td>
+                            </tr>
+                            <tr id="listtable">
+                                <td colspan="4">
+                                    <table id="ProjectTable" class="gridTable">
+                                        <thead>
+                                            <tr>
+                                                <th width="120px">
+                                                    名称
+                                                </th>
+                                                <th width="100px">
+                                                    单价
+                                                </th>
+                                                <th width="60px">
+                                                    次数
+                                                </th>
+                                                <th width="105px">
+                                                    总价
+                                                </th>
+                                                <th width="100px">
+                                                    消耗单价
+                                                </th>
+                                                <th>
+                                                    操作
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{ foreach (ProjectProductEntity projprod in ppentity)
+                                               {
+                                                   if (projprod.Type == 2)
+                                                   {
+                                                <tr>
+                                                    <td class="td1" width="120px">
+                                                        <input type="hidden" class="hidap" value="@projprod.AllPrice" />
+                                                        <input type="hidden" name="HiddenID" value="@projprod.ID" />
+                                                        <input type="hidden" class="idandvalue" name="GiveIDList" value="@projprod.ProjectID|@projprod.Qualtity|@projprod.ConsumptionPrice|@projprod.AllPrice|@projprod.Price" />
+                                                        @projprod.ProjectName
+                                                    </td>
+                                                    <td width="100px">
+                                                        @projprod.Price
+                                                    </td>
+                                                    <td width="60px">
+                                                        <input type="text" name="txtinput" class="smallinput txtnumber"   value="@projprod.Qualtity" />
+                                                    </td>
+                                                    <td width="105px">
+                                                        <input type="text" name="txtallprice" class="smallinput txtallprice"   value="@projprod.AllPrice" />
+                                                    </td>
+                                                    <td width="100px">
+                                                        <input type="text" name="ConsumptionPrice"  class="smallinput txtconsump"   value="@projprod.ConsumptionPrice" />
+                                                    </td>
+                                                    <td>
+                                                        <a class="deletebtn" href="javascript:;">删除</a>
+                                                    </td>
+                                                </tr>
+                                                   }
+                                               }                                          
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <table id="ProductTable" class="gridTable">
+                                        <tbody>
+                                            @{ foreach (ProjectProductEntity projprod in ppentity)
+                                               {
+                                                   if (projprod.Type == 3)
+                                                   {
+                                                <tr>
+                                                    <td class="td1" width="120px">
+                                                        <input type="hidden" name="HiddenID" value="@projprod.ID" />
+                                                        <input type="hidden" class="idandvalue" name="prod" value="@projprod.ProjectID|@projprod.Qualtity|@projprod.AllPrice|@projprod.Price" />
+                                                        @projprod.ProjectName
+                                                    </td>
+                                                    <td width="100px">
+                                                        @projprod.Price
+                                                    </td>
+                                                    <td width="60px">
+                                                        <input type="text" name="txtinput" class="smallinput txtnumber"   value="@projprod.Qualtity" />
+                                                    </td>
+                                                    <td width="105px">
+                                                        <input type="text" name="txtallprice" class="smallinput txtallprice"   value="@projprod.AllPrice" />
+                                                    </td>
+                                                    <td width="100px">
+                                                    </td>
+                                                    <td>
+                                                        <a class="deletebtn" href="javascript:;">删除</a>
+                                                    </td>
+                                                </tr>
+                                                   }
+                                               }                                          
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <table id="Cardtable" class="gridTable">
+                                        <tbody>
+                                            @{ foreach (ProjectProductEntity projprod in ppentity)
+                                               {
+                                                   if (projprod.Type == 1)
+                                                   {
+                                                <tr>
+                                                    <td width="120px">
+                                                        <input type="hidden" class="hidval" name="hidcal" value="@projprod.Price" />
+                                                        <input type="hidden" name="HiddenID" value="@projprod.ID" />
+                                                        <input type="hidden" name="stordcardlist" value="@projprod.ProjectID" />
+                                                        @projprod.ProjectName
+                                                    </td>
+                                                    <td width="100px">
+                                                        @projprod.Price
+                                                    </td>
+                                                    <td width="60px">
+                                                    </td>
+                                                    <td width="105px">
+                                                    </td>
+                                                    <td width="100px">
+                                                    </td>
+                                                    <td>
+                                                        <a class="deletebtn" href="javascript:;">删除</a>
+                                                    </td>
+                                                </tr>
+                                                   }
+                                               }                                          
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="accountdiv">
+                                        <label style="font-weight: normal; height: 40px; line-height: 40px;">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;累计总价：</label><label style="height: 40px; line-height: 40px;"
+                                                name="Price" id="txtPrice">@entity.Price</label>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>*@
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+jQuery(document).ready(function () {
+             $("#tabs  li").click(function () {
+                $("#tabs li").removeClass("thistab");
+                $(this).addClass("thistab");
+                $(".tab_con").hide();
+                var index = $(this).parent().find("li").index(this);
+                $("#tab_conbox").find(".tab_con").eq(index).show();
+            });
+            $("#tabs li:first").addClass("thistab").show();
+        });
+
+  $("h1").toggle(function(){
+    $(".expandable").click();
+    },function(){  $(".collapsable").click();});
+    //添加项目窗口
+    function oppadddisage() {
+     art.dialog.open("/BaseInfo/ProjectList", { title: "项目列表", width: 660, height: 470, close: function () {
+        var bValue = art.dialog.data('bValue'); // 读取B页面的数据
+        if (bValue !== undefined) {
+            Selectsection(bValue);
+        }
+    }
+    })
+
+        //art.dialog.open("/BaseInfo/ProjectList", { title: "项目列表", width: 660, height: 470 })
+    }
+     //添加项目赋值
+    function Selectsection(obj) {
+       var arry = obj.split("$");
+        var str = "";
+        var rersult = 0;
+        for (var i = 0; i < arry.length - 1; i++) {
+        str+= '<tr><td class="td1" width="120px"><input type="hidden" class="hidap" value="'+ arry[i].split("|")[2] +'" /> <input type="hidden" class="idandvalue" name="GiveIDList" value="' + arry[i].split("|")[0] + '|1|'+arry[i].split("|")[2]+'|'+arry[i].split("|")[2]+'|'+arry[i].split("|")[2]+'" />' + arry[i].split("|")[1] + '</td><td width="100px" class="danjia">' + arry[i].split("|")[2] + '</td> <td width="60px"><input type="text" name="txtinput" onkeyup="javascript:CheckInputIntFloatReturn0(this);"  class="smallinput txtnumber"   value="1"></td><td width="105px"><input type="text" class="smallinput  txtallprice" style="width:60px;" onkeyup="javascript:CheckInputIntFloatReturn0(this);" name="AllPrice"  value="'+ arry[i].split("|")[2] +'"> </td><td width="100px"><input class="smallinput txtconsump" onkeyup="javascript:CheckInputIntFloatReturn0(this);" type="text" name="ConsumptionPrice" value="'+ arry[i].split("|")[2] +'" /> </td><td><a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>';
+        rersult+= parseFloat(arry[i].split("|")[2]);
+        }
+        $("#ProjectTable").find("tbody").append(str);
+         var allprice= $("#txtPrice").text();//获取总价
+         $("#txtPrice").text(parseFloat(allprice)+rersult);  
+         $(".Price").val(parseFloat(allprice)+rersult); 
+        //   updateAllprice();
+    }
+
+
+    //打开产品窗口
+     function oppnproductdisage() {
+       // art.dialog.open("/BaseInfo/ProductList", { title: "产品列表", width: 660, height: 470 })
+
+           art.dialog.open("/BaseInfo/ProductList", { title: "产品列表", width: 660, height: 470, close: function () {
+        var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+        if (bValue !== undefined) {
+            Selectproduct(bValue);
+        }
+    }
+    })
+    }
+    //产品列表赋值
+    function Selectproduct(obj)
+    {
+        var arry = obj.split("$");
+        var str = "";
+        var rersult = 0;
+        for (var i = 0; i < arry.length - 1; i++) {
+        str+= '<tr><td class="td1" width="120px"><input class="idandvalue" name="prod" value="'+arry[i].split("|")[0]+'|1|'+arry[i].split("|")[2]+'|'+arry[i].split("|")[2]+'" type="hidden"> ' + arry[i].split("|")[1] + '</td><td width="100px">' + arry[i].split("|")[2] + '</td><td width="60px"><input type="text" name="txtinput" class="smallinput txtnumber" onkeyup="javascript:CheckInputIntFloatReturn0(this);"   value="1"></td><td width="105px"><input type="text" onkeyup="javascript:CheckInputIntFloatReturn0(this);" style="width:60px;" name="AllPrice" class="smallinput txtallprice" value="'+arry[i].split("|")[2]+'" /> </td> <td width="100px"></td>  <td ><a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>';
+        rersult+= parseFloat(arry[i].split("|")[2]);
+        }
+        $("#ProductTable").find("tbody").append(str);
+        var allprice= $("#txtPrice").text();//获取总价
+        $("#txtPrice").text(parseFloat(allprice)+rersult);
+        $(".Price").val(parseFloat(allprice)+rersult);
+          
+    }
+
+
+     //打开储值卡窗口
+     function oppnStorddisage() {
+        art.dialog.open("/BaseInfo/StoredCardList", { title: "储值卡列表", width: 660, height: 470 })
+    }
+
+     //储值卡赋值
+    function InFoDate(obj) {
+        var arry = obj.split("$");
+        var str = "";
+        var rersult = 0;
+        for (var i = 0; i < arry.length - 1; i++) {
+        str+= '<tr><td width="120px"><input type="hidden" class="hidval" name="hidcal" value="'+ arry[i].split("|")[3] +'" />   <input type="hidden" class="idandvalue" name="stordcardlist" value="' + arry[i].split("|")[0] + '" />' + arry[i].split("|")[1] + '</td>    <td width="100px">' + arry[i].split("|")[3] + '</td><td width="60px"></td><td width="105px"><input type="text" name="AllPrice" style="width:60px;" readonly="readonly" class="smallinput txtallprice" value="'+arry[i].split("|")[3]+'" /></td><td width="100px"></td>  <td><a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>';
+        rersult+= parseFloat(arry[i].split("|")[3]);
+        }
+        $("#Cardtable").append(str);
+        var allprice= $("#txtPrice").text();//获取总价
+        $("#txtPrice").text(parseFloat(allprice)+rersult); 
+        $(".Price").val(parseFloat(allprice)+rersult);
+    }
+
+    //删除功能(项目)
+    $(function () {
+        $("#ProjectTable").delegate('.deletebtn', 'click', function () {
+            $(this).parent().parent().remove();
+           var idandlist= $(this).parent().parent().find(".idandvalue").val();//获取隐藏域的值
+           var allprice= $("#txtPrice").text();//获取总价
+           $("#txtPrice").text(parseFloat(allprice)-parseFloat(idandlist.split("|")[3]));
+           $(".Price").val(parseFloat(allprice)-parseFloat(idandlist.split("|")[3]));
+        })
+    });
+
+    //删除功能(产品)
+     $(function () {
+        $("#ProductTable").delegate('.deletebtn', 'click', function () {
+            $(this).parent().parent().remove();
+             var idandlist= $(this).parent().parent().find(".idandvalue").val();//获取隐藏域的值
+             var allprice= $("#txtPrice").text();//获取总价
+             $("#txtPrice").text(parseFloat(allprice)-parseFloat(idandlist.split("|")[2]));
+             $(".Price").val(parseFloat(allprice)-parseFloat(idandlist.split("|")[2]));
+
+        })
+    });
+
+    //删除功能(储值卡)
+     $(function () {
+        $("#Cardtable").delegate('.deletebtn', 'click', function () {
+            $(this).parent().parent().remove();
+          var price= $(this).parent().parent().find(".hidval").val();
+           var allprice= $("#txtPrice").text();//获取总价
+           $("#txtPrice").text(parseFloat(allprice)-parseFloat(price));
+           $(".Price").val(parseFloat(allprice)-parseFloat(price));
+        })
+    });
+     
+    //次数改变是更改隐藏域的值(项目)      ID|数量|消耗单价|总价|销售单价
+    $("#ProjectTable").delegate('.txtnumber', 'keyup', function (){
+        var number=$(this).val();//获取数字
+        var idlist = $(this).parent().parent().find(".td1").find(".idandvalue");//获取隐藏域
+        var leftval=idlist.val().split("|");//分割隐藏域的字符串的值
+        var oldprice=parseFloat(leftval[3]);//获取原来的总价
+
+        var allprice=parseFloat(number)*parseFloat(leftval[4]);//求出现在的总值
+        idlist.val(leftval[0]+"|"+number+"|"+leftval[2]+"|"+allprice+"|"+leftval[4]);//重新给隐藏域赋值
+        $(this).parent().parent().find(".txtallprice").val(allprice);//给总价文本框赋值
+         $(this).parent().parent().find(".hidap").val();//原来的总价格
+         //var ap=$("#txtPrice").val();//获取最上面的价格
+         //$("#txtPrice").val(ap-oldprice+allprice);
+        updateAllprice();
+
+    })
+
+    //当消耗单价发声改变更改隐藏域  (项目)
+     $("#ProjectTable").delegate('.txtconsump', 'keyup', function (){
+        var prices=$(this).val();//获取数字
+        var idlist = $(this).parent().parent().find(".td1").find(".idandvalue");//获取隐藏域
+        var leftval=idlist.val().split("|");//分割隐藏域的字符串的值
+        //var allprice=parseFloat(prices)*parseFloat(leftval[1]);//求出总价
+        //$(this).parent().parent().find(".txtAllPrice").val(allprice);//给总价文本框赋值
+        idlist.val(leftval[0]+"|"+leftval[1]+"|"+prices+"|"+leftval[3]+"|"+leftval[4]);//重新给隐藏域赋值
+        //$("#txtPrice").val(allprice);
+     })
+
+    //当总价发生改变时,更改隐藏域(项目)
+    $("#ProjectTable").delegate('.txtallprice','keyup',function(){
+        var allprice=$(this).val();//获取总价
+        var idlist = $(this).parent().parent().find(".td1").find(".idandvalue");//获取隐藏域
+        var leftval=idlist.val().split("|");//分割隐藏域的字符串的值
+        var oldprice=parseFloat(leftval[3]);//获取原来的总价
+       
+        var prices=parseFloat(allprice)/parseFloat(leftval[1]);
+        $(this).parent().parent().find(".txtconsump").val(prices.toFixed(2));//给消耗单价文本框赋值
+        idlist.val(leftval[0]+"|"+leftval[1]+"|"+prices+"|"+allprice+"|"+leftval[4]);//重新给隐藏域赋值
+       // var ap= $("#txtPrice").val();//获取上面的总价
+        //$("#txtPrice").val(parseFloat(ap)-parseFloat(oldprice)+parseFloat(allprice));
+      updateAllprice();
+    })
+
+    //更改总价
+    function updateAllprice(){
+      var allprice=0;
+     //----------------------------------------
+     var productarray=$("#list").find(".txtallprice");
+     productarray.each( function(){
+        allprice=parseFloat(allprice)+parseFloat($(this).val());
+     })
+     $("#txtPrice").text(allprice);
+     $("#hdiPrice").val(allprice);
+     //----------------------------------------
+    }
+
+
+
+    
+
+      //产品次数修改时    ID|数量|总价|单价
+       $("#ProductTable").delegate('.txtnumber', 'keyup', function (){
+        var number=$(this).val();//获取数字
+        var idlist = $(this).parent().parent().find(".td1").find(".idandvalue");//获取隐藏域
+        var leftval=idlist.val().split("|");//分割隐藏域的字符串的值
+        var oldprice=leftval[2];//旧的总价
+        var newprice=parseFloat(number)*parseFloat(leftval[3]);//新的总价
+        var ap= $("#txtPrice").text();//获取上面的总价
+        $(this).parent().parent().find(".txtallprice").val(newprice);
+        idlist.val(leftval[0]+"|"+number+"|"+newprice+"|"+leftval[3]);//重新给隐藏域赋值
+        //$("#txtPrice").val(parseFloat(ap)-parseFloat(oldprice)+parseFloat(newprice));
+       updateAllprice();
+    })
+
+     //总价发声改变时
+     $("#ProductTable").delegate('.txtallprice', 'keyup', function (){
+        var number=$(this).val();//获取数字
+        var idlist = $(this).parent().parent().find(".td1").find(".idandvalue");//获取隐藏域
+        var leftval=idlist.val().split("|");//分割隐藏域的字符串的值
+        var oldprice=leftval[2];//旧的总价
+        var ap= $("#txtPrice").text();//获取上面的总价
+        idlist.val(leftval[0]+"|"+leftval[1]+"|"+number+"|"+leftval[3]);//重新给隐藏域赋值
+       // $("#txtPrice").val(parseFloat(ap)-parseFloat(oldprice)+parseFloat(number));
+        updateAllprice();
+    })
+
+
+    
+
+    //提交操作
+function saveAs(){
+ $("#btnsave").attr("disabled", "disabled");
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/ProgramCardAddOrEdit?Type=")@type",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+                  $("#btnsave").attr("disabled", false);
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("保存成功！","@Url.Content("~/BaseInfo/CardBusiness")");//卡项选择,这个还没座列表页
+
+               }else if(data=-1){
+                  artdialogfail("名称重复,请重新填写名称","","250","100");
+                   $("#btnsave").attr("disabled", false);
+               }else
+               {
+                artdialogfailTwo("操作失败,员工不能相同！","","250","100");
+                 $("#btnsave").attr("disabled", false);
+               }
+            }
+        });
+     }
+
+jQuery(document).ready(function(){
+        jQuery('#myform').validationEngine('attach', {
+            promptPosition: "topLeft",
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: ".mainContentRight",
+            onValidationComplete: function(form, status){
+                if(status)
+                {
+                saveAs();
+                }
+        }
+        });
+       });
+
+
+
+</script>

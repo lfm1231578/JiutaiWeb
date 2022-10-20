@@ -1,0 +1,229 @@
+﻿@{
+    ViewBag.Title = "Index";
+    EYB.ServiceEntity.MoneyEntity.TimeConsumingPerformanceEntity entity = ViewBag.HospitalUser13Data as EYB.ServiceEntity.MoneyEntity.TimeConsumingPerformanceEntity;
+    EYB.ServiceEntity.CashEntity.Hospital13DataEntity info = ViewBag.Hospital13Data as EYB.ServiceEntity.CashEntity.Hospital13DataEntity;
+    Layout = null;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+        <script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+<h1 style="font-size:48px; text-align:center;">门店13大数据</h1>
+<div id="printtab1">
+                <table class="gridTable" style="border-collapse: collapse; font-size: 1em; text-align: center;">
+                  
+                    <tbody>
+                        <tr>
+                            <td style="width: 40%;">
+                                首次体验客人数
+                            </td>
+                            <td style="width: 59%;">
+                                @info.FirstExperienceCount
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                多次体验客人数
+                            </td>
+                            <td style="width: 59%;">
+                                @info.ExperienceCount
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                增效客人数
+                            </td>
+                            <td style="width: 59%;">
+                                @info.ZengxiaoKeCount
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                护理客流
+                            </td>
+                            <td style="width: 59%;">
+                                @info.HuliKeliu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                达标客流
+                            </td>
+                            <td style="width: 59%;">
+                                @info.DabiaoKeliu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                护理实耗
+                            </td>
+                            <td style="width: 59%;">
+                                @info.HuliShihao
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                平均单次实耗
+                            </td>
+                            <td style="width: 59%;">
+                                @info.HuliShihaoOne
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;" >
+                                实耗项目数
+                            </td>
+                            <td style="width: 59%;">
+                                @info.ShihaoProjectCount
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                赠送项目数
+                            </td>
+                            <td style="width: 59%;">
+                                @info.SendProjectCount
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                基础业绩
+                            </td>
+                            <td style="width: 59%;">
+                                @info.JichuPrice
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                合作业绩
+                            </td>
+                            <td style="width: 59%;">
+                                @info.HezuoPrice
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                到店会员数
+                            </td>
+                            <td style="width: 59%;">
+                                @info.DaodianCount
+                            </td>
+                        </tr>
+                      
+                    </tbody>
+                </table>
+            </div>
+
+<h1 style="font-size:48px; text-align:center;">美容师13大数据</h1>
+<div>
+                <table class="gridTable" style="border-collapse: collapse; font-size: 1em; text-align: center;">
+                  
+                    <tbody>
+                        <tr>
+                            <td style="width: 40%;">
+                                体验客流
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.RenTou
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                增效新客
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.NewRenTou
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                护理客流
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.Keliu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                护理实耗
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.Liaocheng
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                实耗项目数
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.Shihaoxiangmu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                赠送项目数
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.zengsongxiangmu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                充值卡
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.Chuzhika
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;" >
+                                现金产品
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.SumMoney
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                卡划产品
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.Xianjin
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                现金套盒
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.Yinlianka
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 40%;">
+                                卡划疗程
+                            </td>
+                            <td style="width: 59%;">
+                                @entity.Danxiangxiaohao
+                            </td>
+                        </tr>
+                      
+                      
+                    </tbody>
+                </table>
+            </div>
+</body>
+</html>

@@ -1,0 +1,188 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.JiChunEntity>
+    @{
+        ViewBag.Title = "_PatientChuzhiCard";
+        Layout = null;
+        string orderno = "";
+        string delorderno = "";
+        bool result = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_Jicunshenhe);
+    }
+    <form action="@Url.Content("~/CashManage/OrderList")" method="post" id="submitform">
+        <script>
+            function audit(id) {
+
+                @if (result) {
+                    @:art.dialog.open("/CashManage/ProductJichunLingquRecordAudit?rid=" + id, { title: "审核", width: 500, height: 280 });
+                }
+                else {
+                    @:alert('操作失败！没有审核权限');
+                }
+            }
+        </script>
+        <table class="gridTable" style="margin: 0px; width: 100%; border-collapse: collapse;">
+            <thead style="position:absolute;">
+                <tr>
+                    <th>
+                        单据号
+                    </th>
+                    <th>
+                        姓名
+                    </th>
+                    <th>
+                        卡号
+                    </th>
+                    <th>
+                        寄存时间
+                    </th>
+                    <th>
+                        产品名称
+                    </th>
+                    <th>
+                        寄存类型
+                    </th>
+                    <th>
+                        寄存数量
+                    </th>
+                    <th>
+                        已领取数量
+                    </th>
+                    <th>
+                        剩余数量
+                    </th>
+                    <th>
+                        备注
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                    <th>
+                        删除
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    var list = Model.Where(c => c.OrderNo == entity.OrderNo).ToList();
+
+                    <tr>
+                        @if (orderno != entity.OrderNo)
+                        {
+
+                            <td rowspan='@list.Count'>
+                                @entity.OrderNo
+                            </td>
+                            <td rowspan='@list.Count'>
+                                @entity.UserName
+                            </td>
+                            <td rowspan='@list.Count'>
+                                @entity.MemberNo
+                            </td>
+                            <td rowspan='@list.Count'>
+                                @entity.JichunTime
+                            </td>
+                            orderno = entity.OrderNo;
+                        }
+                        <td>
+                            @entity.ProductName
+                        </td>
+                        <td>
+                            @if (entity.JiChunType == 0)
+                            {
+                                @:整体寄存
+                            }
+                            else
+                            {
+                                @:零散寄存
+                            }
+                        </td>
+                        <td>
+                            @entity.JichunCount
+                        </td>
+                        <td>
+                            @entity.LingquCount
+                        </td>
+                        <td>
+                            @entity.ShengYuCount
+                        </td>
+                        <td>
+                            @entity.Memo
+                        </td>
+                        <td>
+                            @if (entity.AuditRecordId > 0)
+                            {
+                                <a href="javascript:;" onclick="audit(@entity.AuditRecordId);">审核</a>
+                            }
+                            else if (entity.ShengYuCount > 0)
+                            {
+                                if (entity.IsActive == 1)
+                                {
+                                    <a href="javascript:OpenDailogLingQu(@entity.JiChunID,@entity.ProductID,'@entity.ProductName',@entity.ShengYuCount);">
+                                        领取
+                                    </a>
+                                }
+                            }
+                            <a href="javascript:OpenDailogLingquDetail(@entity.JiChunID,@entity.ProductID);" style="color: Green;">
+                                领取记录
+                            </a>
+                        </td>
+                        @if (delorderno != entity.OrderNo)
+                        {
+                            <td rowspan='@list.Count'>
+                                @if (entity.IsActive == 1)
+                                {
+                                    <a href="javascript:DeleteJichunOrder(@entity.ID)" style="color: red;">删除</a>
+                                }
+                                else
+                                {
+
+                                    <a href="javascript:;" style="color: gray;">已删除</a>
+                                }
+                            </td>
+                            delorderno = entity.OrderNo;
+                        }
+
+                    </tr>
+                }
+                <tr>
+                    <td colspan="6"></td>
+                    <td>
+                        @ViewBag.JichunCount
+                    </td>
+                    <td>
+                        @ViewBag.LingquCount
+                    </td>
+                    <td>
+                        @ViewBag.ShengYuCount
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 9))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+
+            //计算head高度，宽度 计算articles高度
+            var theadheight = $("#header").height() + $(".accountdiv").height();
+            $(".gridTable thead").css("top", theadheight + "px");
+           $('.mainContentRight_bottom').on('scroll', function () {
+                let scrollHeight = $('.mainContentRight_bottom').scrollTop();
+                let topHeight = $(".ullist").height();
+                if (scrollHeight >= topHeight) {
+                    $(".gridTable thead").css("top", topHeight + "px");
+
+                } else {
+                    $(".gridTable thead").css("top", topHeight + "px");
+                }
+
+
+            })
+        })
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

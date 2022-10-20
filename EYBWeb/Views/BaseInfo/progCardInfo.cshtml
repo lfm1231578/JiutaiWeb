@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "progCardInfo";
+    Layout = null;
+    var ID = Request["ID"];
+    IList<EYB.ServiceEntity.CashEntity.ProjectProductEntity> ppentity = new List<EYB.ServiceEntity.CashEntity.ProjectProductEntity>();
+    CashManage.Factory.IBLL.ICashManageBLL icashBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    ppentity = icashBLL.getProjectProductNopage(new EYB.ServiceEntity.CashEntity.ProjectProductEntity { ProgrammeID = Convert.ToInt32(ID) });
+}
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+         <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<body style=" background:#fff;">
+       
+<table class="gridTable">
+    <thead>
+        <tr>
+            <th>
+                名称
+            </th>
+            <th>
+                单价
+            </th>
+            <th>
+                次数
+            </th>
+            <th>
+                总价
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var info in ppentity)
+        { 
+            <tr>
+                <td>@info.ProjectName
+                </td>
+                <td>@info.Price
+                </td>
+                <td>@info.Qualtity
+                </td>
+                <td>@info.AllPrice
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+  </body>

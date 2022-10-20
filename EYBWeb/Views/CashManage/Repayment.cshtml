@@ -1,0 +1,92 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "还款";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    //顾客ID
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+
+    //查询门店美容师
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    persoList = persoList.Where(i => i.IsSys != 1).ToList();
+    //获取用户所有的划扣次数
+    var projectList = cashBll.GetProjectBalance(UserID, 0, ViewBag.ParentHospitalID);
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_PreAddorder);
+}
+<div id="mainContentBody">
+    @Html.Partial("_CashControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                </label>
+                还款  <label style="font-size:14px;color:red;">(注意：如欠款是购买储值卡产生的，切记不可用储值卡卡扣还欠款！)</label>
+            </div>
+        <div class="mainContentRight_bottom clearfix">
+            @Html.Partial("_PatientSelect")
+            <table class="gridTable" style="width: 96%; border-collapse: collapse; margin-top:10px;">
+                <thead>
+                    <tr style="background: rgba(251,195,196,0.8);">
+                        <th>
+                            选择
+                        </th>
+                        <th>
+                            订单编号
+                        </th>
+                        <th>
+                            订单时间
+                        </th>
+                        <th>
+                            订单类型
+                        </th>
+                        <th>
+                            欠款总额
+                        </th>
+                        <th>
+                            已还
+                        </th>
+                        <th>
+                            剩余欠款
+                        </th>
+                        <th>
+                            本次还款金额
+                        </th>
+                        <th>
+                            参与员工
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="gridtbody">
+                </tbody>
+            </table>
+            <div class="accountdiv" style="width:96%;padding:0;margin:0 auto;" >
+                <label style="font-weight: normal;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本次还款总额：</label><label id="labamout" style="color: Green;
+                        font-size: 16px;">0</label>
+                <label style="font-weight: normal;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 尚欠：</label>
+                <label id="labcardamout" style="color: red; font-size: 16px;">
+                    0</label>
+                <label style="font-weight: normal;">
+                    说明：</label>
+                <input type="text"  id="txtmemo" />
+                @if (result1)
+                {
+                <label>补单：</label>
+                <input type="text" class="text-input Wdate"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                    name="CreateTime" id="txtCreateTime" autocomplete="off" value="" />
+                <input type="checkbox" value="1" name="CheckCreateTime" id="chkcreatetime" style="width: 20px;
+                    height: 20px; vertical-align: middle; margin: -4px 2px 0px 2px;" />
+                }
+            </div>
+            <div class="accountdiv"  style="margin-top:5px;">
+                <input type="button" class="submitbutton2" value="结 账" onclick="CheckOrder()" />
+                @*  <input type="button" id="btnsave" class="submitbutton2" value="返 回" onclick=" history.go(-1)" />*@
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<script src="../../Scripts/Controls/CashManage/Repayment.js?v=1.9" type="text/javascript"></script>

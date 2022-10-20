@@ -1,0 +1,64 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.ProductStockEntity>
+@{
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="height: auto; border-collapse: collapse; margin: 0px;"
+    cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+            <th>
+                <input id="CheckBox" type="checkbox" />选择
+            </th>
+            <th>
+                产品名称
+            </th>
+            <th>
+                零售价
+            </th>
+            <th>
+                品牌
+            </th>
+            <th>
+                所属仓库
+            </th>
+        </tr>
+    </thead>
+    <tbody id="tb">
+        @foreach (var entity in Model)
+        {
+            var listValue = entity.ID + "|" + entity.ProductID + "|" + entity.ProductName + "|" + entity.RetailPrice + "|" + entity.Type + "|" + entity.TypeName + "|" + entity.HouseID + "|" + entity.HouseName + "|" + entity.BrandID + "|" + entity.HouseName + "$";
+            <tr class="ableclick">
+                <td>
+                    <input type="checkbox" name="radioList" value="@listValue" />
+                </td>
+                <td>
+                    @entity.ProductName
+                </td>
+                <td>
+                    @entity.RetailPrice
+                </td>
+                <td>
+                    @entity.BrandName
+                </td>
+                <td>
+                    @entity.HouseName
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $("#CheckBox").click(function () {
+        if (this.checked) {
+            $("input[name='radioList']").attr('checked', true)
+        } else {
+            $("input[name='radioList']").attr('checked', false)
+        }
+    })
+</script>

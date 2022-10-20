@@ -1,0 +1,99 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.PerformanceAnalysisEntity>
+    @{
+        ViewBag.Title = "储值卡销售明细";
+        Layout = null;
+    }
+    <div id="showmessage" style=" display:none;width:220px; height:140px; position:fixed; top:300px; left:650px; color:Red;  margin:0 auto; text-align:center;">
+        <img src="../../Content/themes/images/loading.gif" width="100" />
+        <p style=" text-align:center; height:30px;line-height:30px;">
+            正在努力查询中，请稍后...
+        </p>
+    </div>
+    <form>
+        <table class="gridTable" style="border-collapse: collapse; width: 99%;">
+            <thead>
+                <tr>
+                    <th  orderfield="">
+                        门店
+                    </th>
+                    <th  orderfield="">
+                        员工
+                    </th>
+                    <th orderfield="">
+                        现金目标
+                    </th>
+                    <th  orderfield="">
+                        现金完成
+                    </th>
+                    <th  orderfield="">
+                        现金完成率
+                    </th>
+                  @*  <th  orderfield="">
+                        卡扣目标
+                    </th>
+                    <th  orderfield="">
+                        卡扣完成
+                    </th>
+                    <th  orderfield="">
+                        卡扣完成率
+                    </th>*@
+                    <th  orderfield="">
+                        耗卡目标
+                    </th>
+                    <th  orderfield="">
+                        耗卡完成
+                    </th>
+                    <th  orderfield="">
+                        耗卡完成率
+                    </th>
+                    <th  orderfield="">
+                        产品目标
+                    </th>
+                    <th>
+                        产品完成
+                    </th>
+                    <th>
+                        产品完成率
+                    </th>
+                    <th>
+                        客流目标
+                    </th>
+                    <th>
+                        客流完成
+                    </th>
+                    <th>
+                        客流完成率
+                    </th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>@entity.HospitalName</td>
+                        <td>@entity.UserName</td>
+                        <td>@entity.Xianjin</td>
+                        <td>@entity.SumXianjin</td>
+                        <td>@entity.XianJinScale</td>
+                       @* <td>@entity.Kakou</td>
+                        <td>@entity.SumKakou</td>
+                        <td>@entity.KaKouScale</td>*@
+                        <td>@entity.XiaoHao</td>
+                        <td>@entity.SumXiaoHao</td>
+                        <td>@entity.XiaoHaoScale</td>
+                        <td>@entity.ChanPin</td>
+                        <td>@entity.SumChanPin</td>
+                        <td>@entity.ChanPinScale</td>
+                        <td>@entity.KeShu</td>
+                        <td>@entity.Sumkeshu</td>
+                        <td>@entity.KeShuScale</td>
+                    </tr>
+                }
+                
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 17))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager1" })
+    </form>

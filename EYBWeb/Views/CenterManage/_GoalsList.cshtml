@@ -1,0 +1,155 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model  List<EYB.ServiceEntity.CenterEntity.PerformanceGoalsEntity>
+@{
+    ViewBag.Title = "目标列表";
+    Layout = null;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    var parenthospitalentity = personBLL.HospitalEntityByID(ViewBag.ParentHospitalID);
+}
+<form action="" method="post" id="submitform">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="border-collapse: collapse; width: 100%;">
+    <thead style="position:absolute;">
+        <tr>
+            <th>
+                门店
+            </th>
+            <th>
+                目标时间
+            </th>
+            <th>
+                现金
+            </th>
+            <th>
+                实操
+            </th>
+            <th>
+                客流量
+            </th>
+            <th style="display: none;">
+                项目
+            </th>
+            <th>
+                家居
+            </th>
+            <th>
+                人头
+            </th>
+            @if (parenthospitalentity.VersionName.Contains("仁美"))
+            { 
+                <th>
+                    新客成交
+                </th>
+                <th>
+                    有效顾客
+                </th>
+            }
+            <th>
+                详细
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+      <tr style="height:40px;"></tr>
+        
+        @foreach (var entity in Model)
+        {
+            <tr>
+                <td>
+                    @entity.UserName
+                </td>
+                <td>
+                    @(entity.Years + "年" + entity.Months + "月")
+                </td>
+                <td>
+                    @entity.Xianjin
+                </td>
+                <td>
+                    @entity.ShiHao
+                </td>
+                <td>
+                    @entity.Traffic
+                </td>
+                <td style="display: none;">
+                    @entity.ProjectsConsumption.ToString()
+                </td>
+                <td>
+                    @entity.ProductConsumption.ToString()
+                </td>
+                <td>
+                    @entity.NewCustomerNumber.ToString()
+                </td>
+                @if (parenthospitalentity.VersionName.Contains("仁美"))
+                {
+                    <td>
+                        @entity.NewCustomerNumberChengjiao
+                    </td>
+                    <td>
+                        @entity.Youxiaoguke
+                    </td>
+                }
+            <td>
+                @if (entity.GoalsType == 2)
+                {
+                    <a href="#" target="_self" onclick="redirectEditUrl('@entity.GoalsType','@entity.ID')">
+                        编辑
+                    </a> <a href="javascript:redirectProgressUrl('@entity.ID')">进度</a>
+                }
+                else if (entity.GoalsType == 3)
+                {
+                    <a href="#" target="_self" onclick="redirectEditUrl('@entity.GoalsType','@entity.ID')">
+                        编辑
+                    </a> <a href="javascript:redirectProgressUrl2('@entity.ID')">进度</a>
+
+                }
+                else
+                {
+                    <a href="#" target="_self" onclick="redirectEditUrl('@entity.GoalsType','@entity.ID')">
+                        编辑
+                    </a> <a href="javascript:redirectProgressUrl1('@entity.ID')">进度</a>
+
+                }
+            </td>
+            </tr>
+
+        }
+        @*       @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 10))*@
+    </tbody>
+</table>
+</form>
+    <div style="height:40px;"></div>
+<script type="text/javascript">
+       function redirectEditUrl(gt,id) {
+            //location.href = "@Url.Content("~/CenterManage/GoalEdit")?Type=Edit&gat="+gt+"&ID="+id;
+            art.dialog.open("@Url.Content("~/CenterManage/GoalEdit")?Type=Edit&gat="+gt+"&ID="+id, { title: "目标设置", width: 500, height: 270})
+        }
+
+        function redirectProgressUrl(id) {
+            location.href = "@Url.Content("~/CenterManage/GoalsProgressCompany")?ID="+id;
+        }
+
+        function redirectProgressUrl1(id) {
+            location.href = "@Url.Content("~/CenterManage/GoalsProgress")?ID="+id;
+        }
+        function redirectProgressUrl2(id) {
+            location.href = "@Url.Content("~/CenterManage/GoalsProgressCompany1")?ID="+id;
+        }
+
+</script>
+<script type="text/javascript">
+  $(function () {
+       
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / (thlen-1)) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+        
+      })
+
+</script>

@@ -1,0 +1,106 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.Statistics.StatisticsShareholderSummaryAnalysis>
+    @{
+        Layout = null;
+        int countNum = 0;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        <input type="checkbox" id="check_box" class="checkbox" onclick="selectall('checkbox')" />
+                    </th>
+                    <th>
+                        股东姓名
+                    </th>
+                    <th>
+                        发展人脉
+                    </th>
+                    <th>
+                        带动营业额
+                    </th>
+                    <th>
+                        营业额成本
+                    </th>
+
+                    @*<th>
+                           优惠金额
+                        </th>*@
+                    <th>
+                        股东分红
+                    </th>
+
+                    <th>
+                        店家利润
+                    </th>
+                    <th>
+                        加入时间/天
+                    </th>
+
+                    <th>
+                        股东几天未到店
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    countNum = countNum + 1;
+                    <tr class="ableclick">
+                        <td>
+                            @countNum
+                        </td>
+                        <td>
+                            <input type="checkbox" name="checkbox" class="checkbox" value="@entity.ShareholderId" />
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.NetworkingCount
+                        </td>
+                        <td>
+                            @entity.Revenue
+                        </td>
+                        <td>
+                            @entity.Cost
+                        </td>
+                        <td>
+                            @entity.Bonus
+                        </td>
+                        <td>
+                            @entity.HospitalBonus
+                        </td>
+                        <td>
+                            @entity.LastDay
+                        </td>
+                        <td>
+                            @entity.JoinTime
+                        </td>
+                        @*<td>
+                                @entity.TypeName
+                            </td>*@
+                    </tr>
+                }
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 10))
+            </tbody>
+        </table>
+
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+
+    <script>
+        $(function () {
+            $('#sp').text(@Model.TotalItemCount);
+            $('#networkingtotalId').text(@ViewBag.NetworkingTotal+"人");
+            $('#RevenueTotalId').text(@ViewBag.RevenueTotal+"元");
+            $('#RevenueProportionId').text(@ViewBag.RevenueProportion+"%");
+            $('#BonusTotalId').text(@ViewBag.BonusTotal+"元");
+            $('#HospitalBonusTotalId').text(@ViewBag.HospitalBonusTotal + "元");
+        });
+    </script>

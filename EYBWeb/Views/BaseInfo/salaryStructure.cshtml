@@ -1,0 +1,986 @@
+﻿@using HS.SupportComponents;
+@model PagedList<EYB.ServiceEntity.SystemEntity.UserSettingsEntity>
+    @{
+        ViewBag.Title = "用户设置";
+    }
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style type="text/css">
+        table {
+            width: 100%;
+        }
+
+        tr {
+            line-height: 26px;
+        }
+
+        td {
+            float: left;
+            line-height: 36px;
+        }
+
+        .wid200 {
+            width: 200px;
+            text-align: left;
+            line-height: 36px;
+        }
+        .salarButtons {
+            width:80px;height:25px;border-radius:4px;margin:0 auto;line-height:25px; text-align:center; cursor:pointer;border:1px solid #888; 
+        }
+        .salarButtons:hover {
+            background-color: #cb0000;
+            border: 0px;
+            color: #fff;
+        }
+    </style>
+    <div id="mainContentBody">
+        @Html.Partial("_BaseInfoControl")
+        <div id="mainContentRight">
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+            </label>薪资架构<label style="font-size:14px;color:red;">(所有框内必须有值,如果不需要框里面的填0即可)</label>
+            </div>
+            <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <style>
+
+                    .m-salaryTitle {
+                        text-align: center;
+                        font-size: 22px;
+                    }
+
+                    .mt-salaryTitle {
+                        padding: 10px;
+                        font-size: 20px;
+                        color: 4c4c4c;
+                        text-align: center;
+                    }
+
+                    .title {
+                        padding: 10px;
+                    }
+
+                    .m-salaryLR {
+                        display: flex;
+                        justify-content: flex-start;
+                        background: #fff;
+                    }
+
+                    .m-salaryCell {
+                        width: 20%;
+                        line-height: 30px;
+                        text-align: center;
+                        border-right: 1px solid #d6d6d6;
+                        border-bottom: 1px solid #d6d6d6;
+                    }
+
+                    .m-salaryCell input {
+                         width: 60%;
+                    }
+
+                    .m-salaryCel2 {
+                        width: 18.1%;
+                        line-height: 30px;
+                        text-align: center;
+                        border-right: 1px solid #d6d6d6;
+                        border-bottom: 1px solid #d6d6d6;
+                    }
+
+                    .m-salaryCell3 {
+                        width: 33.3%;
+                        line-height: 30px;
+                        text-align: center;
+                        border-right: 1px solid #d6d6d6;
+                        border-bottom: 1px solid #d6d6d6;
+                    }
+
+                    .m-salaryCel2 input {
+                        width: 100px;
+                    }
+
+                    .salarCel-input {
+                        width: 60%;
+                    }
+
+                    .m-salaryCell3 {
+                        width: 33.3%;
+                    }
+                    .sectionLeft {width:82%;height:100%;border:1px solid #d6d6d6;}
+                    .sectionRight { width:18%; padding:5px; border:1px solid #d6d6d6; line-height:25px; border-left:none;font-size:12px; }
+                    .salaryTable {
+                        margin:10px 10px 20px; padding:10px; background:#EEF5F9;border-radius:10px;
+                    }    
+            </style>
+
+
+
+
+                @*薪资架构*@
+            <div id="app">
+                <div class="m-salaryTitle"> 薪资架构</div>
+
+                @*底薪*@
+                <div class="salaryTable ">
+                    <div class="mt-salaryTitle">美容师</div>
+                    <div style="margin-bottom:10px;padding-left:10px;">底薪</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCell">美容师级别</div>
+                                    <div class="m-salaryCell">底薪(1)</div>
+                                    <div class="m-salaryCell">实操业绩</div>
+                                    <div class="m-salaryCell">月客流量</div>
+                                    <div class="m-salaryCell">底薪(2)</div>
+                                </div>
+                                <div v-for="item in  BeauticianSal" class="m-salaryLR" style="">
+                                    <div class="m-salaryCell">{{item.name}}</div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.BasicsalaryOne" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.shicao1" style="width:35%" />元
+                                        -
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.shicao2" style="width:35%" />元
+                                    </div>
+                                    <div class="m-salaryCell" style="height:31px;">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.customerNum1" style="width:20%" />客流
+                                        -
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.customerNum2" style="width:20%" />客流
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.BasicsalaryTwo" /><span> {{(item.name=='F级')?'元   ':'元/客' }}</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="sectionRight">
+                                1.每月以实操业绩和客流量定底薪，不固定。<br />
+                                2.两个人服务一人算0.5个客流<br />
+                                3.本薪资模板默认为6个等级，若没有6个等级，则请依次从下到上填入波段值。<br />
+                                4.波段值设定时请务必紧密衔接，不要跳跃设定，如实操业绩第一波段为0~8000，第二波段却设为8500~12000，这是错误的，应为8000~12000.
+                            </div>
+                        </div>
+                    </div>
+                    @*底薪*@
+                    @*新客数提成 start*@
+                    <div style="margin:10px 0;padding-left:10px;">新客数奖励</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCel2">月新客量</div>
+                                    <div class="m-salaryCel2">0个</div>
+                                    <div class="m-salaryCel2">1人</div>
+                                    <div class="m-salaryCel2">2人</div>
+                                    <div class="m-salaryCel2">3人</div>
+                                    <div class="m-salaryCel2">4人</div>
+                                    <div class="m-salaryCel2">5人以上</div>
+                                </div>
+                                <div v-for="item in  newGuests" class="m-salaryLR" style="">
+                                    <div class="m-salaryCel2">新客奖励</div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.royalty0" />元
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.royalty1" />元
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.royalty2" />元
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.royalty3" />元
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.royalty4" />元
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.royalty5" />元
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="sectionRight">&nbsp;</div>
+                        </div>
+                    </div>
+                    @*新客数提成 end*@
+                    @*实操业绩提成*@
+                    <div style="margin:10px 0;padding-left:10px;">实操业绩提成</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCel2">月实操业绩</div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautYSJY.scope1" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautYSJY.scope2" />元
+
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautYSJY.scope3" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautYSJY.scope4" />元
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautYSJY.scope5" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautYSJY.scope6" />元
+                                    </div>
+                                </div>
+                                <div v-for="item in operationPerformance" class="m-salaryLR" style="">
+                                    <div class="m-salaryCel2">{{item.name}}</div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope1" />%
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope2" />%
+                                    </div>
+                                    <div class="m-salaryCel2">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope3" />%
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+                            <div class="sectionRight">
+                                若计算薪资时实操业绩不分指定与非指定，则请将指定客提成和非指定提成设置为一样即可。
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding-left:10px;display:none;">是否开启实操业绩公积金 <input type="radio" v-model="isAccum" value="1" />是 <input type="radio" v-model="isAccum" value="0" />否 </div>
+                    <div style="padding-left:10px;margin-top:10px;" v-if="isAccum=='1'?true:false">实操业绩超过 <input type="number" value="" v-model="accum" style="width:100px;" /> 按 {{accum?accum:0}} 元计算,即单个项目实操业绩超过 {{accum?accum:0}}元的部分计入店公积金 </div>
+                    @*实操业绩提成*@
+                    @*店基础现金总收入*@
+                    <div style="margin:10px auto;padding-left:10px;">店基础现金总收入</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCell">店基础现金总收入</div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope1" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope2" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope3" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope4" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope5" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope6" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope7" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="BeautDJCXJ.scope8" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:32%;" v-model="BeautDJCXJ.scope9" />元-
+                                        <input type="number" name="name" value="" style="width:32%;" v-model="BeautDJCXJ.scope10" />元
+                                    </div>
+                                </div>
+                                <div v-for="item in storeRevenue" class="m-salaryLR" style="">
+                                    <div class="m-salaryCell">{{item.name}}</div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope1" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope2" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope3" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope4" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope5" />%
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="sectionRight">&nbsp;</div>
+                        </div>
+                    </div>
+                    @*店基础现金总收入*@
+                    @*个人现金业绩 start*@
+
+                    <div style="margin:10px auto;padding-left:10px;">个人大项目现金业绩</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCell3">个人大项目现金业绩</div>
+                                    <div class="m-salaryCell3">指定客</div>
+                                    <div class="m-salaryCell3">非指定客</div>
+                                </div>
+                                <div v-for="item in  personalRoyalty" class="m-salaryLR" style="">
+                                    <div class="m-salaryCell3">个人提成</div>
+                                    <div class="m-salaryCell3">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope1" />%
+                                    </div>
+                                    <div class="m-salaryCell3">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope2" />%
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="sectionRight"></div>
+                        </div>
+                    </div>
+
+                    @*个人现金业绩 end*@
+
+                    @*平均每天*@
+                    <div style="padding-left:10px;margin:10px auto; ">卡扣业绩提成 <input type="number" value="" v-model="cardBuckle" />% </div>
+                    <div style="padding-left:10px;margin:10px auto; ">月客流项目奖励：平均每天 &nbsp; <input type="number" v-model="beautReward.customerNum" /> 客流 &nbsp; <input type="number" v-model="beautReward.projectNum" /> 个项目<input type="number" v-model="beautReward.price" /> 元 </div>
+                    <div style="padding-left:10px;margin:10px auto; ">月客流项目奖励：平均每天 &nbsp; <input type="number" v-model="beautReward1.customerNum" /> 客流 &nbsp; <input type="number" v-model="beautReward1.projectNum" /> 个项目<input type="number" v-model="beautReward1.price" /> 元 </div>
+                    <div style="padding-left:10px;margin:10px auto; display:none; ">旷工扣罚倍数<input type="number" v-model="kuangGongMRS"> </div>
+                    <div style="padding-left:10px;margin:10px auto; ">是否有特殊产品或特殊项目提成方式 <input type="radio" v-model="isSpecial" value="1" />是 <input type="radio" v-model="isSpecial" value="0" />否 </div>
+                    <div style="padding-left:10px;margin:10px auto; " v-if="isSpecial=='1'?true:false">特殊产品,提成点 <input type="number" value="" v-model="specialProduct" />% </div>
+                    <div style="padding-left:10px;margin:10px auto; " v-if="isSpecial=='1'?true:false">特殊项目,提成点 <input type="number" value="" v-model="specialProject" />%</div>
+                    <div style="padding-left:10px;margin:10px auto; "> 是否开启家居服务提成(家居服务返单提成) <input type="radio" v-model="isHomePro" value="1" />是 <input type="radio" v-model="isHomePro" value="0" />否</div>
+                    <div style="padding-left:10px;margin:10px auto; " v-if="isHomePro==1?true:false">家居服务提成 <input type="number" v-model="HomeProTiChen" value="" />%</div>
+                    <div style="padding-left:10px;display:none; "> 总底薪是否与出勤天数挂钩 <input type="radio" v-model="isAchieMRS" value="1" />是 <input type="radio" v-model="isAchieMRS" value="0" />否</div>
+                    <div style="padding-left:10px; ">是否开启全勤奖 <input type="radio" v-model="isFullAttendMRS" value="1" />是 <input type="radio" v-model="isFullAttendMRS" value="0" />否 </div>
+                    <div style="padding-left:10px;margin:10px auto; " v-if="isFullAttendMRS==1?true:false">全勤奖励 <input type="number" v-model="FullAttendRewMRS" value="" /> </div>
+                    @*<div style="padding-left:10px;">绩效工资是否与考勤挂钩 <input type="radio"  v-model="isBeauticianCheckMRS" value="1" />是 <input type="radio"  v-model="isBeauticianCheckMRS" value="0" />否 </div>*@
+
+                </div>
+
+                @*平均每天*@
+                @*店长薪资*@
+                <div class="salaryTable">
+                    <div class="mt-salaryTitle">店长薪资</div>
+                    <div>
+                        <div style="margin-bottom:10px;padding-left:10px;">底薪</div>
+                        <div style="  padding-left:10px;">
+
+                            <div class="m-salaryLR">
+                                <div class="sectionLeft">
+                                    <div class="m-salaryLR">
+                                        <div class="m-salaryCell">店长级别</div>
+                                        <div class="m-salaryCell">底薪(1)</div>
+                                        <div class="m-salaryCell">店基础现金业绩</div>
+                                        <div class="m-salaryCell">月人头数</div>
+                                        <div class="m-salaryCell">底薪(2)</div>
+                                        <div class="m-salaryCell" style="display:none; ">特别奖励</div>
+                                    </div>
+                                    <div v-for="item in shopownerSal" class="m-salaryLR" style="">
+                                        <div class="m-salaryCell">{{item.name}}</div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.BasicsalaryOne" />元
+                                        </div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.shicao1" style="width:35%" />元
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.shicao2" style="width:35%" />元
+                                        </div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.peopleNum1" style="width:20%" />人头
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.peopleNum2" style="width:20%" />人头
+                                        </div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.BasicsalaryTwo" />元<span v-if="item.name!='E级'?true:false">/人</span>
+                                        </div>
+                                        <div class="m-salaryCell"  style="display:none; ">
+
+                                            <input type="text" name="name" class="salarCel-input" v-model="item.specialAward" />元
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="sectionRight"> &nbsp; </div>
+                            </div>
+
+                        </div>
+                        <div style="margin:10px auto; padding-left:10px;">同比上月人头数减少一个扣 <input type="number" name="name" v-model="deductMoney" /> 元</div>
+                        <div>
+                            <div style="margin-bottom:10px;padding-left:10px;">店基础现金业绩总额</div>
+                            <div style="padding-left:10px;">
+                                <div class="m-salaryLR">
+                                    <div class="sectionLeft">
+                                        <div class="m-salaryLR">
+                                            <div class="m-salaryCell">店基础现金业绩总额</div>
+                                            <div class="m-salaryCell">
+
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope1" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope2" />元
+
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope3" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope4" />元
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope5" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope6" />元
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope7" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope8" />元
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope9" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="shopownerDJCXJ.scope10" />元
+                                            </div>
+                                        </div>
+                                        <div v-for="item in  shopownerAche" class="m-salaryLR" style="">
+                                            <div class="m-salaryCell">{{item.name}}</div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope2" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope3" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope4" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope5" />%
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="sectionRight">&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="padding-left:10px;display:none;">是否参与考勤大项目挂钩 <input type="radio" name="name" v-model="isShopownerCheck" value="1" />是 <input type="radio" name="name" v-model="isShopownerCheck" value="0" />否 </div>
+                        <div style="padding-left:10px; ">是否开启全勤奖 <input type="radio" v-model="isFullAttendDZ" value="1" />是 <input type="radio" v-model="isFullAttendDZ" value="0" />否 </div>
+                        <div style="padding-left:10px;margin:10px auto; " v-if="isFullAttendDZ==1?true:false">全勤奖励 <input type="number" v-model="FullAttendRewDZ" value="" /> </div>
+                        <div style="padding-left:10px;margin:10px auto; display:none;">旷工扣罚倍数<input type="number" v-model="kuangGongDZ"></div>
+                        <div style="padding-left:10px;margin:10px auto; ">是否开启超休6天1.5倍扣罚 <input type="radio" v-model="isExceedRestshopowner" value="1" />是 <input type="radio" v-model="isExceedRestshopowner" value="0" />否</div>
+                        @*<div style="padding-left:10px;display:none; "> 总底薪是否与出勤天数挂钩  <input type="radio" v-model="isAchieDZ" value="1" />是 <input type="radio" v-model="isAchieDZ" value="0" />否</div>*@
+                        <div style="padding-left:10px;display:none; ">绩效工资是否与考勤挂钩 <input type="radio" v-model="isBeauticianCheckDZ" value="1" />是 <input type="radio" v-model="isBeauticianCheckDZ" value="0" />否 </div>
+                    </div>
+                </div>
+                @*店长薪资*@
+
+                @*顾问工资*@
+                <div class="salaryTable">
+                    <div class="mt-salaryTitle">顾问工资</div>
+                    <div>
+                        <div style="margin-bottom:10px;padding-left:10px;">底薪</div>
+                        <div style="padding-left:10px;">
+                            <div class="m-salaryLR">
+                                <div class="sectionLeft">
+                                    <div class="m-salaryLR">
+                                        <div class="m-salaryCell">顾问级别</div>
+                                        <div class="m-salaryCell">底薪(1)</div>
+                                        <div class="m-salaryCell">月顾问管理基础现金业绩</div>
+                                        <div class="m-salaryCell">月顾问管理人头数</div>
+                                        <div class="m-salaryCell">底薪(2)</div>
+                                    </div>
+                                    <div v-for="item in  adviserSal" class="m-salaryLR" style="">
+                                        <div class="m-salaryCell">{{item.name}}</div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.BasicsalaryOne" />元
+                                        </div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.shicao1" style="width:35%" />元
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.shicao2" style="width:35%" />元
+                                        </div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.peopleNum1" style="width:20%" />人头
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.peopleNum2" style="width:20%" />人头
+                                        </div>
+                                        <div class="m-salaryCell">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.BasicsalaryTwo" />元<span v-if="item.name!='E级'?true:false">/人</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="sectionRight"> &nbsp;</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="margin:10px auto; padding-left:10px;">店基础现金业绩总额</div>
+                            <div style="padding-left:10px;">
+                                <div class="m-salaryLR">
+                                    <div class="sectionLeft">
+                                        <div class="m-salaryLR">
+                                            <div class="m-salaryCell">店基础现金业绩总额</div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope1" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope2" />元
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope3" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope4" />元
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope5" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope6" />元
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope7" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope8" />元
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope8" />元-
+                                                <input type="number" name="name" value="" style="width:30%;" v-model="adviserDJCXJL.scope9" />元
+                                            </div>
+                                        </div>
+                                        <div v-for="item in  advererAche" class="m-salaryLR" style="">
+                                            <div class="m-salaryCell">{{item.name}}</div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope2" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope3" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope4" />%
+                                            </div>
+                                            <div class="m-salaryCell">
+                                                <input type="number" name="name" class="salarCel-input" v-model="item.scope5" />%
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="sectionRight">&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin:10px auto; padding-left:10px;">同比上月人头数减少一个扣 <input type="number" name="name" v-model="deductMoney1" /> 元</div>
+                        <div style="padding-left:10px; ">是否开启全勤奖 <input type="radio" v-model="isFullAttendGW" value="1" />是 <input type="radio" v-model="isFullAttendGW" value="0" />否 </div>
+                        <div style="padding-left:10px;margin:10px auto; " v-if="isFullAttendGW==1?true:false">全勤奖励 <input type="number" v-model="FullAttendRewGW" value="" /> </div>
+                        <div style="padding-left:10px;margin:10px auto;display:none; ">旷工扣罚倍数<input type="number" v-model="kuangGongGW"> </div>
+                        <div style="padding-left:10px;margin:10px auto; ">是否开启超休6天1.5倍扣罚 <input type="radio" v-model="isExceedRestAdver" value="1" />是 <input type="radio" v-model="isExceedRestAdver" value="0" />否</div>
+                        <div style="padding-left:10px;display:none; "> 总底薪是否与出勤天数挂钩  <input type="radio" v-model="isAchieGW" value="1" />是 <input type="radio" v-model="isAchieGW" value="0" />否</div>
+                        <div style="padding-left:10px; display:none;  ">绩效工资是否与考勤挂钩 <input type="radio" v-model="isBeauticianCheckGW" value="1" />是 <input type="radio" v-model="isBeauticianCheckGW" value="0" />否 </div>
+                    </div>
+                </div>
+                @*顾问工资*@
+
+                @*店长顾问责任*@
+                <div class="salaryTable">
+                    <div class="mt-salaryTitle">店长责任指标</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCell3">项目</div>
+                                    <div class="m-salaryCell3">月基础现金</div>
+                                    <div class="m-salaryCell3">客流量</div>
+                                    <div class="m-salaryCell3">新客数量</div>
+                                    <div class="m-salaryCell3" style="display:none; ">沉睡客激活</div>
+                                </div>
+                                <div v-for="(item,index) in  asverBeauDuty" class="m-salaryLR" style="">
+                                    <div class="m-salaryCell3">{{item.name}}</div>
+                                    <div class="m-salaryCell3">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope1" style="width:35%;" />元
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope12" style="width:35%;" />元
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope1" /></span>
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+                                    <div class="m-salaryCell3">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope2" style="width:30%;" />人次
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope22" style="width:30%;" />人次
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope2" /></span>
+
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+                                    <div class="m-salaryCell3">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope3" style="width:35%;" />个
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope32" style="width:35%;" />个
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope3" /></span>
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+                                    <div class="m-salaryCell3" style="display:none; ">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope4" style="width:35%;" />个
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope42" style="width:35%;" />个
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope4" /></span>
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="sectionRight"></div>
+                        </div>
+                    </div>
+                </div>
+                @*店长顾问责任*@
+
+                @*店长顾问责任*@
+                <div class="salaryTable">
+                    <div class="mt-salaryTitle">顾问责任指标</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCell3">项目</div>
+                                    <div class="m-salaryCell3">月基础现金</div>
+                                    <div class="m-salaryCell3">客流量</div>
+                                    <div class="m-salaryCell3">新客数量</div>
+                                    <div class="m-salaryCell3" style="display:none; ">沉睡客激活</div>
+                                </div>
+                                <div v-for="(item,index) in  asverBeauDuty1" class="m-salaryLR" style="">
+                                    <div class="m-salaryCell3">{{item.name}}</div>
+                                    <div class="m-salaryCell3">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope1" style="width:35%;" />元
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope12" style="width:35%;" />元
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope1" /></span>
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+                                    <div class="m-salaryCell3">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope2" style="width:30%;" />人次
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope22" style="width:30%;" />人次
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope2" /></span>
+
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+                                    <div class="m-salaryCell3">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope3" style="width:35%;" />个
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope32" style="width:35%;" />个
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope3" /></span>
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+                                    <div class="m-salaryCell3" style="display:none; ">
+                                        <span v-if="index==0">
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope4" style="width:35%;" />个
+                                            -
+                                            <input type="number" name="name" class="salarCel-input" v-model="item.scope42" style="width:35%;" />个
+                                        </span>
+                                        <span v-else><input type="number" name="name" class="salarCel-input" v-model="item.scope4" /></span>
+                                        <span v-if="index==0">&nbsp;</span>
+                                        <span v-else>元</span>
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <div class="sectionRight"></div>
+                        </div>
+                    </div>
+                </div>
+                @*店长顾问责任*@
+                @*前台工资*@
+                <div class="salaryTable">
+                    <div class="mt-salaryTitle">前台工资</div>
+                    <div style="margin-bottom:10px;padding-left:10px;">底薪</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCell3">前台级别</div>
+                                    <div class="m-salaryCell3">月客流量</div>
+                                    <div class="m-salaryCell3">底薪</div>
+
+                                </div>
+                                <div v-for="item in  receptionSal" class="m-salaryLR" style="">
+                                    <div class="m-salaryCell3">{{item.name}}</div>
+                                    <div class="m-salaryCell3">
+                                        <input type="number" name="name" v-model="item.customerNum1" class="salarCel-input" v-model="item.keliuliang" style="width:30%;" /> 客流-
+                                        <input type="number" name="name" v-model="item.customerNum2" style="width:30%;" />客流
+                                    </div>
+                                    <div class="m-salaryCell3">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.BasicsalaryOne" />元
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="sectionRight">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin:10px auto; padding-left:10px;">店基础现金业绩总额</div>
+                    <div style="padding-left:10px;">
+                        <div class="m-salaryLR">
+                            <div class="sectionLeft">
+                                <div class="m-salaryLR">
+                                    <div class="m-salaryCell">店基础现金业绩总额</div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope1" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope2" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope3" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope4" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope5" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope6" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope7" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope8" />元
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope9" />元-
+                                        <input type="number" name="name" value="" style="width:30%;" v-model="receptionDJCXJ.scope10" />元
+                                    </div>
+                                </div>
+                                <div v-for="item in  receptionAche" class="m-salaryLR" style="">
+                                    <div class="m-salaryCell">{{item.name}}</div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope1" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope2" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope3" />%
+                                    </div>
+                                    <div class="m-salaryCell">
+                                        <input type="number" name="name" class="salarCel-input" v-model="item.scope4" />%
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="sectionRight">&nbsp;</div>
+                        </div>
+                    </div>
+                    <div style="padding-left:10px;margin:10px auto; ">是否开启全勤奖 <input type="radio" v-model="isFullAttendQT" value="1" />是 <input type="radio" v-model="isFullAttendQT" value="0" />否 </div>
+                    <div style="padding-left:10px;margin:10px auto; " v-if="isFullAttendQT==1?true:false">全勤奖励 <input type="number" v-model="FullAttendRewQT" value="" /> </div>
+                    @*<div style="padding-left:10px;margin:10px auto;  ">旷工扣罚倍数<input type="number" v-model="kuangGongQT"> </div>
+                    <div style="padding-left:10px;margin:10px auto; "> 底薪是否与出勤天数挂钩 <input type="radio" v-model="isAchieQT" value="1" />是 <input type="radio" v-model="isAchieQT" value="0" />否</div>
+                    <div style="padding-left:10px;margin:10px auto; ">绩效工资是否与职能考评挂钩 <input type="radio" v-model="isBeauticianCheckQT" value="1" />是 <input type="radio" v-model="isBeauticianCheckQT" value="0" />否 </div>*@
+                </div>
+                
+                <div class="salaryTable">
+                    <div class="mt-salaryTitle">全店统一</div>
+                    <div style="padding-left:10px;margin:10px auto;  ">旷工扣罚倍数<input type="number" v-model="kuangGongQT"> </div>
+                    <div style="padding-left:10px;margin:10px auto; "> 每月休息3天还是休息4天（注意：员工一个月休息几天由实际出勤天数结合店休假制度决定）  <input type="radio" v-model="isAchieDZ" value="1" />3天 <input type="radio" v-model="isAchieDZ" value="0" />4天</div>
+                    <div style="padding-left:10px;margin:10px auto; "> 总底薪（奖励&扣罚和职责除外）是否与出勤天数挂钩 <input type="radio" v-model="isAchieQT" value="1" />是 <input type="radio" v-model="isAchieQT" value="0" />否</div>
+                    <div style="padding-left:10px;margin:10px auto; ">总绩效工资（奖励&扣罚和职责除外）是否与职能考评挂钩 <input type="radio" v-model="isBeauticianCheckQT" value="1" />是 <input type="radio" v-model="isBeauticianCheckQT" value="0" />否 </div>
+                </div>
+                @*前台工资*@
+                <div class="salarButtons" v-show="types=='add'?true:false" v-on:click="setSalar('add')">保存</div>
+                <div class="salarButtons" v-show="types=='edit'?true:false" v-on:click="setSalar('edit')">保存</div>
+                <div style="height:30px;"></div>
+                @*薪资架构*@
+
+
+            </div>
+
+
+
+            </div>
+          
+            <script>
+                    new Vue({
+                        el: '#app',
+                        data: {
+                            BeauticianSal: [
+                                { name: "A级", BasicsalaryOne: '750', shicao1: 24000,shicao2:99999999,customerNum1: 80, customerNum2:999, BasicsalaryTwo: '14.5'},
+                                { name: "B级", BasicsalaryOne: '700',  shicao1: 20000,shicao2:24000,customerNum1: 70, customerNum2:80, BasicsalaryTwo: '14'  },
+                                { name: "C级", BasicsalaryOne: '650',  shicao1: 16000,shicao2:20000,customerNum1: 60, customerNum2:70, BasicsalaryTwo: '13.5'  },
+                                { name: "D级", BasicsalaryOne: '600',  shicao1: 12000,shicao2:16000,customerNum1: 50, customerNum2:60, BasicsalaryTwo: '13' },
+                                { name: "E级", BasicsalaryOne: '550', shicao1: 8000,shicao2:12000,customerNum1: 40, customerNum2:50, BasicsalaryTwo: '12.5'  },
+                                { name: "F级", BasicsalaryOne: '500',  shicao1: 0,shicao2:8000,customerNum1: 0, customerNum2:40, BasicsalaryTwo: '500'  }
+                            ],
+                            shopownerSal: [
+                                { name: "A级", BasicsalaryOne: '1400',shicao1: 250000,shicao2:9999999,peopleNum1: 130, peopleNum2:999,BasicsalaryTwo: '13.5',specialAward:0},
+                                { name: "B级", BasicsalaryOne: '1350',shicao1: 250000,shicao2:300000,peopleNum1: 120, peopleNum2:130, BasicsalaryTwo: '13',specialAward:300 },
+                                { name: "C级", BasicsalaryOne: '1300',shicao1: 200000,shicao2:250000,peopleNum1: 110, peopleNum2:120, BasicsalaryTwo: '12.5',specialAward:600  },
+                                { name: "D级", BasicsalaryOne: '1250',shicao1: 150000,shicao2:250000,peopleNum1: 100, peopleNum2:110, BasicsalaryTwo: '12',specialAward:900  },
+                                { name: "E级", BasicsalaryOne: '1200',shicao1: 0,shicao2:150000,peopleNum1: 0, peopleNum2:100, BasicsalaryTwo: '1200',specialAward:1200  },
+                             ],
+                            newGuests: [
+                                { royalty0: '-50', royalty1: '100', royalty2: '200', royalty3: '400', royalty4: '800', royalty5: '1600' }
+                            ],
+                            storeRevenue: [
+                                { name: '个人会员卡指定客提成1', scope1: '1.5', scope2: '2.0', scope3: '2.5', scope4: '3.0', scope5: '3.5' },
+                                { name: '个人会员卡非指定客提成', scope1: '1.0', scope2: '1.5', scope3: '2.0', scope4: '2.5', scope5: '3.0' },
+                                { name: '个人现金疗程项目指定客提成', scope1: '2.5', scope2: '3.0', scope3: '3.5', scope4: '4.0', scope5: '4.5' },
+                                { name: '个人现金疗程项目非指定客提成', scope1: '1.5', scope2: '2.0', scope3: '2.5', scope4: '3.0', scope5: '3.5' },
+                                { name: '个人现金家居指定客提成', scope1: '2.5', scope2: '3.0', scope3: '3.5', scope4: '4.0', scope5: '4.5' },
+                                { name: '个人现金家居非指定客提成', scope1: '1.5', scope2: '2.0', scope3: '2.5', scope4: '3.0', scope5: '3.5' },
+                            ],
+                            personalRoyalty: [{ scope1: 4, scope2: 5 }],
+                            shopownerAche: [{ name: '店综合业绩提成', scope: 1.8, scope2: 2.0, scope3: 2.2, scope4: 2.4, scope5: 2.6 }, { name: '大项目,合作项目', scope: 2.0, scope1: 2.0, scope2: 2.0, scope3: 2.0, scope4: 2.0 }],
+                            adviserSal: [
+                                { name: "A级", BasicsalaryOne: '1100',shicao1: 150000,shicao2:9999999,peopleNum1: 65, peopleNum2:999, BasicsalaryTwo: '23' },
+                                { name: "B级", BasicsalaryOne: '1150',shicao1: 125000,shicao2:150000,peopleNum1: 60, peopleNum2:65, BasicsalaryTwo: '22' },
+                                { name: "C级", BasicsalaryOne: '1100',shicao1: 100000,shicao2:125000,peopleNum1: 55, peopleNum2:60,BasicsalaryTwo: '21' },
+                                { name: "D级", BasicsalaryOne: '1050',shicao1: 75000,shicao2:100000,peopleNum1: 50, peopleNum2:55, BasicsalaryTwo: '20'},
+                                { name: "E级", BasicsalaryOne: '1000', shicao1: 0,shicao2:75000,peopleNum1: 0, peopleNum2:50, BasicsalaryTwo: '1000' },
+                              ],
+                            advererAche: [{ name: '店综合业绩提成', scope: 1.6, scope2: 1.7, scope3: 1.8, scope4: 1.9, scope5: 2.0 }, { name: '大项目,合作项目', scope: 2.0, scope: 2.0, scope: 2.0, scope: 2.0, scope: 2.0 }],
+                            asverBeauDuty:
+                            [{ name: '月目标', scope1: '150000',scope12: '200000', scope2: "330",scope22:'360', scope3: '4',scope32: '8', scope4: '2',scope42: '3'},
+                            { name: '低于目标罚', scope1: '-100', scope2: '-100', scope3: '-100', scope4: '-100' },
+                            { name: '高于目标奖', scope1: '100', scope2: '100', scope3: '100', scope4: '100' },
+                             ],
+                             asverBeauDuty1:
+                            [{ name: '月目标', scope1: '150000',scope12: '200000', scope2: "330",scope22:'360', scope3: '4',scope32: '8', scope4: '2',scope42: '3'},
+                            { name: '低于目标罚', scope1: '-100', scope2: '-100', scope3: '-100', scope4: '-100' },
+                            { name: '高于目标奖', scope1: '100', scope2: '100', scope3: '100', scope4: '100' },
+                            ],
+                            receptionSal: [
+                                { name: "A级",customerNum1:420,customerNum2:999, BasicsalaryOne: '2300', },
+                                { name: "B级" ,customerNum1:390,customerNum2:420, BasicsalaryOne: '2200',},
+                                { name: "C级", customerNum1:360,customerNum2:390, BasicsalaryOne: '2100', },
+                                { name: "D级", customerNum1:330,customerNum2:360, BasicsalaryOne: '2000', },
+                                { name: "E级", customerNum1:0,customerNum2:330, BasicsalaryOne: '1900', },
+                               ],
+                            receptionAche: [{ name: '提成', scope: 0.3, scope1: 0.35, scope2: 0.4, scope3: 0.45, scope4: 0.5 },
+                            { name: '大项目合作项目业绩提成', scope: 0.3, scope1: 0.3, scope2: 0.3, scope3: 0.3, scope4: 0.3 }],
+                            operationPerformance: [{name:'指定客提成',scope1:7,scope2:8,scope3:9},{name:'非指定客提成',scope1:5,scope2:6,scope3:7}],
+                            types: 'edit',
+                            salary1: '',
+                            isBeauticianCheck: 1,
+                            isShopownerCheck: 1,
+                            beautReward: { customerNum: '2.5', projectNum: '4', price: '200' },
+                            beautReward1: { customerNum: '3', projectNum: '5', price: '400' },
+                            deductMoney: '20',
+                            BeautYSJY:{ scope1:0, scope2: 12000, scope3: 12000, scope4: 20000, scope5: 20000, scope6: 9999999, }, //美容师月实操业绩
+                            BeautDJCXJ:{scope1:0, scope2: 150000, scope3: 150000, scope4: 200000, scope5: 200000, scope6: 250000,scope7: 300000, scope8: 350000,scope9: 350000, scope10:9999999, }, //美容师店基础现金业绩总额
+                            shopownerDJCXJ:{ scope1:0, scope2: 150000, scope3: 150000, scope4: 200000, scope5: 200000, scope6: 250000, scope7: 300000, scope8: 350000, scope9: 350000, scope10: 9999999, }, // 店长店基础现金业绩总额
+                            adviserDJCXJL:{scope1:0, scope2: 150000, scope3: 150000, scope4: 200000, scope5: 200000, scope6: 250000, scope7: 300000, scope8: 350000, scope9: 350000, scope10: 9999999, }, //顾问店基础现金业绩总额
+                            receptionDJCXJ:{scope1:0, scope2: 150000, scope3: 150000, scope4: 200000, scope5: 200000, scope6: 250000, scope7: 300000, scope8: 350000, scope9: 350000, scope10: 9999999},  // 前台店基础现金业绩总额
+                            deductMoney1: 30,
+                            isAccum: '0', 
+                            accum: 800,
+                            isSpecial: '0', 
+                            isHomePro: '0',
+                            cardBuckle: '7',
+                            HomeProTiChen: 7, 
+                            isExceedRestAdver: '0',
+                            isExceedRestshopowner: '0',
+                            isFullAttendMRS: "0",
+                            isFullAttendGW: '0', 
+                            isFullAttendDZ: '0', 
+                            isFullAttendQT: '0',
+                            kuangGongMRS: 3,
+                            kuangGongQT: 3,
+                            kuangGongGW: 3,
+                            kuangGongDZ: 3,
+                            isAchieMRS: '0',
+                            isAchieQT: '0',
+                            isAchieDZ: '0',
+                            isAchieGW: '0',
+                            specialProduct: 5,
+                            specialProject: 4,
+                            isBeauticianCheckQT: "0",
+                            isBeauticianCheckGW: "0",
+                            isBeauticianCheckDZ: "0",
+                            isBeauticianCheckMRS: '0',
+                            FullAttendRewMRS: 50,
+                            FullAttendRewGW: 50,
+                            FullAttendRewDZ: 50,
+                            FullAttendRewQT: 50,
+
+                            
+                        },
+                        mounted() {
+                          this.initSalar();
+                        },
+                        methods: {
+                            setSalar(ty) {
+                                let _that = this;
+                                let salary3 = ['BeauticianSal', 'newGuests', 'storeRevenue', 'personalRoyalty', 'shopownerSal', 'shopownerAche', 'adviserSal', 'asverBeauDuty', 'asverBeauDuty1', 'receptionSal', 'receptionAche', 'operationPerformance', 'isShopownerCheck', 'deductMoney', 'beautReward', 'beautReward1', 'BeautYSJY', 'BeautDJCXJ', 'shopownerDJCXJ', 'adviserDJCXJL', 'receptionDJCXJ', 'deductMoney1'];
+                                let salary1 = 'isAccum + accum + isSpecial + isHomePro + cardBuckle + HomeProTiChen + isExceedRestAdver + isExceedRestshopowner + isFullAttendMRS+isFullAttendGW+isFullAttendDZ+isFullAttendQT+kuangGongMRS+kuangGongQT+kuangGongGW+kuangGongDZ+isAchieMRS+isAchieQT+isAchieDZ+isAchieGW+specialProduct+specialProject+isBeauticianCheckQT+isBeauticianCheckGW+isBeauticianCheckDZ+isBeauticianCheckMRS+advererAche'
+                                let arrSal2 =['FullAttendRewMRS','FullAttendRewGW','FullAttendRewDZ','FullAttendRewQT']
+                                let arrSal = [...salary3, ...salary1.split("+"), ...arrSal2];
+                                let salary2 = '';
+                                for (let item of arrSal) {
+                                    let a = item.replace(/\s*/g,"");
+                                    salary2=salary2+'|||'+a+'|||'+JSON.stringify(this[a])
+                                }
+                                salary2 = salary2.slice(3);
+                                if (salary2.length> 8000) {
+                                    console.log(salary2.length)
+                                }
+                                $.ajax({
+                                         type: "POST",
+                                         url: "@Url.Content("/BaseInfo/SetSalary")",
+                                         dataType: "json",
+                                         data: { salar: salary2, types: ty },
+                                         success: function (data) {
+                                             _that.initSalar();
+                                             if (data == 1) {
+                                                 alert('保存成功')
+                                             } else {
+                                                 alert('保存成功')
+                                             }
+                                         }
+                               });
+                            },
+                            initSalar() {
+                               let _that = this;
+                               $.ajax({
+                                     type: "POST",
+                                     url: "@Url.Content("/BaseInfo/InitSalary")",
+                                     dataType: "json",
+                                        success: function (data) {
+                                        if (data) {
+                                            _that.types = 'edit';
+                                            let arr = data.split('|||');
+                                                _that[arr[0]] = JSON.parse(arr[1]);
+                                                for (let i = 2; i < arr.length; i++) {
+                                                    if ((i % 2) == 0) {
+                                                        _that[arr[i]] = [];
+                                                        _that[arr[i]] = JSON.parse(arr[i+1]);
+                                                        }
+                                                    }
+                                            } else {
+                                                _that.types='add'
+                                            }
+
+                                    }
+                               });
+                            }
+                        },
+                        watch: {
+                            isAccum(val) {
+                                console.log(val);
+                            }
+                        }
+                    })
+            </script>
+
+            <script>
+
+
+
+            </script>
+
+
+          

@@ -1,0 +1,348 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    Layout = null;
+    decimal Price = 0;
+    decimal OtherXianjin = 0;
+    decimal Weixin = 0;
+    decimal Zhufubao = 0;
+    decimal Xianjin = 0;
+    decimal Yinlianka = 0;
+    decimal Chuzhika = 0;
+    decimal ZengChuzhika = 0;
+    decimal Huakouka = 0;
+    decimal OtherPay = 0;
+    decimal QianPrice = 0;
+}
+<style>
+    /*******表格********/
+    .gridTable tbody
+    {
+        display: block;
+    }
+    .gridTable tr
+    {
+        display: block;
+    }
+    .gridTable th
+    {
+        width: 200px;
+        line-height: 40px;
+    }
+    .gridTable td
+    {
+        width: 200px;
+    }
+</style>
+<form action="" method="post" id="submitform">
+<table class="gridTable" style="border-collapse: collapse; overflow: scroll;">
+    <thead style="display: block; position: fixed;">
+        <tr>
+            <th @(ViewBag.orderField == "DocumentNumber" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="DocumentNumber">
+                流水号
+            </th>
+            <th @(ViewBag.orderField == "OrderType" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="OrderType">
+                业务类型
+            </th>
+            <th @(ViewBag.orderField == "MemberNo" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MemberNo">
+                卡号
+            </th>
+            <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                姓名
+            </th>
+            <th>
+                订单金额
+            </th>
+            <th>
+                现金
+            </th>
+            <th>
+                刷卡
+            </th>
+            <th>
+                支付宝
+            </th>
+            <th>
+                微信
+            </th>
+            @*<th>
+            其他现金
+        </th>*@
+
+            <th>
+                总现金
+            </th>
+            <th>
+                储值卡划扣
+            </th>
+            <th>
+                赠卡划扣
+            </th>
+            <th>
+                疗程消耗
+            </th>
+
+            @{
+                if (ViewBag.ParentHospitalID != 708)
+                {
+                    <th>
+                        券类
+                    </th>
+                }
+            }
+
+            <th @(ViewBag.orderField == "QianPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="QianPrice">
+                欠款
+            </th>
+            @{
+                if (ViewBag.HospitalID == 2 || ViewBag.HospitalID == 1017)
+                {
+                    <th>积分消费</th>
+                }
+            }
+            <th>
+                详情
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height: 50px;">
+            <td colspan="11">
+            </td>
+        </tr>
+        @foreach (var entity in Model)
+        {
+            //Price = Price + entity.Price;
+            //Xianjin = Xianjin + entity.Xianjin;
+            //Zhufubao = Zhufubao + entity.Zhifubao;
+            //Weixin = Weixin + entity.Weixin;
+
+            //OtherXianjin = OtherXianjin + (entity.SumMoney - entity.Xianjin - entity.Yinlianka);
+            //Yinlianka = Yinlianka + entity.Yinlianka;
+            //Chuzhika = Chuzhika + entity.Chuzhika;
+            //ZengChuzhika = ZengChuzhika + entity.ZengChuzhika;
+
+            //Huakouka = Huakouka + entity.Huakouka;
+            //OtherPay = OtherPay + entity.OtherPay;
+            //QianPrice = QianPrice + entity.QianPrice;
+           
+    <tr @(entity.IsArchives == 1 ? "style=background:#e7f6ff" : "")>
+        @{
+            @*if (ViewBag.ParentHospitalID != 708)
+            {
+                <td>
+                    @entity.OrderNo
+                </td>
+            }
+            else
+            {*@
+
+                <td>
+                    @entity.DocumentNumber @(entity.IsArchives == 1 ? Html.Raw("(<label style='color:red;'>变更单据</label>)") : null)
+                </td>
+
+            @*}*@
+        }
+        <td>
+            @*汪 为把购买充值卡和疗程卡分开 2019-8-17 bgein*@
+            @*@EYB.Web.Code.PageFunction.GetorderType(entity.OrderType)*@
+            @if (entity.OrderType == 2 && entity.BuyType == 1)
+            {
+                <span>充值办卡</span>
+            }
+            else if (entity.OrderType == 2 && entity.BuyType == 0)
+            {
+                <span>购买疗程</span>
+            }
+            else if (entity.OrderType == 1)
+            {
+                <span>项目产品</span>
+            }
+            else if (entity.OrderType == 4)
+            {
+                <span>还款</span>
+            }
+            else if (entity.OrderType == 5)
+            {
+                <span>退换</span>
+            }
+            @*汪 end*@
+        </td>
+        <td>
+            @entity.MemberNo
+        </td>
+        <td>
+            <a style="color: Blue;" href="javascript:OpenPatientDetail(@entity.UserID,1)">@entity.UserName</a>
+        </td>
+        <td>
+            @entity.Price
+        </td>
+        <td>
+            @entity.Xianjin
+        </td>
+        @{
+            if (entity.UserID == 158702)
+            {
+                <td>
+                    2980.00
+                </td>
+            }
+            else
+            {
+                <td>
+                    @entity.Yinlianka
+                </td>
+            }
+        }
+
+        @*<td>
+            @entity.Yinlianka
+        </td>*@
+        <td>
+            @entity.Zhifubao
+        </td>
+        <td>
+            @entity.Weixin
+        </td>
+        @*<td>
+            @(entity.SumMoney - entity.Xianjin - entity.Yinlianka - entity.Zhifubao - entity.Weixin)
+        </td>*@
+        @{
+            if (entity.UserID == 158702)
+            {
+                <td>
+                    2980.00
+                </td>
+            }
+            else
+            {
+                <td>@(entity.SumMoney)</td>
+            }
+        }
+        @*<td>@(entity.SumMoney)</td>*@
+        <td>
+            @entity.Chuzhika
+        </td>
+        <td>
+            @entity.ZengChuzhika
+        </td>
+        <td>
+            @entity.Huakouka
+        </td>
+
+        @{
+            if (ViewBag.ParentHospitalID != 708)
+            {
+                <td>
+                    @entity.OtherPay
+                </td>
+            }
+        }
+        <td>
+            @entity.QianPrice
+        </td>
+        @{
+            if (ViewBag.HospitalID == 2 || ViewBag.HospitalID == 1017)
+            {
+                <td>
+                    @entity.Jifen
+                </td>
+            }
+        }
+        <td>
+            <a href="javascript:OpenOrderDetail('@entity.OrderNo');">详情</a>
+        </td>
+    </tr>
+        }
+    <tr>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+        </td>
+        <td>
+            总计:
+        </td>
+        <td>
+            @ViewBag.Price
+        </td>
+        <td>
+            @ViewBag.Xianjin
+        </td>
+        <td>
+            @ViewBag.Yinlianka
+        </td>
+        <td>
+            @ViewBag.Zhifubao
+        </td>
+        <td>
+            @ViewBag.Weixin
+        </td>
+        @*<td>
+            @(ViewBag.SumMoney - ViewBag.Xianjin - ViewBag.Yinlianka - ViewBag.Zhifubao - ViewBag.Weixin)
+        </td>*@
+
+        <td>@(ViewBag.SumMoney) </td>
+        <td>
+            @ViewBag.Chuzhika
+        </td>
+        <td>
+            @ViewBag.ZengChuzhika
+        </td>
+        <td>
+            @ViewBag.Huakouka
+        </td>
+        @{
+            if (ViewBag.ParentHospitalID != 708)
+            {
+                <td>
+                    @ViewBag.OtherPay
+                </td>
+            }
+        }
+        <td>
+            @ViewBag.QianPrice
+        </td>
+        @{
+            if (ViewBag.HospitalID == 2 || ViewBag.HospitalID == 1017)
+            {
+                <td>
+                    @ViewBag.Jifen
+                </td>
+            }
+        }
+        <td>
+        </td>
+    </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 11))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        //计算head高度，宽度 计算articles高度
+        var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+   
+       
+        $("#showmessage").css("display", "none");
+    })
+</script>
+<script type="text/javascript">
+    $(function () {
+       $("#sp").text('@Model.TotalItemCount');
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+</script>

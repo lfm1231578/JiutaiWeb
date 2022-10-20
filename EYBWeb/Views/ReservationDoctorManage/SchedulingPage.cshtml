@@ -1,0 +1,307 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "HospitalDetail";
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //查询所有的医师
+    var depList = personbll.GetAllUserByHospitalID((int)ViewBag.HospitalID, 0);
+    Layout = "../Shared/_Layout.cshtml";
+}
+<div id="mainContentBody">
+    @Html.Partial("_ReservationControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top" >
+            <label class="Soliddots">●</label> 排班表</div>
+        <div class="mainContentRight_bottom">
+            <form id="myform" class="formular" method="post" action="@Url.Content("~/ReservationDoctorManage/SaveScheduling")">
+            <table class="mainContentRight_bottomnewdepart" style="z-index: 0px;">
+                <tr>
+                    <td style="width: 110px;">
+                        请选择医师：
+                    </td>
+                    <td>
+                        <select id="seluserid" name="UserID" class="select">
+                            @{ foreach (var D in depList)
+                               { <option value="@D.UserID">@D.UserName</option>}}
+                        </select>
+                     
+                    </td>
+                </tr>
+                <tr>
+                  <td>当前休假日：</td>
+                  <td  id="labcurrenttext" >
+                   
+                  </td>
+                </tr>
+                <tr>
+                    <td>
+                        休假日：
+                    </td>
+                    <td>
+                        <div id="selectdepartuser" style="min-width: 120px; float: left;">
+                            <div class="selectdiv" style="min-width: 120px; float: left;">
+                                <select name="RestDay" class="RestDay select">
+                                    <option value="1">星期一</option>
+                                    <option value="2">星期二</option>
+                                    <option value="3">星期三</option>
+                                    <option value="4">星期四</option>
+                                    <option value="5">星期五</option>
+                                    <option value="6">星期六</option>
+                                    <option value="0">星期日</option>
+                                </select>
+                                <a href="javascript:;" class="deletedepart" style="color: Red;"></a>
+                            </div>
+                        </div>
+                        <input type="button" id="btnAddDepartUserID" class="addsame" value="添加" />
+                        
+                    </td>
+                </tr>
+            </table>
+            <div style="background: #ccc; height: 30px; line-height: 30px; margin: 10px;">
+                <input type="checkbox" value="0"  style="float:left;margin-top:5px;" name="addqjHoliday"  id="IsHealthyRemidShow" class="IsHealthyRemidShow" /><label
+                    for="IsHealthyRemidShow"  style="float:left;margin-top:8px;">
+                    添加请假记录
+                </label>
+            </div>
+            <table class="mainContentRight_bottomnewdepart" style="z-index: 0px;display: none;"  id="IsHealthyRemidShowform" >
+                <tr>
+                    <td style="width: 110px;">
+                        请假时间：
+                    </td>
+                    <td>
+                        <input type="text" id="txtstarttime" style="float: left; width: 150px;" name="StartTime"
+                         value="@DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")"    class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+                        <div style="width: 30px; line-height: 30px; text-align: center; float: left;">
+                            至</div>
+                        <input type="text" id="txtendtime" name="EndTime" style="float: left; width: 150px;"
+                          value="@DateTime.Now.AddDays(10).ToString("yyyy-MM-dd HH:mm:ss")"    class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        请假事由：
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" id="txMemo" name="Memo" class=" textarea"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <div style="background: #ccc; height: 30px; line-height: 30px; margin: 10px;">
+                <input type="checkbox" value="0" name="addtxHoliday" id="IsHealthyRemidShow1" class="IsHealthyRemidShow1" style="float:left;margin-top:5px;" /><label
+                  style="float:left;margin-top:8px;"   for="IsHealthyRemidShow1">
+                    添加调休记录
+                </label>
+            </div>
+            <table class="mainContentRight_bottomnewdepart" style="z-index: 0px;display: none;"  id="IsHealthyRemidShowform1">
+                <tr>
+                    <td style="width: 110px;">
+                        调休时间：
+                    </td>
+                    <td>
+                        <input type="text" id="txtstarttime1" style="float: left; width: 140px;" name="StartTime1"
+                         value="@DateTime.Now"   class=" text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+                        <div style="width: 30px; line-height: 30px; text-align: center; float: left;">
+                            调至</div>
+                        <input type="text" id="txtendtime1" name="EndTime1" style="float: left; width: 140px;"
+                             value="@DateTime.Now.AddDays(10)"   class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        调休事由：
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" id="txMemo1" name="Memo1" class=" textarea"></textarea>
+                    </td>
+                </tr>
+            </table>
+           
+            <div style="height: 40px; margin: 20px;">
+              <input
+                    class="submitbutton2" id="btnsave" type="button" style="*margin-top: -12px;" 
+                    value="保 存" />   &nbsp;&nbsp;<input
+                    class="submitbutton2" type="button" style="*margin-top: -12px;" id="btntiaoxiu"
+                    value="调休记录" />  &nbsp;&nbsp; 
+                    <input class="submitbutton2" type="button" style="*margin-top: -12px;" id="txtholiday"
+                    value="请假记录" />
+                &nbsp;&nbsp;<input class="submitbutton2" type="button" style="*margin-top: -12px;"
+                    onclick="history.go(-1)" value="返 回" />
+            </div>
+             </form>
+        </div>
+    </div>
+</div>
+<div id="departmentuserpeople" style="display: none;">
+    <div class="selectdiv" style="min-width: 120px; float: left;">
+        <select name="RestDay" class="RestDay select">
+            <option value="1">星期一</option>
+            <option value="2">星期二</option>
+            <option value="3">星期三</option>
+            <option value="4">星期四</option>
+            <option value="5">星期五</option>
+            <option value="6">星期六</option>
+            <option value="0">星期日</option>
+        </select>
+        <a href="javascript:;" class="deletedepart" style="color: Red;"></a>
+    </div>
+</div>
+<script type="text/javascript">
+
+
+    $("#mainContentRight_bottomHospital").height(getDocumentHeight() - $("#header").height() - $("#footer").height());
+
+    jQuery(document).ready(function () {
+
+        jQuery("#myform").validationEngine('attach', {
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentBody",
+            promptPosition: "bottomLeft"
+        });
+        //添加休息日
+        $("#btnAddDepartUserID").click(function () {
+            $("#selectdepartuser").append($("#departmentuserpeople").html());
+        });
+        $("#myform").delegate(".deletedepart", 'click', function () {
+            $(this).parent().remove();
+        });
+
+        //添加请假记录
+        $(".IsHealthyRemidShow").click(function () {
+            if ($(this).prop("checked") == false) {
+                $("#IsHealthyRemidShowform").slideUp("slow");
+                $(this).val("0");
+            } else {
+                $("#IsHealthyRemidShowform").slideDown("slow");
+                $(this).val("1");
+            }
+        });
+
+        //添加调休记录
+        $(".IsHealthyRemidShow1").click(function () {
+            if ($(this).prop("checked") == false) {
+                $("#IsHealthyRemidShowform1").slideUp("slow");
+                $(this).val("0");
+            } else {
+                $("#IsHealthyRemidShowform1").slideDown("slow");
+                $(this).val("1");
+            }
+        });
+
+        //请假记录
+        $("#txtholiday").click(function () {
+            var userID = $("#seluserid").val();
+            var username = $("#seluserid").find("option:selected").text();
+            location.href = "/ReservationDoctorManage/SchedulingHoliday?Type=2&UserID=" + userID + "&username=" + username;
+        });
+
+        //调休记录
+        $("#btntiaoxiu").click(function () {
+            var userID = $("#seluserid").val();
+            var username = $("#seluserid").find("option:selected").text();
+            location.href = "/ReservationDoctorManage/SchedulingHoliday?Type=3&UserID=" + userID + "&username=" + username;
+        });
+        //页面初始化获取当前休假日
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "Json", //返回json格式的数据
+            url: getControllerUrl("ReservationDoctorManage", "SelectSchedulingHoliday"),
+            data: { "Type": 1, "UserID": $("#seluserid").val() },
+            success: function (data) {
+                    if(data.OutputHtml=="" || data.OutputHtml==null)
+                    {
+                    $("#labcurrenttext").text("暂无");
+                    }else{
+                    $("#labcurrenttext").text(data.OutputHtml);
+                    }
+                    $("#selectdepartuser").html(data.OutputString);
+            },
+            error: function () {
+                alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+            }
+        });
+        //选择人改变事件
+        $("#seluserid").change(function () {
+            var userID = $("#seluserid").val();
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "Json", //返回json格式的数据
+                url: getControllerUrl("ReservationDoctorManage", "SelectSchedulingHoliday"),
+                data: { "Type": 1, "UserID": userID },
+                success: function (data) {
+                     if(data.OutputHtml=="" || data.OutputHtml==null)
+                    {
+                    $("#labcurrenttext").text("暂无");
+                    }else{
+                    $("#labcurrenttext").text(data.OutputHtml);
+                    }
+                    $("#selectdepartuser").html(data.OutputString);
+                },
+                error: function () {
+                    artdialogfail("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                }
+            });
+        });
+        //保存事件
+        $("#btnsave").click(function () {
+            //请假记录被选择 ，时间必填，而且要填写正确
+            if ($("#IsHealthyRemidShow").prop("checked") == true) {
+                 if($("#txMemo").val()=="")
+                  {
+                    artdialogfail("请填写请假事由");return;
+                  }
+                var starttime = $("#txtstarttime").val();
+                var endtime = $("#txtendtime").val();
+                if (starttime == "" || endtime == "") {
+                    artdialogfail("请选择请假时间！"); return;
+                }
+                
+                if (Date.parse(new  Date(endtime.replace(/-/g,"/")))< Date.parse(new  Date(starttime.replace(/-/g,"/")))) {
+                    artdialogfail("请假结束时间必须大于开始时间！");
+                    return;
+                }
+                
+            }
+            //调休记录被选择 ，时间必填，而且要填写正确
+            if ($("#IsHealthyRemidShow1").prop("checked") == true) {
+                  if($("#txMemo1").val()=="")
+                  {
+                    artdialogfail("请填写调休事由");return;
+                  }
+                var starttime1 = $("#txtstarttime1").val();
+                var endtime1 = $("#txtendtime1").val();
+                if (starttime1 == "" || endtime1 == "") {
+                    artdialogfail("请选择调休时间！"); return;
+                }
+                if (Date.parse(new  Date(endtime1.replace(/-/g,"/")))< Date.parse(new  Date(starttime1.replace(/-/g,"/")))) {
+                    artdialogfail("调休结束时间必须大于开始时间！");
+                    return;
+                }
+                if (Date.parse(new  Date(endtime1.replace(/-/g,"/")))== Date.parse(new  Date(starttime1.replace(/-/g,"/")))) {
+                    artdialogfail("调休结束时间不能等于开始时间！");
+                    return;
+                }
+            }
+            
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "@Url.Content("~/ReservationDoctorManage/SaveScheduling")",
+                data: $('#myform').serialize(), // 你的formid
+                async: false,
+                error: function (request) {
+                    alert("Connection error");
+                },
+                success: function (data) {
+                 if(data>0){
+                    artdialog("保存成功！","@Url.Content("~/ReservationDoctorManage/SchedulingPage")")
+                   }else
+                   {
+                    artdialogfail("保存失败！");
+                   }
+                }
+            });
+        });
+
+           
+    });
+</script>

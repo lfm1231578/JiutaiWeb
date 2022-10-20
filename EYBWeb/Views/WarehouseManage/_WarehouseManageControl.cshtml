@@ -1,0 +1,151 @@
+﻿@{
+    ViewBag.Title = "_BaseInfoControl";
+    var aa = ViewBag.HospitalID;
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_WarehouseManage);//仓库管理
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_WarehouseList);//库存查询
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_WarehouseKucunYuejie);//库存月结
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_PurchasingManagement);//采购进货
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_TheSupplierList);//供应商管理
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_WarehouseNameEdit);//默认仓库编辑
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_WarehouseSummary);//进出仓汇总
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_ProductSummary);//产品明细汇总
+                                                                                                                                        // bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_StorageSummary);//出入库汇总
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_Analysis);//全店仓库分析
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_HaveWarehouseLog);//仓库日志;
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_HaveAllocateReport);//调拨报表;
+    bool result12 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.WarehouseManage_HaveYuanyongProduct);//院用产品使用明细;
+}
+<div id="mainContentLeft">
+    <form action="@Url.Content("~/DepartmentManage/DepartmentPage")" method="post" id="submitform" >
+    <div id="mainContentLeft_top">
+        <span>仓库管理</span></div>
+    @* <div id="mainContentLeft_center">
+            <ul>
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/WarehouseManage/WarehouseManage")"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart1.png'   /><label>仓库管理</label></a></li>
+                <li onclick='CheckRight(this,"@result2")' redirect="@Url.Content("~/WarehouseManage/WarehouseList")" style="margin-left:20px;"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart2.png'   /><label>库存查询</label></a></li>
+            </ul>
+        </div>*@
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/WarehouseManage/WarehouseManage")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;仓库管理
+
+                    </a>
+                </li>
+            }
+            @if (result2)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/WarehouseList")" onclick='CheckRight(this,"@result2")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;库存查询
+
+                    </a>
+                </li>
+            }
+            @if (result3)
+            {
+                if (aa == 571 || aa == 572 )
+                {
+                    <li redirect="@Url.Content("~/WarehouseManage/KucunYuejie")" onclick='CheckRight(this,"@result3")'>
+                        <a style="cursor: pointer; ">
+                            <span class="list_icon"></span>&nbsp;&nbsp;库存月结
+
+                        </a>
+                    </li>
+                }
+            }
+            @if (result4)
+            {
+
+                <li redirect="@Url.Content("~/WarehouseManage/PurchasingManagement")" onclick='CheckRight(this,"@result4")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;采购进货
+
+                    </a>
+                </li>
+            }
+            @if (result5)
+            {
+
+                <li redirect="@Url.Content("~/WarehouseManage/TheSupplierList")" onclick='CheckRight(this,"@result5")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;供应商管理
+
+                    </a>
+                </li>
+            }
+            @if (result6)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/WarehouseNameEdit")" onclick='CheckRight(this,"@result6")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;默认仓库编辑
+
+                    </a>
+                </li>
+            }
+            @if (result7)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/ProductSummary")" onclick='CheckRight(this,"@result7")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;产品明细汇总
+
+                    </a>
+                </li>
+            }
+            @if (result8)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/StorageSummary")" onclick='CheckRight(this,"@result8")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;出入库汇总
+
+                    </a>
+                </li>
+            }
+            @if (result9)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/WarehouseAnalysis")" onclick='CheckRight(this,"@result9")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;全店仓库分析
+
+                    </a>
+                </li>
+            }
+            @if (result10)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/WarehouseLog")" onclick='CheckRight(this,"@result10")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;仓库日志
+
+                    </a>
+                </li>
+            }
+            @if (result11)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/AllocateReport")" onclick='CheckRight(this,"@result11")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;调拨报表
+
+                    </a>
+                </li>
+            }
+            @if (result12)
+            {
+                <li redirect="@Url.Content("~/WarehouseManage/YuanyongProduct")" onclick='CheckRight(this,"@result12")'>
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;院用产品使用明细
+
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+    </form>
+</div>
+<script type="text/javascript">
+        //定义权限列表，主要为了显示默认有权限的页面
+        var TheArray = [["@result1", "@Url.Content("~/WarehouseManage/WarehouseManage")"],["@result2", "@Url.Content("~/WarehouseManage/WarehouseList")"], ["@result3","@Url.Content("~/WarehouseManage/PurchasingManagement")"],["@result4","@Url.Content("~/WarehouseManage/TheSupplierList")"],["@result5","@Url.Content("~/WarehouseManage/WarehouseNameEdit")"],["@result6","@Url.Content("~/WarehouseManage/WarehouseSummary")"],["@result7","@Url.Content("~/WarehouseManage/ProductSummary")"],["@result8","@Url.Content("~/WarehouseManage/StorageSummary")"],["@result9","@Url.Content("~/WarehouseManage/WarehouseAnalysis")"],["@result10","@Url.Content("~/WarehouseManage/WarehouseLog")"],["@result11","@Url.Content("~/WarehouseManage/AllocateReport")"]];
+
+</script>

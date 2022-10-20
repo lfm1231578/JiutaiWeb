@@ -1,0 +1,71 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "编辑仓库名称";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="mainContentBody">
+    @Html.Partial("_WarehouseManageControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+               </label>编辑仓库名称
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <form action="" method="post" class="clearfix" name="myform" id="myform">
+                <input type="hidden" name="ID" value="@Model.ID" />
+                <table class="mainContentRight_table">
+                    <tr>
+                        <td class="tdright">
+                            仓库名称
+                        </td>
+                        <td>
+                            <input type="text" name="Name" class="text-input Name" value="@Model.Name" />
+                        </td>
+                        <td class="tdright">
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                    <tr style="height:10px;"></tr>
+                    <tr>
+                        <td>
+                        </td>
+                        <td>
+                            <input type="button" id="btn" value="保  存" class="submitbutton2" />
+                        </td>
+                    </tr>
+                </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $("#btn").click(function () {
+        var name = $(".Name").val();
+        if (name == "") {
+            artdialogfail("操作失败！仓库名称名必须输入...");
+            return false;
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("WarehouseManage", "EditWareHouse"),
+            async: false,
+            data: $('#myform').serialize(), // 你的formid
+            error: function (request) {
+                artdialogfail("操作失败！");
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("操作成功！", "/WarehouseManage/WarehouseNameEdit", "250", "100");
+                }
+            }
+        });
+    })
+  
+</script>

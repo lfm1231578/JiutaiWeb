@@ -1,0 +1,129 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<ProductUseUnitEntity>
+@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "库存查询";
+
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    var HospitalID = ViewBag.HospitalID;
+}
+<div id="mainContentBody">
+    @Html.Partial("_WarehouseManageControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>院用产品使用明细(<span id="sp">@Model.TotalItemCount</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <div class="toolbar">
+                    <div class="box-wrap">
+                        <div class="l-list">
+                            @using (Ajax.BeginForm("YuanyongProduct", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                            {
+                                <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
+                                <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
+                                <div class="accountdiv" style="margin: 0px auto; width: 100%;">
+                                    @if (HasPermission)
+                                    {
+                                        <label style="font-weight: normal;">
+                                            所属分店：</label>
+                                        <select name="HospitalID" id="HospitalID" class="" class="ymxSelect"  >
+                                            <option value="0">请选择分店</option>
+                                            @if (RegionhospitalList.Count > 0)
+                                            {
+                                                foreach (var info in RegionhospitalList)
+                                                {
+                                                <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                foreach (var info in hospitalList)
+                                                {
+                                                <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                                                }
+                                            }
+                                        </select>
+                                    }
+                                    <label style="font-weight: normal;">
+                                        订单时间:</label>
+                                    <input type="text" autocomplete="off" class="text-input Wdate"   onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                        name="StartTime" id="txtStartTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <label style="font-weight: normal;">
+                                        至:</label><input type="text" autocomplete="off"   class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                            name="EndTime" id="txtEndTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    产品名称：
+                                    <input type="text" name="ProductName" id="ProductName" class="text-input ymxInput" 
+                                        value="" />
+                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" class="submitbutton2" id="btnsumbit" style="float: none;" value="查 询" />
+                                    @*<input type="button" class="submitbutton2" id="btnSave" style="float: none;" value="导 出" />*@
+                                </div>
+                    
+                    
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div id="articles" class="" style="overflow: auto; margin-top: 5px; width: 100%;">
+                    @Html.Partial("_YuanyongProduct", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </div>
+    <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+</div>
+<script type="text/javascript">
+    $("#Name").keyup(function () {
+        $("#btnsearch").click();
+        //document.getElementById("searchForm").submit();
+    });
+
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+    function OpenDailogUrl(ProductID, HospitalID, obj) {
+        var StartTime = $(obj).attr("code1");
+        var EndTime = $(obj).attr("code2");
+        art.dialog.open("/WarehouseManage/YuanyongProductDetail?ProductID=" + ProductID + "&HospitalID=" + HospitalID + "&StartTime=" + StartTime + "&EndTime=" + EndTime, { title: "项目详情", width: 960, height: 640 });
+    }
+    function OpenTiaoDailogUrl(ProductID, HospitalID, obj) {
+
+        art.dialog.open("/WarehouseManage/YuanyongProductDetail?ProductID=" + ProductID + "&HospitalID=" + HospitalID + "&StartTime=" + StartTime + "&EndTime=" + EndTime, { title: "调整结余", width: 960, height: 640 });
+    }
+    $(function () {
+
+        //定义高度
+        var docheight = getDocumentHeight() - $("#header").height() - $("#footer").height() + 15;
+        $("#articles").height(docheight - 150);
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+    //导出
+    $("#btnSave").click(function () {
+        //var HouseID = $("#HouseID").val();
+        if ($("#HospitalID").val() == "" || $("#HospitalID").val() == null) {
+            var HospitalID =@HospitalID;
+        }
+        else { var HospitalID = $("#HospitalID").val(); }
+        var BrandID = $("#BrandID").val();
+        var ProductName = $("#ProductName").val();
+        var url = getControllerUrl("WarehouseManage", "ExportWarehouseList") + "?pageNum=1&numPerPage=10000&ProductName=" + ProductName + "&HouseID=" + HospitalID + "&BrandID=" + BrandID;
+        window.location.href = url;
+
+    });
+
+
+</script>

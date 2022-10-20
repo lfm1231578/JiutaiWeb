@@ -1,0 +1,137 @@
+﻿@model EYB.ServiceEntity.ShareShopEntity.BonusItemEntity
+@{
+    Layout = null;
+    var BonusId= Request["id"];
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/placeholder.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/table.js"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight">
+        <form class="formular" method="post" id="myForm">
+            <div class="mainContentRight_bottom" style="overflow-y: hidden;">
+                <input type="hidden" name="Id" value="@Model.Id"/>
+                <table class="mainContentRight_bottomnewdepart">
+                    <tr>
+                        <td style="width: 120px;">项目名称：</td>
+                        <td>
+                            @if (Convert.ToInt32(BonusId) > 0)
+                            {
+                                <input type="text"  name="Name" value="@Model.Name" class="text-input"  readonly="readonly" />
+                            }
+                            else
+                            {
+                                <input type="text" id="Name" name="Name" value="@Model.Name" class="text-input" readonly="readonly" />
+                            }
+
+                            <input type="hidden" name="ItemType" id="ItemType" value="@Model.ItemType" />
+                            <input type="hidden" name="ItemTypeId"  id="ItemTypeId" value="@Model.ItemTypeId" />
+                            <input type="hidden" name="BonusId" value="@BonusId" /> 
+ 
+                        </td>
+                    </tr>
+                    @*<tr>
+                            <td style="width: 120px;">项目：</td>
+                            <td>
+                                <select id="ItemType" name="ItemType" class="select">
+                                    <option value="1" @(Model.ItemType == 1 ? "selected=\"selected\"" : "")>单次项目</option>
+                                    <option value="2" @(Model.ItemType == 2 ? "selected=\"selected\"" : "")>产品</option>
+                                    <option value="3" @(Model.ItemType == 3 ? "selected=\"selected\"" : "")>疗程卡</option>
+                                </select>
+                                <input type="button" value="选择" class="addsame" />
+                                <input type="hidden" name="ItemTypeId" value="@Model.ItemTypeId" />
+                            </td>
+                        </tr>*@
+                    <tr>
+                        <td>毛利率：</td>
+                        <td><input type="text" id="txtGrossProfit" name="GrossProfit" placeholder="请输入活动名称" value="@Model.GrossProfit" onkeyup="CheckInputIntFloat(this);" class="text-input" style="width: 60px; display: inline-block;"/>%</td>
+                    </tr>
+                    <tr>
+                        <td>是否优惠：</td>
+                        <td>
+                            <select name="IsDiscount" class="select">
+                                <option value="0">否</option>
+                                <option value="1" @(Model.IsDiscount == 1 ? "selected=\"selected\"" : "")>是</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>排序：</td>
+                        <td><input type="number" name="Sort" value="@Model.Sort" onkeyup="CheckInputIntFloat(this);" class="text-input" style="width: 60px;"/> </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input style="margin-left: 0px;" type="button" func="Save" class="submitbutton2" value="保 存"/>
+                            <input class="submitbutton2" onclick="closeedNorefresh()" type="button" value="取 消"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
+<script>
+    $(function () {
+        $('#Name').click(function () {
+            art.dialog.open("@Url.Action("SelectProjects")", { title: '选择项目', width: 900, height: 600,close: function () {
+                var bValue = art.dialog.data('bValue'); // 读取B页面的数据
+                if (bValue != undefined) {
+                    var shu = new Array();
+                    shu = bValue.split(",");
+                    if (shu.length - 1 > 1) {
+                        var name = "";
+                        var itemtype = "";
+                        var itemtypeId = "";
+                        for (var i = 0; i < shu.length - 1; i++) {
+                            name += shu[i].split("|")[1] + ",";
+                            itemtype += shu[i].split("|")[2] + ",";
+                            itemtypeId += shu[i].split("|")[0] + ",";
+                          
+                        }
+                        $("#Name").val(name.substring(0,name.length-1));
+                        $("#ItemType").val(itemtype.substring(0, itemtype.length - 1));
+                        $("#ItemTypeId").val(itemtypeId.substring(0, itemtypeId.length - 1));
+                    }
+                    else
+                    {
+                        $("#Name").val(bValue.split("|")[1]);
+                        $("#ItemType").val(bValue.split("|")[2]);
+                        $("#ItemTypeId").val(bValue.split("|")[0]);
+                    }
+                  
+                }
+            } });
+        });
+        $('[func=Save]').click(function () {
+            if ($.trim($('[name=ItemTypeId]').val()) == '') {
+                alert('请选择项目');
+                return;
+            }
+            $.post("@Url.Action("_SaveDividendItems")", $('#myForm').serialize(),function(data) {
+                if (data.IsError) {
+                    alert(data.Message);
+                } else {
+                    closeed();
+                }
+            },"json");
+        });
+    });
+</script>
+ 
+ 
+ 

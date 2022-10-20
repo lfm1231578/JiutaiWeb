@@ -1,0 +1,85 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using EYB.ServiceEntity.ReservationEntity;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@{
+    Layout = null;
+    var Hid = ViewBag.HospitalID ;//门店ID
+    IReservationDoctorManageBLL resBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var depList = personbll.GetAllUserByHospitalID(Hid, 1);
+    DateTime dt = DateTime.Now;
+    dt = dt.AddDays(1 - Convert.ToInt32(dt.DayOfWeek.ToString("d")));
+}
+<link href="../../Content/themes/css/core.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<table id="weekTable" border="0" class="todayrevertion" style=" background:#fff; border-collapse:collapse"    cellpadding="0" cellspacing="0"  >
+<tr>
+  <th   style="width:60px;min-width:60px;">
+ 
+  </th>
+   @{
+       
+     //获取当前月份的天数
+       for (var i = 0; i <=6 ; i++)
+     {
+      <th style="min-width:60px; font-size:12px;">
+       @dt.AddDays(i).ToString("yyyy-MM-dd")<br />
+       @( HS.SupportComponents.Season.GetWeekByDate(dt.AddDays(i)))
+     
+      </th>
+     }
+    }
+
+</tr>
+  @{
+      foreach (var D in depList)
+      {
+         <tr>
+
+         <td style="text-align:center;"> @D.UserName</td>
+           @{
+         
+          var resList = resBLL.GetReservationWeeksList(Hid, D.UserID);
+          //获取所有休息日  两个月的 周可能跨月 或年 
+          var listXiuxi = personbll.GetDate(D.UserID, dt.ToString("yyyy-MM"));
+          var listXiuxi1 = personbll.GetDate(D.UserID, dt.AddMonths(1).ToString("yyyy-MM"));
+          var i=0;
+          foreach (var R in resList)
+          {
+              if (listXiuxi.Contains(dt.AddDays(i).ToString("yyyy-MM-dd")) || listXiuxi1.Contains(dt.AddDays(i).ToString("yyyy-MM-dd")))
+              {
+                             <td style="text-align:center;">
+                                 休假
+                             </td>
+              }
+              else
+              {
+                  var name = R.UserName + "";
+                 <td style="height:110px;min-height:110px; text-align:left; vertical-align:top; ">@{
+                  if (name != "")
+                  {
+                      foreach (var p in name.Split(','))
+                      {
+                         <a  style="font-size:12px;" id="@p.Split('-')[1]">@p.Split('-')[0]<br /><span style="color:#65727f;font-size:12px;">@p.Split('-')[2]</span> <br /> </a>
+                      }
+                  }
+                     }
+             
+                 </td>
+              }
+               i++;
+          }
+
+             }
+         </tr>
+       }
+         
+   }
+</table>
+
+<script type="text/javascript">
+     //隔行换色
+    $("#weekTable").find("tr:even").css("background-color", "#e7f6ff");
+    $("body").css("background","#fff");
+</script>

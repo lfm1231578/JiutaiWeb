@@ -1,0 +1,97 @@
+﻿@model PagedList<EYB.ServiceEntity.ActivityEntity.CustomerValueCardEntity>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>
+                        股东姓名
+                    </th>
+                    <th>
+                        手机
+                    </th>
+                    <th>
+                        加入时间
+                    </th>
+                    <th>
+                        剩余保证金
+                    </th>
+                    <th>
+                        入股总金额
+                    </th>
+                    <th>
+                        返还保证金
+                    </th>
+                    <th>
+                        分红方案
+                    </th>
+                    <th>
+                        备注
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+            {
+                    <tr class="ableclick">
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.Mobile
+                        </td>
+                        <td>
+                            @entity.JoinTime
+                        </td>
+                        <td>
+                            @entity.Deposit
+                        </td>
+                        <td>
+                            @entity.AmountTotal
+                        </td>
+                        <td>
+                            @switch (entity.IsDepositReturn)
+                            {
+                                case 1:
+                                    @:是
+                                break;
+                                default:
+                                    @:否
+                                break;
+                            }
+                        </td>
+                        <td>
+                            @entity.BonusSchemeName
+                        </td>
+                        <td>
+                            @entity.Remarks
+                        </td>
+                        <td>
+                            @if (entity.State == 2)
+                            {
+                                <a href="javascript:;" onclick="deltetproduct(@entity.Id,1)">启用</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:;" style="color: red;" onclick="deltetproduct(@entity.Id,2)">删除</a>
+                            }&nbsp;|&nbsp;
+                            <a href="javascript:OpenDailogDetail('Edit',@entity.Id);">修改</a>&nbsp;|&nbsp;
+                            <a href="javascript:OpenNew(@entity.Id);">保证金充值</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+
+
+

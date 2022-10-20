@@ -1,0 +1,63 @@
+﻿@model EYB.ServiceEntity.CenterEntity.PerformanceGoalsEntity
+@{
+    ViewBag.Title = "_GoalsStatistics";
+}
+<form action="" method="post" id="submitform">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable" style="border-collapse: collapse;">
+    <thead >
+        <tr style="position:absolute;">
+            <th>
+                美容师
+            </th>
+            <th>
+                月份
+            </th>
+            <th>
+                现金
+            </th>
+            <th>
+                现金达成率(%)
+            </th>
+            <th>
+                家居
+            </th>
+            <th>
+                家居达成率(%)
+            </th>
+            <th>
+                实操
+            </th>
+            <th>
+                实操达成率(%)
+            </th>
+            <th>
+                客流量
+            </th>
+            <th>
+                客流量达成率(%)
+            </th>
+        </tr>
+        <tr style="height:40px;"></tr>
+    </thead>
+
+    <tbody>
+        @Html.Raw(Model.StrHtml)
+    </tbody>
+</table>
+</form>
+<div style="height:100px;"></div>
+<script type="text/javascript">
+   window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+       var thlen = $(".gridTable thead th").length;
+       let theadWidth = $(".gridTable").width()-7;
+       console.log($(".gridTable").width())
+        //let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / (thlen)) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 1)
+</script>

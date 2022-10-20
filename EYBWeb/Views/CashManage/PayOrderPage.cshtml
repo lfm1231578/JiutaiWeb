@@ -1,0 +1,800 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@using SystemManage.Factory.IBLL;
+@{
+    ViewBag.Title = "项目产品-支付界面";
+    Layout = null;
+    var isOpenAutoPrint = ViewBag.IsOpenAutoPrint;//自动打印
+    var uname = ViewBag.Username;
+    var cashamout = Request["cashamout"];//现金总额
+    var cardamout = Request["cardamout"];//卡类支付总额
+    var chkcreatetime = Request["chkcreatetime"];//是否选中补单
+    var txtCreateTime = Request["txtCreateTime"];//补单时间
+    if (txtCreateTime==""||txtCreateTime == "undefined")
+    {
+        txtCreateTime =DateTime.Now.ToString("yyyy-MM-dd");
+    }
+   
+    var allamout = Request["allamout"];//所有总额
+    var orderNo = Request["orderNo"];//订单编号
+    var userId = Request["UserID"];//顾客ID
+    var txtmemo = Request["txtmemo"];//备注
+    var cardIDstr = Request["CardIDstr"];//卡类ID-集合
+    var ordertimesstr = Request["ordertimesstr"];//卡类ID消费次数 -集合
+    var preOrderNoList = Request["preOrderNOList"];//待结订单集合
+    var _HospitalID = ViewBag.HospitalID;
+
+
+
+
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    ISystemManageBLL systemBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    IList<MainCardBalanceEntity> list = new List<MainCardBalanceEntity>();
+    if (Convert.ToDecimal(allamout) < 0)
+    {
+        list = cashBll.GetMainCardBalanceList(new MainCardBalanceEntity { UserID = ConvertValueHelper.ConvertIntValue(userId), Type = 1 }).ToList();
+    }
+    else
+    {
+        list = cashBll.GetMainCardBalanceList(new MainCardBalanceEntity { UserID = ConvertValueHelper.ConvertIntValue(userId), Type = 1 }).Where(c => c.Price > 0).ToList();
+    }
+    list = list.Where(t=>t.IsDel!=3).ToList();
+    //是否开启储值卡支付限制
+    var isopencardlimit = systemBll.GetUserSettingsValue(ViewBag.HospitalID, "IsOpenCardLimit");
+
+    //是否开启打印服务
+    var isopenprint = systemBll.GetUserSettingsValue(ViewBag.HospitalID, "IsOpenPrint").AttributeValue;
+
+    //获取支付方式
+    var baseList = systemBll.GetBaseInfoTreeByType("Payment", 1, ViewBag.ParentHospitalID);
+    //获取打印头
+    var printNameEntity = systemBll.GetUserSettingsValue(ViewBag.HospitalID, "PrintName");
+    var printXuanNameEntity = systemBll.GetUserSettingsValue(ViewBag.HospitalID, "PrintXuanName");
+    //打印机设置
+    var printTemplate = systemBll.GetUserSettingsValue(ViewBag.HospitalID, "PrintTemplate").AttributeValue;
+    //获取订单详情
+    var entity = cashBll.GetOrderModel(new OrderEntity { OrderNo = orderNo });
+    var time = entity.CreateTime.ToString("yyyy-MM-dd HH:mm");
+
+    //使用优惠券权限
+    var couponAuthority = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_UseCoupon);
+
+    var userNamePrin = "";
+    var AllPricePrin = "";
+    var ZhePayPrin = "";
+    var YinPayPrin = "";
+    var QianPricePrin = 0;
+    var orderinfolistPrin = "";
+
+
+
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div style="width: 395px; height: 420px; float: left;">
+        <fieldset style="width: 395px; height: 300px; overflow: auto;">
+            <legend>&nbsp;&nbsp;储值卡&nbsp;&nbsp;</legend>
+            <table class="gridTable" style="height: auto; border-collapse: collapse; margin-left: 5px;"
+                cellpadding="0" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            选择
+                        </th>
+                        <th>
+                            卡名称
+                        </th>
+                        <th>
+                            可用余额
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tbodychekbox">
+                    @{ var countSum =1;}
+                    @foreach (var info in list)
+                    {
+                        //是否过期赠卡
+                        var expire = info.IsGive == 1 && info.ExpireTime < DateTime.Now;
+                        if (@info.Name == "积分消费")
+                        {
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" value="@ViewBag.Proportion" name="积分消费" code="@info.ID" IsGive="@info.IsGive" id="ssff" class="pppp" />
+                                        <div id="ssff1" style="display:none">@ViewBag.count</div>
+                                    </td>
+                                    <td>@info.Name</td>
+                                    <td>@ViewBag.intrgral</td>
+                                </tr>
+                        }
+                        else
+                        {
+                        <tr>
+                            <td>
+                                <input type="checkbox" @((isopencardlimit.AttributeValue == "1" && info.IsBuyProduct == 0) || expire ? "disabled=disabled" : "") value="@info.Price" @*((info.Price < 1 || (Convert.ToDecimal(cashamout)<0)) ? "disabled=disabled" : "")*@ name="@info.Name" code="@info.ID" IsGive="@info.IsGive" />
+                            </td>
+                            <td>
+                                @info.Name
+                            </td>
+                            <td>
+                                @info.Price
+                            </td>
+                        </tr>
+                        }
+                        @*if (countSum == 1)
+                        {
+                            if (ViewBag.HospitalID == 204 || ViewBag.HospitalID == 121 || ViewBag.HospitalID == 131 || ViewBag.HospitalID == 2)
+                            {
+                                <tr>
+                                    <td><input type="checkbox"  value="@ViewBag.Proportion" name="积分消费" code="88888" IsGive="@info.IsGive" /></td>
+                                    <td>积分消费111</td>
+                                    <td>@ViewBag.intrgral</td>
+                                </tr>
+                            }
+                        }
+                        countSum++;*@
+                    }
+                </tbody>
+            </table>
+        </fieldset>
+        <fieldset style="width: 395px; height: 115px;" id="otherPayment">
+            <legend>&nbsp;&nbsp;其他支付&nbsp;&nbsp;</legend>
+            <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;">
+                @foreach (var info in baseList)
+                {
+                    if (info.parentID != 0)
+                    {
+                        if (info.InfoName == "优惠券")
+                        {
+                            if (couponAuthority)
+                            {
+
+                    <div style="float: left; min-width: 80px; margin-left: 10px; margin-top: 10px;">
+                        <input type="checkbox" code="@info.InfoName" name="txt-@info.ID" value="@info.ID" id="txt-@info.ID" iscash="@info.IsCash"/>
+                        <label for="txt-@info.ID">
+                            @info.InfoName
+                        </label>
+                    </div>
+                            }
+                        }
+                        else
+                        {
+                    <div style="float: left; min-width: 80px; margin-left: 10px; margin-top: 10px;">
+                        <input type="checkbox" code="@info.InfoName" name="txt-@info.ID" value="@info.ID" id="txt-@info.ID" iscash="@info.IsCash"/>
+                        <label for="txt-@info.ID">
+                            @info.InfoName
+                        </label>
+                    </div>
+                        }
+                    }
+                }
+            </div>
+        </fieldset>
+    </div>
+    <div id="mainContentRight" style="width: 320px; float: left; margin: 0px; margin-left: 10px;">
+        <fieldset style="border-color: #ccc; height: 420px;">
+            <legend>&nbsp;&nbsp;订单详情&nbsp;&nbsp;</legend>
+            <div class="mainContentRight_bottom" style="position: relative; margin-top: 0px;">
+                <table class="mainContentRight_bottomnewdepart" id="mainContentRight_bottomnewdepart"
+                       style="">
+                    <tbody id="xftable">
+                        <tr>
+                            <td style="width: 60px;">
+                                订单编号
+                            </td>
+                            <td>
+                                @orderNo
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                订单时间
+                            </td>
+                            <td>
+                                @(txtCreateTime)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                订单总额
+                            </td>
+                            <td style="color: Red; font-size: 20px; font-weight: bold;">
+                                @allamout
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                卡扣支付
+                            </td>
+                            <td style="color: Red; font-size: 20px; font-weight: bold;">
+                                @(Convert.ToDouble(cardamout).ToString("0.00"))
+                            </td>
+                        </tr>
+                        <tr style="height: 40px;">
+                            <td style="border-bottom: 1px #ccc dashed;">
+                                实收
+                            </td>
+                            <td style="color: Green; font-size: 30px; font-weight: bold; border-bottom: 1px #ccc dashed;">
+                                <label id="labshishou" style="color: Green; font-size: 30px; font-weight: bold;">@(Convert.ToDouble(cashamout).ToString("0.00"))</label>
+                            </td>
+                        </tr>
+                        <tr style="height: 40px;">
+                            <td style="border-bottom: 1px #ccc dashed;">
+                                尚欠
+                            </td>
+                            <td style="color: Green; font-size: 30px; font-weight: bold; border-bottom: 1px #ccc dashed;">
+                                <label id="labshengyuprice" style="color: red; font-size: 26px; font-weight: bold;">
+                                    @(Convert.ToDouble(cashamout).ToString("0.00"))
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                现金
+                            </td>
+                            <td>
+                                <input onkeyup="javascript:CheckInputIntFloat(this);" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                                       type="text" style="width: 150px;" name="CashPrice" id="txtCash" value="0" class="CardMoney text-input" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                银联卡
+                            </td>
+                            <td>
+                                <input onkeyup="javascript:CheckInputIntFloat(this);" onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
+                                       type="text" style="width: 150px;" name="CardPrice" id="txtyingliancard" value="0"
+                                       class="CardMoney text-input" />
+                            </td>
+                        </tr>
+                        <input type="hidden" style="width: 150px;" name="jjff" id="jjff" value="@ViewBag.count" />
+                        <input type="hidden" style="width: 150px;" name="hospitalID" id="hospitalID" value="@ViewBag.HospitalID" />
+                    </tbody>
+                </table>
+                <div style="margin: 20px; margin-left: 50px;" class="clearfix">
+                    <input type="button" class="submitbutton2" id="savebtn" value="支 付" onclick="PayMoney()" />
+                    <input class="submitbutton2" type="button" id="btncancel" onclick="closeedNorefreshAndClearOrder('@orderNo')" value="取 消" />
+                </div>
+            </div>
+        </fieldset>
+    </div>
+        @*益湘潭的打印模板*@
+    <div id="HidTab20" style="display: none;">
+        <div style="width:610px;margin:20px auto  ">
+            <div style="margin-bottom:10px; text-align:center;font-size:18px;"> @(printNameEntity.AttributeValue)出库单</div>
+            <div style="display:flex;justify-content:flex-start;margin-bottom:8px;">
+                <div style="width:50%;line-height:26px;">订单编号:@entity.DocumentNumber</div>
+                <div style="width:50%;line-height:26px;">订单时间:@time</div>
+            </div>
+            <div style="display:flex;justify-content:flex-start;margin-bottom:8px;">
+                <div style="width:50%;line-height:26px;">顾客名称:@entity.UserName</div>
+                <div style="width:50%;line-height:26px;">编号:@entity.MemberNo</div>
+            </div>
+            <div style="margin-bottom:10px;">
+                <div style="border:1px solid #d6d6d6;"></div>
+                <div style="border-left:1px solid #d6d6d6;border-right:1px solid #d6d6d6;border-top:1px solid #d6d6d6;">
+                    <div style="display:flex;justify-content:flex-start;border-bottom:1px solid #d6d6d6;">
+                        <div style="width:40%; border-right:1px solid #d6d6d6;text-align:center;line-height:25px;">产品名称</div>
+                        <div style="width:20%; border-right:1px solid #d6d6d6;text-align:center;line-height:25px;">品牌</div>
+                        <div style="width:20%; border-right:1px solid #d6d6d6;text-align:center;line-height:25px;">数量</div>
+                        <div style="width:20%;text-align:center;line-height:25px;">单位</div>
+                    </div>
+                    @{
+                        var orderNoCopy = "";
+                        if (orderNo != orderNoCopy && orderNo != null)
+                        {
+                            var PrintList = cashBll.GetOrderinfoList(new OrderinfoEntity { OrderNo = orderNo }).OrderByDescending(i => i.CardType).ToList();
+                            foreach (var item in PrintList)
+                            {
+                                <div style="display:flex;justify-content:flex-start;border-bottom:1px solid #d6d6d6;">
+                                    <div style="width:40%; border-right:1px solid #d6d6d6;text-align:center; line-height:25px;">@item.ProdcuitName</div>
+                                    <div style="width:20%; border-right:1px solid #d6d6d6;text-align:center;line-height:25px;">@item.BrandName</div>
+                                    <div style="width:20%; border-right:1px solid #d6d6d6;text-align:center;line-height:25px;">@item.Quantity</div>
+                                    <div style="width:20%;text-align:center;line-height:25px;">@item.ids</div>
+                                </div>
+                            }
+                            orderNoCopy = orderNo;
+                        }
+                    }
+                </div>
+                <div style="line-height:26px;margin-bottom:10px;">备注 :  @txtmemo</div>
+                <div style="margin-bottom:10px;">
+                    <div>
+                        <div>需知:</div>
+                        <div style="font-size:10px;line-height:18px;">1.订货后3天内（快递）或5天内（物流）如未收到货品请及时与我司联系。货到时请务必验收，如有问题请及时反馈，逾时自行承担。</div>
+                        <div style="font-size:10px;line-height:18px;">2.退换货标准：出货3个月内且不影响二次销售。</div>
+                        <div style="font-size:10px;line-height:18px;">3.退换货流程：和负责美导老师确认后方可退货。</div>
+                    </div>
+                    <div style="display:flex;justify-content:flex-start;margin-bottom:15px;">
+                        <div style="width:33%;line-height:26px;">经办:@uname </div>
+                        <div style="width:33%;line-height:26px;">审核:</div>
+                        <div style="width:33%;line-height:26px;">验收:</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+         @*益湘潭的打印模板*@
+ <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width="0"
+                height="0">
+            <embed id="LODOP_EM" type="application/x-print-lodop" width="0" height="0" />
+        </object>
+       
+    <div id="form1" style="display: none; font-size: 14px;">
+    </div>
+    <div id="form2" style="display: none; font-size: 18px;">
+    </div>
+    <div style='font-size: 16px; text-align: center; display: none;' id="hiddenhospitalname">@printNameEntity.AttributeValue</div>
+</body>
+</html>
+    <script>
+      
+    </script>
+<script type="text/javascript">
+    var cashamout = "@cashamout";
+    var UserID = "@userId";
+    var OrderNo = "@orderNo";
+    var cardamout = "@cardamout";
+    var allcashamout = "@allamout"; //订单总额
+    var CardIDstr = "@cardIDstr"; //卡ID集合
+    var ordertimesstr = "@ordertimesstr"; //卡次数
+    var preOrderNOList = "@preOrderNoList";
+    var isopenprint = "@isopenprint"; //是否开启打印服务
+    var time = "@time";
+    var printtemp = '@printTemplate';
+    var chkcreatetime = '@chkcreatetime';
+    var txtCreateTime = '@txtCreateTime';
+    var yixiangtangID = "@_HospitalID";
+</script>
+<script src="../../Scripts/Controls/CashManage/PayOrder.js?v=2.6" type="text/javascript"></script>
+<script type="text/javascript">
+    $("#ssff").change(function(){
+    
+   })
+    $(function () {
+        $("#txtCash").focus();
+        var baseIndex = 100;
+        $("#mainContentRight_bottomnewdepart").find("tr").each(function (r) {
+            $(this).find("td").each(function (c) {
+                $(this).find("input").attr("tabindex", r * 100 + c + baseIndex);
+            });
+        });
+        $("#mainContentRight_bottomnewdepart input").live("keydown", function (evt) {
+            var tabIndex = parseInt($(this).attr("tabindex"));
+            switch (evt.which) {
+                case 38: //上
+                    tabIndex -= 100;
+                    break;
+                case 40: //下
+                    tabIndex += 100;
+                    break;
+                case 37: //左(會導致輸入時無法使用左右移)
+                    tabIndex--;
+                    break;
+                case 39: //右(會導致輸入時無法使用左右移)
+                    tabIndex++;
+                    break;
+                default:
+                    return;
+            }
+            if (tabIndex > 0) {
+                $("input[tabindex=" + tabIndex + "]").focus();
+                return false;
+            }
+            return true;
+        });
+        $("#mainContentRight_bottomnewdepart [id=CouponPay]").live('click', function () {
+
+            art.dialog.open("@Url.Action("SelectCoupon", new { CustomerUserId = userId })",
+                { title: "选择优惠券", width: 500, height: 600 });
+        });
+    });
+    //打印
+    // var LODOP; //声明为全局变量
+    function Preview1() {
+        // LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+        if ("@printTemplate" == "80") {
+            Preview80();
+        } else if ("@printTemplate" == "76") {
+            Preview76();
+        } else {
+            Preview58();
+        }
+    };
+    function Preview58() {
+        try {
+            LODOP.PRINT_INIT("自定义纸张");
+            //         document.getElementById('W1').value;
+            //这个方法只能设置固定宽度，无法设定自适应宽度
+            //LODOP.SET_PRINT_PAGESIZE(3, 580, 45, "A4");
+            if (yixiangtangID == 616 ||yixiangtangID == 2 || yixiangtangID == 1108 || yixiangtangID == 1144 ||  yixiangtangID == 615) {
+                LODOP.SET_PRINT_PAGESIZE(1, 0, 0, "A4");
+            } else {
+                LODOP.SET_PRINT_PAGESIZE(3, 580, 45, "A4");
+            }
+            LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+            LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+            AddPrintContent58();
+            if ("@isOpenAutoPrint" == "1") {
+                (yixiangtangID == 616 ||yixiangtangID == 2 || yixiangtangID == 1108 || yixiangtangID == 1144 ||  yixiangtangID == 615) ? LODOP.PREVIEW() : LODOP.PRINT();
+                } else {
+                       
+                (yixiangtangID == 616 ||yixiangtangID == 2 || yixiangtangID == 1108 || yixiangtangID == 1144 || yixiangtangID == 615) ? LODOP.PRINT() : LODOP.PREVIEW();
+                }
+            //closeed();
+        } catch (e) {
+            alert("请安装打印控件!");
+        }
+    }
+    
+    function Preview76() {
+        try {
+            LODOP.PRINT_INIT("自定义纸张");
+            //document.getElementById('W1').value;
+            //这个方法只能设置固定宽度，无法设定自适应宽度
+            LODOP.SET_PRINT_PAGESIZE(3, 760, 45, "A4");
+            LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+            LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+
+            AddPrintContent76();
+            if ("@isOpenAutoPrint" == "1") {
+                LODOP.PRINT();
+            } else {
+                LODOP.PREVIEW();
+            }
+
+
+            //closeed();
+        } catch (e) {
+            alert("请安装打印控件!");
+        }
+    }
+
+    function Preview80() {
+        try {
+            LODOP.PRINT_INIT("自定义纸张");
+            //document.getElementById('W1').value;
+            //这个方法只能设置固定宽度，无法设定自适应宽度
+            LODOP.SET_PRINT_PAGESIZE(3, 800, 45, "A4");
+            LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+            LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+
+            AddPrintContent80();
+            if ("@isOpenAutoPrint" == "1") {
+                LODOP.PRINT();
+            } else {
+                LODOP.PREVIEW();
+            }
+            //closeed();
+        } catch (e) {
+            alert("请安装打印控件!");
+        }
+    }
+    function AddPrintContent58() {
+        var orderinfolist = "";
+        var paylist = "";
+        var username = "";
+        var AllPrice = 0;
+        var ZhePay = 0;
+        var YinPay = 0;
+        var QianPrice = 0;
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "json", //返回json格式的数据
+            url: "/CashManage/GetOrderinfoList",
+            data: { "OrderNo": "@orderNo" },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    //订单详情
+                    orderinfolist = data.OutputHtml;
+                    $("#form1").append(orderinfolist);
+                    //订单支付方式及金额
+                    paylist = data.OutputString;
+                    $("#form2").append(paylist);
+                    //参会者、美容师
+                    username = data.message;
+                    AllPrice = data.AllPrice;
+                    ZhePay = data.ZhePay;
+                    YinPay = data.YinPay;
+                    QianPrice = data.QianPrice;
+                    $("#userNamePrin").text(username);
+                    $("#AllPricePrin").text(AllPrice);
+                    $("#ZhePayPrin").text(ZhePay);
+                    $("#YinPayPrin").text(YinPay);
+                    $("#QianPricePrin").text(QianPrice);
+                    $("#form1").html(orderinfolist);
+                    //$("#orderinfolistPrin").html(orderinfolist)
+                }
+            },
+            error: function () {
+            }
+        });
+        if (yixiangtangID==616 || yixiangtangID == 1108 || yixiangtangID == 1144 || yixiangtangID == 2 ||yixiangtangID==615) {
+             LODOP.ADD_PRINT_HTM(30, "5%", "90%", "90%", document.getElementById("HidTab20").innerHTML);
+             LODOP.NewPageA();
+
+
+        } else {
+            //----------------------------0------------
+            // LODOP.SET_PRINT_STYLE("FontColor", 16711680);
+        // LODOP.ADD_PRINT_RECT(62, 16, 459, 217, 0, 1);
+        LODOP.ADD_PRINT_HTM(15, 20, "100%", 25, document.getElementById("hiddenhospitalname").innerHTML + "消费单");
+        LODOP.SET_PRINT_STYLE("FontSize", 10);
+        LODOP.SET_PRINT_STYLE("FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontColor", 0);
+        //LODOP.ADD_PRINT_TEXT(36, 75, 90, 20, "消费单");
+        // LODOP.ADD_PRINT_HTM(36, 30, "100%", 25, "消费单");
+        LODOP.ADD_PRINT_TEXT(50, 5, "100%", 20, "流水: @entity.DocumentNumber");
+        //汪
+        @*LODOP.ADD_PRINT_TEXT(65, 5, "100%", 20, "卡号: @entity.MemberNo 姓名: @entity.UserName");*@
+        LODOP.ADD_PRINT_TEXT(65, 5, "100%", 20, "卡号: @entity.MemberNo");
+        LODOP.ADD_PRINT_TEXT(80, 5, "100%", 20, "姓名: @entity.UserName");
+        //汪
+        LODOP.ADD_PRINT_TEXT(95, 5, "100%", 20, "分店: @entity.HospitalName");
+        // LODOP.ADD_PRINT_LINE(96, 0, 90, 500, 2, 1)//横线
+
+        //订单详情
+        var form1height = $("#form1").height();
+        LODOP.ADD_PRINT_HTM(110, 5, "100%", form1height, orderinfolist);
+        //var trheight = 0;
+        //$("#form1 tr").each(function (i) {
+        //    trheight += $(this).height();
+        //    if ($(this).text().length > 13) {
+        //        trheight += $(this).height();
+        //    }
+        //});
+        //alert(trheight);//上面注释行已有计算form1height
+        var nowheight = form1height + 120;
+        //var nowheight = trheight ;
+            LODOP.ADD_PRINT_TEXT(nowheight, 5, "100%", 20, "合计       " + AllPrice + "元");
+        LODOP.ADD_PRINT_TEXT(nowheight + 15, 5, "100%", 20, "折让       " + ZhePay + "元");
+        LODOP.ADD_PRINT_TEXT(nowheight + 30, 5, "100%", 20, "应付       " + YinPay + "元");
+        //  LODOP.ADD_PRINT_LINE(nowheight + 45, 0, nowheight + 35, 500, 2, 1)//横线
+        //如果存在欠款
+        if (QianPrice != 0) {
+            LODOP.ADD_PRINT_TEXT(nowheight + 45, 5, "100%", 20, "欠款       " + QianPrice + "元");
+            var form2height = $("#form2").height();
+            //支付方式 /余额
+            LODOP.ADD_PRINT_HTM(nowheight + 60, 5, "100%", form2height, document.getElementById("form2").innerHTML);
+            //var trheight1 = 0;
+            //$("#form2 tr").each(function(i) {
+            //    trheight1 += $(this).height();
+            //});
+            LODOP.ADD_PRINT_TEXT(nowheight + 75 + form2height , 5, "100%", 30, "操作员：@uname");
+            LODOP.ADD_PRINT_TEXT(nowheight + 90 + form2height , 5, "100%", 30, "美容师：" + username);
+            LODOP.ADD_PRINT_TEXT(nowheight + 120 + form2height , 5, "100%", 30, "订单时间：" + time);
+            LODOP.ADD_PRINT_TEXT(nowheight + 150 + form2height , 5, "100%", 30, "备注：@txtmemo");
+            LODOP.ADD_PRINT_TEXT(nowheight + 180 + form2height , 5, "100%", 30, "@printXuanNameEntity.AttributeValue");
+            LODOP.ADD_PRINT_TEXT(nowheight + 210 + form2height , 5, "100%", 30, "签名：");
+
+        } else {
+            //不存在欠款
+            var form2height = $("#form2").height();
+            LODOP.ADD_PRINT_HTM(nowheight + 45, 5, 580, form2height, document.getElementById("form2").innerHTML);
+            //var trheight1 = 0;
+            //$("#form2 tr").each(function (i) {
+            //    trheight1 += $(this).height();
+            //})
+            LODOP.ADD_PRINT_TEXT(nowheight + 45 + form2height, 5, "100%", 30, "操作员：@uname");
+            LODOP.ADD_PRINT_TEXT(nowheight + 60 + form2height, 5, "100%", 30, "美容师：" + username);
+            LODOP.ADD_PRINT_TEXT(nowheight + 90 + form2height , 5, "100%", 30, "订单时间：" + time);
+            LODOP.ADD_PRINT_TEXT(nowheight + 120 + form2height , 5, "100%", 30, "备注：@txtmemo");
+            LODOP.ADD_PRINT_TEXT(nowheight + 150 + form2height , 5, "100%", 30, "@printXuanNameEntity.AttributeValue");
+            LODOP.ADD_PRINT_TEXT(nowheight + 180 + form2height , 5, "100%", 30, "签名：");
+        }
+            //----------------------------0------------
+        }
+    };
+    function AddPrintContent76() {
+        var orderinfolist = "";
+        var paylist = "";
+        var username = "";
+        var AllPrice = 0;
+        var ZhePay = 0;
+        var YinPay = 0;
+        var QianPrice = 0;
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "json", //返回json格式的数据
+            url: "/CashManage/GetOrderinfoList76",
+            data: { "OrderNo": "@orderNo" },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    //订单详情
+                    orderinfolist = data.OutputHtml;
+                    $("#form1").append(orderinfolist);
+                    //订单支付方式及金额
+                    paylist = data.OutputString;
+                    $("#form2").append(paylist);
+                    //参会者、美容师
+                    username = data.message;
+                    AllPrice = data.AllPrice;
+                    ZhePay = data.ZhePay;
+                    YinPay = data.YinPay;
+                    QianPrice = data.QianPrice;
+                }
+            },
+            error: function () {
+            }
+        });
+        // LODOP.SET_PRINT_STYLE("FontColor", 16711680);
+        // LODOP.ADD_PRINT_RECT(62, 16, 459, 217, 0, 1);
+        LODOP.ADD_PRINT_HTM(15, 20, "100%", 25, document.getElementById("hiddenhospitalname").innerHTML + "消费单");
+        LODOP.SET_PRINT_STYLE("FontSize", 12);
+        LODOP.SET_PRINT_STYLE("FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontColor", 0);
+        //LODOP.ADD_PRINT_TEXT(36, 75, 90, 20, "消费单");
+        // LODOP.ADD_PRINT_HTM(45, 0, "100%", 25, "消费单");
+        LODOP.ADD_PRINT_TEXT(65, 5, "100%", 20, "流水: @entity.DocumentNumber");
+        //汪
+        @*LODOP.ADD_PRINT_TEXT(88, 5, "100%", 20, "卡号: @entity.MemberNo 姓名: @entity.UserName");*@
+        LODOP.ADD_PRINT_TEXT(85, 5, "100%", 20, "卡号: @entity.MemberNo");
+        LODOP.ADD_PRINT_TEXT(105, 5, "100%", 20, "姓名: @entity.UserName");
+        //汪
+        LODOP.ADD_PRINT_TEXT(125, 5, "100%", 20, "分店: @entity.HospitalName");
+        // LODOP.ADD_PRINT_LINE(96, 0, 90, 500, 2, 1)//横线
+        //订单详情
+        var form1height = $("#form1").height();
+        LODOP.ADD_PRINT_HTM(145, 5, "100%", form1height, orderinfolist);
+        //var trheight = 0;
+        //$("#form1 tr").each(function (i) {
+        //    trheight += $(this).height();
+        //    if ($(this).text().length > 13) {
+        //        trheight += $(this).height();
+        //    }
+        //});
+        //alert(form1height);
+        var nowheight = form1height + 155;
+        //var nowheight = trheight ;
+        LODOP.ADD_PRINT_TEXT(nowheight, 5, "100%", 20, "合计       " + AllPrice + "元");
+        LODOP.ADD_PRINT_TEXT(nowheight + 20, 5, "100%", 20, "折让       " + ZhePay + "元");
+        LODOP.ADD_PRINT_TEXT(nowheight + 40, 5, "100%", 20, "应付       " + YinPay + "元");
+        //  LODOP.ADD_PRINT_LINE(nowheight + 45, 0, nowheight + 35, 500, 2, 1)//横线
+        //如果存在欠款
+        if (QianPrice != 0) {
+            LODOP.ADD_PRINT_TEXT(nowheight + 60, 5, "100%", 20, "欠款       " + QianPrice + "元");
+            var form2height = $("#form2").height();
+            //支付方式 /余额
+            LODOP.ADD_PRINT_HTM(nowheight + 80, 5, "100%", form2height, document.getElementById("form2").innerHTML);
+            //var trheight1 = 0;
+            //$("#form2 tr").each(function (i) {
+            //    trheight1 += $(this).height();
+            //});
+            LODOP.ADD_PRINT_TEXT(nowheight + 100 + form2height , 5, "100%", 20, "操作员：@uname");
+            LODOP.ADD_PRINT_TEXT(nowheight + 120 + form2height , 5, "100%", 20, "美容师：" + username);
+            LODOP.ADD_PRINT_TEXT(nowheight + 160 + form2height , 5, "100%", 20, "订单时间：" + time);
+            LODOP.ADD_PRINT_TEXT(nowheight + 180 + form2height , 5, "100%", 20, "备注：@txtmemo");
+            LODOP.ADD_PRINT_TEXT(nowheight + 220 + form2height , 5, "100%", 20, "@printXuanNameEntity.AttributeValue");
+            LODOP.ADD_PRINT_TEXT(nowheight + 260 + form2height , 5, "100%", 20, "签名：");
+        } else {
+            //不存在欠款
+            var form2height = $("#form2").height();
+            LODOP.ADD_PRINT_HTM(nowheight + 60, 5, "100%", form2height, document.getElementById("form2").innerHTML);
+            //var trheight1 = 0;
+            //$("#form2 tr").each(function (i) {
+            //    trheight1 += $(this).height();
+            //});
+            LODOP.ADD_PRINT_TEXT(nowheight + 80 + form2height , 5, "100%", 20, "操作员：@uname");
+            LODOP.ADD_PRINT_TEXT(nowheight + 100 + form2height , 5, "100%", 20, "美容师：" + username);
+            LODOP.ADD_PRINT_TEXT(nowheight + 140 + form2height , 5, "100%", 20, "订单时间：" + time);
+            LODOP.ADD_PRINT_TEXT(nowheight + 160 + form2height , 5, "100%", 20, "备注：@txtmemo");
+            LODOP.ADD_PRINT_TEXT(nowheight + 200 + form2height , 5, "100%", 20, "@printXuanNameEntity.AttributeValue");
+            LODOP.ADD_PRINT_TEXT(nowheight + 240 + form2height , 5, "100%", 20, "签名：");
+        }
+    };
+    function AddPrintContent80() {
+        var orderinfolist = "";
+        var paylist = "";
+        var username = "";
+        var AllPrice = 0;
+        var ZhePay = 0;
+        var YinPay = 0;
+        var QianPrice = 0;
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "json", //返回json格式的数据
+            url: "/CashManage/GetOrderinfoList76",
+            data: { "OrderNo": "@orderNo" },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    //订单详情
+                    orderinfolist = data.OutputHtml;
+                    $("#form1").append(orderinfolist);
+                    //订单支付方式及金额
+                    paylist = data.OutputString;
+                    $("#form2").append(paylist);
+                    //参会者、美容师
+                    username = data.message;
+                    AllPrice = data.AllPrice;
+                    ZhePay = data.ZhePay;
+                    YinPay = data.YinPay;
+                    QianPrice = data.QianPrice;
+                }
+            },
+            error: function () {
+            }
+        });
+        // LODOP.SET_PRINT_STYLE("FontColor", 16711680);
+        // LODOP.ADD_PRINT_RECT(62, 16, 459, 217, 0, 1);
+        LODOP.ADD_PRINT_HTM(15, 60, "100%", 25, document.getElementById("hiddenhospitalname").innerHTML + "消费单");
+        LODOP.SET_PRINT_STYLE("FontSize", 12);
+        LODOP.SET_PRINT_STYLE("FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontColor", 0);
+        //LODOP.ADD_PRINT_TEXT(36, 75, 90, 20, "消费单");
+        // LODOP.ADD_PRINT_HTM(45, 60, "100%", 25, "消费单");
+        LODOP.ADD_PRINT_TEXT(65, 60, "100%", 20, "流水: @entity.DocumentNumber");
+        //汪
+        @*LODOP.ADD_PRINT_TEXT(88, 60, "100%", 20, "卡号: @entity.MemberNo 姓名: @entity.UserName");*@
+        LODOP.ADD_PRINT_TEXT(85, 60, "100%", 20, "卡号: @entity.MemberNo");
+        LODOP.ADD_PRINT_TEXT(105, 60, "100%", 20, "姓名: @entity.UserName");
+        //汪
+        LODOP.ADD_PRINT_TEXT(125, 60, "100%", 20, "分店: @entity.HospitalName");
+        // LODOP.ADD_PRINT_LINE(96, 0, 90, 500, 2, 1)//横线
+        //订单详情
+        var form1height = $("#form1").height();
+        LODOP.ADD_PRINT_HTM(145, 60, "100%", form1height, orderinfolist);
+        //var trheight = 0;
+        //$("#form1 tr").each(function (i) {
+        //    trheight += $(this).height();
+        //    if ($(this).text().length > 13) {
+        //        trheight += $(this).height();
+        //    }
+        //});
+        var nowheight = form1height + 155;
+        //var nowheight = trheight ;
+        LODOP.ADD_PRINT_TEXT(nowheight, 60, "100%", 20, "合计       " + AllPrice + "元");
+        LODOP.ADD_PRINT_TEXT(nowheight + 20, 60, "100%", 20, "折让       " + ZhePay + "元");
+        LODOP.ADD_PRINT_TEXT(nowheight + 40, 60, "100%", 20, "应付       " + YinPay + "元");
+        //  LODOP.ADD_PRINT_LINE(nowheight + 45, 0, nowheight + 35, 500, 2, 1)//横线
+        //如果存在欠款
+        if (QianPrice != 0) {
+            LODOP.ADD_PRINT_TEXT(nowheight + 60, 60, "100%", 20, "欠款       " + QianPrice + "元");
+            var form2height = $("#form2").height();
+            //支付方式 /余额
+            LODOP.ADD_PRINT_HTM(nowheight + 80, 60, "100%", form2height, document.getElementById("form2").innerHTML);
+            //var trheight1 = 0;
+            //$("#form2 tr").each(function (i) {
+            //    trheight1 += $(this).height();
+            //})
+            LODOP.ADD_PRINT_TEXT(nowheight + 100 + form2height, 60, "100%", 20, "操作员：@uname");
+            LODOP.ADD_PRINT_TEXT(nowheight + 120 + form2height, 60, "100%", 20, "美容师：" + username);
+            LODOP.ADD_PRINT_TEXT(nowheight + 140 + form2height, 60, "100%", 20, "订单时间：" + time);
+            LODOP.ADD_PRINT_TEXT(nowheight + 160 + form2height, 60, "100%", 20, "备注：@txtmemo");
+            LODOP.ADD_PRINT_TEXT(nowheight + 200 + form2height , 60, "100%", 20, "@printXuanNameEntity.AttributeValue");
+            LODOP.ADD_PRINT_TEXT(nowheight + 240 + form2height, 60, "100%", 20, "签名：");
+        } else {
+            //不存在欠款
+            var form2height = $("#form2").height();
+            LODOP.ADD_PRINT_HTM(nowheight + 60, 60, "100%", form2height, document.getElementById("form2").innerHTML);
+            //var trheight1 = 0;
+            //$("#form2 tr").each(function (i) {
+            //    trheight1 += $(this).height();
+            //})
+            LODOP.ADD_PRINT_TEXT(nowheight + 80 + form2height, 60, "100%", 20, "操作员：@uname");
+            LODOP.ADD_PRINT_TEXT(nowheight + 100 + form2height, 60, "100%", 20, "美容师：" + username);
+            LODOP.ADD_PRINT_TEXT(nowheight + 120 + form2height , 60, "100%", 20, "订单时间：" + time);
+            LODOP.ADD_PRINT_TEXT(nowheight + 140 + form2height , 60, "100%", 20, "备注：@txtmemo");
+            LODOP.ADD_PRINT_TEXT(nowheight + 180 + form2height , 60, "100%", 20, "@printXuanNameEntity.AttributeValue");
+            LODOP.ADD_PRINT_TEXT(nowheight + 220 + form2height , 60, "100%", 20, "签名：");
+        }
+    };
+</script>

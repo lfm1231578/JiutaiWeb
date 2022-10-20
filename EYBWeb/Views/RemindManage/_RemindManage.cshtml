@@ -1,0 +1,26 @@
+﻿@{
+    ViewBag.Title = "_RemindManage";
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+       <span>提醒管理</span>
+    </div>
+    <div id="mainContentLeft_bottom">
+        <ul>
+            <li  onclick='CheckRight(this,"")'  redirect="@Url.Content("~/RemindManage/CustomerBirthdaysList")"  >
+                <a style="cursor: pointer; "><span class="list_icon"></span>&nbsp;&nbsp;顾客生日提醒</a></li>
+            <li   onclick='CheckRight(this,"")'  redirect="@Url.Content("~/RemindManage/PersonnelBirthdaysList")"  >
+                <a style="cursor: pointer; "><span class="list_icon"></span>&nbsp;&nbsp;员工生日提醒<label></label></a></li>
+            <li   onclick='CheckRight(this,"")'  redirect="@Url.Content("~/RemindManage/BalanceManage")"  >
+                <a style="cursor: pointer; "><span class="list_icon"></span>&nbsp;&nbsp;余额不足提醒<label></label></a></li>
+            <li   onclick='CheckRight(this,"")'  redirect="@Url.Content("~/RemindManage/BalanceTimesManage")"  >
+                <a style="cursor: pointer; "><span class="list_icon"></span>&nbsp;&nbsp;余次不足提醒<label></label></a></li>
+            <li   onclick='CheckRight(this,"")'  redirect="@Url.Content("~/RemindManage/BalanceExpireTimesManage")"  >
+                <a style="cursor: pointer; "><span class="list_icon"></span>&nbsp;&nbsp;过期卡项提醒<label></label></a></li>
+            <li   onclick='CheckRight(this,"")'  redirect="@Url.Content("~/RemindManage/KucunRemind")"  >
+                <a style="cursor: pointer; "><span class="list_icon"></span>&nbsp;&nbsp;库存预警提醒<label></label></a></li>
+            <li   onclick='CheckRight(this,"")'  redirect="@Url.Content("~/RemindManage/CustomerRemind")"  >
+                <a style="cursor: pointer; "><span class="list_icon"></span>&nbsp;&nbsp;顾客跟进提醒<label></label></a></li>
+        </ul>
+    </div>
+</div>

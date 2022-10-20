@@ -1,0 +1,78 @@
+﻿@using EYB.ServiceEntity.WarehouseEntity;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<BuyOrderEntity>
+@{
+    ViewBag.Title = "入库列表";
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var parentHospitalID = Common.Manager.LoginHospitalUserManager.GetLoginInfo().ParentHospitalID;//获取当前用户的父点ID
+    var cangku = wareBll.GetWarehouseList(new EYB.ServiceEntity.WarehouseEntity.WarehouseEntity { HospitalID = ViewBag.HospitalID });//获取仓库列表
+    Layout = null;
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+
+    var Name = ViewBag.Name;
+    var HouseID = ViewBag.HouseID;
+
+}
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<body style="background: #fff;">
+    @using (Ajax.BeginForm("XiaoshouList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+    {
+        <div class="accountdiv">
+                <a href="@Url.Content("~/WarehouseManage/Xiaoshou")?Type=Add" style="margin-top:2px; margin-left:10px;" class="submitbutton3">添加销售</a>
+        </div>
+    }
+    <div id="articles" class="mainContentRight_bottom" style="margin-top: 5px; width: 100%;">
+        @Html.Partial("_XiaoshouList", Model)
+    </div>
+    @{Html.RegisterMvcPagerScriptResource();}
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+</body>
+<script type="text/javascript">
+    $("#Name").keyup(function () {
+        $("#btnsearch").click();
+        //document.getElementById("searchForm").submit();
+    });
+
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+
+    function CRK(obj) {
+        if(obj!=null&& confirm("确认提交?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "RukuXamine?OrderNo="+obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！", "@Url.Content("~/WarehouseManage/RukuList")");
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+     }
+
+</script>

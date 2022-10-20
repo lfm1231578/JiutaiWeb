@@ -1,0 +1,79 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.PerformanceRankingEntity>
+    @{
+        ViewBag.Title = "业绩排名";
+        Layout = null;
+    }
+    <div id="showmessage" style=" display:none;width:220px; height:140px; position:fixed; top:300px; left:650px; color:Red;  margin:0 auto; text-align:center;">
+        <img src="../../Content/themes/images/loading.gif" width="100" />
+        <p style=" text-align:center; height:30px;line-height:30px;">
+            正在努力查询中，请稍后...
+        </p>
+    </div>
+    <form>
+        <table class="gridTable" style="border-collapse: collapse; width: 99%;">
+            <thead>
+                <tr>
+                    <th orderfield="">
+                        门店
+                    </th>
+                    <th orderfield="">
+                        员工
+                    </th>
+                    <th orderfield="">
+                        现金业绩
+                    </th>
+                    <th orderfield="">
+                        现金业绩排名
+                    </th>
+                  @*  <th orderfield="">
+                        卡项业绩
+                    </th>
+                    <th orderfield="">
+                        卡项业绩排名
+                    </th>*@
+                   
+                    <th orderfield="">
+                        实耗业绩
+                    </th>
+                    <th orderfield="">
+                        实耗业绩排名
+                    </th>
+                    <th orderfield="">
+                        新客成单
+                    </th>
+                    <th orderfield="">
+                        新客成单排名
+                    </th>
+                    @*<th>
+                        顾客到店次数
+                    </th>
+                    <th>
+                        顾客到店次数排名
+                    </th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>@entity.HospitalName</td>
+                        <td>@entity.UserName</td>
+                        <td>@entity.Yeji</td>
+                        <td>@entity.YejiRank</td>
+                      @*  <td>@entity.KaXiang</td>
+                        <td>@entity.KaXiangRank</td>*@
+                        <td>@entity.ShiHao</td>
+                        <td>@entity.ShihaoRank</td>
+                        <td>@entity.XinKe</td>
+                        <td>@entity.XinKeRank</td>
+                        @*<td>@entity.DaoDian</td>
+                        <td>@entity.DaoDianRank</td>*@
+                    </tr>
+                }
+
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 12))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager1" })
+    </form>

@@ -1,0 +1,235 @@
+﻿@{
+
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_PerformanceAudit);//员工业绩审核
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_PerformanceDetails);//员工销售明细
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_ItemDetailsConsumption);//员工消耗明细
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_PerformanceSummary);//员工业绩汇总
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_PassengerTraffic);//员工客流量
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_StatisticsHospitalUser);//员工业绩达成分析
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_PerformanceReports);//营收分析
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_YewuxiaoshouMingxi);//业务销售明细
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_Yewuxiaoshouhuizong);//业务销售汇总
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.Statistics_Statisticsjiajuyeji);//员工家居业绩统计
+
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalScheduleList);//目标状态
+    bool result12 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalsManage);//目标管理
+    bool result13 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalsStatistics); //目标结果
+
+    bool result14 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_Dakarecode); //打卡记录
+    bool result15 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_Dakarecode_Addqingjia); //异常考勤管理
+    bool result16 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.MoneyManage_Dakarecode_Kaoqingtongji); //考勤统计
+
+    bool result17 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CashManage_OrderSummary); //门店客流
+    
+    bool result18 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.PersonManager_SalaryStatisticsFilter); //薪资管理
+    bool result19 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.PersonManager_Leavepage1); //行政扣罚&职能考评
+    
+    bool result24 = Common.Manager.LoginHospitalUserManager.HasPermission("8A402892-76D4-49AE-A166-2C7E13634D66");//各组各店员工汇总
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <span>员工管理</span>
+    </div>
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/MoneyManage/PerformanceAudit")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;员工业绩审核
+                    </a>
+                </li>
+            }
+            @if (result2)
+            {
+                <li onclick='CheckRight(this,"@result2")' redirect="@Url.Content("~/MoneyManage/PerformanceDetails")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;员工销售明细
+
+                    </a>
+                </li>
+            }
+            @if (result3)
+            {
+                <li onclick='CheckRight(this,"@result3")' redirect="@Url.Content("~/MoneyManage/ItemDetailsConsumption")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;员工消耗明细
+
+                    </a>
+                </li>
+            }
+            @if (result4)
+            {
+                <li onclick='CheckRight(this,"@result4")' redirect="@Url.Content("~/MoneyManage/PerformanceSummary")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;员工绩效汇总
+
+                    </a>
+                </li>
+            }
+            @if (result24)
+            {
+                <li onclick='CheckRight(this,"@result24")' redirect="@Url.Content("~/MoneyManage/PerformanceSummaryNew")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;各店组业绩统计
+
+                    </a>
+                </li>
+            }
+            @if (result5)
+            {
+                <li onclick='CheckRight(this,"@result5")' redirect="@Url.Content("~/MoneyManage/PassengerTraffic")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;员工客流量
+
+                    </a>
+                </li>
+            }
+            @if (result10)
+            {
+                <li onclick='CheckRight(this,"@result10")' redirect="@Url.Content("~/MoneyManage/HospitalUserProductYeji")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;员工家居业绩统计
+
+                    </a>
+                </li>
+            }
+            @if (result6)
+            {
+                <li onclick='CheckRight(this,"@result6")' redirect="@Url.Content("~/Statistics/StatisticsHospitalUser")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;员工业绩达成分析
+
+                    </a>
+                </li>
+            }
+            @if (result12)
+            {
+                <li onclick='CheckRight(this,"@result11")' style="" redirect="@Url.Content("~/CenterManage/GoalsListInfo")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;目标管理
+
+                    </a>
+                </li>
+            }
+            @*@if (result11)
+        {
+            <li onclick='CheckRight(this,"@result11")' style="" redirect="@Url.Content("~/CenterManage/GoalsState")">
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;目标状态
+
+                </a>
+            </li>
+        }
+        @if (result13)
+        {
+            <li onclick='CheckRight(this,"@result13")' style="" redirect="@Url.Content("~/CenterManage/GoalsStatistics")">
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;目标结果
+
+                </a>
+            </li>
+        }*@
+            @if (result14)
+            {
+                <li onclick='CheckRight(this, "@result14")' style="" redirect="@Url.Content("~/ReservationDoctorManage/DakaRecord")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;打卡记录
+                    </a>
+                </li>
+            }
+            @if (result15)
+            {
+                <li onclick='CheckRight(this, "@result14")' style="" redirect="@Url.Content("~/ReservationDoctorManage/Leavepage")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;异常考勤管理
+                    </a>
+                </li>
+            }
+            @if (result16)
+            {
+                <li onclick='CheckRight(this, "@result14")' style="" redirect="@Url.Content("~/ReservationDoctorManage/DakaRecordStatistics")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;考勤统计
+                    </a>
+                </li>
+            }
+            @if (result18)
+            {
+                <li onclick='CheckRight(this,"@result14")' redirect="@Url.Content("~/ReservationDoctorManage/SalaryStatisticsFilterShopManagerInfo")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;薪资管理
+
+                    </a>
+                </li>
+            }
+            @if (result19)
+            {
+                <li onclick='CheckRight(this, "@result14")' style="" redirect="@Url.Content("~/ReservationDoctorManage/Leavepage1")">
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;行政扣罚职能考评
+                    </a>
+                </li>
+            }
+            @*@if (result16)
+        {
+            <li onclick='CheckRight(this,"@result14")' redirect="@Url.Content("~/ReservationDoctorManage/SalaryStatisticsFilterCounselor")">
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;顾问薪资
+
+                </a>
+            </li>
+        }
+        @if (result16)
+        {
+            <li onclick='CheckRight(this,"@result14")' redirect="@Url.Content("~/ReservationDoctorManage/SalaryStatisticsFilter")">
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;美容师薪资
+
+                </a>
+            </li>
+        }
+        @if (result16)
+        {
+            <li onclick='CheckRight(this,"@result14")' redirect="@Url.Content("~/ReservationDoctorManage/SalaryStatisticsFilterReceptionist")">
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;前台薪资
+
+                </a>
+            </li>
+        }
+        @if (result16)
+        {
+            <li onclick='CheckRight(this, "@result14")' style="" redirect="@Url.Content("~/ReservationDoctorManage/SalaryStatistics")">
+                <a style="cursor: pointer; ">
+                    <span class="list_icon"></span>&nbsp;&nbsp;薪资统计
+                </a>
+            </li>
+        }*@
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    //登录回车事件
+    $(document).keydown(function (event) {
+        if (event.keyCode == 13 || event.keyCode == 32) {
+            if ($.trim($(".searchInput").val()) != "" && $(".searchInput").val() != "搜索") {
+                document.getElementById("submitform").submit();
+            }
+        }
+    });
+
+    //定义权限列表，主要为了显示默认有权限的页面
+    var TheArray = [["@result1", "@Url.Content("~/MoneyManage/PerformanceAudit")"],
+        ["@result2", "@Url.Content("~/MoneyManage/PerformanceDetails")"],
+        ["@result3", "@Url.Content("~/MoneyManage/ItemDetailsConsumption")"],
+        ["@result4", "@Url.Content("~/MoneyManage/PerformanceSummary")"],
+        ["@result5", "@Url.Content("~/MoneyManage/PassengerTraffic")"],
+        ["@result6", "@Url.Content("~/Statistics/StatisticsHospitalUser")"],
+        ["@result10", "@Url.Content("~/MoneyManage/HospitalUserProductYeji")"],
+        ["@result11", "@Url.Content("~/CenterManage/GoalsState")"],
+        ["@result12", "@Url.Content("~/CenterManage/GoalsList")"],
+        ["@result13", "@Url.Content("~/CenterManage/GoalsStatistics")"]];
+
+
+</script>

@@ -1,0 +1,513 @@
+﻿@using EYB.ServiceEntity.CashEntity;
+@model EYB.ServiceEntity.MoneyEntity.TimeConsumingPerformanceEntity
+@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "当日营业汇总";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var staretime = ViewBag.StartTime;
+    var endtime = ViewBag.Endtime;
+    var HospitalID = ViewBag.HospitalID;
+    SystemManage.Factory.IBLL.ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //打印机设置
+    var PrintTemplate = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "PrintTemplate").AttributeValue;
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+
+}
+<script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+<div id="mainContentBody">
+    @Html.Partial("_CashControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+            </label>
+            当日营业汇总
+        </div>
+        <div class="mainContentRight_bottom clearfix">
+            <form id="myform" action="@Url.Content("~/CashManage/TodaySummary")" class="clearfix" method="post">
+                <div class="accountdiv ullist">
+                    <ul>
+                        @if (HasPermission)
+                        {
+                            <li>
+                                <label style="font-weight: normal;">
+                                    所属分店：
+                                </label>
+                                <select name="HospitalID" class="ymxSelect">
+                                    <option value="0">请选择分店</option>
+                                    @if (RegionhospitalList.Count > 0)
+                                    {
+                                        foreach (var info in RegionhospitalList)
+                                        {
+                                            <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID">@info.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (var info in hospitalList)
+                                        {
+                                            <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID">@info.Name</option>
+                                        }
+                                    }
+                                </select>
+                            </li>
+                        }
+                        <li>
+                            <label style="font-weight: normal;">
+                                时间:
+                            </label><input autocomplete="off" type="text" name="StartTime" value="@ViewBag.StartTime.ToString("yyyy-MM-dd")" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                           id="startTime" />
+                        </li>
+                        <li>
+                            <label style="font-weight: normal;">
+                                至:
+                            </label><input autocomplete="off" type="text" name="EndTime" value="@ViewBag.EndTime.ToString("yyyy-MM-dd")" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                           id="endtime" />
+                        </li>
+                        <li>
+                            <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                            <input type="submit" id="btnsumbit" class="submitbutton2 ymxButtonMT" name="btn"
+                                   value="汇总" />
+                        </li>
+                        <li>
+                            <input type="button" class="submitbutton2 ymxButtonMT" name="" onclick="Preview1()"
+                                   value="打印" />
+                        </li>
+                    </ul>
+                    <div style="clear: both;">
+                    </div>
+                </div>
+            </form>
+            <style>
+                .gridTable tr {
+                    border: 1px solid #d6d6d6;
+                }
+            </style>
+            <div id="printtab1">
+                <table class="gridTable" style="border-collapse: collapse; font-size: 1em; text-align: center; width:550px;margin-top:10px;">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">
+                                消费类别
+                            </th>
+                            <th style="width: 50%;">
+                                收入
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="width: 50%;">
+                                总业绩
+                            </td>
+                            <td style="width: 50%;">
+                                @(Model.SumMoney)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;">
+                                现金
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Xianjin
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;">
+                                大项目现金
+                            </td>
+                            <td style="width: 50%;">
+                                @ViewBag.Yeji_Daxiangmu    @*@Model.XianjinDaxiangmu*@
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;">
+                                银联
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Yinlianka
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;">
+                                其他现金
+                            </td>
+                            <td style="width:50%;">
+                                @(Model.SumMoney - Model.Xianjin - Model.Yinlianka)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                券类
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Quanlei
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                储值卡划扣
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Chuzhika
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                赠卡划扣
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.ZengChuzhika
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;" title="划卡实操">
+                                疗程消耗
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Liaocheng
+                            </td>
+                        </tr>
+                        @*<tr>
+                            <td style="width: 50%;">
+                                大项目消耗
+                            </td>
+                            <td style="width: 50%;">
+                                0
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.LiaochengDaxiangmu
+                            </td>
+                        </tr>*@
+                        <tr>
+                            <td style="width: 50%;">
+                                单项消耗
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Danxiangxiaohao
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                产品
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Productprice
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                还款
+                            </td>
+                            <td style="width: 50%;">
+                                @ViewBag.Huankuan @*@Model.Qiankuan*@ @*@(Model.Xianjin + Model.Qiankuan)*@
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                欠款
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Qiankuan
+                            </td>
+                        </tr>
+                        @*<tr>
+                            <td style="width: 50%;">
+                                老客
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.RenTou
+                            </td>
+                        </tr>*@
+                        <tr>
+                            <td style="width: 50%;">
+                                新客
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.NewRenTou
+                            </td>
+                        </tr>
+                        @*汪  20190726*@
+                        <tr>
+                            <td>
+                                店人头数
+                            </td>
+                            <td>
+                                @*@Model.Keliu*@ @(Model.RenTou + Model.NewRenTou)
+                            </td>
+                        </tr>
+                        @*汪  20190726*@
+                        <tr>
+                            <td style="width: 50%;">
+                                客流
+                            </td>
+                            <td style="width: 50%;">
+                                @Model.Keliu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 50%;">
+                                营业收支结余
+                            </td>
+                            <td style="width:50%;">
+                                @Model.InMoney
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">
+                                现金结余
+                            </td>
+                            <td style="width: 50%;">
+                                @(Model.SumMoney + Model.InMoney)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="printtab" style="display: none;">
+                <table class="gridTable" style="border-collapse: collapse; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>
+                                消费类别
+                            </th>
+                            <th>
+                                收入
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                总业绩
+                            </td>
+                            <td>
+                                @(Model.SumMoney)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                现金
+                            </td>
+                            <td>
+                                @Model.Xianjin
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                银联
+                            </td>
+                            <td>
+                                @Model.Yinlianka
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                其他现金
+                            </td>
+                            <td>
+                                @(Model.SumMoney - Model.Xianjin - Model.Yinlianka)
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                券类
+                            </td>
+                            <td>
+                                @Model.Quanlei
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                储值卡划扣
+                            </td>
+                            <td>
+                                @Model.Chuzhika
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                赠卡划扣
+                            </td>
+                            <td>
+                                @Model.ZengChuzhika
+                            </td>
+                        </tr>
+                        <tr>
+                            <td title="划卡实操">
+                                疗程消耗
+                            </td>
+                            <td>
+                                @Model.Liaocheng
+                            </td>
+                        </tr>
+                        <tr>
+                            <td title="大项目实操">
+                                大项目消耗
+                            </td>
+                            <td>
+                                @Model.LiaochengDaxiangmu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                单项消耗
+                            </td>
+                            <td>
+                                @Model.Danxiangxiaohao
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                产品
+                            </td>
+                            <td>
+                                @Model.Productprice
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                欠款
+                            </td>
+                            <td>
+                                @Model.Qiankuan
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                老客
+                            </td>
+                            <td>
+                                @Model.RenTou
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                新客
+                            </td>
+                            <td>
+                                @Model.NewRenTou
+                            </td>
+                        </tr>
+                        @*汪  20190726*@
+                        @*<tr>
+            <td>
+                店人头数
+            </td>
+            <td>
+                @(Model.RenTou+Model.NewRenTou))
+            </td>
+        </tr>*@
+                        @*汪  20190726*@
+                        <tr>
+                            <td>
+                                客流
+                            </td>
+                            <td>
+                                @Model.Keliu
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                营业收支结余
+                            </td>
+                            <td>
+                                @Model.InMoney
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                现金结余
+                            </td>
+                            <td>
+                                @(Model.SumMoney + Model.InMoney)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div style="height:15px;"></div>
+            <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width="0"
+                    height="0">
+                <embed id="LODOP_EM" type="application/x-print-lodop" width="0" height="0"></embed>
+            </object>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var printtemp = '@PrintTemplate';
+    $("#btnsumbit").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+
+    //打印
+    var LODOP; //声明为全局变量
+    function Preview1() {
+        LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+
+        if (printtemp == 58) {
+            //alert("我进了58打印!");
+            Preview58();
+        } else {
+            //alert("我进了76打印!");
+            Preview76();
+        }
+
+
+    };
+
+    function Preview58() {
+        // LODOP.PRINT_INITA(0, 0, 580, 333, "自定义纸张1");
+        LODOP.PRINT_INIT("自定义纸张");
+        //         document.getElementById('W1').value;
+        LODOP.SET_PRINT_PAGESIZE(3, 580, 800, "A4");
+        LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+        LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+        AddPrintContent();
+        LODOP.PREVIEW();
+    }
+
+    function Preview76() {
+        // LODOP.PRINT_INITA(0, 0, 580, 333, "自定义纸张1");
+        LODOP.PRINT_INIT("自定义纸张");
+        //         document.getElementById('W1').value;
+        LODOP.SET_PRINT_PAGESIZE(3, 760, 800, "A4");
+        LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+        LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+        AddPrintContent76();
+        LODOP.PREVIEW();
+    }
+
+
+    function AddPrintContent() {
+        LODOP.ADD_PRINT_HTM(15, 5, "100%", 20, "<div style='font-size:15px; text-align:center;'>" + $("#startTime").val() + "至" + $("#endtime").val() + "</div>");
+        LODOP.ADD_PRINT_HTM(45, 5, "100%", 20, "<div style='font-size:16px; text-align:center;'>营业汇总</div>");
+
+        LODOP.SET_PRINT_STYLE("FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontSize", 10);
+        LODOP.SET_PRINT_STYLE("FontColor", 0);
+
+        //订单详情
+        var form1height = $("#printtab").height();
+        LODOP.ADD_PRINT_HTM(98, 5, 580, form1height, document.getElementById("printtab").innerHTML);
+        var trheight = 0;
+    }
+
+    function AddPrintContent76() {
+        LODOP.ADD_PRINT_HTM(15, 5, "100%", 20, "<div style='font-size:16px; text-align:center;'>" + $("#startTime").val() + "至" + $("#endtime").val() + "</div>");
+        LODOP.ADD_PRINT_HTM(45, 5, "100%", 20, "<div style='font-size:18px; text-align:center;'>营业汇总</div>");
+
+        LODOP.SET_PRINT_STYLE("FontName", "宋体");
+        LODOP.SET_PRINT_STYLE("FontSize", 13);
+        LODOP.SET_PRINT_STYLE("FontColor", 0);
+
+        //订单详情
+        var form1height = $("#printtab1").height();
+        LODOP.ADD_PRINT_HTM(98, 5, 760, form1height, document.getElementById("printtab1").innerHTML);
+        var trheight = 0;
+    }
+</script>
+

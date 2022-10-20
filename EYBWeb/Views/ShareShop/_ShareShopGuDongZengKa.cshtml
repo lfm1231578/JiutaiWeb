@@ -1,0 +1,92 @@
+﻿@model PagedList<EYB.ServiceEntity.ShareShopEntity.ShareholderActivityEntity>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th style="display: none;">设置为二维码赠卡</th>
+                    <th>
+                        赠卡活动
+                    </th>
+                    <th>
+                        会员卡
+                    </th>
+                    <th>
+                        股东赠卡数量
+                    </th>
+                    <th>
+                        客源赠卡
+                    </th>
+
+                    <th>
+                        赠送积客价值
+                    </th>
+                    <th>
+                        赠送积客数量
+                    </th>
+                    <th>
+                        修改时间
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr class="ableclick">
+                        <td style="display: none;">
+                            <input type="radio" name="radio" value="@entity.Id" @(entity.IsQrCodeGiveCard == 1 ? "checked=\"checked\"" : "") />
+                        </td>
+                        <td>
+                            @entity.ActivityName
+                        </td>
+                        <td>
+                            @entity.MainCardName
+                        </td>
+                        <td>
+                            @entity.ShareQuantity
+                        </td>
+                        <td>
+                            @entity.FriendShareQuantity
+                        </td>
+                        <td>
+                            @entity.ActivityValue
+                        </td>
+                        <td>
+                            @entity.ActivityCount
+                        </td>
+                        <td>
+                            @entity.UpdateTime
+                        </td>
+                        <td>
+                            @if (entity.State == 2)
+                            {
+                                <a href="javascript:;" onclick="deltetproduct(@entity.Id,1)">启用</a>
+                            }
+                            else
+                            {
+                                <a href="javascript:;" style="color: red;" onclick="deltetproduct(@entity.Id,2)">删除</a>
+                            }&nbsp;|&nbsp;
+                            <a href="javascript:OpenDailogDetail('Edit',@entity.Id);">修改</a>
+                        </td>
+
+                    </tr>
+                }
+            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 9))
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>
+

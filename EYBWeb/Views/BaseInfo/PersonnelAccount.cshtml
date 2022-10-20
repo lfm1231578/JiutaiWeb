@@ -1,0 +1,184 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.SystemEntity.SysOperateLogEntity>
+@{
+    ViewBag.Title = "PersonnelAccount";
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+             <label class="Soliddots"></label> 账号安全</div>
+        <div class="mainContentRight_bottom" style=" position:relative; overflow:hidden;">
+            <div class="accountdiv">
+                修改密码
+            </div>
+            <form id="myform" action="@Url.Content("~/PersonnelManage/UpdatePwd")" class="formular" method="post">
+                <table class="mainContentRight_bottomnewdepart" style="margin-left:40px;">
+                    <tr>
+                        <td style="width: 110px;">
+                            账号：
+                        </td>
+                        <td>
+                            <input type="hidden" name="UserID" value="@ViewBag.UserID" />
+                            @ViewBag.LoginAccount
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            原密码：
+                        </td>
+                        <td>
+                            <input type="password" name="OldPwd" id="txtpwd" class="validate[required] text-input" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            新密码：
+                        </td>
+                        <td>
+                            <input type="password" name="Password" id="txtnewpwd" class="validate[required] text-input" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            确认新密码：
+                        </td>
+                        <td>
+                            <input type="password" id="txtrenewpwd" class="validate[required,equals[txtnewpwd]] text-input" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+
+                            <input type="button" id="btnsave" class="submitbutton2" value="保存修改" style=" margin:0;" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <div class="accountdiv">
+                最近一周操作日志
+            </div>
+            <div id="listTatbel" style="overflow:auto">
+                <table class="gridTable" style="width:96%;">
+                    <thead style="position:absolute;">
+                        <tr style=" background:rgba(251,195,196,1);">
+                            <th>
+                                用户
+                            </th>
+                            <th>
+                                时间
+                            </th>
+                            <th>
+                                IP地址
+                            </th>
+                            <th>
+                                IP所在地
+                            </th>
+                            <th>
+                                模块名称
+                            </th>
+                            <th>
+                                操作
+                            </th>
+                            <th>
+                                描述
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="height:40px;"></tr>
+                        @foreach (var info in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @info.LoginAccount
+                                </td>
+                                <td>
+                                    @info.OccurTime
+                                </td>
+                                <td>
+                                    @info.ClientIP
+                                </td>
+                                <td>
+                                    @info.ApplicationName
+                                </td>
+                                <td>
+                                    @info.ModuleName
+                                </td>
+                                <td>
+                                    @info.Action
+                                </td>
+                                <td>
+                                    @info.Memo
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+                <div style="height:60px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery("#myform").validationEngine('attach', {
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentBody",
+            promptPosition: "bottomLeft"
+        });
+    //保存
+     $("#btnsave").click(function(){
+         if($("#txtpwd").val()=="" || $("#txtnewpwd").val()==""  || $("#txtrenewpwd").val()==""   )
+         {
+            $('#myform').submit();
+            return;
+         }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/PersonnelManage/UpdatePwd")",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                alert("Connection error");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("修改成功！");
+               }else if(data==-2){
+               artdialogfail("原密码错误！","@Url.Content("~/PersonnelManage/PersonnelAccount")");
+               }else
+               {
+                artdialogfail("修改失败！");
+               }
+            }
+        });
+     });
+    });
+</script>
+<script>
+    $(function () {
+        let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+        $("#listTatbel").css("height", (acHeight-250) + "px");
+    })
+</script>
+<script type="text/javascript">
+    $(function () {
+    
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+</script>

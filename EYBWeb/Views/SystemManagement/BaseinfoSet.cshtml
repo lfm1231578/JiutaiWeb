@@ -1,0 +1,449 @@
+﻿@using SystemManage.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    Layout = "~/Views/Shared/Header.cshtml";
+    var systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    var list = systemBLL.GetBaseInfoList();
+    var arealist = systemBLL.GetBaseInfoByParentid("areacode", 0);   
+}
+@section head
+{
+    <link href="../../Content/themes/css/tree.css" rel="stylesheet" type="text/css" />
+}
+<div style="width: 30%; float: left; border: 1px solid  #eeeeee; height: 900px;">
+    <div class="content-menu ib-a blue line-x">
+        <a class="add fb" href="javascript:;" id="btnlinkAddInfotype"><em>添加基础类型</em></a>
+        <input type="button" id="btnlinkUpdateInfotype" class="buttonclass" name="dosubmit"
+            value="修改基础类型" />
+        <input type="button" id="btnlinkDeleteInfotype" class="buttonclass" name="dosubmit"
+            value="删除基础类型" />
+    </div>
+    <div>
+        <label>
+            基础类型：</label>
+        <input type="text" id="txtinfotype" style="width: 200px;" /></div>
+    <div class="panelTable">
+        <div id="setDataRightContent" style="height: 900px;">
+        </div>b
+        <input type="hidden" id="hiddeninfoType" />
+    </div>
+</div>
+<div style="width: 68%; float: left; border: 1px solid  #eeeeee; height: 900px;">
+    <div class="pageContent">
+        <div class="content-menu ib-a blue line-x">
+            <a class="add fb" href="javascript:;" id="btnlinkAddInfotypeInfo"><em>添加基础字典</em></a>
+            <input type="button" id="btnlinkUpdateInfotypeInfo" class="buttonclass" name="dosubmit"
+                value="修改基础字典" />
+            <input type="button" id="btnlinkDeleteInfotypeInfo" class="buttonclass" name="dosubmit"
+                value="删除基础字典" />
+        </div>
+        <table id="tableInfotypeManage">
+        </table>
+        <div id="pagerInfotypeManage">
+        </div>
+        <div id="AddInfoTypeTable" class="ui-helper-hidden">
+            <table class="list" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr class="clearfix">
+                    <td>
+                        所属分类：
+                    </td>
+                    <td>
+                        <select id="selInfoType">
+                            @{
+                                foreach (var info in list)
+                                {
+                                <option value="@info.InfoType" >@info.InfoType</option>
+                                }
+                         
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        分类编码：
+                    </td>
+                    <td>
+                        <input id="txtInfoCode" class="input require" type="text" />
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        名称：
+                    </td>
+                    <td>
+                        <input id="txtInfoName" class="input require" type="text" />
+                    </td>
+                </tr>
+                <tr class="clearfix" id="trareacode" style="display: none;">
+                    <td>
+                        父类地区：
+                    </td>
+                    <td>
+                        <select id="txtparentareaName">
+                            <option value="0" selected="selected">---无父地区--</option>
+                            @{
+                                foreach (var info in arealist)
+                                {
+                                <option value="@info.ID">@info.InfoName</option>
+                                }
+                         
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        描述：
+                    </td>
+                    <td>
+                        <input id="txtInfoDesc" class="input require" type="text" />
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        排序：
+                    </td>
+                    <td>
+                        <input id="txtInfoSort" class="input require" type="text" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="UpdateInfoTypeTable" class="ui-helper-hidden">
+            <table class="list" width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr class="clearfix" style="display: none;">
+                    <td>
+                        所属分类：
+                    </td>
+                    <td>
+                        <select id="selUpdateInfoType">
+                            @{
+                                foreach (var info in list)
+                                {
+                                <option value="@info.InfoType">@info.InfoType</option>
+                                }
+                         
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        名称：
+                    </td>
+                    <td>
+                        <input id="txtUpdateInfoName" class="input require" type="text" />
+                    </td>
+                </tr>
+                <tr class="clearfix" style="display: none;">
+                    <td>
+                        父类地区：
+                    </td>
+                    <td>
+                        <select id="txtupdateparentareaName">
+                            @{
+                                foreach (var info in arealist)
+                                {
+                                <option value="@info.ID">@info.InfoType</option>
+                                }
+                         
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        分类编码：
+                    </td>
+                    <td>
+                        <input id="txtUpdateInfoCode" class="input require" type="text" />
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        描述：
+                    </td>
+                    <td>
+                        <input id="txtUpdateInfoDesc" class="input require" type="text" />
+                    </td>
+                </tr>
+                <tr class="clearfix">
+                    <td>
+                        排序：
+                    </td>
+                    <td>
+                        <input id="txtUpdateInfoSort" class="input require" type="text" />
+                    </td>
+                </tr>
+            </table>
+            <input type="hidden" id="hiddenInfoTypeID" />
+        </div>
+    </div>
+</div>
+<script src="../../Scripts/Jquery/plugins/jquery.tree.js" type="text/javascript"></script>
+<script type="text/javascript">
+
+    $(function () {
+        //////////////////////////////////////加载分类树////////////////////////////////////
+        $('#tableInfotypeManage').jqGrid({
+            url: getControllerUrl("SystemManagement", "GetBaseInfoTreeByType"),
+            datatype: "json",
+            mtype: 'POST',
+            search: '',
+            data: { 'InfoType': item.value },
+            colNames: ['编号', '分类名称', '分类编码', '名称', '父编码', '描述', '排序代码'],
+            colModel: [
+                            { name: 'ID', index: 'ID', sortable: true, key: true },
+                            { name: 'InfoType ', index: 'InfoType', sortable: true },
+                             { name: 'InfoCode', index: 'InfoCode', sortable: true },
+                            { name: 'InfoName', index: 'InfoName', sortable: true },
+                             { name: 'parentid', index: 'parentid', sortable: true },
+                            { name: 'InfoDesc', index: 'InfoDesc', sortable: true },
+                            { name: 'SortID', index: 'SortID', sortable: true }
+
+                        ],
+            pager: '#pagerInfotypeManage',
+            pagerpos: 'center',
+            rowNum: 100,
+            height: GetJqGridHeight() - 60,
+            multiselect: true,
+            altRows: true,
+            multiboxonly: true,
+            viewrecords: true,
+            pginput: false,
+            emptyrecords: "没有符合查询条件的数据",
+            autowidth: true,
+            altclass: 'tableAltClass',
+
+            gridComplete: function () {
+                $('#tableInfotypeManage').trigger("gridComplete");
+            }
+        });
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "json", //返回json格式的数据
+            url: getControllerUrl("SystemManagement", "GetBaseInfoTree"),
+            success: function (data) {
+                var o = { onnodeclick: function (item) {
+                    $("#txtinfotype").val(item.value);
+                    $("#hiddeninfoType").val(item.value);
+                    $('#tableInfotypeManage').setGridParam({
+                        url: getControllerUrl("SystemManagement", "GetBaseInfoTreeByType") + "?InfoType=" + encodeURI(item.value),
+                        page: 1
+                    }).trigger("reloadGrid");
+                    //$("#tableInfotypeManage").clearGridData();
+
+                }
+                };
+                o.data = data;
+                $("#setDataRightContent").treeview(o);
+
+            },
+            error: function (xhr) {
+                alert('数据没有加载成功！');
+            }
+        });
+
+        $("#selInfoType").change(function () {
+            var code = $("#selInfoType").val();
+            if (code == "活动区域") {
+                $("#trareacode").css("display", "block");
+            } else {
+                $("#trareacode").css("display", "none");
+            }
+        });
+        //////////////////////////////////////添加分类树////////////////////////////////////
+        $('#btnlinkAddInfotype').click(function () {
+            if ($("#txtinfotype").val() == "") {
+                alert('请输入分类信息！');
+                return;
+            } else {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("SystemManagement", "AddBaseInfo") + "?InfoType=" + encodeURI($("#txtinfotype").val()),
+                    success: function (data) {
+                        alert("操作成功！");
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+                $(this).dialog('close');
+            }
+        });
+        //////////////////////////////////////修改分类树////////////////////////////////////
+        $('#btnlinkUpdateInfotype').click(function () {
+            if ($("#txtinfotype").val() == "") {
+                alert('请输入分类信息！');
+                return;
+            } else {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("SystemManagement", "UpdateBaseInfo") + "?InfoType=" + encodeURI($("#txtinfotype").val()) + "&oldInfotype=" + encodeURI($("#hiddeninfoType").val()),
+                    success: function (data) {
+                        alert("操作成功！");
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+                $(this).dialog('close');
+            }
+        });
+        //////////////////////////////////////删除分类树////////////////////////////////////
+        $('#btnlinkDeleteInfotype').click(function () {
+            if ($("#txtinfotype").val() == "") {
+                alert('请输入分类信息！');
+                return;
+            } else {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("SystemManagement", "DeleteBaseInfo") + "?InfoType=" + encodeURI($("#txtinfotype").val()),
+                    success: function (data) {
+                        alert("操作成功！");
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+                $(this).dialog('close');
+            }
+        });
+        //////////////////////////////////////添加分类信息////////////////////////////////////
+
+        $("#AddInfoTypeTable").dialog({
+            modal: true,
+            autoOpen: false,
+            height: 400,
+            buttons: {
+                "确定": function () {
+                    var param = new Object();
+                    param.InfoType = $("#selInfoType").val();
+                    param.InfoName = $("#txtInfoName").val();
+                    param.InfoDesc = $("#txtInfoDesc").val();
+                    param.InfoCode = $("#txtInfoCode").val();
+                    param.SortID = $("#txtInfoSort").val();
+                    param.parentID = $("#txtparentareaName").val();
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: getControllerUrl("SystemManagement", "AddBaseInfoEntity"),
+                        data: param,
+                        success: function (d) {
+                            if (d == null || d.IsSuccess == false)
+                                alert("您的当前操作未成功，请重新操作！");
+                            else
+                                alert("操作成功！");
+                            location.reload();
+                        },
+                        error: function () {
+                            alertMsg("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "取消": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $('#btnlinkAddInfotypeInfo').click(function () {
+            $("#txtInfoName").val("");
+            $("#txtInfoDesc").val("");
+            $("#txtInfoCode").val("");
+            $("#txtInfoSort").val("");
+            $('#AddInfoTypeTable').dialog('open');
+        });
+
+        ///////////////////////////////////////修改分类////////////////////////////////
+        $("#UpdateInfoTypeTable").dialog({
+            modal: true,
+            autoOpen: false,
+            height: 400,
+            buttons: {
+                "确定": function () {
+                    var param = new Object();
+                    param.InfoType = $("#selUpdateInfoType").val();
+                    param.InfoName = $("#txtUpdateInfoName").val();
+                    param.InfoDesc = $("#txtUpdateInfoDesc").val();
+                    param.InfoCode = $("#txtUpdateInfoCode").val();
+                    param.SortID = $("#txtUpdateInfoSort").val();
+                    param.ID = $("#hiddenInfoTypeID").val();
+                    $.ajax({
+                        type: "post",
+                        dataType: "json",
+                        url: getControllerUrl("SystemManagement", "UpdateBaseInfoEntity"),
+                        data: param,
+                        success: function (d) {
+                            if (d == null || d.IsSuccess == false)
+                                alert("您的当前操作未成功，请重新操作！");
+                            else
+                                alert("操作成功！");
+                            location.reload();
+                        },
+                        error: function () {
+                            alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                        }
+                    });
+                    $(this).dialog("close");
+                },
+                "取消": function () {
+                    $(this).dialog("close");
+                }
+            }
+        });
+
+        $('#btnlinkUpdateInfotypeInfo').click(function () {
+            $("#txtUpdateInfoName").val("");
+            $("#txtUpdateInfoDesc").val("");
+            $("#txtUpdateInfoCode").val("");
+            $("#txtUpdateInfoSort").val("");
+
+            var selectUnit = $(':checked', '#tableInfotypeManage');
+            if (selectUnit.size() != 1) {
+                alertMsg.warn("请选择一条信息!"); return;
+            } else {
+                var rows = $("#tableInfotypeManage").jqGrid("getGridParam", "selrow");
+                var rowData = $("#tableInfotypeManage").jqGrid("getRowData", rows);
+                $("#selUpdateInfoType[value=" + rowData.InfoType + "]").attr("selected", "selected");
+                $("#txtUpdateInfoName").val(rowData.InfoName);
+                $("#txtUpdateInfoDesc").val(rowData.InfoDesc);
+                $("#txtUpdateInfoCode").val(rowData.InfoCode);
+                $("#txtUpdateInfoSort").val(rowData.SortID);
+                $("#hiddenInfoTypeID").val(rowData.ID);
+            }
+            $('#UpdateInfoTypeTable').dialog('open');
+        });
+
+        //////////////////////////////////////删除分类信息////////////////////////////////////
+        $('#btnlinkDeleteInfotypeInfo').click(function () {
+            var selectUnit = $(':checked', '#tableInfotypeManage');
+            if (selectUnit.size() < 1) {
+                alertMsg.warn("请至少选择一条信息!"); return;
+            } else {
+                var ids = jQuery("#tableInfotypeManage").jqGrid('getGridParam', 'selarrrow');
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("SystemManagement", "DeleteBaseInfoEntity") + "?ids=" + ids,
+                    success: function (data) {
+                        alertMsg.correct("操作成功！");
+                        navTab.reload();
+                    },
+                    error: function () {
+                        alertMsg.warn("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+            }
+        });
+    });
+  
+</script>

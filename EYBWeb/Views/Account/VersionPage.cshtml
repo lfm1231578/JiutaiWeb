@@ -1,0 +1,23 @@
+﻿@using SystemManage.Factory.IBLL;
+@using HS.SupportComponents;
+
+@{
+    Layout = null;
+    ISystemManageBLL curbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    var entity = curbll.GetLastVersionByID(1);
+
+    System.Collections.Hashtable hb = new System.Collections.Hashtable();
+    hb.Add("appname", "jinfeng");
+    hb.Add("apkname", entity.DownUrl);
+    hb.Add("verCode", entity.VersionCode);
+    hb.Add("verName", entity.VersionName);
+    hb.Add("title", "软件升级");
+    hb.Add("content", entity.Content);
+   string json = Newtonsoft.Json.JsonConvert.SerializeObject(hb);
+    //String json = "{\"appname\":\"jinfeng\",\"apkname\":\"jinfeng.apk\",\"verCode\":\"2\",\"verName\":\"1.21\",\"title\":\"软件升级\",\"content\":\"增加了验证码登录验证功能，必须升级APP，才能正常登录系统！\"}";
+    string result = HttpUtility.UrlEncode(json, System.Text.Encoding.GetEncoding("utf-8"));
+    Response.Write(result);
+    Response.End();
+}
+
+

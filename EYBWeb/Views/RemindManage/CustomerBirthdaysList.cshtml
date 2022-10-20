@@ -1,0 +1,65 @@
+﻿@model PagedList<EYB.ServiceEntity.PatientEntity.PatientEntity>
+@{
+    ViewBag.Title = "CustomerBirthdaysList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="mainContentBody">
+    @Html.Partial("_RemindManage")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots"></label>
+            顾客生日提醒 (<span>@Model.TotalItemCount</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                <div class="toolbar" style="padding:0;">
+                    <div class="box-wrap">
+                        <div class="l-list">
+                            @using (Ajax.BeginForm("CustomerBirthdaysList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                            {
+                                <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+                                <input type="hidden" value="" name="orderField" id="orderField" />
+                                <div class="accountdiv" style="margin:0px auto; width:100%;">
+                                    卡号：
+                                    <input type="text" name="m" id="m" class="text-input ymxInput "  value="" />
+                                    姓名：
+                                    <input type="text" name="u" id="u" class="text-input ymxInput " value="" />
+                                    时间:
+                                    <input type="text" class="text-input Wdate input130"  onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="s" id="s" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    至
+                                    <input type="text" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="e" id="e" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                    <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                    <input type="submit" class="submitbutton2 ymxButtonMT" id="btnsumbit" style="float: none;" value="查 询" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div id="articles" class="" style="overflow:auto; margin-top: 5px; width: 100%;">
+                    @Html.Partial("_CustomerBirthdaysList", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = true, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </div>
+</div>

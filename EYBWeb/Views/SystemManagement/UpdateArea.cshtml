@@ -1,0 +1,110 @@
+﻿@using  GXW.BaseInfoManagement.Factory.IBLL;
+@using GXW.ServiceInterface.ServiceEntity.Entity.BaseInfoEntity;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "AddAdSlot";
+    Layout = "~/Views/Shared/Header.cshtml";
+    var areacode = Request["areacode"];
+    var systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseInfoManagementBLL>();
+    var entity = systemBLL.GetAreaEntity(ConvertValueHelper.ConvertIntValue(areacode));
+}
+<div class="pad_10">
+    <form action="@Url.Content("~/BaseInfoManagement/UpdateArea")" method="post" name="myform" id="myform">
+    <table width="100%" cellpadding="2" cellspacing="1" class="table_form">
+        <tr>
+            <th width="70">
+                地区编码:
+            </th>
+            <td>
+                <input type="text" name="AreaCode" value="@entity.AreaCode" style="width: 90%; height: 16px; line-height: 16px;
+                    border: 1px #E1E1E1 solid;" />
+            </td>
+        </tr>
+         <tr>
+            <th width="70">
+                父地区编码:
+            </th>
+            <td>
+                <input type="text" name="ParentAreaCode"  value="@entity.ParentAreaCode" style="width: 90%; height: 16px; line-height: 16px;
+                    border: 1px #E1E1E1 solid;" />
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                地区类型:
+            </th>
+            <td>
+               <select name="AreaType">
+                 <option value="1" @(entity.AreaType == 1 ? "selected=selected" : "")>州</option>
+                 <option value="2" @(entity.AreaType == 2 ? "selected=selected" : "")>国家</option>
+                 <option value="3" @(entity.AreaType == 3 ? "selected=selected" : "")>省</option>
+                 <option value="4" @(entity.AreaType == 4 ? "selected=selected" : "")>市</option>
+                 <option value="5" @(entity.AreaType == 5 ? "selected=selected" : "")>区县</option>
+               </select>
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                地区名称:
+            </th>
+            <td>
+                <input type="text" name="AreaName" value="@entity.AreaName" style="width: 90%; height: 16px; line-height: 16px;
+                    border: 1px #E1E1E1 solid;" />
+            </td>
+        </tr>
+         <tr>
+            <th width="70">
+                中文拼音:
+            </th>
+            <td>
+                <input type="text" name="AreaNamePinyin" value="@entity.AreaNamePinyin" style="width: 90%; height: 16px; line-height: 16px;
+                    border: 1px #E1E1E1 solid;" />
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                权重
+            </th>
+            <td>
+                <input type="text" name="SortID" value="@entity.SortID" value="" />
+            </td>
+        </tr>
+        <tr>
+            <th width="70">
+                是否启用
+            </th>
+            <td>
+                <select name="IsActive">
+                    <option value="1" @(entity.IsActive==1?"selected=selected":"")>启用</option>
+                    <option value="0" @(entity.IsActive==0?"selected=selected":"")>禁用</option>
+                </select>
+            </td>
+        </tr>
+          <tr>
+            <th width="70">
+                经度
+            </th>
+            <td>
+                <input type="text" name="Jingdu" value="@entity.Jingdu"  value="" />
+            </td>
+        </tr>
+          <tr>
+            <th width="70">
+                纬度
+            </th>
+            <td>
+                <input type="text" name="Weidu" value="@entity.Weidu"  value="" />
+            </td>
+        </tr>
+    </table>
+    <input type="submit" name="dosubmit" id="dosubmit" class="dialog" style="display: none;"
+        value=" " />
+    </form>
+</div>
+<script type="text/javascript">
+    $.formValidator.initConfig({ formid: "myform", autotip: true, onerror: function (msg, obj) { window.top.art.dialog({ content: msg, lock: true, width: '250', height: '50', show: true }, function () { this.close(); $(obj).focus(); }) } });
+    $("#AreaCode").formValidator({ onshow: "", onfocus: "地区编码不能为空" }).inputValidator({ min: 1, onerror: "地区编码不能为空" });
+    $("#ParentAreaCode").formValidator({ onshow: "", onfocus: "父地区编码不能为空" }).inputValidator({ min: 1, onerror: "父地区编码不能为空" });
+    $("#AreaName").formValidator({ onshow: "", onfocus: "地区名称不能为空" }).inputValidator({ min: 1, onerror: "地区名称不能为空" });
+    $("#AreaNamePinyin").formValidator({ onshow: "", onfocus: "中文拼音不能为空" }).inputValidator({ min: 1, onerror: "中文拼音不能为空" });
+</script>

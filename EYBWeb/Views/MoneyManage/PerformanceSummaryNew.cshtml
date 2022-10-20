@@ -1,0 +1,253 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using DepartmentManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.CashEntity.JoinUserEntity>
+@{
+    ViewBag.Title = "员工业绩汇总";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    IDepartmentManageBLL departbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IDepartmentManageBLL>();
+    //var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    var PersonList = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    //获取部门选择框
+    var departList = departbll.GetDepartmentListByHospitalID(ViewBag.HospitalID, 1);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    var HospitalID = ViewBag.HospitalID;
+    
+    var M = ViewBag.Months + "";
+    var Year = ViewBag.Years + "";
+}
+<div id="mainContentBody">
+    @Html.Partial("_MoneyControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>
+            员工绩效汇总（新版）</div>
+        <div class="mainContentRight_bottom" style="overflow:hidden;">
+            @using (Ajax.BeginForm("PerformanceSummaryNew", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+            {
+            <div class="accountdiv" style="margin-bottom: 0px; width: 98%;">
+                @*@if (HasPermission)
+        {
+            <label style="font-weight: normal;">
+                所属分店：</label>
+            <select name="s_HospitalID" id="s_HospitalID" class="select ymxSelect" >
+                <option value="0">请选择分店</option>
+                @if (RegionhospitalList.Count > 0)
+                {
+                    foreach (var info in RegionhospitalList)
+                    {
+                    <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                    }
+                }
+                else
+                {
+                    foreach (var info in hospitalList)
+                    {
+                    <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                    }
+                }
+            </select>
+        }*@
+                <label style="font-weight: normal;">
+                    所属分店：
+                </label>
+                <input type="text" name="s_HospitalName" id="s_HospitalName" class="ymxInput" readonly="readonly" style="padding:0 10px;width:440px;" />
+                <input type="text" name="s_HospitalIDName" id="s_HospitalIDName" style="display:none" class="ymxInput" />
+                <input type="button" class="submitbutton4" onclick="ProductList1()" value="浏览分店" style="margin: 5px;" />
+                @*<label style="font-weight: normal;">
+                    所属组别：
+                </label>
+                <select name="DepartmentID" id="DepartmentID" class="select ymxSelect">
+                    <option value="0">请选择分组</option>
+                    @foreach (var info in departList)
+                    {
+                        <option value="@info.ID">@info.Name</option>
+                    }
+                </select>
+                <label style="font-weight: normal;display:none">
+                    指定类型：
+                </label>
+                <select name="IsZhiding" id="IsZhiding" class="select ymxSelect" style="height: 25px;display:none;
+                        width:125px;">
+                    <option value="-1">请选择指定类型</option>
+                    <option value="1">指定客</option>
+                    <option value="0">非指定客</option>
+                </select>
+                <label style="font-weight: normal;">
+                    员工姓名：
+                </label>
+                <select class="select s_FollowUpUserID ymxSelect" id="UserID" name="s_FollowUpUserID">
+                    <option value="0">请选择员工</option>
+                    @foreach (var info in PersonList)
+                    {
+                        <option value="@info.UserID">@info.UserName</option>
+                    }
+                </select>*@
+                @*<label style="font-weight: normal;">
+                    开始时间：
+                </label>
+                <input type="text" autocomplete="off" class="text-input Wdate" style="width: 100px; border: none; padding-left: 10px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                       name="s_StareTime" id="s_StareTime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <label style="font-weight: normal;">
+                    至：
+                </label><input type="text" autocomplete="off" style="width: 100px; border: none; padding-left: 10px;" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                               name="s_Endtime" id="s_Endtime" value="@DateTime.Now.ToString("yyyy-MM-dd")" />*@
+                @*<input type="checkbox" id="IsGive" name="IsGive" value="1" />跨店查询*@
+                                                <select name="Years" id="Years">
+                                    @for (int i = DateTime.Now.AddYears(-3).Year; i <= DateTime.Now.AddYears(3).Year; i++)
+                                    {
+                                        <option @(Year == i + "" ? "selected=selected" : "") value="@i">@i</option>
+                                    }
+                                </select>
+                                年
+                                <select name="Months" id="Months">
+                                    <option @(M == "1" ? "selected=selected" : "") value="1">1</option>
+                                    <option @(M == "2" ? "selected=selected" : "") value="2">2</option>
+                                    <option @(M == "3" ? "selected=selected" : "") value="3">3</option>
+                                    <option @(M == "4" ? "selected=selected" : "") value="4">4</option>
+                                    <option @(M == "5" ? "selected=selected" : "") value="5">5</option>
+                                    <option @(M == "6" ? "selected=selected" : "") value="6">6</option>
+                                    <option @(M == "7" ? "selected=selected" : "") value="7">7</option>
+                                    <option @(M == "8" ? "selected=selected" : "") value="8">8</option>
+                                    <option @(M == "9" ? "selected=selected" : "") value="9">9</option>
+                                    <option @(M == "10" ? "selected=selected" : "") value="10">10</option>
+                                    <option @(M == "11" ? "selected=selected" : "") value="11">11</option>
+                                    <option @(M == "12" ? "selected=selected" : "") value="12">12</option>
+                                </select>月
+                <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="查询" />
+                <input type="button" class="submitbutton2" id="btnSave" style="float: none;" value="导出" />
+            </div>
+                
+            }
+            <div id="articles" style="margin-top: 5px;overflow:auto;">
+                @Html.Partial("_PerformanceSummaryNew", Model)
+            </div>
+            @{Html.RegisterMvcPagerScriptResource();}
+            <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#btnsumbit").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+        //接收产品
+    function ProductList1() {
+        art.dialog.open("/WarehouseManage/PdlistNew", { title: "分店列表", width: 660, height: 480, close: function () {
+            var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+            
+            if (bValue !== undefined) {
+                //这里添加一个绑定方法
+                //pdbind(bValue);
+                //$("#txtHospitalName").val(bValue);
+                var item = "";
+                var itemid = "";
+                   var arraylist = new Array();
+                   arraylist = bValue.split('$');
+                    $.each(arraylist, function (n, value) {
+                        if (value != '') {
+                            item += value.split('|')[0] + ",";
+                            itemid += value.split('|')[1] + ",";
+             
+                        }
+                    })
+                $("#s_HospitalName").val(item);
+                $("#s_HospitalIDName").val(itemid);
+                
+            }
+        }
+        })
+    }
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+        //        $("#txtUserName").keyup(function () {
+        //            $("#btnsumbit").click();
+        //            //document.getElementById("searchForm").submit();
+        //        });
+
+
+        //导出
+        $("#btnSave").click(function () {
+            var s_StareTime = $("#s_StareTime").val();
+            var s_Endtime = $("#s_Endtime").val();
+            //var s_HospitalID = $("#s_HospitalID").val();
+            //if ( s_HospitalID==undefined) {
+            //    s_HospitalID = 0;
+            //}
+            if ($("#s_HospitalName").val() == "" || $("#s_HospitalName").val() == null) {
+                var HospitalID =99999;
+            }
+            else { var HospitalID = 99999;var HospitalIDName = $("#s_HospitalIDName").val() }
+            var IsZhiding = $("#IsZhiding").val();
+            var DepartmentID = $("#DepartmentID").val();
+            var s_FollowUpUserID = $(".s_FollowUpUserID").val();
+            var Months = $("#Months").val();
+            var Years = $("#Years").val();
+            var s_isGive = 0;
+            //alert($('#IsGive').is(':checked'));
+            if ($('#IsGive').is(':checked')) {
+                //alert("23");
+                s_isGive = 1;
+            }
+            var url = "/MoneyManage/ExportPerformanceSummaryNew?pageNum=1&numPerPage=1000000&s_HospitalID=" +  HospitalID + "&Months=" +  Months + "&Years=" +  Years + "&HospitalIDName=" + HospitalIDName +  "&IsZhiding=" + -1 + "&s_StareTime=" + "2020-10-09" + "&s_Endtime=" + "2020-10-09" + "&DepartmentID=" + 0 + "&s_FollowUpUserID=" + 0 + "&s_isGive=" + s_isGive;
+            window.location.href = url;
+
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                url: url,
+                data: { "UserID": url },
+                async: false,
+                success: function (data) {
+
+                },
+                error: function () {
+                    alert("数据获取失败！");
+                }
+            });
+        });
+
+    });
+
+
+
+    $("#s_HospitalID").change(function () {
+        var id = $("#s_HospitalID").val(); //获取所选门店
+        $.ajax({
+            type: "post", //使用get方法访问后台 
+            dataType: "text", //返回json格式的数据
+            url: "/MoneyManage/GetHospltalUser",
+            data: { "HospitalID": id },
+            async: false,
+            success: function (data) {
+                if (data != null) {
+                    $("#UserID").empty();
+                    $("#UserID").append(data.toString());
+                }
+            },
+            error: function () {
+                alert("数据请求失败!");
+            }
+        });
+
+    })
+
+</script>
+<script>
+    $(function () {
+        let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+        $("#articles").css("height", acHeight + "px");
+    })
+</script>

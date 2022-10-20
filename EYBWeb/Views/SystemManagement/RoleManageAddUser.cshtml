@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "RoleManageAddUser";
+    var roleid = Request["roleid"];
+}
+<div class="pageHeader">
+    <div class="searchBar">
+        <ul class="searchContent">
+            <li style="width: 700px;">账号：
+                <input id="txtqueryLoginAccount" class="textInput" value="" type="text" />
+                姓名：
+                <input id="txtqueryUserName" class="textInput" value="" type="text" />
+                部门：
+                <input id="txtqueryDepartment" class="textInput" value="" type="text" />
+                <input id="btnqueryUser" type="button" value="查询" />
+                <input id="btnSaveSET" type="button" value="保存设置" />
+            </li>
+        </ul>
+    </div>
+</div>
+<div class="pageContent">
+    <div class="panelTable">
+        <table id="tableRoleUserSetManage">
+        </table>
+        <div id="pagerRoleUserSetManage">
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        //选择部门
+        $("#txtqueryDepartment").click(function () {
+            var options = { width: 300, height: 400, max: false, mask: true, fresh: true };
+            var url = getControllerUrl("Public", "DepartMentControl") + "?id=txtqueryDepartment";
+            $.pdialog.open(encodeURI(url), "DepartMentControl", "选择部门", options);
+        });
+        var getuserUrl = getControllerUrl("SystemManagement", "GetUserList");
+        //初始化jqGrid表格事件
+        $('#tableRoleUserSetManage').jqGrid({
+            url: getuserUrl,
+            datatype: "json",
+            mtype: 'POST',
+            postData: { "LoginAccount": function () { return $("#txtqueryLoginAccount").val() }, "UserName": function () { return $("#txtqueryUserName").val() }, "DeptCode": function () { return $("#txtqueryDepartment").attr("deptcode") } },
+            search: '',
+            colNames: ['用户ID', '用户登录账号', '真实姓名', '所属部门'],
+            colModel: [
+                { name: 'UserID', index: 'UserID', sortable: true, key: true, hidden: true },
+                { name: 'LoginAccount', index: 'LoginAccount', sortable: true },
+                { name: 'UserName', index: 'UserName', sortable: true },
+                { name: 'Department', index: 'Department', sortable: true }
+            ],
+            pager: '#pagerRoleUserSetManage',
+            pagerpos: 'center',
+            rowNum: 100,
+            height: GetJqGridHeight() - 200,
+            multiselect: true,
+            altRows: true,
+            multiboxonly: true,
+            viewrecords: true,
+            pginput: false,
+            emptyrecords: "没有符合查询条件的数据",
+            autowidth: true,
+            altclass: 'tableAltClass',
+            gridComplete: function () {
+                $('#tableRoleUserSetManage').trigger("gridComplete");
+            }
+        });
+        //查询用户
+        $("#btnqueryUser").click(function () {
+            $('#tableRoleUserSetManage').setGridParam({
+                url: getuserUrl,
+                postData: { "LoginAccount": function () { return $("#txtqueryLoginAccount").val() }, "UserName": function () { return $("#txtqueryUserName").val() }, "DeptCode": function () { return $("#txtqueryDepartment").attr("deptcode") } },
+                page: 1
+            }).trigger("reloadGrid");
+        });
+        $("#btnSaveSET").click(function () {
+            var selectCount = $(':checked', '#tableRoleUserSetManage');
+            var userIds = jQuery("#tableRoleUserSetManage").jqGrid('getGridParam', 'selarrrow');
+            if (selectCount.size() < 1) {
+                alertMsg.warn("请选择用户"); return;
+            } else {
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: getControllerUrl("SystemManagement", "SaveRoleUserRelation"),
+                    data: { RoleID: '@roleid', userids:userIds.join(',') },
+                    success: function (data) {
+                        alertMsg.correct("设置成功！");
+                    },
+                    error: function () {
+                        alertMsg.warn("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+            }
+        });
+    });
+</script>

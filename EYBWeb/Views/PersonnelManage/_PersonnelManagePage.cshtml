@@ -1,0 +1,223 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity>
+@{
+    ViewBag.Title = "_PersonnelManagePage";
+}
+<form action="@Url.Content("~/PersonnelManage/PersonnelManagePage")" method="post" id="submitform" >
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable">
+    <thead style="position:absolute;">
+        <tr>
+          <th>
+                
+            </th>
+             <th>
+                编码
+            </th>
+            <th orderfield="UserName">
+                姓名
+            </th>
+            <th orderfield="Sex">
+                性别
+            </th>
+           
+            <th orderfield="DepartmentName" >
+                组别
+            </th>
+            <th orderfield="IsDoctor"  >
+                岗位
+            </th>
+            <th orderfield="Phone">
+                联系方式
+            </th>
+            <th>
+                在职状态
+            </th>
+            <th>是否删除</th>
+            <th>
+                员工管理
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:40px;"></tr>
+       
+        @foreach (var info in Model)
+        {
+            <tr class="ableclick">
+                <td>
+                    @*<input name="radioList" type="radio" value="@listValue" />*@
+                    <input type="checkbox" name="radioList" code="@info.UserName" value="@info.UserID" />
+                </td>
+                <td>
+                    @info.UserID
+                </td>
+                <td>
+                    @info.UserName
+                </td>
+                <td>
+                    @info.Sex
+                </td>
+
+                <td>
+                    @info.DepartmentName
+                </td>
+                <td>
+                    @info.DutyName
+                </td>
+                <td>
+                    @info.Phone
+                </td>
+                <td>
+                    @(info.IsSeparation == 0 ? "在职" : "离职")
+                </td>
+                <td>
+                    @(info.IsActive == 1 ? "使用中" : "已删除")
+                </td>
+                <td>
+                    @if (string.IsNullOrEmpty(info.OpenID))
+                    {
+                        @*<a href="#" style="color:red;" onclick="Weixinbind(@info.UserID)">绑定</a>*@
+                    }
+                    else
+                    {
+                        <a href="#" onclick="WeixinbindRemove(@info.UserID)">解绑</a>
+                    }
+                    <a href="@Url.Content("~/PersonnelManage/PersonnelEdit?UserID=")@info.UserID">编辑</a>&nbsp;
+
+                    @if (info.IsActive == 1)
+                    {
+                        <a href="javascript:;" code="@info.UserID" class="deletebtn" style="color:red;">删除</a>
+                    }
+                    @if (info.IsActive == 0)
+                    {
+                        <a href="javascript:;" code="@info.UserID" class="btnactive">启用</a>
+                    }
+                    @*@if (info.IsSeparation == 0)
+                    {
+                        <a href="javascript:;" code="@info.UserID" class="lizhibtn">离职</a>
+                    }
+                    else
+                    {
+                        <a href="javascript:;" code="@info.UserID" class="huifubtn">恢复</a>
+                    }*@
+
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+    </tbody>
+</table>
+ @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<div style="height:100px;"></div>
+<script type="text/javascript">
+
+    $(function () {
+          $("#sp").text('@Model.TotalItemCount');
+        //删除
+        $(".deletebtn").click(function () {
+            var code = $(this).attr("code");
+            if (confirm("确认删除吗？")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("PersonnelManage", "DeleteDepartment"),
+                    data: { "UserID": code },
+                    success: function (data) {
+                        if (data > 0) {
+                            artdialog("删除成功！", "/PersonnelManage/PersonnelManagePage");
+                        } else {
+                            artdialogfail("删除失败！");
+                        }
+                    },
+                    error: function () {
+                        artdialogfail("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+            }
+        })
+        $(".btnactive").click(function () {
+            var code = $(this).attr("code");
+            
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("PersonnelManage", "RestoreDepartment"),
+                    data: { "UserID": code },
+                    success: function (data) {
+                        if (data > 0) {
+                            artdialog("启用成功！", "/PersonnelManage/PersonnelManagePage");
+                        } else {
+                            artdialogfail("启用失败！");
+                        }
+                    },
+                    error: function () {
+                        artdialogfail("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+           
+        })
+        
+
+        $(".lizhibtn").click(function () {
+            var code = $(this).attr("code");
+            if (confirm("确认离职吗？")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("PersonnelManage", "lizhiDepartment"),
+                    data: { "UserID": code },
+                    success: function (data) {
+                        if (data > 0) {
+                            artdialog("操作成功！", "/PersonnelManage/PersonnelManagePage");
+                        } else {
+                            artdialogfail("操作失败！");
+                        }
+                    },
+                    error: function () {
+                        artdialogfail("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+            }
+        })
+
+        $(".huifubtn").click(function () {
+            var code = $(this).attr("code");
+            if (confirm("确认重新入职吗？")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("PersonnelManage", "ruzhizhiDepartment"),
+                    data: { "UserID": code },
+                    success: function (data) {
+                        if (data > 0) {
+                            artdialog("操作成功！", "/PersonnelManage/PersonnelManagePage");
+                        } else {
+                            artdialogfail("操作失败！");
+                        }
+                    },
+                    error: function () {
+                        artdialogfail("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+            }
+        })
+    })
+</script>
+<script type="text/javascript">
+    $(function () {
+        window.setTimeout(function () {
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+</script>

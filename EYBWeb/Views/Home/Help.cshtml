@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Hlep";
+    Layout = null;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <style>
+        h2
+        {
+            text-align: center;
+        }
+        ul, ol
+        {
+            list-style: none;
+        }
+        ul li
+        {
+            float: left;
+            width: 160px;
+            text-align: center;
+        }
+        .divshuzi
+        {
+            width: 60px;
+            height: 80px;
+            line-height: 80px;
+            background: #2288cc;
+            color: #fff;
+            text-align: center;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0 auto;
+        }
+        a
+        {
+            text-decoration: none;
+            color: #2288cc;
+        }
+        .divmingzi a
+        {
+            width: 160px;
+            height: 40px;
+            line-height: 40px;
+            color: #2288cc;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="height: 80px;">
+        新手上路</h2>
+    <div style="clear: both;">
+        <ul>
+            <li>
+                <div class="divshuzi">
+                    1</div>
+                <hr />
+                <div class="divmingzi">
+                    <a href="javascript:Openlink('/BaseInfo/UserSettings');">系统参数</a></div>
+            </li>
+            <li>
+                <div class="divshuzi">
+                    2</div>
+                <hr />
+                <div class="divmingzi">
+                    <a href="javascript:Openlink('/PersonnelManage/PersonnelManagePage');">员工列表</a>
+                </div>
+            </li>
+            <li>
+                <div class="divshuzi">
+                    3</div>
+                <hr />
+                <div class="divmingzi">
+                    <a href="javascript:Openlink('/BaseInfo/TheProject');">服务项目</a>
+                </div>
+            </li>
+            <li>
+                <div class="divshuzi">
+                    4</div>
+                <hr />
+                <div class="divmingzi">
+                    <a href="javascript:Openlink('/BaseInfo/TheProduct');">产品设置</a>
+                </div>
+            </li>
+            <li>
+                <div class="divshuzi">
+                    5</div>
+                <hr />
+                <div class="divmingzi">
+                    <a href="javascript:Openlink('/BaseInfo/Chuzhika');">卡项设置</a>
+                </div>
+            </li>
+            <li>
+                <div class="divshuzi">
+                    6</div>
+                <hr />
+                <div class="divmingzi">
+                    <a href="javascript:Openlink('/CashManage/Consumer');">前台收银</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div style="clear: both;">
+    </div>
+ 
+    <h2 style="height: 40px; line-height: 40px;">
+        联系客服
+    </h2>
+    <div style="width: 220px; margin: 0 auto; color: #2288cc;">
+       
+       @if (!string.IsNullOrEmpty(Model.KefuQQ))
+       {
+        <label> 客服QQ：</label>
+           @Model.KefuQQ   <br/>
+       }
+       @if (!string.IsNullOrEmpty(Model.QQqun))
+       {
+           <label>  QQ群：</label>
+           @Model.QQqun   <br/>
+       }
+       @if (!string.IsNullOrEmpty(Model.Phone1))
+       {
+           <label> 电话1：</label>
+           @Model.Phone1   <br/>
+       }
+       @if (!string.IsNullOrEmpty(Model.Phone2))
+       {
+           <label> 电话2：</label>
+           @Model.Phone2   <br/>
+       }
+       @if (!string.IsNullOrEmpty(Model.Phone3))
+       {
+           <label> 电话3：</label>
+           @Model.Phone3   <br/>
+       }
+      
+    </div>
+    <h2 style="height: 60px; line-height: 60px; color: Red; font-size: 14px;">
+        注意：如果链接打不开，请点击鼠标右键-复制快捷方式，在您的浏览器里面打开</h2>
+    <script type="text/javascript">
+        function Openlink(obj) {
+            top.location.href = obj;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+    @{
+        ViewBag.Title = "_Patientlist";
+        Layout = null;
+        decimal _Quantity = 0;
+        decimal _Yeji = 0;
+    }
+    <form action="" method="post" id="submitform">
+
+        <table class="gridTable" style="">
+            <thead style="display: block; position: absolute;">
+                <tr>
+                    <th @(ViewBag.orderField == "UserID" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserID">
+                        员工编号
+                    </th>
+                    <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                        员工姓名
+                    </th>
+                    <th @(ViewBag.orderField == "InfoBuyType" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="InfoBuyType">
+                        业务类别
+                    </th>
+                    <th @(ViewBag.orderField == "PatientName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="PatientName">
+                        顾客姓名
+                    </th>
+                    <th @(ViewBag.orderField == "ProdcuitName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProdcuitName">
+                        项目名称
+                    </th>
+                    <th @(ViewBag.orderField == "Quantity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quantity">
+                        数量
+                    </th>
+                    <th @(ViewBag.orderField == "Yeji" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Yeji">
+                        现金
+                    </th>
+                    <th @(ViewBag.orderField == "KakouYeji" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="KakouYeji">
+                        卡扣
+                    </th>
+                    <th @(ViewBag.orderField == "OtherTiCheng" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="OtherTiCheng">
+                        奖励
+                    </th>
+                    <th @(ViewBag.orderField == "CreateTime" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CreateTime">
+                        时间
+                    </th>
+                    <th @(ViewBag.orderField == "HospitalID" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalID">
+                        单据所属分店
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;">
+                    <td colspan="12">
+                    </td>
+                </tr>
+                @foreach (var entity in Model)
+                {
+                    _Quantity += entity.Quantity;
+                    _Yeji += entity.Yeji;
+                    <tr>
+                        <td>
+                            @entity.UserID
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.GetInfoBuyTyoeBy5Lei()
+                        </td>
+                        <td>
+                            @entity.PatientName
+                        </td>
+                        <td>
+                            @entity.ProdcuitName
+                        </td>
+                        <td>
+                            @entity.Quantity
+                        </td>
+                        <td>
+                            @entity.Yeji
+                        </td>
+                        <td>
+                            @entity.KakouYeji
+                        </td>
+                        <td>
+                            @entity.OtherTiCheng
+                        </td>
+                        <td>
+                            @entity.CreateTime
+                        </td>
+                        <td>
+                            @entity.HospitalName
+                        </td>
+                        <td>
+                            <a href="javascript:OpenOrderPerformance('@entity.OrderNo')">查看业绩分配</a>
+                        </td>
+                    </tr>
+                }
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 10))
+            </tbody>
+            <tr>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                    合计
+                </td>
+                <td>
+                    @_Quantity  @*@ViewBag.AllQuantity*@
+                </td>
+                <td>
+                    @_Yeji  @*@ViewBag.CashAmount*@
+                </td>
+                <td>
+                    @ViewBag.KakouAmount
+                </td>
+                <td>
+                    @ViewBag.OtherTiCheng
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+                <td>
+                </td>
+            </tr>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <div style="height:160px;"></div>
+    <script type="text/javascript">
+    function OpenOrderPerformance(orderNo) {
+        art.dialog.open("/MoneyManage/StaffPerformanceDetail?orderNo=" + orderNo, { title: "订单业绩", width: 860, height: 500 });
+    }
+
+
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        //计算head高度，宽度 计算articles高度
+        var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+
+        $(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 62) + "px");
+        $(".gridTable tr").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 62) + "px");
+
+    })
+
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

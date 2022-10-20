@@ -1,0 +1,73 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ReservationEntity.ReservationEntity>
+<form action="" method="post" id="myform" name="myform">
+<table class="gridTable">
+    <thead>
+        <tr>
+            <th>
+                编号
+            </th>
+            <th>
+                姓名
+            </th>
+            <th>
+                性别
+            </th>
+            <th>
+                年龄
+            </th>
+            <th>
+                联系方式
+            </th>
+            <th>
+                预约时间
+            </th>
+            <th>
+                来源
+            </th>
+            <th>
+                预约编号
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr>
+                <td>
+                    @entity.UserID
+                </td>
+                <td>
+                    <a href="/PatientManage/PatientRegister?UserID=@entity.UserID">@entity.UserName</a>
+                </td>
+                <td>
+                    @(entity.Sex == 0 ? "男" : "女")
+                </td>
+                <td>
+                    @entity.Age
+                </td>
+                <td>
+                    @entity.Mobile
+                </td>
+                <td>
+                    @(entity.ApplyTime != null ? entity.ApplyTime.Value.ToString("yyyy-MM-dd") : "")<br />
+                </td>
+                <td>
+                    @entity.Source
+                </td>
+                <td>
+                    <a href="/ReservationDoctorManage/ReservationDetail?ID=@entity.ID">@entity.Reservationnumber</a>
+                </td>
+                <td>
+                    <a onclick="goPageBlack('@entity.ID','@entity.CaseID')" href="#">指定美容师</a>
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>

@@ -1,0 +1,255 @@
+﻿#show_quan
+{
+    width: 310px;
+    height: 635px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-image: url(../images/iphoneBg.png);
+    padding: 45px 22px 20px 22px;
+    border-radius: 60px;
+    box-shadow: 5px 5px 10px rgba(189, 189, 189, 0.7);
+}
+
+#show_quan *
+{
+    word-wrap: break-word;
+    word-break: break-all;
+}
+
+#show_quan .money:before
+{
+    content: '¥';
+}
+
+#show_quan header
+{
+    position: relative;
+    line-height: 1;
+}
+
+#show_quan header.video:after
+{
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 35px;
+    height: 35px;
+    z-index: 9;
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url('image/play.png');
+    transform: translate(-50%,-50%);
+}
+
+#show_quan .price
+{
+    right: 0;
+    bottom: 1px;
+    min-width: 65px;
+    padding: 0 10px;
+    height: 35px;
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  
+}
+
+#show_quan .give_friend, .receive_now
+{
+    color: white;
+    width: 90%;
+    font-weight: bold;
+    text-align: center;
+    font-size: 14px;
+    line-height: 40px;
+    border-radius: 4px;
+    background-color: #1AAD17;
+    border: 0;
+}
+
+#show_quan .give_friend:before
+{
+    content: '赠送给朋友';
+}
+
+#show_quan .receive_now
+{
+    background-color: #FC3B3B;
+}
+
+#show_quan .receive_now:before
+{
+    content: '立即使用';
+}
+
+#show_quan .small_img
+{
+    width: 50px;
+    height: 50px;
+}
+.column-wrap, .row-wrap
+{
+    -webkit-flex-wrap: wrap;
+    -moz-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    -o-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+#articeLog img {
+    max-width: 100%;
+}
+
+#show_quan ::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+}
+
+#show_quan ::-webkit-scrollbar-thumb {
+    border-radius: 3px;
+    width: 6px;
+    height: 16px;
+    -webkit-box-shadow: inset 0 0 6px #333336;
+    background-color: #333336;
+}
+
+#show_quan ::-scrollbar {
+    float: right;
+    width: 6px;
+    background-color: transparent;
+}
+
+#show_quan ::-scrollbar-thumb {
+    border-radius: 3px;
+    width: 6px;
+    height: 16px;
+    -webkit-box-shadow: inset 0 0 6px #333336;
+    background-color: #333336;
+}
+.column
+{
+    display: box;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-flex-direction: column;
+    -moz-flex-direction: column;
+    -ms-flex-direction: column;
+    -o-flex-direction: column;
+    flex-direction: column;
+}
+
+.column.row-c, .row.column-c
+{
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    -o-align-items: center;
+    align-items: center;
+}
+
+.column.row-c .btn, .column.row-c .form-group, .row.column-c .btn, .row.column-c .form-group
+{
+    margin-bottom: 0;
+}
+
+.row
+{
+    display: box;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-flex-direction: row;
+    -moz-flex-direction: row;
+    -ms-flex-direction: row;
+    -o-flex-direction: row;
+    flex-direction: row;
+}
+
+.column.column-c, .row.row-c
+{
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    -ms-justify-content: center;
+    -o-justify-content: center;
+    justify-content: center;
+}
+
+.cell, .cell-1
+{
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+}
+.f12 {
+    font-size: 12px !important;
+}
+
+.f13 {
+    font-size: 13px !important;
+}
+
+.f14 {
+    font-size: 14px !important;
+}
+
+.f16 {
+    font-size: 16px !important;
+}
+
+.f18 {
+    font-size: 18px !important;
+}
+
+.f20 {
+    font-size: 20px !important;
+}
+
+.fb {
+    font-weight: bold !important;
+}
+
+.fn {
+    font-weight: normal !important;
+}
+
+.t2 {
+    text-indent: 2em !important;
+}
+
+.lh150 {
+    line-height: 150% !important;
+}
+.from_table1 {
+    width: 98%;
+}
+
+.from_table1 tr {
+    height: 35px;
+}
+
+.from_table1 th {
+    padding-right: 10px;
+    width: 25%;
+    text-align: right;
+    line-height: 30px;
+    font-weight: initial;
+}
+
+.from_table1 td {
+    width: 75%;
+    padding-left: 10px;
+}

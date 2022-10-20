@@ -1,0 +1,183 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model  List<EYB.ServiceEntity.CenterEntity.PerformanceGoalsEntity>
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@{
+    Layout = null;
+    ViewBag.Title = "目标列表";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    //查询门店美容师
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    persoList = persoList.Where(i => i.IsSys != 1).ToList();
+    
+}
+<!--位置不能颠倒，否则影响样式-->
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+<style type="text/css">
+    body
+    {
+        background: #fff;
+        overflow-x: hidden;
+    }
+</style>
+
+<div class="mainContentRight_bottom " style="">
+            <div class="box-wrap toolbar">
+                <div class="accountdiv l-list ullist" style="margin: 0px auto;padding:0px; width:100%;">
+                    <ul id="tdul">
+                        @using (Ajax.BeginForm("GoalsListcompany", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                        {
+                        
+                            <li>
+                                <label style="font-weight: normal;">
+                                    所属分店：</label>
+                                <select name="HospitalID" id="HospitalID" class="select" style="height: 25px;
+                                    width: 110px;">
+                                    <option value="0">请选择分店</option>
+                                    @foreach (var info in hospitalList)
+                                    {
+                                        <option value="@info.ID" @(ViewBag.HospitalID == info.ID ? "selected=selected" : "")>@info.Name</option>
+                                    }
+                                </select>
+                            </li>
+                            <li>
+                                <label style="font-weight: normal;">
+                                    年份：</label>
+                                <select name="Years" id="Years">
+                                    @for (int i = DateTime.Now.Year - 5; i < DateTime.Now.Year + 3; i++)
+                                    {
+                                        <option @(i == DateTime.Now.Year ? "selected=selected" : "")  value="@i">@i</option>
+                                    }
+                                </select>
+                            </li>
+                            <li>
+                                <label style="font-weight: normal;">
+                                    月：</label>
+                                <select name="Months" id="Months">
+                                     <option value="">全部</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                </select>
+                            </li>
+                          
+                            <li>
+                                <input type="submit" id="btnsumbit" class="submitbutton3" style="float: none;" value="查询" />
+                            </li>
+                            <li style="">
+                                <ul class="icon-list" style=" float:none;">
+                                    <li><a class="add" style="cursor: pointer;" onclick="redirectUrl()"><i></i><span>添加目标</span></a></li>
+                                </ul>
+                            </li>
+                        }
+                        </ul>
+                         <div style="clear: both;">
+                        </div>
+                </div>
+            </div>
+            <div id="articles" style="margin-top: 5px;">
+                @Html.Partial("_GoalsListcompany", Model)
+            </div>
+            @{Html.RegisterMvcPagerScriptResource();}
+            <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        </div>
+  
+    <script type="text/javascript">
+        //导出
+        $("#btnSave").click(function () {
+
+            var s_HospitalID = $("#s_HospitalID").val();
+            var s_ID = $("#s_ID").val();
+            var s_Keyword = $("#s_Keyword").val();
+            var BrandID = $("#BrandID").val();
+            var ProjectType = $("#ProjectType").val();
+            var s_StartTime = $("#s_StartTime").val();
+            var s_EndTime = $("#s_EndTime").val();
+            var url = "/CenterManage/ExportPopularityRate?pageNum=1&numPerPage=10000&s_HospitalID=" + s_HospitalID + "&s_Keyword=" + s_Keyword + "&BrandID=" + BrandID + "&ProjectType=" + ProjectType + "&s_StartTime=" + s_StartTime + "&s_EndTime=" + s_EndTime + "&s_ID=" + s_ID;
+            window.location.href = url;
+        });
+
+         function redirectUrl() {
+         art.dialog.open("@Url.Content("~/CenterManage/GoalEdit")?Type=Add&gat=2", { title: "目标设置", width: 660, height: 470})
+        }
+
+
+      
+
+        $(function () {
+            $("th[orderField='@orderField']").addClass("@orderDirection");
+            if (window.PIE) {
+                $('.rounded').each(function () {
+                    PIE.attach(this);
+                });
+            }
+        });
+        $( function(){
+            //门店更改修改员工列表
+            $("#HospitalID").change( function(){
+            var hospitalID=$(this).val();
+            $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/CenterManage/GetUserList")",
+            data: {"HospitalID":hospitalID}, 
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+            },
+            success: function (data) {
+             if(data!=null){
+                  $("#UserID").empty();
+                  $("#UserID").append(data);
+               }
+               else{
+                alert("员工下拉菜单获取失败!");
+               }
+            }
+        });
+                
+            })
+
+            //修改类别时隐藏员工列表
+            $("#GoalsType").change( function(){
+               var goalsType=$(this).val(); 
+               if(goalsType=="2")
+               {                                 
+                    $(".tdulli").attr("style","display:none;");
+                    $("#UserID").find("option[value='0']").attr("selected",true);
+               }else
+               {
+                   $(".tdulli").removeAttr("style");
+               }
+               
+            })
+        })
+    </script>

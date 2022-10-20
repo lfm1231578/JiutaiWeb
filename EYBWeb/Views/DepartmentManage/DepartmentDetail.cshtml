@@ -1,0 +1,96 @@
+﻿@using DepartmentManage.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "DepartmentDetail";
+    var ID = Request["ID"];
+    IDepartmentManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IDepartmentManageBLL>();
+    //获取部门详情
+    var entity = systemBLL.GetDepartmentEntityByID(ConvertValueHelper.ConvertIntValue(ID));
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+        <label class="Soliddots">●</label>     部门详情</div>
+        <div class="mainContentRight_bottom">
+            <table class="mainContentRight_bottomnewdepart formular">
+                <tr>
+                    <td style="width:110px;">
+                        部门名称：
+                    </td>
+                    <td>@entity.Name
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        部门房间号：
+                    </td>
+                    <td>@entity.RoomNo
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td>
+                        部门员工：
+                    </td>
+                    <td>@entity.DepartUseName.Trim(',')
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        部门电话：
+                    </td>
+                    <td>@entity.Phone
+                    </td>
+                </tr>
+               
+                <tr>
+                    <td>
+                        部门介绍：
+                    </td>
+                    <td>@entity.Memo
+                    </td>
+                </tr>
+               
+                <tr style="height:80px;">
+                <td></td>
+                    <td >
+                       <input class="submitbutton2" type="button" value="编 辑" onclick="GoForwardPage()" />
+                        <input class="submitbutton2" type="button" value="删 除" id="btnDelete" />
+                        <input class="submitbutton2" type="button" value="返 回" onclick="history.go(-1);" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+function GoForwardPage()
+{
+ location.href="@Url.Content("~/DepartmentManage/DepartmentNew")?ID=@ID&Type='edit'";
+}
+    $(function () {
+        //
+        $("#btnDelete").click(function () {
+            if (confirm("确认删除吗？")) {
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("DepartmentManage", "DeleteDepartment"),
+                    data: { ID:'@ID' },
+                    success: function (data) {
+                      if(data>0)
+                      {
+                        artdialog("删除成功！","/DepartmentManage/DepartmentPage")
+                      }else{
+                      artdialogfail("删除失败！")
+                      }
+                    },
+                    error: function () {
+                        alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+                    }
+                });
+            }
+        })
+    })
+</script>

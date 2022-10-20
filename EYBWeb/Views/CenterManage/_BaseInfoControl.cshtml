@@ -1,0 +1,83 @@
+﻿@{
+    ViewBag.Title = "_BaseInfoControl";
+    //
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_TheProject);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_TheProduct);
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_CardBusiness);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_BasicInformation);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_PersonnelManagePage);
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_UserManagePage);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_UserSettings);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_HospitalDetail);
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_CompetenceManage);
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_DataClear);
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <a style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+        </a><span>系统设置</span></div>
+    @* <div id="mainContentLeft_center">
+            <ul>
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/BaseInfo/TheProject")?Type=add"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart1.png'   /><label>项目管理</label></a></li>
+                <li onclick='CheckRight(this,"@result2")' redirect="@Url.Content("~/BaseInfo/TheProduct")" style="margin-left:20px;"><a  href="javascript:;" ><img width='129' height='110' src='../../Content/themes/images/depart2.png'   /><label>产品管理</label></a></li>
+            </ul>
+        </div>*@
+    <div id="mainContentLeft_bottom">
+        <ul>
+            <li  redirect="@Url.Content("~/BaseInfo/TheProject")" onclick='CheckRight(this,"@result1")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">项目管理
+                    <label>
+                    </label>
+                </a></li>
+            <li  redirect="@Url.Content("~/BaseInfo/TheProduct")" onclick='CheckRight(this,"@result2")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">产品管理
+                    <label>
+                    </label>
+                </a></li>
+            <li  redirect="@Url.Content("~/BaseInfo/CardBusiness")" onclick='CheckRight(this,"@result3")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">卡项业务设置
+                    <label>
+                    </label>
+                </a></li>
+            <li redirect="@Url.Content("~/BaseInfo/BasicInformation")" onclick='CheckRight(this,"@result4")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">基础字典设置
+                    <label>
+                    </label>
+                </a></li>
+            <li redirect="@Url.Content("~/PersonnelManage/PersonnelManagePage")" onclick='CheckRight(this,"@result5")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">员工管理<label></label></a> </li>
+            <li redirect="@Url.Content("~/BaseInfo/SysUserpage")" onclick='CheckRight(this,"@result6")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">系统用户<label></label></a> </li>
+            <li redirect="@Url.Content("~/BaseInfo/UserSettings")" onclick='CheckRight(this,"@result7")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">系统参数<label></label></a> </li>
+            <li redirect="@Url.Content("~/BaseInfo/HospitalDetail")" onclick='CheckRight(this,"@result8")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">门店信息<label></label></a> </li>
+            <li redirect="@Url.Content("~/BaseInfo/CompetenceManage")" onclick='CheckRight(this,"@result9")'>
+                <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                </span><a style="cursor: pointer; ">权限组管理<label></label></a> </li>
+       
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+        //登录回车事件
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13 || event.keyCode == 32) {
+                if ($.trim($(".searchInput").val()) != "" && $(".searchInput").val() != "搜索") {
+                    document.getElementById("submitform").submit();
+                }
+            }
+        });
+       
+        //定义权限列表，主要为了显示默认有权限的页面
+        var TheArray = [["@result1", "@Url.Content("~/BaseInfo/TheProject")"],["@result2", "@Url.Content("~/BaseInfo/TheProduct")"], ["@result3","@Url.Content("~/BaseInfo/CardBusiness")"],["@result4","@Url.Content("~/BaseInfo/BasicInformation")"],["@result5","@Url.Content("~/BaseInfo/PersonnelManagePage")"],["@result6","@Url.Content("~/BaseInfo/UserManagePage")"],["@result7","@Url.Content("~/BaseInfo/UserSettings")"],["@result8","@Url.Content("~/BaseInfo/HospitalDetail")"],["@result9","@Url.Content("~/BaseInfo/CompetenceManage")"], ["@result10","@Url.Content("~/CenterManage/DataClear")"]];
+
+</script>

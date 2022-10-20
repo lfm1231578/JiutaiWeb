@@ -1,0 +1,494 @@
+﻿@model PagedList<EYB.ServiceEntity.WarehouseEntity.CheckOrderInfoEntity>
+@{
+    ViewBag.Title = "盘点";
+    Layout = null;
+    WarehouseManage.Factory.IBLL.IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<WarehouseManage.Factory.IBLL.IWarehouseManageBLL>();
+    SystemManage.Factory.IBLL.ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    //查询门店美容师
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    //var thetype = sysBll.GetBaseInfoTreeByType("WarehouseIn", 1, ViewBag.ParentHospitalID);//类型分类
+    var cangku = wareBll.GetWarehouseList(new EYB.ServiceEntity.WarehouseEntity.WarehouseEntity { HospitalID = ViewBag.HospitalID });//获取仓库列表
+    var ID = Convert.ToInt32(Request["ID"]);
+    var order = wareBll.GetCheckOrderModel(new EYB.ServiceEntity.WarehouseEntity.CheckOrderEntity { ID = ID });
+ 
+}
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+<body style="background: #fff;">
+    <form method="POST" action="@Url.Content("~/WarehouseManage/PandianEdit")" id="myform2">
+    <input type="hidden" name="OrderNo" value="@order.OrderNo" />
+  <input type="hidden" name="ID" value="@ID" />
+    <span style="height: 40px; width: 100%; line-height: 40px;">
+        @if (order.IsVerify == 1)
+        {
+            <input type="button" class="submitbutton4" onclick="ProductList()" value="选择盘点产品"
+                style="width: 100px; margin: 5px;" />
+        }
+        &nbsp;&nbsp;&nbsp; 盘点人:
+        <select name="UserID">
+            @foreach (var j in persoList)
+            { 
+                <option @( order.UserID == j.UserID ? "selected='selected'" : "") value="@j.UserID">@j.UserName</option>
+            }
+        </select>
+        &nbsp;&nbsp;&nbsp; 盘点时间:
+        <input type="text" disabled="disabled" class="text-input" style=" height:25px; width:150px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="Time" id="Time" value="@order.CheckTime.ToString("yyyy-MM-dd")" />
+        &nbsp;&nbsp;&nbsp;备注:
+        <input type="text" name="VerifyMemo" style="width:100px;" value="@order.VerifyMemo" />
+    &nbsp;&nbsp;&nbsp;产品名称:
+        <input type="text" name="ProductName"  style="width:100px;" value="" />
+        <input type="submit" id="btnsearch" name="search" class="searchsubmitton" value="搜 索" />
+    </span>
+  
+    <table class="gridTable" style="border-collapse: collapse; margin-left: 10px;">
+        <thead>
+            <tr style="background: #c4c4c4;">
+                <th>
+                    产品名称
+                </th>
+                <th>
+                    品牌
+                </th>
+                <th>
+                    单价
+                </th>
+                <th>
+                    账面数量
+                </th>
+                <th>
+                    实盘数量
+                </th>
+               <th>
+                    盘盈数量
+                </th>
+                <th>
+                    盘盈金额
+                </th>
+                <th>
+                    盘亏数量
+                </th>
+                <th>
+                    盘亏金额
+                </th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody id="warebody">
+            @foreach (var info in Model)
+            { 
+                <tr>
+                    <td>
+                        <input type='hidden' name='kucunID' value='@info.kucunID' />@info.ProductName
+                        <input type='hidden' name='HouseID' value='@info.HouseID' />
+                    </td>
+                    <td>@info.BrandName
+                    </td>
+                    <td class="price">@info.RetailPrice
+                    </td>
+                    <td class="BookNumber">@info.BookQuatity
+                    </td>
+                    <td>
+                        @if (order.IsVerify == 1)
+                        {
+                            <input type="text" class="wid50 InventoryNumber" onkeyup="CheckInputIntFloat(this)" name="InventoryNumber" value="@info.ActualQuatity" />
+                        }
+                        else
+                        { 
+                            <label>@info.ActualQuatity</label>
+                        }
+                    </td>
+                    <td class="MoreNumber">@info.MoreQuatity
+                    </td>
+                    <td class="MorePrice">@info.MorePrice</td>
+                    <td class="LessNumber">@info.LessQuatity
+                    </td>
+                    <td class="LessPrice">@info.LessPrice
+                    </td>
+                    <td>
+                        @if (order.IsVerify == 1)
+                        {
+                            <a class="delthis" href="#">删除</a>
+                        }
+                        else
+                        { 
+                            <label>
+                                已完成</label>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="accountdiv" style="">
+        <label style="font-weight: normal; line-height: 40px;">
+            &nbsp;&nbsp;账面数量：</label><label id="labcash0" class="labamout0">@order.ZhangMianQuatity</label>
+        <label style="font-weight: normal;">
+            实际数量：</label><label id="labcash1" class="labcash1">@order.ShijiQuatity</label>
+        @*<label style="font-weight: normal; line-height: 40px;">
+            &nbsp;&nbsp;盘亏数量：</label><label id="labcash2" class="labcash2">@order.PankuiQuatity</label>
+        <label style="font-weight: normal;">
+            盘亏金额：</label>
+        <label id="labcash3" class="labcash3">
+            @order.PankuiMoeny</label>*@
+    </div>
+    <table class="mainContentRight_table ">
+        <tr>
+            <td>
+                
+                @if (order.IsVerify == 1)
+                {
+                    <input type="button" id="btn" value="保  存" class="submitbutton2" />
+                    <a href="#" class="ruku submitbutton2"  onclick="chexiao(@order.ID)" >撤销</a>
+                }
+                <input type="button" class="submitbutton2" onclick="Preview1()" style="float: none;"
+                    value="打 印" />
+     <input type="button" class="submitbutton2" id="btnSave" style="float: none;" value="导 出" />
+            </td>
+        </tr>
+    </table>
+  </form>
+    <div id="HidTab" style="display: none;">
+        <table  id="hidt1" class="" style="border: 0px; width: 610px; margin: 0 auto; margin-top: 5px;
+            border-collapse: collapse;">
+            <thead style="border: 0px;">
+                <tr style="line-height: 35px;">
+                    <td colspan="4" style="width: 610px; text-align: center; font-size: 22px;">@(Model!=null && Model.Count>0?Model[0].HouseName:"")<span
+                        style="font-size: 14px;">(盘点单)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        单据编号:
+                    </td>
+                    <td style="text-align: left; width: 300px; line-height: 20px; border: 0px;">@order.OrderNo
+                    </td>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        日期:
+                    </td>
+                    <td style="text-align: left; width: 140px; line-height: 20px; border: 0px;">@order.CheckTime.ToString("yyyy-MM-dd HH:mm:ss")
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        操作人:
+                    </td>
+                    <td style="text-align: left; width: 300px; line-height: 20px; border: 0px;">@order.UserName
+                    </td>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        备注:
+                    </td>
+                    <td style="text-align: left; width: 140px; line-height: 20px; border: 0px;">@order.VerifyMemo
+                    </td>
+                </tr>
+            </thead>
+        </table>
+        <table id="hidt2" style="border: 2px solid #ccc; border-collapse: collapse; width: 610px; margin: 0 auto;
+            margin-top: 5px; border-collapse: collapse;">
+            <tbody  style="">
+                <tr style="line-height: 35px; background: #999;">
+                    <th style="wdith: 90px; border: 2px solid #ccc; ">
+                        产品名称
+                    </th>
+                    <th style="wdith: 60px; border: 2px solid #ccc; ">
+                        品牌
+                    </th>
+                    <th style="wdith: 60px; border: 2px solid #ccc; ">
+                        单价
+                    </th>
+                    <th style="wdith: 60px; border:2px solid #ccc; " >
+                        数量
+                    </th>
+                    <th style="wdith: 60px; border: 2px solid #ccc; ">
+                        实盘数量
+                    </th>
+                    <th style="wdith: 60px; border: 2px solid #ccc; ">
+                        盘盈数量
+                    </th>
+                    <th style="wdith: 80px; border: 2px solid #ccc; ">
+                        盘盈金额
+                    </th>
+                    <th style="wdith: 60px; border: 2px solid #ccc; ">
+                        盘亏数量
+                    </th>
+                    <th style="wdith: 80px; border: 2px solid #ccc; ">
+                        盘亏金额
+                    </th>
+                </tr>
+                @foreach (var info in Model)
+                { 
+                    <tr style="line-height: 30px;">
+                        <td style=" text-align: center; border: 2px solid #ccc; ">
+                            @info.ProductName
+                        </td>
+                        <td style=" text-align: center; border: 2px solid #ccc; ">
+                            @info.BrandName
+                        </td>
+                        <td style=" text-align: center; border: 2px solid #ccc; ">
+                            @info.RetailPrice
+                        </td>
+                        <td style=" text-align: center; border: 2px solid #ccc; ">
+                            @info.BookQuatity
+                        </td>
+                        <td style=" text-align: center; border: 2px solid #ccc; ">@info.ActualQuatity
+                        </td>
+                        <td style="text-align: center; border: 2px solid #ccc; ">@info.MoreQuatity
+                        </td>
+                        <td style="text-align: center; border: 2px solid #ccc; ">@info.MorePrice
+                        </td>
+                        <td style="text-align: center; border: 2px solid #ccc; ">@info.LessQuatity
+                        </td>
+                        <td style="text-align: center; border: 2px solid #ccc; ">@info.LessPrice
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr style=" line-height:35px;">
+                    <td colspan="5" style=" text-align:right; border: 2px solid #ccc; ">合计:</td>
+                    <td style="border: 2px solid #ccc;  text-align:center;"> @order.PanYinQuatity</td>
+                    <td style="border: 2px solid #ccc; text-align:center;"> @order.PanyinMoney</td>
+                    <td style="border:2px solid #ccc; text-align:center; "> @order.PankuiQuatity</td>
+                    <td style="border: 2px solid #ccc; text-align:center; "> @order.PankuiMoeny</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width="0"
+        height="0">
+        <embed id="LODOP_EM" type="application/x-print-lodop" width="0" height="0"></embed>
+    </object>
+
+</body>
+<script type="text/javascript">
+    //接收产品
+    function ProductList() {
+        art.dialog.open("/WarehouseManage/kucunChanpin", { title: "盘点产品列表", width: 660, height: 470, close: function () {
+            var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+            if (bValue != undefined && bValue != '') {
+                //这里添加一个绑定方法
+                pdbind(bValue);
+            }
+        }
+        })
+    }
+    //接受产品的方法
+    function pdbind(obj) {
+        var arraylist = new Array();
+        arraylist = obj.split('$');
+        var idlist = '';
+        var kucunIDlist = '';
+        $.each(arraylist, function (n, value) {
+            if (value.split('|')[1] != '' && value.split('|')[1] != undefined) {
+                idlist = idlist + value.split('|')[1] + ",";
+                kucunIDlist = kucunIDlist + value.split('|')[0] + ",";
+            }
+        })
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("WarehouseManage", "GetAllpandianList?idlist=" + idlist + "&kucunIDlist=" + kucunIDlist),
+            async: false,
+            error: function (request) {
+                artdialogfailTwo("操作失败！", "", "250", "100");
+            },
+            success: function (data) {
+                if (data != null) {
+                    //这里是填写内容
+                    $("#warebody").append(data);
+                } else {
+                    artdialogfailTwo("操作失败,！", "", "250", "100");
+                }
+            }
+        });
+        allmunbercount();
+    }
+    //添加实盘数量自动更新其他数据
+    $("#warebody").delegate(".InventoryNumber", "keyup", function () {
+        var val = $(this).val(); //获取实盘数量
+        var price = $(this).parent().parent().find(".price").text();  //获取单价
+        var BookNumber = $(this).parent().parent().find(".BookNumber").text(); //获取账面数量
+        var pankui = parseFloat(BookNumber) - parseFloat(val); //盘亏数量
+        var pakkuiprice = parseFloat(pankui) * parseFloat(price); //盘亏金额
+        var panying = parseFloat(val) - parseFloat(BookNumber); //赢盘数量
+        var panyingprice = parseFloat(panying) * parseFloat(price);//盘盈金额
+        if (pankui > 0) {
+            panying = 0; //如果盘亏大于0,则表示是盘亏,盘盈则为0;
+        }
+
+        $(this).parent().parent().find(".MoreNumber").text(panying);
+        $(this).parent().parent().find(".LessNumber").text(pankui);
+        $(this).parent().parent().find(".LessPrice").text(pakkuiprice); 
+        $(this).parent().parent().find(".MorePrice").text(panyingprice);
+        allmunbercount();
+    })
+    //删除功能的实现
+    $("#warebody").delegate(".delthis", "click", function () {
+        if (confirm('确实要删除吗?')) {
+            $(this).parent().parent().remove();
+            allmunbercount();
+        }
+
+    })
+    //保存
+    $("#btn").click(function () {
+        $(this).attr("disabled", "disabled ");     //给当前元素加上不可操作功能
+
+        if (yanzheng()) {
+            artdialogfailTwo("请选择产品,确保产品已经入库！", "", "250", "100");
+            $(this).attr("disabled", false);
+            return false;
+        }
+
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("WarehouseManage", "EditPandian"),
+            async: false,
+            data: $('#myform2').serialize(), // 你的formid
+            error: function (request) {
+                artdialogfailTwo("操作失败！", "", "250", "100");
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("操作成功！");
+                    closeed();
+                }
+            }
+        });
+        $(this).attr("disabled", false); //把提交按钮还原
+    })
+
+    function yanzheng() {
+        var Idinfo = $("#warebody").find("input[name='kucunID']");
+        var result = false;
+        if (Idinfo.length == 0) {
+            result = true;
+        }
+        return result;
+    }
+
+        function CRK(obj) {
+        if(!isNaN(obj)&& confirm("确认提交?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "AddPandianRukuAndChuku?ID="+obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+     }
+
+      function allmunbercount() {
+        var shipan = $("#warebody").find(".InventoryNumber"); //获取实盘数量
+        var pankui = $("#warebody").find(".LessNumber"); //盘亏数量(text)
+        var pankuipeice = $("#warebody").find(".LessPrice"); //盘亏金额(text)
+        var zhangmian = $("#warebody").find(".BookNumber"); //账面数量
+
+        var shipannumber = 0;
+        shipan.each(function () {
+            shipannumber = shipannumber + parseFloat($(this).val());
+        })
+
+        var pankuinumber = 0;
+        pankui.each(function () {
+            pankuinumber = pankuinumber + parseFloat($(this).text());
+        })
+
+        var allpankuipeice = 0;
+        pankuipeice.each(function () {
+            allpankuipeice = allpankuipeice + parseFloat($(this).text());
+        })
+
+        var allzhangmian = 0;
+        zhangmian.each(function () {
+            allzhangmian = allzhangmian + parseFloat($(this).text())
+        })
+
+        $("#labcash0").text(allzhangmian);
+        $("#labcash1").text(shipannumber);
+        $("#labcash2").text(pankuinumber);
+        $("#labcash3").text(allpankuipeice);
+    }
+
+     function chexiao(obj)
+     {       
+         if(!isNaN(obj)&& confirm("是否撤销单据")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "DelPanOrder?ID="+obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                          artdialog("操作成功！");
+                        closeed();
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+     }
+
+
+
+
+
+         //打印
+    var LODOP; //声明为全局变量  
+    function Preview1() {
+        LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+        // LODOP.PRINT_INITA(0, 0, 580, 333, "自定义纸张1");
+        LODOP.PRINT_INIT("自定义纸张");
+        //         document.getElementById('W1').value;
+        LODOP.SET_PRINT_PAGESIZE(3, 2479, 3508, "A4");
+          LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+        LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+
+        AddPrintContent();
+        LODOP.PREVIEW();
+    };
+    function AddPrintContent() {
+        LODOP.ADD_PRINT_HTM(30, 80, 580, 20, document.getElementById("HidTab").innerHTML);
+         var trheight = ($("#hidt2 tr").length+$("#hidt1 tr").length)*35;
+        LODOP.ADD_PRINT_TEXT(60+trheight, 200, 580, 20, "审核人:_________________");
+        LODOP.ADD_PRINT_TEXT(60+trheight, 60, 580, 20, "提货人：______________");
+         }
+
+
+    //导出
+    $("#btnSave").click(function () {
+        
+        var url = getControllerUrl("WarehouseManage", "ExportPandianEdit") + "?pageNum=1&numPerPage=10000&ID=@ID";
+        window.location.href = url;
+
+    });
+
+</script>

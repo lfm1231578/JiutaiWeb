@@ -1,0 +1,198 @@
+﻿@using HWLY.OA.SystemManagement.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    Layout = "~/Views/Shared/Header.cshtml";
+
+    var  systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManagementBLL>();
+    var list = systemBLL.GetAllRole().Where(c => c.IsActive == 1).ToList();
+    var id = Request["id"];
+    //获取用户实体
+    var entity = systemBLL.GetUserByUserID(ConvertValueHelper.ConvertIntValue(id));
+    //获取职务
+    var infotypeList = systemBLL.GetBaseInfoTreeByType("job");
+}
+
+<div class="pad_10">
+    <form  method="post" name="myform" id="myform">
+     <table width="100%" cellpadding="2" cellspacing="1" class="table_form">
+        <tr style="height:25px;">
+            <th style="font-size: 16px; color: Red; font-weight: bold;">
+                基本信息:
+            </th>
+        </tr>
+        <tr>
+            <th width="80">
+                账号/工号 :
+            </th>
+            <td>
+            <input type="hidden"  value="@id" name="UserID" />
+                <input type="text" name="LoginAccount" id="user_name" class="input-text" value="@entity.LoginAccount"/>
+            </td>
+            <th width="80">
+                用户名 :
+            </th>
+            <td>
+                <input type="text" name="UserName" class="input-text" value="@entity.UserName" />
+            </td>
+        </tr>
+        <tr>
+           
+            <th width="80">
+                昵称 :
+            </th>
+            <td>
+                <input type="text" name="NickName" class="input-text"  value="@entity.NickName"  />
+            </td>
+             <th width="80">
+                入职时间 :
+            </th>
+            <td>
+                <input type="text" name="DutyTime" class="date input-text"  value="@entity.DutyTime" />
+            </td>
+        </tr>
+       
+        <tr>
+            <th>
+                所属部门 :
+            </th>
+            <td>
+                <input type="text" id="department" class="input-text"  value="@entity.DeptName" />
+                <input type="hidden" name="DeptCode" id="hiddendepartment"  value="@entity.DeptCode" />
+            </td>
+            <th width="80">
+                性别 :
+            </th>
+            <td>
+                <select name="Sex">
+                    <option value="男" @("男"== entity.Sex ? "selected=selected" : "")>男</option>
+                    <option value="女" @("女" == entity.Sex ? "selected=selected" : "")>女</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                职务 :
+            </th>
+            <td>
+                <select id="selduty" name="DutyName">
+                    @foreach (var info in infotypeList)
+        {
+                        <option @(info.InfoName == entity.DutyName ? "selected=selected" : "") value="@info.InfoName">@info.InfoName</option>
+        }
+                </select>
+            </td>
+            <th width="80">
+                联系电话 :
+            </th>
+            <td>
+                <input type="text" name="Mobile"  value="@entity.Mobile"/>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                角色 :
+            </th>
+            <td>
+              <select name="RoleID">
+                    @foreach (var info in list)
+                    {
+                        <option @(info.RoleID == entity.RoleID ? "selected=selected" : "") value="@info.RoleID">@info.RoleName</option>
+                    }
+                </select>
+            </td>
+            <th width="80">
+                档案地址 :
+            </th>
+            <td>
+                <input type="text" name="FilesAddress" class="input-text" value="@entity.FilesAddress" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                状态 :
+            </th>
+            <td>
+               <input type="radio" name="IsActive" @(1==entity.IsActive?"checked=checked":"") class="radio_style" value="1" checked="checked" />
+                &nbsp;有效&nbsp;&nbsp;&nbsp;
+                <input type="radio" name="IsActive" @(0 == entity.IsActive ? "checked=checked" : "") class="radio_style" value="0" />
+                &nbsp;禁用
+            </td>
+            <th width="80">
+                备注 :
+            </th>
+            <td>
+                <textarea name="Memo" class="input-text">@entity.Memo</textarea>
+            </td>
+        </tr>
+        <tr style="height:25px;">
+            <th style="font-size: 16px; color: Red; font-weight: bold;">
+                附属信息:
+            </th>
+        </tr>
+        <tr>
+            <th>
+                父亲名字 :
+            </th>
+            <td>
+                <input type="text" name="FatherName" class="input-text" value="@entity.FatherName" />
+            </td>
+            <th width="80">
+                父亲电话 :
+            </th>
+            <td>
+                <input type="text" name="FatherPhone" class="input-text" value="@entity.FatherPhone" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                母亲名字 :
+            </th>
+            <td>
+                <input type="text" name="MotherName" class="input-text"  value="@entity.MotherName"/>
+            </td>
+            <th width="80">
+                母亲电话 :
+            </th>
+            <td>
+                <input type="text" name="MotherPhone" class="input-text" value="@entity.MotherPhone" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                毕业学校 :
+            </th>
+            <td>
+                <input type="text" name="GraduateSchool" class="input-text" value="@entity.GraduateSchool"/>
+            </td>
+            <th width="80">
+                毕业时间 :
+            </th>
+            <td>
+                <input type="text" name="GraduateTime" class="date  input-text" value="@entity.GraduateTime"/>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                工作记录 :
+            </th>
+            <td>
+                <textarea name="WorkRecord" class="input-text" cols="50">@entity.WorkRecord</textarea>
+            </td>
+             <th>
+                是否在职 :
+            </th>
+            <td>
+                 <select name="IsDuty">
+                    <option value="1" @(1== entity.IsDuty ? "selected=selected" : "")>在职</option>
+                    <option value="0" @(0 == entity.IsDuty ? "selected=selected" : "")>离职</option>
+                </select>
+            </td>
+        </tr>
+    </table>
+      <div id="dialogareaDepartment" style="text-align: left;">
+        <div id="treeContentArea">
+        </div>
+    </div>
+   
+    
+</div>

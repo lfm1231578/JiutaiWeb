@@ -1,0 +1,117 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    Layout = null;
+    decimal SumMoney = 0;
+    decimal Xianjin = 0;
+    int Keliu = 0;
+    int Quantity = 0;
+    decimal MianDan = 0;
+   
+}
+<style>
+    /*******表格********/
+    .gridTable tbody
+    {
+        display: block;
+    }
+    .gridTable tr
+    {
+        display: block;
+    }
+    .gridTable th
+    {
+        width: 200px;
+        line-height: 40px;
+    }
+    .gridTable td
+    {
+        width: 200px;
+    }
+</style>
+<form action="" method="post" id="submitform">
+<table class="gridTable" style="border-collapse: collapse; overflow: scroll;">
+    <thead style="display: block; position: fixed;">
+        <tr>
+            <th>
+                消费门店
+            </th>
+            <th @(ViewBag.orderField == "SumMoney" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="SumMoney">
+                总实收
+            </th>
+            <th title="产品+项目" @(ViewBag.orderField == "Xianjin" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Xianjin">
+                总消耗
+            </th>
+            <th title="有效客人数（正式会员）" @(ViewBag.orderField == "Keliu" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Keliu">
+                总人数
+            </th>
+            <th @(ViewBag.orderField == "Quantity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quantity">
+                总人次
+            </th>
+            <th @(ViewBag.orderField == "MianDan" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MianDan">
+                总退款
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height: 40px;">
+            <td colspan="11">
+            </td>
+        </tr>
+        @foreach (var entity in Model)
+        {
+            SumMoney = SumMoney + entity.SumMoney;
+            Xianjin = Xianjin + entity.Xianjin;
+            Keliu = Keliu + entity.Keliu;
+            Quantity = Quantity + entity.Quantity;
+            MianDan = MianDan + entity.MianDan;
+            <tr>
+                <td>@entity.Name
+                </td>
+                <td>@entity.SumMoney
+                </td>
+                <td>@entity.Xianjin
+                </td>
+                <td>@entity.Quantity
+                </td>
+                <td>@entity.Keliu
+                </td>
+                <td>@entity.MianDan
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+                总计:
+            </td>
+            <td>@SumMoney
+            </td>
+            <td>@Xianjin
+            </td>
+  <td>@Quantity
+            </td>
+            <td>@Keliu
+            </td>
+          
+            <td>@MianDan
+            </td>
+        </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 6))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $(function () {
+
+        //计算head高度，宽度 计算articles高度
+        var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+        $(".gridTable thead").css("top", theadheight + "px");
+        $(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+        $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+        $("#showmessage").css("display", "none");
+    })
+</script>

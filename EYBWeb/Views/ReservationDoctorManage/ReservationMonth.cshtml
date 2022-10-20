@@ -1,0 +1,311 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using EYB.ServiceEntity.ReservationEntity;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@{
+    ViewBag.Title = "本月预约";
+    var Hid = ViewBag.HospitalID;//门店ID
+    var Year = Request["Year"];//年份
+    var Month = Request["Month"];//
+    var M = Month;
+    if (Year == "" || Year == null)
+    {
+        Year = DateTime.Now.Year.ToString();
+    }
+    if (Month == "" || Month == null)
+    {
+        M = DateTime.Now.Month.ToString();
+
+        if (DateTime.Now.Month < 10)
+        {
+            Month = "0" + DateTime.Now.Month;
+        }
+
+    }
+    else
+    {
+        if (Convert.ToInt32(Month) < 10)
+        {
+            Month = "0" + Month;
+        }
+    }
+    var YearMonth = Year + "-" + DateTime.Now.Month + "-01";
+    ViewBag.Title = "PatientMonthReserve";
+    IReservationDoctorManageBLL resBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    var depList = personbll.GetAllUserByHospitalID(Hid, 1);
+
+    //查询员工 史晓云
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    var goalslist = resBLL.GetPatientPerformanceGoalsListMonth(new EYB.ServiceEntity.PatientEntity.PatientPerformanceGoalsEntity { HospitalID = Hid, Years = DateTime.Now.Year, Months = DateTime.Now.Month });
+    DateTime dt = DateTime.Now;
+    //本月第一天时间      
+    DateTime dt_First = dt.AddDays(1 - (dt.Day));
+    //获得某年某月的天数 
+    int year = dt.Date.Year;
+    int month = dt.Date.Month;
+    int dayCount = DateTime.DaysInMonth(year, month);
+    //本月最后一天时间    
+    DateTime dt_Last = dt_First.AddDays(dayCount - 1);
+
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+
+    int greenCount = 0;
+    int blueCount = 0;
+    int redCount = 0;
+   
+}
+<div id="mainContentBody">
+    @Html.Partial("_ReservationControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+               </label>
+            顾客考勤跟踪表 &nbsp;<a href="javascript:goPage(this);" style="width: 130px;" class="addbutton">
+                新建顾客目标</a></div>
+        <div class="mainContentRight_bottom  clearfix" style="position: relative; overflow: auto;">
+            <div class="reservationblock">
+                @if (HasPermission)
+                {
+               
+                    <label style="font-weight: normal;">
+                        所属分店：</label>
+                    <select name="HospitalID" id="HospitalID" class="ymxSelect" >
+                        <option value="0">请选择分店</option>
+                        @if (RegionhospitalList.Count > 0)
+                        {
+                            foreach (var info in RegionhospitalList)
+                            {
+                            <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID" >@info.Name</option>
+                            }
+                        }
+                        else
+                        {
+                            foreach (var info in hospitalList)
+                            {
+                            <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID" >@info.Name</option>
+                            }
+                        }
+                    </select>
+            
+                }
+                跟进人：
+                <select class="select" name="FollowUpUserID" id="FollowUpUserID" >
+                    <option value="0">跟进人</option>
+                    @foreach (var info in PersonList)
+                    {
+                        <option    value="@info.UserID">@info.UserName</option>
+                    }
+                </select>
+                <select name="Years" id="Years" >
+                    @for (int i = 2015; i <= 2030; i++)
+                    {
+                        <option  @(Year == i + "" ? "selected=selected" : "") value="@i">@i</option>
+                    }
+                </select>
+                年
+                <select name="Months" id="Months">
+                    <option @(M == "1" ? "selected=selected" : "") value="1">1</option>
+                    <option @(M == "2" ? "selected=selected" : "") value="2">2</option>
+                    <option @(M == "3" ? "selected=selected" : "")  value="3">3</option>
+                    <option @(M == "4" ? "selected=selected" : "") value="4">4</option>
+                    <option @(M == "5" ? "selected=selected" : "")  value="5">5</option>
+                    <option @(M == "6" ? "selected=selected" : "") value="6">6</option>
+                    <option @(M == "7" ? "selected=selected" : "")  value="7">7</option>
+                    <option @(M == "8" ? "selected=selected" : "") value="8">8</option>
+                    <option @(M == "9" ? "selected=selected" : "")  value="9">9</option>
+                    <option @(M == "10" ? "selected=selected" : "") value="10">10</option>
+                    <option @(M == "11" ? "selected=selected" : "") value="11">11</option>
+                    <option @(M == "12" ? "selected=selected" : "") value="12">12</option>
+                </select>月
+                <input type="button" class="submitbutton2" id="btnsearch" style="float: none;" value="查 询" />
+                <input type="button" class="submitbutton2" onclick="AddReservation()" style="float: none;"
+                    value="新建预约" />
+                <label style="color: Red;">
+                    备注：
+                    <label style="color: Green;">
+                        绿色：[有预约,有到店]</label>
+                    <label style="color: blue;">
+                        蓝色：[有预约,未到店]</label><label style="color: red;">红色：[未预约,有到店,但计入实际到店次数]</label></label>
+            </div>
+            <style>.monthrevertion th{ border-right:1px solid #fff; color:#636465;}</style>
+            <table id="weekTable" border="0" class="monthrevertion" style="width:98%;min-width:98%;">
+                <tr>
+                    <th style="width: 60px;">
+                        员工
+                    </th>
+                    <th style="width: 60px;">
+                        顾客
+                    </th>
+                    <th style="width: 60px;">
+                        目标
+                    </th>
+                    <th style="width: 60px;">
+                        达成
+                    </th>
+                    @{
+                        var days = DateTime.DaysInMonth(Convert.ToInt32(Year), Convert.ToInt32(M));
+                        //获取当前月份的天数
+                        for (var i = 1; i <= days; i++)
+                        {
+                                        <th style="padding:0 5px;color:@((i == 7 || i == 10 || i == 15 || i == 21)?"peru":"#636465") ">
+                                            @i
+                                            @{ 
+                                                if (i == 7 || i == 10 || i == 15 || i == 21) {
+                                                    <br/><span style="color:peru;">检查</span>
+
+                                                }
+                                             }
+                                       
+                                        </th>
+                        }
+                    }
+                </tr>
+                @{
+
+                    foreach (var D in goalslist)
+                    {
+                        var Dates1 = dt_First.ToString("yyyy-MM-dd 00:00:01");
+                        var DatesEnd1 = dt_Last.ToString("yyyy-MM-dd 23:59:59");
+                        var daodianlist = cashBll.GetOnedayOrderList(D.UserID, Dates1, DatesEnd1);
+                        <tr>
+                            <td style="text-align: center;">
+                                @(!string.IsNullOrEmpty(D.HospitalUserName) ? D.HospitalUserName : D.GenjinUserName)
+                        </td>
+                        <td style="text-align: center;">
+                            @D.UserName
+                    </td>
+                    <td style="text-align: center;">
+                        @D.DaodianCount
+                </td>
+                <td style="text-align: center;">
+                    @daodianlist
+            </td>
+            @{
+
+                //var resList = resBLL.GetReservationMontList(Convert.ToDateTime(YearMonth), Hid, D.UserID);
+                //foreach (var R in resList)
+                //{
+
+                for (var i = 1; i <= days; i++)
+                {
+                    //日期组装
+                    var Dates = Year + "-" + DateTime.Now.Month + "-" + i + " 00:00:01";
+
+                    var DatesEnd = Year + "-" + DateTime.Now.Month + "-" + i + " 23:59:59";
+                    var Dates11 = Year + "-" + DateTime.Now.Month + "-" + i;
+                    var daodianlist1 = cashBll.GetOnedayOrderList(D.UserID, Dates, DatesEnd);
+                    var list = resBLL.SelectReservationList(Hid, Dates11, D.UserID);
+                    //绿色：[有预约,有到店] 蓝色：[有预约,未到店]红色：[未预约,有到店,但计入实际到店次数]
+                    if (daodianlist1 > 0 && list.Count > 0)
+                    {
+                       greenCount++; 
+                       <td style="background: green; border-right: 1px dashed #ccc;">
+                                       <div style="position: relative; width: 100%; height: 70px; background: grenn;">
+                                     
+                                       </div>
+                        </td>
+                    }
+                    else if (list.Count > 0 && daodianlist1 == 0)
+                    {
+                        blueCount++;
+                        <td style="background: blue; border-right: 1px dashed #ccc;">
+                            <div style="position: relative; width: 100%; height: 70px; background: blue;">
+                            </div>
+                        </td>
+                    }
+                    else if (daodianlist1 > 0 && list.Count == 0)
+                    {
+                        redCount++;
+                        <td>
+                            <div style="position: relative; width: 100%; height: 70px; background: red; border-right: 1px dashed #ccc;">
+                            </div>
+                        </td>
+                    }
+                    else if (i == 7 || i == 10 || i == 15 || i == 21)
+                    {
+                        <td>
+                            <div style="position: relative; width: 100%; height: 70px;  border-right: 1px dashed #ccc;">
+                            </div>
+                        </td>
+                    }
+                    else
+                    {
+                        <td>
+                            <div style="position: relative; width: 100%; height: 70px; border-right: 1px dashed #ccc;">
+                            </div>
+                        </td>
+                    }
+
+                }
+
+            }
+            </tr>
+        }
+            
+
+                }
+            <tr style="height:35px; line-height:35px;"> <td colspan="14"><span style='color:green;'>绿色块:@greenCount</span> &nbsp; <span style='color:blue;'>蓝色块:@blueCount</span> &nbsp; <span style='color:red;'>红色块:@redCount </span> </td> </tr>
+       
+            </table>
+        </div>
+    </div>
+</div>
+<div id="showmessage" style="display: none; width: 220px; height: 140px; position: fixed;
+    top: 300px; left: 650px; color: Red; margin: 0 auto; text-align: center;">
+    <img src="../../Content/themes/images/loading.gif" width="100" />
+    <p style="text-align: center; height: 30px; line-height: 30px;">
+        正在努力查询中，请稍后...</p>
+</div>
+<script type="text/javascript">
+    function goPage() {
+        location.href = "@Url.Content("~/ReservationDoctorManage/ReservationMonth")?Year="+$("#Year").val()+"&Month="+$("#Month").val()      ;
+    }
+    function AddReservation(obj) {
+  
+         art.dialog.open("@Url.Content("~/ReservationDoctorManage/ReservationAdd")?Date=@DateTime.Now.ToString("yyyy-MM-dd")", { title: "预约", width: 800, height: 470 });
+       
+     }
+        //打开预约详情
+    function openReservation(obj) {
+         art.dialog.open("@Url.Content("~/ReservationDoctorManage/ReservationDetail")?ID="+obj, { title: "预约详情", width: 800, height: 470 });
+     }
+   function goPage(obj) {
+       
+    art.dialog.open("@Url.Content("~/ReservationDoctorManage/PatientPerformanceGoals")?Date=@DateTime.Now.ToString("yyyy-MM-dd")"+"&DocID="+obj, { title: "顾客目标管理", width: 1000, height: 600 });
+     }
+     //统计预约人数
+     $("#weekreservationcount").text($(".weekreservation").length);
+     //隔行换色
+     //$("#weekTable").find("td:odd").css("background-color", "#d8eff8");
+     //搜索
+    $("#btnsearch").click(function(){
+        $("#showmessage").css("display", "");
+        var FollowUpUserID = $("#FollowUpUserID").val();
+        var Years = $("#Years").val();
+        var Months = $("#Months").val();
+        var HospitalID = $("#HospitalID").val();
+        $.ajax({
+        type: "post", //使用get方法访问后台 
+        dataType: "text", //返回json格式的数据
+        url: getControllerUrl("ReservationDoctorManage", "GetReservationMonth"),
+        data: { "HospitalID": HospitalID, "FollowUpUserID": FollowUpUserID, "Years": Years, "Months": Months },
+            success: function (data) {
+            //赋值下拉框
+            $("#weekTable").html("");
+            $("#weekTable").append(data);
+            // alert($("tr:gt(0)").find(".selHospitalID").length);
+        //隔行换色
+     //$("#weekTable").find("tr:odd").css("background-color", "#d8eff8");
+         $("#showmessage").css("display", "none");
+        },
+        error: function () {
+            alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+        }
+     });
+    })
+</script>

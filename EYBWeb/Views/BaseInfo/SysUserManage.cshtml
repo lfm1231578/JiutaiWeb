@@ -1,0 +1,74 @@
+﻿@{
+    ViewBag.Title = "系统用户";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+        <div class="mainContentRight_top">
+           <label class="Soliddots">
+                </label>权限组管理 @*<a href="@Url.Content("~/BaseInfo/UserManageEdit")?Type=add&UserID=0" class="addbutton">
+                    新建</a>*@
+        </div>
+        <div class="mainContentRight_bottom clearfix">
+                <div id="tabbox">
+                <ul class="tabs" id="tabs">
+                    <li><a href="#" tab="tab1">PC端权限</a></li>
+                    <li><a href="#" tab="tab2">手机端权限</a></li>
+                   
+                </ul>
+                <ul id="tab_conbox" class="tab_conbox">
+                    <li id="tab1" class="tab_con" style="padding: 2px;">
+                    <iframe src="@Url.Content("~/BaseInfo/CompetenceManage")" href="@Url.Content("~/BaseInfo/CompetenceManage")"  frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px; ">
+                    </iframe>
+                    </li>
+                    <li id="tab2" class="tab_con" style="display: none;">
+                     <iframe src="" href="@Url.Content("~/BaseInfo/CompetenceManageP")"  frameborder="0" style="width:100%;_border:none;border:none;  border:0px; _border:0px; ">
+                    </iframe>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+  <script type="text/javascript">
+
+      jQuery(document).ready(function () {
+          $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 110);
+          //Tab切换
+          $("#tabs  li").click(function () {
+              if ($(this).text() == "系统用户") {
+                  localStorage.setItem("setUser", "pc")
+              } else {
+                  localStorage.setItem("setUser", "moblie")
+              }
+              $("#tabs li").removeClass("thistab");
+              $(this).addClass("thistab");
+              $("#tabs li").children("a").css("color","#666","textShadow", "1px 1px 1px #868686")
+              $(this).children("a").css("color","lightsalmon","textShadow", "1px 1px 1px #868686")
+              $(".tab_con").hide();
+              var index = $(this).parent().find("li").index(this);
+              $("#tab_conbox").find(".tab_con").eq(index).show();
+              var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+              iframe1.attr("src", iframe1.attr("href"));
+          });
+          $("#tabs li:first").addClass("thistab").show();
+          $("#tabs li:first").children("a").css("color", "lightsalmon");
+
+          if (localStorage.getItem("setUser") == "moblie") {
+               $("#tab_conbox").find(".tab_con").eq(0).hide();
+               $("#tab_conbox").find(".tab_con").eq(1).show();
+               var iframe1 = $("#tab_conbox").find(".tab_con").eq(1).find("iframe");
+               iframe1.attr("src", iframe1.attr("href"));
+               $("#tabs li:nth-child(2)").addClass("thistab").show();
+               $("#tabs li:nth-child(2)").children("a").css("color", "lightsalmon");
+               $("#tabs li:first").children("a").css("color", "#666");
+          } else {
+              localStorage.setItem("setUser", "pc");
+          }
+      });
+  
+</script>

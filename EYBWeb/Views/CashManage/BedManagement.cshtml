@@ -1,0 +1,81 @@
+﻿@using HS.SupportComponents;
+@model PagedList<EYB.ServiceEntity.CashEntity.BedManageEntity>
+@{
+    ViewBag.Title = "床位管理";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+   
+
+}
+<style type="text/css">
+    .blockq { width: 20%; margin: 10px; height: 92px; float: left; background: #4DDA34; border: 5px transparent dashed; -moz-border-radius: 10px; -webkit-border-radius: 10px; }
+    .nouse { background: #eee; }
+    /*没有使用中房间的样式*/
+    .yuyue { background: #FFD5AA; }
+    .border { border: 5px #bbb dashed; }
+    .borderwrite { }
+    .BedName { width: 100%; text-align: center; height: 20px; line-height: 20px; font-size: 14px; position: relative; }
+    .aline { width: 100%; line-height: 24px; height: 24px; font-size: 13px; text-align: left; }
+    .spantitle { width: 50px; text-align: right; margin-left: 5px; padding-right: 5px; height: 24px; line-height: 24px; font-size: 13px; }
+    .operationblock { width: 100%; height: 24px; line-height: 24px; background: #DFDFD0; bottom: 0px; display: none; }
+    .buttomheight { width: 100%; height: 24px; line-height: 24px; position: static; bottom: 0px; }
+    #mr_b_t { overflow: auto; }
+    .operationblock span { width: 40px; display: inline-block; text-align: right; }
+    .buycar { position: absolute; right: 0px; top: 0px; font: 0px; color: #fff; }
+    .jiezhang { position: absolute; right: 0px; top: 30px; color: #fff; }
+</style>
+<div id="mainContentBody">
+    @Html.Partial("_CashControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            床位管理
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="">
+            <div id="mr_b_t">
+                @foreach (var info in Model)
+                {
+                
+                    <blockquote class=" @(info.Type == 1 ? "blockq yuyue borderwrite" : (info.Type == 2 ? "blockq  borderwrite" : "blockq nouse borderwrite")) ">
+                        <div class="BedName">
+                            @info.BedName
+                            <a href="javascript:;" onclick="openyuyuelist(@info.ID)" style=" position:relative; right:-30px;" >@(info.Count == 0 ? "" : info.Count.ToString())</a>
+                            <input type="hidden" class="hidval" value="@info.ID|@info.OrderNo|@info.UserID" />
+                        </div>
+                        <div class="aline">
+                            <span class="spantitle"></span>@(info.UserName == null ? "" : info.UserName + (info.MemberNo))
+                        </div>
+                        <div class="aline">
+                            <span class="spantitle"></span>
+                            <label title="@info.Memo">
+                                @EYB.Web.Controllers.CashManageController.outstr(@info.Memo)</label>
+                        </div>
+                        <div class="aline">
+                            <span class="spantitle"></span>
+                            @info.StartTime - @info.EndTime
+                        </div>
+                    </blockquote>
+                  
+                }
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    $(".blockq").dblclick(function () {
+        $(".blockq").removeClass("border");
+        $(this).addClass("border");
+        var hidvar = $(this).find(".hidval").val();
+        art.dialog.open("/CashManage/_Consumer?bedid=" + hidvar.split("|")[0] + "&userid=" + hidvar.split("|")[2] + "&orderno=" + hidvar.split("|")[1], { title: "产品项目", width: 690, height: 470 })
+    })
+    //点击预约人数显示床位预约详情
+    function openyuyuelist(obj) {
+        art.dialog.open("/CashManage/AppointmentList?bedid=" + obj, { title: "预约列表", width: 660, height: 470 })
+    }
+
+
+</script>

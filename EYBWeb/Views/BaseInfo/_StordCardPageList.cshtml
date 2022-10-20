@@ -1,0 +1,82 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.BaseInfo.MainCardEntity>
+@{
+    Layout = null;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+<table class="gridTable " style="width: 99%; border-collapse: collapse;">
+    <thead style="position:absolute;">
+        <tr>
+            <th>
+                卡名称
+            </th>
+            <th>
+                有效期
+            </th>
+            <th>
+                购卡金额
+            </th>
+            <th>
+                是否赠卡
+            </th>
+            <th orderfield="MultiplyingPower" style="display: none;">
+                消耗倍率
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height:40px;"></tr>
+        @foreach (EYB.ServiceEntity.BaseInfo.MainCardEntity entity in Model)
+        { 
+            <tr>
+                <td>@entity.Name
+                </td>
+                <td>@entity.VaildityDay
+                </td>
+                <td>@entity.Price
+                </td>
+                <td>
+                    @(entity.IsGive == 1 ? Html.Raw("<label style='color:red;'>赠卡</label>") : Html.Raw("<label style='color:green;'>非赠卡</label>"))
+                </td>
+                <td style="display: none;">@entity.MultiplyingPower
+                </td>
+                <td>
+                    <a   href="javascript:OpenDailogDetail('Edit',@entity.ID);"   >
+                        编辑</a>&nbsp; <a></a>
+                    
+                     @if (entity.IsActive == 1)
+                     {
+                     <a onclick='delit(@entity.ID, this,0)'>启用</a>
+                     }
+                     else
+                     {
+                     <a onclick='delit(@entity.ID, this,1)'>删除</a>
+                     }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+</form>
+<div style="height:120px;"></div>
+<script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        window.setTimeout(function () {
+        let theadWidth = $(".gridTable tbody").width(); 
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let thLenth = $(".gridTable thead th").length 
+        let tdWidth = (theadWidth / 5) + "px";
+        
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+          
+        }, 1)
+    })
+</script>

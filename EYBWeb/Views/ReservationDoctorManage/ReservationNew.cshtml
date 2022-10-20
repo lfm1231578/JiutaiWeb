@@ -1,0 +1,398 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.PersonnelEntity;
+@{
+    ViewBag.Title = "ReservationNew";
+    var Hid = ViewBag.HospitalID;//门店ID
+    var DocID = Request["DocID"];//本月预约中 点击添加预约传来的值
+    var Date = Request["Date"];//本月预约中 点击添加预约传来的值
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //获取基础字典
+    // var baseinfolist = systemBLL.GetBaseInfoList();
+    //查询所有的美容师
+    IList<HospitalUserEntity> List = personbll.GetAllUserByHospitalID(Hid, 0);
+   
+    
+}
+<div id="mainContentBody">
+    @Html.Partial("_ReservationControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            新建预约</div>
+        <form action="@Url.Content("~/ReservationDoctorManage/AddReservation")" class="formular" method="post" name="myform" id="myform">
+        <div class="mainContentRight_bottom">
+            <input type="hidden" name="UserID" id="UserID" value="0" />
+            <table class="mainContentRight_bottomnewdepart">
+                <tr>
+                    <td style="width: 110px;">
+                        <span class="red">*&nbsp;</span>顾客姓名
+                    </td>
+                    <td>
+                        <input type="text" disabled="disabled" name="UserName" id="UserName" class="text-input" style="float: left;" />
+                        <input type="button" id="btnAddHSUserID" title="如该用户已经登记，请点击此按钮选择直接调取顾客的基本信息" style="float: left;"
+                            class="addsame" onclick="PatientList()" value="点击选择人员" />
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        性别
+                    </td>
+                    <td>
+                        <select id="Sex" name="Sex" class="select">
+                            <option value="0">男</option>
+                            <option value="1">女</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        <span class="red">*&nbsp;</span>身份证号
+                    </td>
+                    <td>
+                        <input type="text" name="CertNo" class="validate[required] text-input input200" id="CertNo" />
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        出生年月
+                    </td>
+                    <td>
+                        <select class="select" name="Y" id="Y" style="width: 70px;">
+                            @{ for (int i = 1910; i < 2020; i++)
+                               { <option   value="@i">@i</option>} }
+                        </select><span style="margin-left: 5px; line-height: 30px;" class="tdspan">年</span><select
+                            class="select" style="width: 55px; margin-left: 5px;" name="M" id="M">@{ for (int i = 1; i <= 12; i++)
+                                                                                                     { <option  value="@i">@i</option>} }
+                        </select><span style="margin-left: 5px; line-height: 30px;" class="tdspan">月</span><select
+                            class="select" style="margin-left: 5px; width: 70px;" name="D" id="D">@{ for (int i = 1; i <= 31; i++)
+                                                                                                     { <option   value="@i">@i</option>} }
+                        </select><span style="margin-left: 5px; line-height: 30px;" class="tdspan">日</span>
+                        <!--  <input type="text" name="Birthday" id="txtBirthday" readonly="readonly" class="text-input Wdate"
+                            onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />-->
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        <span class="red">*&nbsp;</span>手机号码
+                    </td>
+                    <td>
+                        <input type="text" name="Mobile" id="Mobile" class="validate[custom[phone]] text-input" />
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        家庭地址
+                    </td>
+                    <td>
+                        <input type="text" id="Adderss" name="Adderss" class="text-input" />
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        电子邮箱
+                    </td>
+                    <td>
+                        <input type="text" id="Email" name="Email" class="validate[custom[email]] text-input" />
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        获悉方式
+                    </td>
+                    <td>
+                        <input name="Channel" style="display: inline" value="5" type="checkbox" />
+                        <span>朋友介绍</span>&nbsp;&nbsp;&nbsp;<input name="Channel" style="display: inline"
+                            value="1" type="checkbox" /><span>杂志</span> &nbsp;&nbsp;&nbsp;<input name="Channel"
+                                value="2" style="display: inline" type="checkbox" /><span>户外</span> &nbsp;&nbsp;&nbsp;<input
+                                    name="Channel" value="3" style="display: inline" type="checkbox" /><span>互联网</span>
+                        &nbsp;&nbsp;&nbsp;<input name="Channel" value="4" style="display: inline" type="checkbox" /><span>其它</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        来临方式
+                    </td>
+                    <td>
+                        <select name="ComingWay">
+                            <option value="1">主动</option>
+                            <option value="2">被动</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr id="trID">
+                    <td>
+                        <span class="red">*&nbsp;</span>预约美容师
+                    </td>
+                    <td style="line-height: 30px; height: 30px;">
+                        <select name="ReservationUserID" id="ReservationUserID" class="select">
+                            @{ foreach (var D in List)
+                               { <option  value="@D.UserID" @(D.UserID + "" == DocID + "" ? "selected=selected" : "")>@D.UserName</option>}}
+                        </select>
+                        <a id="WorkDay" style="padding-left: 10px; display: block; margin-top: 10px; width: 120px;
+                            float: left;" href="###">预约美容师排班表</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="red">*</span>预约日期
+                    </td>
+                    <td>
+                        <input type="text" class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="ApplyTime" id="ApplyTime" value="@Date"/>
+                    </td>
+                </tr>
+                <tr id="trTime">
+                    <td>
+                        <span class="red">*</span>预约时间段
+                    </td>
+                    <td>
+                        <select class="select" name="StartTime" id="StartTime">
+                            <option value="7:00">7:00</option>
+                            <option value="7:30">7:30</option>
+                            <option value="8:00">8:00</option>
+                            <option value="8:30">8:30</option>
+                            <option value="9:00">9:00</option>
+                            <option value="9:30">9:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                        </select><div style="width: 20px; float: left; line-height: 40px; text-align: center;">
+                            -</div>
+                        <select class="select" name="EndTime" id="EndTime">
+                            <option value="7:00">7:00</option>
+                            <option value="7:30">7:30</option>
+                            <option value="8:00">8:00</option>
+                            <option value="8:30">8:30</option>
+                            <option value="9:00">9:00</option>
+                            <option value="9:30">9:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="14:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        备注
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="Memo" class=" textarea"></textarea>
+                    </td>
+                </tr>
+                <tr style="height: 80px;">
+                    <td>
+                    </td>
+                    <td>
+                        <input style="margin-left: 0px;" type="button" id="btnsave" class="submitbutton2"
+                            value="保 存" /><input class="submitbutton2" onclick="history.go(-1)" type="button"
+                                value="返 回" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery("#myform").validationEngine('attach', {
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentBody",
+            promptPosition: "bottomLeft"
+        });
+
+    });
+    //赋值
+   
+    $("input[type=checkbox][name='InfoName']").click(function(){
+      
+     $(this).parent().siblings("div").find("input[type=checkbox]").attr("checked",false);
+     $("#Tneatment").val($(this).attr("title"));
+   
+    })
+    
+   $("input[type=checkbox][name='Channel']").click(function(){
+      
+     $(this).siblings("input[type=checkbox]").attr("checked",false);
+     
+   
+    })
+ 
+   $(".radios").click(function(){
+
+    if($(this).val()=="1")
+    {
+     $("#trID").hide();
+      $("#WorkDay").hide();
+      
+        $("#trTime").hide();
+    }else
+    {
+      $("#trTime").show();
+     $("#trID").show();
+       $("#WorkDay").show();
+    }
+   
+   })
+
+    //选择顾客赋值
+    function InFoDate(obj) {
+
+     $("input[type=checkbox][name='Channel']").attr("checked",false);
+        $("#UserID").val(obj.split("|")[0]);
+        $("#UserName").val(obj.split("|")[1]);
+        $("#Sex option[value=" + obj.split("|")[2] + "]").attr("selected", "selected");
+        $("#Nationality option[value=" + obj.split("|")[3] + "]").attr("selected", "selected");
+        $("#Adderss").val(obj.split("|")[4]);
+
+        $("#Mobile").val(obj.split("|")[5]);
+
+        $("#Email").val(obj.split("|")[6]);
+        $("#InfoName").val(obj.split("|")[7]);
+       // $("#txtBirthday").val(obj.split("|")[8]);
+          if(obj.split("|")[8]!="")
+          {
+           var bird=obj.split("|")[8];
+             $("#Y option[value=" + bird.split("-")[0] + "]").attr("selected", "selected");
+              $("#M option[value=" + bird.split("-")[1] + "]").attr("selected", "selected");
+           $("#D option[value=" + bird.split("-")[2] + "]").attr("selected", "selected");
+          }
+         $("#CertNo").val(obj.split("|")[9]);
+         $("input[type=checkbox][name='Channel']").each(function(){
+            if($(this).val()==obj.split("|")[10])
+            {
+            $(this).attr("checked",true);
+            return;
+            }
+         })
+      //  $("input[type=checkbox][name='Channel'][value='"+obj.split("|")[10]+"']");  
+         
+    }
+ 
+      //查看美容师预约排期表
+   $("#WorkDay").click(function () {
+        art.dialog.open("/ReservationDoctorManage/ReservationWorkDay?DocID="+$("#ReservationUserID").val(), { title:$("#ReservationUserID").find("option:selected").text()+ "-预约安排表", width: 808, height:560 })
+    })
+
+      //保存
+     $("#btnsave").click(function(){
+        
+          if($("#ApplyTime").val()=="" )
+          {
+           artdialogfail("预约日期不能为空！","");
+            return;
+          }
+          if($("#UserName").val()=="")
+         {
+           
+            artdialogfail("姓名不能为空！","");
+            return;
+         }
+        var obj = new Object();
+        obj.ApplyTime=$("#ApplyTime").val();
+        
+        if(obj.ApplyTime=="")
+          {
+           artdialogfail("请选择预约时间！");
+           return ;
+          }
+     if( $('input[name="IsFirst"]:checked').val()=="0"){
+              if(Date.parse(new  Date(obj.ApplyTime.replace(/-/g,"/")))< Date.parse(new  Date('@DateTime.Now.ToString("yyyy-MM-dd")'.replace(/-/g,"/"))))
+              {
+               artdialogfail("预约时间必须大于当前时间！");
+               return ;
+              }
+             obj.StartTime=$("#StartTime").val();
+             obj.EndTime=$("#EndTime").val();
+              if((parseInt(obj.StartTime.split(':')[0])==parseInt(obj.EndTime.split(':')[0])) && parseInt(obj.StartTime.split(':')[1])>=parseInt(obj.EndTime.split(':')[1]))
+              {
+                artdialogfail('预约结束时段必须大于预约开始时段！')
+                return ;
+              }  
+              if("@(DateTime.Now.ToString("yyyy-MM-dd"))"==obj.ApplyTime)
+              {
+                  if((parseInt(obj.StartTime.split(':')[0])<parseInt("@DateTime.Now.Hour")))
+                  {
+                    artdialogfail('预约开始时段必须大于当前时间！')
+                    return false;
+                  } 
+                   if((parseInt(obj.StartTime.split(':')[0])==parseInt("@DateTime.Now.Hour")) && parseInt(obj.StartTime.split(':')[1])>=parseInt("@DateTime.Now.Minute"))
+                  {
+                    artdialogfail('预约开始时段必须大于当前时间！')
+                    return false;
+                  } 
+             
+              }
+               if(parseInt(obj.StartTime.split(':')[0])>parseInt(obj.EndTime.split(':')[0]))
+                {
+                artdialogfail('预约结束时段必须大于预约开始时段！')
+                return false;
+                }  
+
+            }
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "@Url.Content("~/ReservationDoctorManage/AddReservation")",
+                data: $('#myform').serialize(), // 你的formid
+                async: false,
+                error: function (request) {
+                    artdialogfail("哎哟、出错了！GPS管理员来灭火。");
+                },
+                success: function (data) {
+                 if(data>0){
+                        artdialog("预约成功！","/ReservationDoctorManage/ReservationDoctorPage");
+                   }else if(data==-1){
+                        artdialogfail("您" + $("#ApplyTime").val() + "日已预约，不能重复预约！");
+                   }else if(data==-2)
+                   {
+                        artdialogfail(" 当前美容师" + $("#ApplyTime").val() + "日预约人数已满，请选择其他日期！");
+                   }else if(data==-3)
+                   {
+                        artdialogfail(" 当前美容师"+ $("#ApplyTime").val() + "休假，请选择其他日期！");
+                   } 
+                    else{
+                        artdialogfail("预约失败！");
+                   }
+                }
+            });
+     });
+</script>

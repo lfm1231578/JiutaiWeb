@@ -1,0 +1,88 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.ReservationEntity;
+@model PagedList<ReservationEntity>
+@{
+    ViewBag.Title = "回复记录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var UserID = Request["UserID"];
+    var ReservationID = Request["ReservationID"];
+
+}
+<div id="mainContentBody">
+    @Html.Partial("_ReservationControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            回访记录 (<span>@Model.TotalItemCount</span>)</div>
+        <div class="mainContentRight_bottom" style="position: relative;">
+            @using (Ajax.BeginForm("ReservationReVisit", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+            {
+                <input type="hidden" name="UserID" value="@UserID" />
+                <div style="margin-top: 15px; height: 30px; color: #666">
+                    <span style="margin-left: 15px;">预约编号：</span>
+                    <input type="text" name="Reservationnumber" id="Reservationnumber" style="width: 130px" value="" />
+                    <span>预约时间：</span>
+                    <input type="text" name="ApplyTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                        id="ApplyTime" style="width: 130px" />
+                    <input type="submit" value="查询" id="GoSelect" />
+                </div>  
+            }
+            <div id="articles">
+                @Html.Partial("_ReservationReVisit", Model)
+            </div>
+              <input  type="button" value="添 加" onclick="showPlan()"  class="submitbutton2"/>
+              <input  type="button" value="返 回" onclick="history.go(-1)"  class="submitbutton2"/>
+        </div>
+    </div>
+</div>
+<div id="PlanCase" style="display: none; width: 400px; height: 230px">
+    <div>
+        <textarea  style=" height:180px; width: 98%" id="Pcontent"></textarea></div>
+    <div style="text-align: center;margin:10px;padding-left:100px;">
+        <input type="button" class="submitbutton2" id="btnsave" value="保 存" />
+        <input type="button" class="submitbutton2" onclick="DivClose()" value="取 消" />
+     </div>
+</div>
+@{Html.RegisterMvcPagerScriptResource();}
+<script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+<script type="text/javascript" >
+  
+    //弹出框
+    var dialog;
+    function showPlan() {
+        dialog = art.dialog({
+            title: '添加回访记录',
+            content: document.getElementById('PlanCase')
+        });
+    }
+    function DivClose() {
+        dialog.close();
+    }
+    //保存记录
+    var UserID="@UserID";
+    var ReservationID="@ReservationID";
+    $("#btnsave").click(function () { 
+    var memo = $("#Pcontent").val();
+    if(memo=="")
+    {
+       artdialogfail("回访记录不能为空!");return;
+    }
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/ReservationDoctorManage/AddReservationRevisit")",
+            data:{Memo:memo,UserID:UserID,ReservationID:ReservationID},
+            success: function (data)
+             {
+               if(data>0)
+               {
+                 artdialog("保存成功!");
+                 DivClose();
+                }else{
+                 artdialogfail("保存失败!");
+                }
+              }
+        });
+    });
+</script>

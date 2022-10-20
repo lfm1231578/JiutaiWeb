@@ -1,0 +1,768 @@
+﻿@using EYB.ServiceEntity.WarehouseEntity;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<StockOrderInfo>
+@{
+    ViewBag.Title = "订单详情";
+    Layout = null;
+    var id = Request["ID"];
+    WarehouseManage.Factory.IBLL.IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<WarehouseManage.Factory.IBLL.IWarehouseManageBLL>();
+    var buyorder = wareBll.GetStockOrderModel(new StockOrderEntity { ID = Convert.ToInt32(id) });
+    var bnum = 0;
+}
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+<script src="../../Scripts/Print/LodopFuncs.js" type="text/javascript"></script>
+<style type="text/css">
+    .title
+    {
+        line-height: 40px;
+        text-align: center;
+    }
+
+    .ltitle
+    {
+        display: inline-block;
+        float: right;
+        text-align: center;
+        margin-right: 10px;
+    }
+
+    .ltitle label
+    {
+        font-style: inherit;
+        color: Red;
+    }
+
+    .toptable
+    {
+        border-collapse: collapse;
+        border: none;
+        width: 100%;
+        background: #eee;
+        margin: 0 auto;
+    }
+
+    .toptable td
+    {
+        border: solid #fff 1px;
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+    }
+
+    .toptable tr td:nth-child(1n)
+    {
+        text-align: right;
+
+        padding: 0px 5px 0px 25px;
+    }
+
+    .toptable tr td:nth-child(2n)
+    {
+        text-align: left;
+        padding: 0px 25px 0 5px;
+    }
+
+    .line
+    {
+        width: 100%;
+        display: block;
+    }
+
+    .clear
+    {
+        clear: both;
+    }
+</style>
+<body style="background: #fff;">
+    <div class="mainContentRight">
+        <div class="line">
+            <table class="toptable">
+                <tr>
+                    <td style="text-align: right;">
+                        单号:
+                    </td>
+                    <td style="text-align: center;" colspan="4">
+                        <input type="hidden" name="hidID" class="hidID" value="@buyorder.ID" />
+                        @(buyorder.OrderNo + "(关联单据:" + buyorder.VerifyMemo + ")")
+                    </td>
+                    <td style="text-align: right;">
+                        订单状态:
+                    </td>
+                    <td style="text-align:center;" @(buyorder.IsVerify == 1 ? "style=color:red;" : "style=color:Olive;") >@EYB.Web.Code.PageFunction.BuyOrderType(buyorder.IsVerify)
+                        (@buyorder.VerifyTime)
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        业务员:
+                    </td>
+                    <td style="text-align: center;">@buyorder.UserName
+                    </td>
+                    <td style="text-align: right;">
+                        备注:
+                    </td>
+                    <td style="text-align: center;">@buyorder.Memo
+                    </td>
+                    <td style="text-align: right;">
+                        操作原因:
+                    </td>
+                    <td style="text-align: center;">@buyorder.BaseShow
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        单据类别:
+                    </td>
+                    <td style="text-align: center;">@EYB.Web.Code.PageFunction.OrderType(buyorder.Type)
+                    </td>
+                    <td style="text-align: right;">
+                        实付金额:
+                    </td>
+                    <td style="text-align: center;">@buyorder.AllMoney
+                    </td>
+                    <td style="text-align: center;">
+                        总计数量
+                    </td>
+                    <td style="text-align: center;">@buyorder.AllQuatity
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right;">
+                        备注:
+                    </td>
+                      <td  colspan="6">
+                         @buyorder.Memo
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="line">
+            <table class="gridTable" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th>
+                            品牌
+                        </th>
+                        <th>
+                            所在仓库
+                        </th>
+                        <th>
+                            产品名称
+                        </th>
+                        <th>
+                            数量
+                        </th>
+                        <th>
+                            调拨到的仓库
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var info in Model)
+                    {
+@*if (bnum % 20 == 0)
+                        {
+                          <tr style="page-break-before:always;">
+                            </tr>
+                        <tr>
+                            <td>
+                                @info.ProductName
+                            </td>
+                            <td>@info.BrandName
+                            </td>
+                            <td>@info.Housename
+                            </td>
+                            <td>@info.Number
+                            </td>
+                            <td>@info.TransferHouseName
+                             </td>
+                        </tr>
+
+                        }
+                        else if (bnum % 20 == 19)
+                        {
+                            <tr style="page-break-after:always;">
+                            </tr>
+                            <tr>
+                            <td>
+                                @info.ProductName
+                            </td>
+                            <td>@info.BrandName
+                            </td>
+                            <td>@info.Housename
+                            </td>
+                            <td>@info.Number
+                            </td>
+                            <td>@info.TransferHouseName
+                             </td>
+                            </tr>
+
+                        }
+                        else
+                        {
+                        *@<tr>
+                            <td>@info.BrandName
+                            </td>
+                            <td>@info.Housename
+                            </td>
+                            <td>
+                                @info.ProductName
+                            </td>
+                            <td>@info.Number
+                            </td>
+                            <td>@info.TransferHouseName
+                            </td>
+                        </tr>
+@* }*@
+                    }
+                </tbody>
+            </table>
+        </div>
+        @if (buyorder.Type == 2)
+        {
+
+            if (buyorder.IsVerify == 1)
+            {
+
+            <a href="#" class="ruku submitbutton2" onclick="CRK('@buyorder.OrderNo.ToString()')">
+                审核</a>
+            <a href="@Url.Content("~/WarehouseManage/RukuEdit?ID=" + buyorder.ID)" class="submitbutton2">
+                编辑</a>
+            <a href="#" class="chexiao submitbutton2" onclick="chexiao2('@buyorder.ID')">撤销</a>
+
+            }
+
+        }
+        else if (buyorder.Type == 1)
+        {
+
+            if (buyorder.IsVerify == 1)
+            {
+
+            <a href="#" class="ruku submitbutton2" onclick="CK('@buyorder.OrderNo.ToString()')">审核</a>
+            <a href="@Url.Content("~/WarehouseManage/ChukuEdit?ID=" + buyorder.ID)" class="submitbutton2">
+                编辑</a>
+            <a href="#" class="chexiao submitbutton2" onclick="chexiao1('@buyorder.ID')">撤销</a>
+            }
+
+        }
+        else if (buyorder.Type == 3)
+        {
+
+            if (buyorder.IsVerify == 1)
+            {
+                if (buyorder.HospitalID == ViewBag.HospitalID && buyorder.IsVerify == 1)
+                {
+            <a class="submitbutton2" href="@Url.Content("~/WarehouseManage/DiaoboEdit")?ID=@buyorder.ID">
+                编辑</a>
+            <a href="#" class="chexiao submitbutton2" onclick="chexiao3('@buyorder.ID')">撤销</a>
+            <a href="#" class="ruku submitbutton2" onclick="Diaoboconfirm('@buyorder.OrderNo.ToString()')">
+                调拨确认</a>
+                }
+                else if (buyorder.HospitalID == ViewBag.HospitalID)
+                {
+            <a href="#" class="chexiao submitbutton2" onclick="chexiao3('@buyorder.ID')">撤销</a>
+                }
+
+            }
+            else if (buyorder.IsVerify == 4)
+            {
+                if (buyorder.DiaoHospitalID == ViewBag.HospitalID && buyorder.IsVerify == 4)
+                {
+            <a href="#" class="ruku submitbutton2" onclick="CR('@buyorder.OrderNo.ToString()')">
+                调拨调入</a>
+                }
+                if (buyorder.HospitalID == ViewBag.HospitalID)
+                {
+            <a href="#" class="chexiao submitbutton2" onclick="chexiao4('@buyorder.ID')">撤销</a>
+                }
+            }
+
+        }
+        else if (buyorder.Type == 5)
+        {
+
+            if (buyorder.IsVerify == 1)
+            {
+            <a href="#" class="ruku submitbutton2" onclick="YuFushenhe('@buyorder.OrderNo.ToString()')">
+                审核</a>
+            }
+        }
+        <input type="button" class="submitbutton2" onclick="Preview1()" style="float: none;"
+            value="打 印" />
+    </div>
+    <div id="HidTab" style="display: none;">
+        <table id="hidt1" class="" style="border: 0px; width: 610px; font-size: 14px; margin: 0 auto;
+            margin-top: 5px; border-collapse: collapse;">
+            <thead id="" style="border: 0px;">
+                <tr style="line-height: 35px;">
+                    <td colspan="4" style="width: 610px; text-align: center; font-size: 22px;">
+                        @buyorder.Housename<span style="font-size: 14px;">(@EYB.Web.Code.PageFunction.OrderType(buyorder.Type)单)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        单据编号:
+                    </td>
+                    <td style="text-align: left; width: 300px; line-height: 20px; border: 0px;">
+                        @buyorder.OrderNo
+                        @(buyorder.Type == 3 ? "(" + buyorder.ShowDocumentNumber + ")" : "")
+                    </td>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        日期:
+                    </td>
+                    <td style="text-align: left; width: 140px; line-height: 20px; border: 0px;">
+                        @buyorder.OrderTime.ToString("yyyy-MM-dd HH:mm:ss")
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        单据序号:
+                    </td>
+                    <td style="text-align: left; width: 300px; line-height: 20px; border: 0px;">
+                        @buyorder.DocumentNumber
+                    </td>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        类型:
+                    </td>
+                    <td style="text-align: left; width: 140px; line-height: 20px; border: 0px;">
+                        @EYB.Web.Code.PageFunction.GetClassName(buyorder.Class, buyorder.Type)
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align: right; line-height: 20px; width: 80px;">
+                        备注:
+                    </td>
+                    <td style="width: 300px;">
+                        @buyorder.Memo
+                    </td>
+                    <td style="text-align: right; width: 80px; line-height: 20px; border: 0px;">
+                        操作人:
+                    </td>
+                    <td style="text-align: left; width: 140px; line-height: 20px; border: 0px;">
+                        @buyorder.UserName
+                    </td>
+                </tr>
+                @if (buyorder.Type > 2 && Model.Any())
+                {
+                    <tr>
+                        <td style="text-align: right; line-height: 20px; width: 80px;">
+                            调至仓库:
+                        </td>
+                        <td style="text-align: left; line-height: 20px; width: 300px;">
+                            @Model[0].TransferHouseName
+                        </td>
+                        <td style="text-align: right; line-height: 20px; width: 80px;">
+                        </td>
+                        <td style="text-align: left; line-height: 20px; width: 140px;">
+                        </td>
+                    </tr>
+                }
+            </thead>
+        </table>
+        @*@if (ViewBag.HospitalID == 1144)*@
+        @if (ViewBag.HospitalID == 1144)
+        {
+
+            <table id="hidt2" style="border: 2px solid #ccc; border-collapse: collapse; font-size: 14px;
+            width: 610px; margin: 0 auto; margin-top: 5px; border-collapse: collapse;">
+                <tbody style="">
+                    <tr style="line-height: 20px; background: #999;">
+                        <th style="wdith: 140px;"  colspan="2">
+                            产品名称
+                        </th>
+                        <th style="wdith: 120px;"  colspan="2">
+                            品牌
+                        </th>
+                        <th style="wdith: 210px;" >
+                            数量
+                        </th>
+                    </tr>
+                    @foreach (var info in Model)
+                    {
+                        <tr style="line-height: 20px;">
+                            <td style="wdith: 140px; text-align: center; border: 2px solid #ccc;" colspan="2" >
+                                @info.ProductName
+                            </td>
+                            <td style="wdith: 120px; text-align: center; border: 2px solid #ccc;"  colspan="2">
+                                @info.BrandName
+                            </td>
+                            <td style="wdith: 210px; text-align: center; border: 2px solid #ccc;" >
+                                @info.Number
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot style="border: 2px solid #ddd;">
+                    <tr style="line-height: 20px; border: 2px solid #ccc;">
+                        <td colspan="4" style="text-align: right; border: 2px solid #ccc;">
+                            合计:
+                        </td>
+                        <td style="text-align: center; border: 2px solid #ccc;">
+                            @buyorder.AllQuatity
+                        </td>
+                    </tr>
+                    <tr style="height: 22px; line-height: 20px;">
+                        <td>
+                        </td>
+                        <td style="text-align: right;">
+                            审核人:
+                        </td>
+                        <td style="text-align: left;">
+                            __________________
+                        </td>
+                        <td style="text-align: right;">
+                            提货人:
+                        </td>
+                        <td style="text-align: left;">
+                            __________________
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+        else
+        {
+            <table id="hidt2" style="border: 2px solid #ccc; border-collapse: collapse; font-size: 14px;
+            width: 610px; margin: 0 auto; margin-top: 5px; border-collapse: collapse;">
+                <tbody style="">
+                    <tr style="line-height: 20px; background: #999;">
+                        <th style="wdith: 140px;">
+                            产品名称
+                        </th>
+                        <th style="wdith: 120px;">
+                            品牌
+                        </th>
+                        <th style="wdith: 120px;">
+                            单价
+                        </th>
+                        <th style="wdith: 110px;">
+                            数量
+                        </th>
+                        <th style="wdith: 120px;">
+                            合计金额
+                        </th>
+                    </tr>
+                    @foreach (var info in Model)
+                    {
+                        <tr style="line-height: 20px;">
+                            <td style="wdith: 140px; text-align: center; border: 2px solid #ccc;">
+                                @info.ProductName
+                            </td>
+                            <td style="wdith: 120px; text-align: center; border: 2px solid #ccc;">
+                                @info.BrandName
+                            </td>
+                            <td style="wdith: 120px; text-align: center; border: 2px solid #ccc;">
+                                @info.RetailPrice
+                            </td>
+                            <td style="wdith: 110px; text-align: center; border: 2px solid #ccc;">
+                                @info.Number
+                            </td>
+                            <td style="wdith: 120px; text-align: center; border: 2px solid #ccc;">
+                                @(info.Number * info.RetailPrice)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot style="border: 2px solid #ddd;">
+                    <tr style="line-height: 20px; border: 2px solid #ccc;">
+                        <td colspan="3" style="text-align: right; border: 2px solid #ccc;">
+                            合计:
+                        </td>
+                        <td style="text-align: center; border: 2px solid #ccc;">
+                            @buyorder.AllQuatity
+                        </td>
+                        <td style="text-align: center; border: 2px solid #ccc;">
+                            @buyorder.AllMoney
+                        </td>
+                    </tr>
+                    <tr style="height: 22px; line-height: 20px;">
+                        <td>
+                        </td>
+                        <td style="text-align: right;">
+                            审核人:
+                        </td>
+                        <td style="text-align: left;">
+                            __________________
+                        </td>
+                        <td style="text-align: right;">
+                            提货人:
+                        </td>
+                        <td style="text-align: left;">
+                            __________________
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        }
+    </div>
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width="0"
+        height="0">
+        <embed id="LODOP_EM" type="application/x-print-lodop" width="0" height="0"></embed>
+    </object>
+</body>
+<script type="text/javascript">
+    function CRK(obj) {
+        if (obj != null && confirm("是否入库?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "RukuXamine?OrderNo=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    } else {
+
+                        artdialogfail("操作失败！请检查仓库库存是否足够!");
+                    }
+
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+    function CK(obj) {
+        if (obj != null && confirm("是否出库?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "ChukuXamine?OperateType=@buyorder.BaseShow&OrderNo=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    } else if (data = -1) {
+                        artdialog("操作失败!请检查库存数量!");
+                    }
+                    else {
+                        artdialog("操作失败!");
+                    }
+
+
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+    function CR(obj) {
+        if (obj != null && confirm("是否调拨?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "DiaoboXamine?OrderNo=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    } else {
+                        artdialogfail("操作失败！请检查仓库库存是否足够!");
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+    function Diaoboconfirm(obj) {
+        if (obj != null && confirm("是否确认调拨?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "DiaoboConfirm?OrderNo=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+
+                        artdialog("操作成功！");
+                        closeed();
+                    } else {
+                        artdialogfail("操作失败！请检查仓库库存是否足够或者是否入库!");
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+
+
+
+
+
+
+    function YuFushenhe(obj) {
+        if (obj != null && confirm("是否审核?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "YuFuXamine?OrderNo=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data = 9) {
+                        artdialogfail("库存不足！");
+                    } else {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+
+    function chexiao4(obj) {
+        if (obj != null && confirm("确认是否撤销确认调拨单据?撤消后库存可以重新加入库存")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "DiaoBocancel?ID=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+
+    function chexiao3(obj) {
+        if (obj != null && confirm("确认是否撤销单据?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "ChexiaoOrder?ID=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+    function chexiao2(obj) {
+        if (obj != null && confirm("确认是否撤销单据?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "ChexiaoOrder?ID=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+    function chexiao1(obj) {
+        if (obj != null && confirm("确认是否撤销单据?")) {
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("WarehouseManage", "ChexiaoOrder?ID=" + obj.toString()),
+                data: $('#myform').serialize(),
+                async: false,
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    }
+
+
+    //打印
+    var LODOP; //声明为全局变量
+    function Preview1() {
+        LODOP = getLodop(document.getElementById('LODOP_OB'), document.getElementById('LODOP_EM'));
+        // LODOP.PRINT_INITA(0, 0, 580, 333, "自定义纸张1");
+        LODOP.PRINT_INIT("自定义纸张");
+        //         document.getElementById('W1').value;
+        //LODOP.SET_PRINT_PAGESIZE(3, 2479, 3508, "A4");
+        LODOP.SET_PRINT_PAGESIZE(1, 0, 0, "A4");
+        LODOP.SET_PRINTER_INDEXA(-1); //指定打印机
+        LODOP.SET_PRINT_MODE("RESELECT_PAGESIZE", true);
+
+        AddPrintContent();
+
+        LODOP.PREVIEW();
+    };
+    function AddPrintContent() {
+
+        LODOP.ADD_PRINT_HTM(30, "5%", "90%", "90%", document.getElementById("HidTab").innerHTML);
+        LODOP.NewPageA();
+        //LODOP.ADD_PRINT_HTM(30, 80, "90%", 20, document.getElementById("HidTab").innerHTML);
+
+        var trheight = ($("#hidt2 tr").length + $("#hidt1 tr").length) * 35;
+        //        $("#hidt2 tr").each(function (i) {
+        //            trheight += $(this).height();
+        //        })
+        //         $("#hidt1 tr").each(function (i) {
+        //            trheight += $(this).height();
+        //        })
+
+        // LODOP.ADD_PRINT_TEXT(60 + trheight, 200, 580, 20, "审核人:_________________");
+        //LODOP.ADD_PRINT_TEXT(60 + trheight, 60, 580, 20, "提货人：______________");
+    }
+
+
+</script>

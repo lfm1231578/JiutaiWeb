@@ -1,0 +1,116 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.PersonnelEntity;
+@{
+    ViewBag.Title = "权限编辑";
+    SystemManage.Factory.IBLL.ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL PersonnelManageBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    var ID = Request["ID"];
+    var VersionID = ViewBag.VersionID;
+
+    // Layout = null;
+    //获取所有的菜单
+    var list = PersonnelManageBLL.SelectVersionRightList(VersionID);
+    var menulist = systemBLL.GetMenuList(1, 999);
+    var newmenulist = new List<EYB.ServiceEntity.SystemEntity.UIControlEntity>();
+    foreach (var info in list)
+    {
+        var menlist = menulist.Where(i => i.UIControlID.ToString().ToUpper() == info.UIControlID).ToList();
+        if (menlist.Count > 0)
+        {
+            newmenulist.Add(menlist[0]);
+        }
+    }
+    //获取员工的权限
+    var rightlist = PersonnelManageBLL.SelectVersionRightList(Convert.ToInt32(ID)).Select(s => s.UIControlID).ToList();
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots"></label>
+            权限编辑
+        </div>
+        <div class="mainContentRight_bottom">
+            <form action="@Url.Content("~/BaseInfo/EditCompetence")" method="post" id="submitform">
+                <input type="hidden" value="@ID" name="ID" />
+                @foreach (var menu in menulist.Where(c => c.ParentUIControlID == new Guid("BEF5CCF2-18C0-46a6-9B91-E984BEB9BFEF")))
+                {
+                    <div class="container">
+                        <div style="margin-top: 5px;">
+                            <input type="checkbox" @( rightlist.Contains(menu.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") class="selectbox" value="@menu.UIControlID" name="UIControlID" style="float:left;height:10px;line-height:10px;" />@menu.UIControlName
+                        </div>
+                        <div class="menuDiv clearfix">
+                            <ul>
+                                @foreach (var menuinfo in newmenulist.Where(c => c.ParentUIControlID == menu.UIControlID))
+                                {
+                                    <li>
+                                        <input type="checkbox" class="selectboxchild" @( rightlist.Contains(menuinfo.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") value="@menuinfo.UIControlID" name="UIControlID" style="float:left;" />@menuinfo.UIControlName
+                                        @{
+                                            var childsubList1 = newmenulist.Where(c => c.ParentUIControlID == menuinfo.UIControlID).ToList();
+                                            foreach (var childmenuinfo in childsubList1.Where(c => c.ParentUIControlID == menuinfo.UIControlID))
+                                            {
+                                            <li>
+                                                (
+                                                <input type="checkbox" value="@childmenuinfo.UIControlID" @(rightlist.Contains(childmenuinfo.UIControlID.ToString().ToUpper()) ? "checked=checked" : "") name="UIControlID" style="float:left;" />@childmenuinfo.UIControlName
+                                                )
+                                            </li>
+                                            }
+                                        }
+                                        </li>
+                                            }
+                            </ul>
+                        </div>
+                    </div>
+                                            }
+                <div class="clearfix" style="margin-top:10px; margin-bottom:30px;">
+                    <input style="margin-bottom: 20px;" type="button" class="submitbutton2" id="btnsave"
+                           value="保 存" />
+                    <input type="button" style="margin-bottom: 20px;" class="submitbutton2"
+                           onclick="history.go(-1)" value="取 消" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    //复选框选择事件
+    $(".selectbox").click(function () {
+        if ($(this).prop("checked") == false) {
+            $(this).parent().parent().find("input").each(function () {
+                this.checked = false;
+            });
+
+        } else {
+            $(this).parent().parent().find("input").each(function () {
+                this.checked = true;
+            });
+        }
+    });
+    // 子类选择事件
+    $(".selectboxchild").click(function () {
+        if ($(this).prop("checked") == true) {
+            $(this).parent().parent().parent().parent().find(".selectbox").attr("checked", "checked");
+        }
+    });
+
+    $("#btnsave").click(function () {
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("BaseInfo", "EditCompetence"),
+            //async: false,
+            data: $('#submitform').serialize(), // 你的formid
+            error: function (request) {
+                artdialogfailTwo("操作失败！", "", "250", "100");
+            },
+            success: function (data) {
+
+                if (data != null) {
+                    artdialog("操作成功！", "@Url.Content("~/BaseInfo/CompetenceManage")", "250", "100");
+                } else {
+                    artdialogfailTwo("操作失败,！", "", "250", "100");
+                }
+            }
+        });
+    });
+
+</script>

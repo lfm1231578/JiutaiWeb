@@ -1,0 +1,219 @@
+﻿@{
+
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopProject);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopFenhongFangan);
+    bool result3 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopGudongList);
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopSendActivity);
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopGudongZengka);
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopHuizongfenxi);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopGudongAllFenhong);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopGudongZhaomu);
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopGudongGongxian);
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopGudongFenhongRecord);
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ShareShopTixianRecord);
+    bool result12 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.ShareShop_ZengKaRecords);
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <a style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+        </a><span>共享店铺</span>
+    </div>
+
+    <div id="mainContentLeft_bottom">
+        <ul>
+            @if (result1)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopProject")" onclick='CheckRight(this, "@result1")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        设置分红项目
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result2)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopDividendScheme")" onclick='CheckRight(this, "@result2")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        设置分红方案
+                        <label>
+                        </label>
+                    </a>
+
+                </li>
+            }
+            @if (result3)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopGudongGuanli")" onclick='CheckRight(this, "@result3")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东管理
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result4)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopGudongHuodong")" onclick='CheckRight(this, "@result4")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        给股东发送活动
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result5)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopGuDongZengKa") " onclick='CheckRight(this, "@result5")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东赠卡
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result6)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopHuizongfenxi")" onclick='CheckRight(this, "@result6")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        汇总分析
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result7)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopGudongAllFenhong")" onclick='CheckRight(this, "@result7")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东分红汇总
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result8)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopGudongZhaomu")" onclick='CheckRight(this, "@result8")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东招募报表
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result9)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareholderNetworking")" onclick='CheckRight(this, "@result9")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东发展人脉记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result8)
+            {
+                <li redirect="@Url.Content("~/ShareShop/gudonggongxian")" onclick='CheckRight(this, "@result8")'>
+
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东贡献报表
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result9)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopGudongFenhongRecord")" onclick='CheckRight(this, "@result9")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东分红记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result10)
+            {
+                <li redirect="@Url.Content("~/ShareShop/IntroducingRecords")" onclick='CheckRight(this, "@result10")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        介绍分红记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result11)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ShareShopTixianRecord")" onclick='CheckRight(this, "@result11")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        提现记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result12)
+            {
+                <li redirect="@Url.Content("~/ShareShop/ZengKaRecords")" onclick='CheckRight(this, "@result12")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        赠卡记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+            @if (result12)
+            {
+                <li redirect="@Url.Content("~/ShareShop/MarginRechargeRecord")" onclick='CheckRight(this, "@result12")'>
+                    <span style="background: #fff url('../../Content/themes/default/images/menu/icon1.jpg')  11px -260px no-repeat;">
+                    </span>
+                    <a style="cursor: pointer; ">
+                        股东保证金充值记录
+                        <label>
+                        </label>
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    //登录回车事件
+    $(document).keydown(function (event) {
+        if (event.keyCode == 13 || event.keyCode == 32) {
+            if ($.trim($(".searchInput").val()) != "" && $(".searchInput").val() != "搜索") {
+                document.getElementById("submitform").submit();
+            }
+        }
+    });
+
+</script>

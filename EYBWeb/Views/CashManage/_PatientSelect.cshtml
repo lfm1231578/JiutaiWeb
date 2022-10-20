@@ -1,0 +1,61 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "_PatientSelect";
+    //顾客ID
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+    //获取用户账户信息
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+
+    var entity = cashBll.GetAllBalance(new EYB.ServiceEntity.CashEntity.MainCardBalanceEntity { UserID = UserID });
+}
+    <div class="accountdiv" style="margin-top: 5px;">
+        <input type="hidden" id="labuserid" name="UserID" value="@UserID" />
+        <input type="hidden" id="laballPrice" name="Price" value="0" />
+        <input type="hidden" id="OldOrderNo" name="OldOrderNo" value="" />
+        <input type="button" class="submitbutton2 ymxButtonMT" style="margin-left: 0px;" onclick="PatientList()"
+               value="选择客户" />
+        <label style="font-weight: normal;">
+            &nbsp; 客户卡号：
+        </label>
+        <label id="labMemberNo">
+            @entity.MemberNo
+        </label>
+        <label style="font-weight: normal;">
+            客户姓名：
+        </label><a id="labUserName" style="color: Blue;" href="#">@entity.UserName</a>
+        <label style="font-weight: normal;">
+            &nbsp; 结余金额：
+        </label>
+        <label id="labPrice">
+            @entity.Price
+        </label>
+        <label style="font-weight: normal;">
+            &nbsp; 结余次数：
+        </label>
+        <label id="labTiems">
+            @entity.Tiems
+        </label>
+        <label style="font-weight: normal;">
+            &nbsp; 欠款总额：
+        </label>
+        <label id="">
+            <span id="labQinakuan" style="color: Blue;">@entity.AllPrice</span>
+        </label>
+        <label style="font-weight: normal; position: relative;">
+            &nbsp; 储值卡余额：
+            <div id="txtchuzhishow1" style="position: absolute; display: none; top: -5px; z-index: 999999;
+            left: 0px; background-color: #fff;">
+            </div>
+        </label>
+        <label id="labChuzhi" style="color:blue;">
+            0
+        </label>
+        &nbsp;  积分： <span id="labjifen" style="color:blue;"></span>
+    </div>
+<script type="text/javascript">
+    //打开顾客详情1
+    function OpenPatientDetail(obj, type) {
+        art.dialog.open("/PatientManage/PatientDetailControl?type=" + type + "&UserID=" + obj, { title: "@entity.UserName 顾客详情", width: 1100, height: 640 });
+    }
+</script>

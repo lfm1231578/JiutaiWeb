@@ -1,0 +1,109 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ActivityEntity.ActivityRewardEntity>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+    margin: 0px; width: 100%;" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>
+                        姓名
+                    </th>
+                    <th>
+                        手机
+                    </th>
+                    <th style="display: none;">
+                        卡号
+                    </th>
+                    <th>
+                        微信昵称
+                    </th>
+                    <th>
+                        积客奖励
+                    </th>
+                    <th>
+                        订单号
+                    </th>
+                    <th>
+                        活动名称
+                    </th>
+                    <th>
+                        券号
+                    </th>
+                    <th>
+                        带动营业额
+                    </th>
+                    <th>
+                        分享对象
+                    </th>
+                    <th>
+                        手机号
+                    </th>
+                    <th>
+                        奖励时间
+                    </th>
+                    <th>
+                        消费门店
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+
+                    <tr class="ableclick">
+                        <td>
+                            @entity.CustomerName
+                        </td>
+                        <td>
+                            @entity.Mobile
+                        </td>
+                        <td style="display: none;">
+                            @entity.CardNo
+                        </td>
+                        <td>
+                            @entity.WxNickname
+                        </td>
+                        <td>
+                            @entity.Amount
+                        </td>
+                        <td>
+                            @entity.OrderNo
+                        </td>
+                        <td>
+                            @entity.ActivityName
+                        </td>
+                        <td>
+                            @entity.CouponNo
+                        </td>
+                        <td>
+                            @entity.Revenue
+                        </td>
+                        <td>
+                            @entity.ShareObjUser
+                        </td>
+                        <td>
+                            @entity.ShareObjMobile
+                        </td>
+                        <td>
+                            @entity.RewardTime
+                        </td>
+                        <td>
+                            @entity.ExpendHospital
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>

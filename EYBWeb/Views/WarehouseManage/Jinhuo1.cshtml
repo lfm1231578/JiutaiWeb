@@ -1,0 +1,481 @@
+﻿@model PagedList<EYB.ServiceEntity.WarehouseEntity.ProductStockEntity>
+@{
+    ViewBag.Title = "库存进货单1";
+    Layout = null;
+    WarehouseManage.Factory.IBLL.IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<WarehouseManage.Factory.IBLL.IWarehouseManageBLL>();
+    SystemManage.Factory.IBLL.ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);//查询门店美容师
+    persoList = persoList.Where(i => i.IsSys != 1).ToList();
+    //仓库列表
+    var cangku = wareBll.GetWarehouseList(new EYB.ServiceEntity.WarehouseEntity.WarehouseEntity { HospitalID = ViewBag.HospitalID });//获取仓库列表
+
+    var zhifu = wareBll.GetPaymentList();//支付方式  
+    var brandlist = wareBll.GetBrandListNoPage(ViewBag.ParentHospitalID);//获取品牌列表
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_采购进货成本价);
+}
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+<style>
+    .text-input { color: #555; padding: 4px; border: 1px solid #B5B8C8; font-size: 14px; margin-top: 4px; height: 28px; width: 110px; }
+</style>
+<body style="background: #fff; overflow-x: hidden;">
+    <form method="post" action="#" id="myform2">
+    <table class=" condition">
+        <tr>
+            <td class="tdright">
+                单位名称：
+            </td>
+            <td style="width: 400px;">
+                <input type="hidden" name="SupplierID" class="SupplierID" value="" />
+                <input type="text" name="SupperName" class="SupperName text-input" disabled="disabled" />
+                <input type="button" id="selectsupper" class="addsame" onclick="SupperList()" style="color: #555;
+                    padding: 4px; border: 1px solid #B5B8C8; font-size: 14px; margin-top: 4px;" value="选择供应商" />
+            </td>
+            <td class="tdright">
+                联系名称:
+            </td>
+            <td>
+                <input type="text" name="LianxiName" class="LianxiName text-input" />
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                联系电话:
+            </td>
+            <td>
+                <input type="text" name="Supperphone" class="Supperphone text-input" />
+            </td>
+            <td class="tdright">
+                结算方式:
+            </td>
+            <td>
+                <select style="width: 80px;" name="PaymentID" class="select">
+                    <option value="1">现金</option>
+                    <option value="2">支付宝</option>
+                    <option value="3">财付通</option>
+                    <option value="4">其它</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                业务员：
+            </td>
+            <td>
+                <select style="width: 80px;" name="UserID" class="select">
+                    @foreach (var j in persoList)
+                    { 
+                        <option value="@j.UserID">@j.UserName</option>
+                    }
+                </select>
+            </td>
+             <td class="tdright">
+                经手人：
+            </td>
+            <td>
+                <select name="HouseUserID" class="select">
+                    @foreach (var j in persoList)
+                    { 
+                        <option value="@j.UserID">@j.UserName</option>
+                    }
+                </select>
+            </td>
+           
+        </tr>
+        <tr>
+         <td class="tdright"  style="@(HasPermission.ToString()=="False" ? "display:none;":"")" >
+                <span style="color:Red;">*</span>应付金额：
+            </td>
+            <td   style="@(HasPermission.ToString()=="False" ? "display:none;":"")">
+                <input type="text" name="NeedMoney" class="NeedMoney text-input" readonly="readonly" />
+            </td>
+            <td class="tdright">
+               <span style="color:Red;">*</span> 实付金额：
+            </td>
+            <td>
+                <input type="text" name="ActualMoney" onkeyup="CheckInputIntFloat(this)" class="ActualMoney  text-input" />
+            </td>
+           
+        </tr>
+        <tr>
+            <td class="tdright">
+                备注:
+            </td>
+            <td>
+                <input type="text" name="Memo" />
+            </td>
+        </tr>
+    </table>
+    <div style="line-height: 35px; height: 35px; margin-top: 10px; padding-top: 10px;
+        border-top: 1px solid #ccc;">
+        <span style="margin-left: 25px;">当前仓库:</span>
+        <select class="wid110 HouseID" name="HouseID" style="height: 28px;">
+            <option value="">请选择仓库</option>
+            @foreach (var i in cangku)
+            { 
+                <option value="@i.ID">@i.Name</option>
+            }
+        </select>
+        <span style="margin-left: 10px;">品牌:</span> <span>
+            <select name="BrandID" style="" class="BrandID select">
+                <option value="0">=选择品牌=</option>
+                @foreach (var info in brandlist)
+                {
+                    <option value="@info.ID">@info.Name</option>
+                }
+            </select>
+        </span>
+    </div>
+    <table class="gridTable" style="width: 99%; margin: 0 auto; border-collapse: collapse;">
+        <thead>
+            <tr style="">
+                <th>
+                    产品名称
+                </th>
+                <th>
+                    所属仓库
+                </th>
+                <th>
+                    品牌
+                </th>
+                @if (HasPermission)
+                {
+                <th>
+                    成本价
+                </th>
+                }
+                <th>
+                    门店库存
+                </th>
+                <th>
+                    公司库存
+                </th>
+                
+                <th>
+                    数量
+                </th>
+                   @if (HasPermission)
+                   {
+                <th>
+                    合计金额
+                </th>
+                   }
+                  
+            </tr>
+        </thead>
+        <tbody id="warebody">
+        </tbody>
+    </table>
+    <div class="accountdiv" style="width:99%;margin:0 auto;">
+        <label style="font-weight: normal; line-height: 40px;">
+            &nbsp;&nbsp;数量：</label><label id="labcash0" class="labamout0">0</label>
+        <label style="font-weight: normal;">
+            合计金额：</label><label id="labcash1" class="labcash1">0</label>
+    </div>
+    <table class="mainContentRight_table ">
+        @*<tr>
+            <td class="tdright">
+                说明：
+            </td>
+            <td>
+                <textarea cols="40" rows="4" name="Memo"></textarea>
+            </td>
+        </tr>*@
+        <tr>
+            <td class="tdright">
+            </td>
+            <td>
+                <input type="button" id="btn" value="保  存" class="submitbutton2" />
+                <a class="submitbutton2 rukubtn" href="@Url.Content("~/WarehouseManage/JinhuoList")" >
+                    返 回</a>
+            </td>
+        </tr>
+    </table>
+    </form>
+</body>
+<script type="text/javascript">
+  
+
+    function SupperList() {
+        art.dialog.open("/WarehouseManage/SupplierList", { title: "供应商列表", width: 660, height: 470, close: function () {
+            var bValue = art.dialog.data('SValueProduct'); // 读取B页面的数据
+            if (bValue != undefined && bValue != '') {
+                //这里添加一个绑定方法
+                Supplierbind(bValue);
+            }
+        }
+        })
+    }
+
+    //供应商
+    function Supplierbind(obj) {
+        var arraylist = new Array();
+        arraylist = obj.split('$');
+        $.each(arraylist, function (n, value) {
+            if (value != '') {
+                $(".SupplierID").val(value.split('|')[0]);
+                $(".SupperName").val(value.split('|')[1]);
+                $(".Supperphone").val(value.split('|')[2]);
+            }
+        })
+    }
+
+    //次数更改了修改总价
+    $("#warebody").delegate(".Number", "keyup", function () {
+        if ($(this).val() == '') {
+            $(this).val(0);
+        }
+        var number = $(this).val(); //获取当前价格
+        var price = $(this).parent().parent().find(".Price").val(); //获取单价
+        var allprice = parseFloat(price) * parseFloat(number);
+        $(this).parent().parent().find(".allprice").text(allprice.toFixed(2));
+        UpdateNeedPrice();
+        updateallpeice();
+    })
+
+    //单价发生改变修改总价
+    $("#warebody").delegate(".Price", "keyup", function () {
+        if ($(this).val() == '') {
+            $(this).val(0);
+        }
+        var number = $(this).parent().parent().find(".Number").val();   //获取数量
+        var allprice = parseFloat($(this).val()) * parseFloat(number);
+        $(this).parent().parent().find(".allprice").text(allprice.toFixed(2));
+        UpdateNeedPrice();
+        updateallpeice();
+
+    })
+
+    function UpdateNeedPrice() {
+        var plist = $("#warebody").find(".allprice");
+        var needprice = 0;
+        plist.each(function () {
+            needprice = parseFloat(needprice) + parseFloat($(this).text());
+        })
+
+        $(".NeedMoney").val(needprice);
+    }
+
+    //删除功能的实现
+    $("#warebody").delegate(".delthis", "click", function () {
+        if (confirm('确实要删除吗?')) {
+            $(this).parent().parent().remove();
+            UpdateNeedPrice();
+            updateallpeice();
+        }
+    })
+
+
+    //选择仓库是触发的事件
+    $(".HouseID").change(function () {
+        var houseid = $(this).val();
+        if (houseid != '') {
+            $.ajax({
+                type: "POST",
+                url: getControllerUrl("WarehouseManage", "GetHouseList"),
+                async: false,
+                data: { "HouseID": houseid, "BrandID": 0 },
+                error: function (request) {
+                    artdialogfail("操作失败！");
+                },
+                success: function (data) {
+                    if (data != null) {
+                        // artdialog("操作成功！", "", "250", "100");
+                        $("#warebody").empty();
+                        $("#warebody").append(data);
+                        updateallpeice();
+                    }
+                }
+            });
+        }
+        else {
+            $("#warebody").empty();
+        }
+    })
+
+    //品牌修改的时候触发的方法
+    $(".BrandID").change(function () {
+        var houseid = $(".HouseID").val();
+        var brandid = $(this).val();
+        if (houseid != '' && brandid != '') {
+            $.ajax({
+                type: "POST",
+                url: getControllerUrl("WarehouseManage", "GetHouseList"),
+                async: false,
+                data: { "HouseID": houseid, "BrandID": brandid },
+                error: function (request) {
+                    artdialogfail("操作失败！");
+                },
+                success: function (data) {
+                    if (data != null) {
+                        // artdialog("操作成功！", "", "250", "100");
+                        $("#warebody").empty();
+                        $("#warebody").append(data);
+                        updateallpeice();
+                    }
+                }
+            });
+        }
+        else {
+            $("#warebody").empty();
+        }
+    })
+
+
+//    //新增仓库
+//    $(".addhouse").click(function () {
+//        art.dialog.open("/WarehouseManage/addWarehouse", { title: "添加仓库", width: 250, height: 200, close: function () {
+//            var bValue = art.dialog.data('WValue'); // 读取B页面的数据
+//            if (bValue != undefined && bValue != '') {
+//                //这里添加一个绑定方法
+//                cangkubind(bValue);
+//            }
+//        }
+//        })
+//    })
+
+//    //仓库绑定
+//    function cangkubind(obj) {
+//        $.ajax({
+//            type: "POST",
+//            url: getControllerUrl("WarehouseManage", "Addhouse"),
+//            async: false,
+//            //data: $('#myform2').serialize(), // 你的formid
+//            data: { "name": obj },
+//            error: function (request) {
+//                artdialogfail("操作失败！");
+//            },
+//            success: function (data) {
+//                if (data > 0) {
+//                    // artdialog("操作成功！", "", "250", "100");
+//                    $(".HouseID").append("<option selected='selected'  value='" + data + "'>" + obj + "</option> ");
+//                    updateallpeice();
+//                }
+//            }
+//        });
+
+
+//    }
+
+
+    //当数量发生变化时,修改总价和下面的价格
+    $("#warebody").delegate(".number", "keyup", function () {
+        var thisval = $(this).val();  //获取当前数量
+        var price = $(this).parent().parent().find(".CostPrice").text();
+        $(this).parent().parent().find(".Allprice").text(parseFloat(thisval) * parseFloat(price));
+        updatepeice();
+        updateallpeice();
+    })
+
+
+
+    //更新价格方法
+    function updatepeice() {
+        var arraylist = $("#warebody").find(".Allprice");
+        var allprice = 0;
+        arraylist.each(function () {
+            allprice = parseFloat(allprice) + parseFloat($(this).text());
+        })
+        $(".NeedMoney").val(allprice);
+        updateallpeice();
+    }
+
+    //提交按钮
+    $("#btn").click(function () {
+        //$("#btn").attr("disabled", "disabled");
+        var IDarray = $("#warebody").find(".ID");
+        var HouseIDarray = $("#warebody").find(".HouseID");
+        var numberarray = $("#warebody").find(".number");
+        var IDList = "";
+        IDarray.each(function () {
+            IDList = IDList + "," + $(this).val();
+        })
+
+        var HouseIDList = "";
+        HouseIDarray.each(function () {
+            HouseIDList = HouseIDList + "," + $(this).val();
+        })
+
+        var numberlist = "";
+        numberarray.each(function () {
+            numberlist = numberlist + "," + $(this).val();
+        })
+
+//        $(this).attr("disabled", "disabled ");     //给当前元素加上不可操作功能
+
+        if ($(".SupplierID").val() == '') {
+            artdialogfail("请选择供应商！");
+            $("#btn").attr("disabled", false);
+            return false;
+        }
+        if ($(".ActualMoney").val() == '') {
+            artdialogfail("请填写付款金额！");
+            $("#btn").attr("disabled", false);
+            return false;
+        }
+
+        if ($(".NeedMoney").val() == '') {
+            artdialogfail("请选择产品并输入库存数量！");
+            $("#btn").attr("disabled", false);
+            return false;
+        }
+
+        if ($(".HouseID").val() == '') {
+            artdialogfail("请选择仓库！");
+            $("#btn").attr("disabled", false);
+            return false;
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("WarehouseManage", "AddJinhuo1?IDlist=" + IDList + "&HouseIDList=" + HouseIDList + "&numberlist=" + numberlist),
+            async: false,
+            data: $('#myform2').serialize(), // 你的formid
+            error: function (request) {
+                artdialogfail("操作失败！");
+                $("#btn").attr("disabled", false);
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("操作成功！", "/WarehouseManage/JinhuoList", "250", "100");
+                }
+            }
+        });
+
+//        $(this).attr("disabled", false); //吧提交按钮还原
+
+
+    })
+
+    //总价格计算
+    function updateallpeice() {
+        var numb = $("#warebody").find(".number");
+        var allp = $("#warebody").find(".Allprice");
+        var allnumber = 0;
+        numb.each(function () {
+            allnumber = parseFloat(allnumber) + parseFloat($(this).val());
+        })
+        var allprice = 0;
+        allp.each(function () {
+            allprice = parseFloat(allprice) + parseFloat($(this).text());
+        })
+        $("#labcash0").text(allnumber);
+        $("#labcash1").text(allprice);
+
+    } 
+
+</script>

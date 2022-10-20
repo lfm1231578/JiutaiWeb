@@ -1,0 +1,60 @@
+﻿@using EYB.ServiceEntity.WarehouseEntity;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@model PagedList<ProductStockEntity>
+@{
+    ViewBag.Title = "PurchaseReport--采购报表";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+}
+ <div id="mainContentBody">
+    @Html.Partial("_WarehouseManageControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>采购报表
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight">
+                @using (Ajax.BeginForm("PurchaseReport", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                {
+                    <div class="accountdiv" style="margin-bottom: 0px;">
+                        产品名称：
+                        <input type="text" name="ProductName" id="ProductName" class="text-input " style="height:20px;" value="" />
+                        仓库名称:
+                        <select name="HouseID">
+                            <option value="0" >请选择仓库</option>
+                        
+                        </select>
+                        开始时间:<input type="text" name="StartTime" value="" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                        id="StartTime"  />
+                        结束时间:<input type="text" name="EndTime" value="" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                        id="EndTime"  />
+
+                        <input type="submit" class="submitbutton2" id="btnsearch" style="float: none;" value="查 询" />
+                    </div>
+                }
+                <div id="articles" class="mainContentRight_bottom" style="height: 350px; overflow: hidden;
+                    margin-top: 5px; width: 100%;">
+                     
+                    @Html.Partial("_PurchaseReport", Model)
+                </div>
+                @{Html.RegisterMvcPagerScriptResource();}
+                <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        $("th[orderField='@orderField']").addClass("@orderDirection");
+        if (window.PIE) {
+            $('.rounded').each(function () {
+                PIE.attach(this);
+            });
+        }
+    });
+
+</script>
+

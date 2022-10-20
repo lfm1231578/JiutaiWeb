@@ -1,0 +1,42 @@
+﻿@{
+    ViewBag.Title = "_DoctorControl";
+    //新建部门
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.OrderinglsManager_Manage_View);
+    //部门列表
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.OrderinglsManager_Introduce_View_b);
+}
+
+    <div id="mainContentLeft">
+      <form action="@Url.Content("~/DepartmentManage/DepartmentPage")" method="post" id="submitform" >
+        <div id="mainContentLeft_top" >
+         <a style="background:#fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -116px no-repeat;"> </a><span>部门管理</span></div>
+        <div id="mainContentLeft_center">
+            <ul>
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/DepartmentManage/DepartmentNew")?Type=add"><a  style="cursor: pointer; " ><img width='129' height='110' src='../../Content/themes/images/depart1.png'   /><label>新建部门</label></a></li>
+                <li onclick='CheckRight(this,"@result2")' redirect="@Url.Content("~/DepartmentManage/DepartmentPage")" style="margin-left:20px;"><a  style="cursor: pointer; " ><img width='129' height='110' src='../../Content/themes/images/depart2.png'   /><label>部门列表</label></a></li>
+            </ul>
+        </div>
+        <div id="mainContentLeft_bottom">
+            <ul>
+                 <li style="height:33px;padding-left:13px;"><span  class="submitspan"  ></span><input type="text" name="Name" class="searchInput" value="搜索" />
+                <input type="submit" class="submitbutton"  value="" />
+                </li>
+            </ul>
+        </div>
+        </form>
+    </div>
+    
+
+    <script type="text/javascript">
+        //登录回车事件
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13 || event.keyCode == 32) {
+                if ($.trim($(".searchInput").val()) != "" && $(".searchInput").val() != "搜索") {
+                    document.getElementById("submitform").submit();
+                }
+            }
+        });
+
+    </script>
+
+

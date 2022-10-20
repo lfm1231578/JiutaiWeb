@@ -1,0 +1,286 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.ProductStockEntity>
+@{
+    Layout = null;
+    var s = Request["StartTime"];
+    //var St = ViewData["St"] == null ? ViewBag.StartTime : ViewData["St"];
+    //var Et = ViewData["Et"] == null ? ViewBag.EndTime : ViewData["Et"];
+
+    var lingshou = ViewData["lingshou"] == null ? ViewBag.LingshouPrice : ViewData["lingshou"];
+    var chengben = ViewData["chengben"] == null ? ViewBag.Chengbenprice : ViewData["chengben"];
+    var allnumber = ViewData["allnumber"] == null ? ViewBag.allnumber : ViewData["allnumber"];
+    allnumber = 0;
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_库存管理成本价);
+}
+<style>
+    /*******表格********/
+    .gridTable tbody
+    {
+        display: block;
+    }
+    .gridTable tr
+    {
+        display: block;
+    }
+    .gridTable th
+    {
+        width: 200px;
+        line-height: 40px;
+    }
+    .gridTable td
+    {
+        width: 200px;
+    }
+</style>
+<form action="" method="post" id="searchForm">
+<table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+    overflow: scroll;" cellpadding="0" cellspacing="0">
+    <thead style="display: block; position:absolute;">
+        <tr>
+            <th @(ViewBag.orderField == "ProductName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProductName">
+                <div style="width: 200px; overflow: hidden;">
+                    产品名称
+                </div>
+            </th>
+            <th>
+                产品编码
+            </th>
+            <th @(ViewBag.orderField == "RetailPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="RetailPrice">
+                零售价
+            </th>
+            <th @(ViewBag.orderField == "Quatity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quatity">
+                实际库存
+            </th>
+            <th>
+                寄存数量
+            </th>
+            <th>
+                欠货
+            </th>
+            <th>
+                理论库存
+            </th>
+            <th>
+                零售价总额
+            </th>
+            @if (HasPermission)
+            {
+                <th>
+                    成本价总额
+                </th>
+            }
+            <th @(ViewBag.orderField == "BrandName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="BrandName">
+                所属品牌
+            </th>
+            <th @(ViewBag.orderField == "TypeName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="TypeName">
+                类别
+            </th>
+            <th>
+                容量
+            </th>
+            <th>
+                规格
+            </th>
+            <th>
+                所在仓库
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height: 33px;"></tr>
+        @foreach (var entity in Model)
+        {
+    <tr>
+        <td>
+            <div style="width: 200px; overflow: hidden;">
+                @entity.ProductName
+            </div>
+        </td>
+        <td>
+            @entity.ProductCode
+        </td>
+        <td>
+            @entity.RetailPrice
+        </td>
+        @if (entity.ID == 92432)
+        {
+            var quatity = 19 + @entity.Quatity;
+            allnumber += quatity;
+            <td>
+                @quatity
+            </td>
+
+        }
+        else if (entity.ID == 92409)
+        {
+            var quatity = 2 + @entity.Quatity;
+            allnumber += quatity;
+            <td>
+                @quatity
+            </td>
+
+        }
+        else
+        {
+            allnumber += entity.Quatity;
+            <td>
+                @entity.Quatity
+            </td>
+
+        }
+        <td>
+            @entity.JichunCount
+        </td>
+        <td>
+            @entity.QianhuoCount
+        </td>
+        @if (entity.ID == 92432)
+        {
+            var quatity = 19 + @entity.Quatity;
+            <td>
+                @(quatity + entity.JichunCount)
+            </td>
+
+        }
+        else if (entity.ID == 92409)
+        {
+            var quatity = 2 + @entity.Quatity;
+            <td>
+                @(quatity + entity.JichunCount)
+            </td>
+
+        }
+        else
+        {
+            <td>
+                @(entity.Quatity + entity.JichunCount)
+            </td>
+
+        }
+        @*<td>
+            @(entity.Quatity + entity.JichunCount)
+        </td>*@
+        @if (entity.ID == 92409)
+        {
+            <td>
+                1360.00
+            </td>
+
+        }
+        else
+        {
+            <td>
+                @entity.LingshouPrice
+            </td>
+
+        }
+        @if (HasPermission)
+        {
+            <td>
+                @entity.Chengbenprice
+            </td>
+        }
+        <td>
+            @entity.BrandName
+        </td>
+        <td>
+            @entity.TypeName
+        </td>
+        <td>
+            @entity.UseUnit
+        </td>
+        <td>
+            @entity.StandardUnitName
+        </td>
+        <td>
+            @entity.HouseName
+        </td>
+        <td>
+            <a href="@Url.Content("~/WarehouseManage/WarehouseInfo?ID=" + entity.ID)" style="display:none">详细</a>
+            <a href="@Url.Content("~/WarehouseManage/WarehouseLog?rt=t&IntoWarehouse=" + entity.HouseID + "&ProductID=" + entity.ProductID+"&ProductName="+entity.ProductName)">
+                详细日志
+            </a>
+        </td>
+    </tr>
+
+        }
+        <tr>
+            <td>
+                <div style="width: 200px; overflow: hidden;">
+                </div>
+            </td>
+            <td>
+            </td>
+            <td style="color: #00B0DE;">
+                统计:
+            </td>
+            <td style="color: #00B0DE;">
+                @allnumber
+            </td>
+            <td style="color: #00B0DE;">
+            </td>
+            <td style="color: #00B0DE;">
+            </td>
+            <td style="color: #00B0DE;">
+            </td>
+            <td style="color: #00B0DE;">
+                @lingshou
+            </td>
+            @if (HasPermission)
+            {
+                <td style="color: #00B0DE;">
+                    @chengben
+                </td>
+            }
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $(function () {
+       let topHeight = $(".box-wrap").height()+10;
+        $(".gridTable thead").css("top", topHeight + "px");
+        console.log($(".ullist").height())
+        console.log(topHeight)
+    })
+
+    $("#sp").text('@Model.TotalItemCount');
+    //计算head高度，宽度 计算articles高度
+   
+
+
+
+
+    $(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+
+    var gridtablewidth = $(".gridTable").width();
+    var thlen = $(".gridTable thead th").length;
+    $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+    $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+
+    function OpenProductStock(obj, txtname) {
+        art.dialog.open("/WarehouseManage/ProductStockPage?OrderNO=" + obj, { title: txtname + "库存详细", width: 760, height: 470, close: function () {
+            var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+            if (bValue !== undefined) {
+            }
+        }
+        })
+    }
+
+</script>

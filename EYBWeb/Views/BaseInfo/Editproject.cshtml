@@ -1,0 +1,865 @@
+﻿@using BaseinfoManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@using EYB.ServiceEntity.BaseInfo;
+@using EYB.ServiceEntity.SystemEntity;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@{
+    var type = Request["Type"];
+    var id = Request["ID"];
+    Layout = null;
+    ProjectEntity entity = new ProjectEntity();
+    IList<ProjectProductEntity> ppentity = new List<ProjectProductEntity>();
+    IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseinfoBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    //CashManage.Factory.IBLL.ICashManageBLL icashBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    if (!String.IsNullOrEmpty(id))
+    {
+        entity = baseinfoBLL.GetProjectModel(ConvertValueHelper.ConvertIntValue(id));//获取项目实体
+    }
+    var ParentHospitalID = ViewBag.ParentHospitalID;//总店ID
+
+    IList<RoyaltySchemeEntity> royentity = new List<RoyaltySchemeEntity>();
+    IList<BrandEntity> brandlist = new List<BrandEntity>();
+    royentity = baseinfoBLL.GetAllRoyaltyScheme(new RoyaltySchemeEntity { ProjectID = entity.ID });//获取提成方案列表
+
+    var caretypelist = wareBll.GetProductTypeNoPage(ParentHospitalID, 1);//获取项目分类列表
+    brandlist = wareBll.GetBrandListNoPage(ParentHospitalID);//获取品牌列表
+
+    ViewBag.Title = "编辑项目";
+
+    if (type.ToUpper() == "ADD")
+    {
+        entity.SellEndTime = DateTime.Now.AddYears(10);
+    }
+    //获取项目成本价
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_项目管理成本价);
+    var relationList = baseinfoBLL.GetProjectProductRelation(new ProjectProductRelationEntity { ProjectID = ConvertValueHelper.ConvertIntValue(id) });
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式--> 
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentBody">
+        @if (type.ToUpper() == "DETAIL")
+        {
+
+
+            <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+                <div class="mainContentRight">
+                    <form id="myform" action="@Url.Content("~/BaseInfo/ProjectAddOrEdit")" class="clearfix" method="post">
+                        <table class="mainContentRight_table ">
+                            <tr>
+                                <td class="tdright">
+                                    <span class="red">*&nbsp;</span>项目名称：
+                                </td>
+                                <td>
+                                    @entity.Name
+                            </td>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>零售价：
+                            </td>
+                            <td>
+                                @entity.RetailPrice
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                所属类别：
+                            </td>
+                            <td>
+                                <div class="selectdiv" style="width: 100px; float: left;">
+                                    <select name="ProjectType" class="select" disabled="disabled">
+                                        @foreach (var info in caretypelist)
+                                        {
+                                            <option @(info.ID == entity.ProjectType ? "selected=selected" : "")=) value="@info.ID">@info.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                            <td class="tdright">
+                                品牌：
+                            </td>
+                            <td>
+                                <div class="selectdiv" style="width: 100px; float: left;">
+                                    <select name="BrandID" class="select" disabled="disabled">
+                                        @foreach (var info in brandlist)
+                                        {
+                                            <option @(info.ID == entity.BrandID ? "selected=selected" : "")=) value="@info.ID">@info.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>基础类别
+                            </td>
+                            <td>
+                                <select id="selBaseType" name="BaseType" style="width: 150px;" class="select" disabled="disabled">
+                                    <option value="0">=选择基础类别=</option>
+                                    <option @(entity.BaseType == 1 ? "selected=selected" : "")=) value="1">基础项目</option>
+                                    <option @(entity.BaseType == 2 ? "selected=selected" : "")=) value="2">特殊项目</option>
+                                    <option @(entity.BaseType == 3 ? "selected=selected" : "")=) value="3">大项目</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                是否套盒：
+                            </td>
+                            <td>
+                                @(entity.ISKit == 1 ? "否" : "是")
+                            </td>
+                            <td class="tdright">
+                                服务时长：
+                            </td>
+                            <td>
+                                @entity.ServiceTime 分钟
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                间隔天数：
+                            </td>
+                            <td>
+                                @entity.HuiDay
+                            </td>
+                            @* 汪 *@
+                            <td class="tdright">
+                                销售截止时间：
+                            </td>
+                            <td>
+                                @entity.SellEndTime.ToString("yyyy-MM-dd")
+                            </td>
+                        </tr>
+                        <tr style="display: none;">
+                        </tr>
+                        <tr>
+                            @if (HasPermission)
+                            {
+                                <td class="tdright">
+                                    成本价：
+                                </td>
+                                <td>
+                                    @entity.CostPrice
+                                </td>
+                            }
+                            <td class="tdright">
+                                说明：
+                            </td>
+                            <td colspan="3">
+                                @entity.Memo
+                            </td>
+                        </tr>
+                    </table>
+                    <div id="tabbox1" style="margin: 5px;">
+                        @* <ul class="tabs" id="" style="width: 126px;">
+                                <li><a href="###" class="addfangan" tab="tab2">提成方案列表</a></li>
+                            </ul>*@
+                        <ul id="tab2" class="tab_conbox">
+                            <li id="" class="tab_con">
+                                <table id="Royaltylist" class="gridTable">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                价格区间
+                                            </th>
+                                            <th>
+                                                开始价格
+                                            </th>
+                                            <th>
+                                                结束价格
+                                            </th>
+                                            <th>
+                                                正常提成@*手供提成方式*@
+                                            </th>
+                                            <th>
+                                                提成金额
+                                            </th>
+                                            @* <th>
+        指定提成情况额外提成方式
+                                            </th>
+                                            <th>
+                                                额外提成@*提成金额
+                                            </th>
+                                            @*   <th>
+            操作
+        </th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (RoyaltySchemeEntity info in royentity)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" name="vallist" value="@info.AllPriceType|@info.StartPrice|@info.EndPrice|@info.NonSpecifiedType|@info.NonSpecifiedPrice|@info.SpecifiedType|@info.SpecifiedPrice" />
+                                                    @(info.AllPriceType == 1 ? "折扣比例" : "固定金额")
+                                                </td>
+                                                <td>
+                                                    @info.StartPrice
+                                                </td>
+                                                <td>
+                                                    @info.EndPrice
+                                                </td>
+                                                <td>
+                                                    @(info.NonSpecifiedType == 1 ? "折扣比例" : "固定金额")
+                                                </td>
+                                                <td>
+                                                    @info.NonSpecifiedPrice
+                                            </td>
+                                            @*<td>
+                                                @(info.SpecifiedType == 1 ? "折扣比例" : "固定金额")
+                                        </td>
+                                        <td>
+                                            @info.SpecifiedPrice
+                                    </td>*@
+                                    @* <td>
+                                        </td>*@
+                                </tr>
+                            }
+                                    </tbody>
+                                </table>
+                            </li>
+                        </ul>
+                    </div>
+                    @*  <a href="@Url.Content("~/BaseInfo/Editproject")?Type=Edit&ID=@entity.ID" class="submitbutton3" style="margin-left:30px;" >
+                            编 辑</a>
+                        <input type="reset" onclick="history.go(-1)" class="submitbutton2" style="margin-left: 20px;"
+                            value="返 回" />*@
+                </form>
+            </div>
+        </div>
+
+    }
+    else
+    {
+
+
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <form id="myform" action="@Url.Content("~/BaseInfo/ProjectAddOrEdit")" class="clearfix" method="post">
+                    <table class="mainContentRight_table ">
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>项目名称
+                            </td>
+                            <td>
+                                <input type="hidden" value="@entity.ID" name="ID" />
+                                <input type="text" name="Name" id="txtName" value="@entity.Name" class="validate[required] text-input input200" />
+                                <input type="checkbox" name="IsHalf" value="1" @(entity.IsHalf == 1 ? "checked=checked" : "")=) />是否业绩分成
+                            </td>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>零售价
+                            </td>
+                            <td>
+                                <input type="text" name="RetailPrice" id="txtRetailPrice" value="@entity.RetailPrice" class=" text-input input200 validate[custom[number]]" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>所属类别
+                            </td>
+                            <td>
+                                <div class="selectdiv" style="width: 100px; float: left;">
+                                    <select id="ProjectType" name="ProjectType" style="width: 100px;" class="select">
+                                        <option value="0">=选择分类=</option>
+                                        @foreach (var info in caretypelist)
+                                        {
+                                            <option @(info.ID == entity.ProjectType ? "selected=selected" : "")=) value="@info.ID">@info.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <a href="#" style="float: left; display: block; margin-top: 10px;" onclick="AddCategory()">
+                                    添加类别
+                                </a>
+                            </td>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>品牌
+                            </td>
+                            <td>
+                                <div class="selectdiv" style="width: 100px; float: left;">
+                                    <select name="BrandID" id="BrandID" style="width:100px;" class="select" @(type == "detail" ? "disabled='disabled'" : "")=)>
+                                        <option value="0">=选择品牌=</option>
+                                        @foreach (var info in brandlist)
+                                        {
+                                            <option @(info.ID == entity.BrandID ? "selected=selected" : "")=) value="@info.ID">@info.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <a href="#" style="float: left; display: block; margin-top: 10px;" onclick="AddBrank()">
+                                    添加品牌
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>基础类别
+                            </td>
+                            <td>
+                                <select id="selBaseType" name="BaseType" style="width: 150px;" class="select">
+                                    <option @(entity.BaseType == 1 ? "selected=selected" : "")=) value="1">基础项目</option>
+                                    <option @(entity.BaseType == 2 ? "selected=selected" : "")=) value="2">特殊项目</option>
+                                    <option @(entity.BaseType == 3 ? "selected=selected" : "")=) value="3">大项目</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                是否套盒
+                            </td>
+                            <td>
+                                <select name="ISKit" class="select" @(type == "detail" ? "disabled='disabled'" : "")=)>
+                                    <option @(entity.ISKit == 1 ? "selected=selected" : "")=) value="1">否</option>
+                                    <option @(entity.ISKit == 2 ? "selected=selected" : "")=) value="2">是</option>
+                                </select>
+                            </td>
+                            <td class="tdright">
+                                服务时长
+                            </td>
+                            <td>
+                                <input type="text" name="ServiceTime" id="txtServiceTime" value="@entity.ServiceTime" class="text-input input200 validate[custom[number]]" style=" width:100px;" />分钟
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                间隔天数
+                            </td>
+                            <td>
+                                <input type="text" name="HuiDay" id="txtHuiDay" value="@entity.HuiDay" class="text-input input200 validate[custom[number]]" />
+                            </td>
+                            @*<td class="tdright">
+                                        销售截止时间
+                                    </td>
+                                    <td>
+                                        <input type="text" name="SellEndTime" value="@entity.SellEndTime.ToString("yyyy-MM-dd")" class=" Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                id="SellEndTime" style="width: 130px" />
+                                    </td>*@
+                        </tr>
+                        <tr style="display: none;">
+                        </tr>
+                        <tr>
+                            @if (HasPermission)
+                            {
+                                <td class="tdright">
+                                    成本价
+                                </td>
+                                <td>
+                                    <input type="text" name="CostPrice" id="txtCostPrice" value="@entity.CostPrice" class="text-input input200" />
+                                </td>
+                            }
+                            <td class="tdright">
+                                说明
+                            </td>
+                            <td colspan="2">
+                                <textarea rows="1" name="Memo" cols="40" class="textarea" style="height: 80px; line-height: 20px;">@entity.Memo</textarea>
+                            </td>
+                        </tr>
+                        @{
+                            if (ViewBag.HospitalID == 1017 || ViewBag.HospitalID == 2)
+                            {
+                                <tr>
+                                    <td class="tdright">
+                                        积分抵扣：
+                                    </td>
+                                    <td>
+                                        <input type="text" name="Proportion" id="txtProportion" value="@entity.Proportion" class="text-input input200" />
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        <tr>
+                            <td class="clearfix">
+                            </td>
+                            <td colspan="3">
+                                <input type="submit" id="btnsave" class="submitbutton2" value="保 存" />
+                                <input type="button" onclick="closeedNorefresh()" class="submitbutton2" value="关 闭" />
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="panel collapse close" minh="400" defh="0">
+                        <h1>
+                            添加固定手工方案
+                        </h1>
+                        <div>
+                            <table class="mainContentRight_table">
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            销售中的成交价:按照固定金额 从
+                                            <input style="width: 120px;" class="" id="StartPrice" value="" />
+                                            到<input style="width: 120px;" class="" id="EndPrice" value="" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            不计实操业绩时手工费
+                                            <select id="NonSpecifiedType">
+                                                <option value="0"></option>
+                                                <option value="1">折扣比例 </option>
+                                                <option value="2">固定金额 </option>
+                                            </select>
+                                            ,可获取提成金额
+                                            <input type="text" style="width: 80px;" id="NonSpecifiedPrice" value="" />
+                                        </td>
+                                    </tr>
+                                    @*<tr>
+                                        <td>
+                                            除手工外额外再奖励<select id="SpecifiedType" style="width: 100px;">
+                                                <option value="0"></option>
+                                                <option value="1">折扣比例 </option>
+                                                <option value="2">固定金额 </option>
+                                            </select>
+                                            ,另获奖励金额
+                                            <input type="text" style="width: 80px;" id="SpecifiedPrice" value="" />
+                                        </td>
+                                    </tr>*@
+                                    <tr>
+                                        <td>
+                                            <input type="button" value="添加" class="submitbutton2" onclick="Addroylty()" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table id="Royaltylist" class="gridTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            价格区间
+                                        </th>
+                                        <th>
+                                            开始价格
+                                        </th>
+                                        <th>
+                                            结束价格
+                                        </th>
+                                        <th>
+                                            正常提成@*手供提成方式*@
+                                        </th>
+                                        <th>
+                                            提成金额
+                                        </th>
+                                        @*<th>
+                                            指定提成情况额外提成方式
+                                        </th>
+                                        <th>
+                                            额外提成金额
+                                        </th>*@
+                                        <th>
+                                            操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (RoyaltySchemeEntity info in royentity)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" name="vallist" value="@info.AllPriceType|@info.StartPrice|@info.EndPrice|@info.NonSpecifiedType|@info.NonSpecifiedPrice|@info.SpecifiedType|@info.SpecifiedPrice" />
+                                                @(info.AllPriceType == 1 ? "折扣比例" : "固定金额")
+                                            </td>
+                                            <td>
+                                                @info.StartPrice
+                                            </td>
+                                            <td>
+                                                @info.EndPrice
+                                            </td>
+                                            <td>
+                                                @(info.NonSpecifiedType == 1 ? "折扣比例" : "固定金额")
+                                            </td>
+                                            <td>
+                                                @info.NonSpecifiedPrice
+                                        </td>
+                                        @*<td>
+                                            @(info.SpecifiedType == 1 ? "折扣比例" : "固定金额")
+                                    </td>
+                                    <td>
+                                        @info.SpecifiedPrice
+                                </td>*@
+                                <td>
+                                    <a href="javascript:;" class="lista">删除</a>
+                                </td>
+                            </tr>
+                        }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel collapse close" minh="400" defh="0">
+                        <h1>
+                            添加产品用量
+                        </h1>
+                        <div>
+                            <div style="height: 40px;">
+                                <input type="button" value="添加产品" class="submitbutton2" onclick="ProductList()" />
+                            </div>
+                            <table class="gridTable">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            产品名称
+                                        </th>
+                                        <th>
+                                            容量
+                                        </th>
+                                        <th>
+                                            规格
+                                        </th>
+                                        <th>
+                                            单次用量
+                                        </th>
+                                        <th>
+                                            操作
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbodyproduct">
+                                    @foreach (ProjectProductRelationEntity info in relationList)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" name="ProductID" value="@info.ProductID" />@info.Name
+                                            </td>
+                                            <td>
+                                                @info.UseUnit
+                                            </td>
+                                            <td>
+                                                @info.StandardUnitName
+                                            </td>
+                                            <td>
+                                                <input name="DanCiUseUnit" value="@info.DanCiUseUnit" onkeyup="CheckInputIntFloat(this)" type="text" class="smallinput" />
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="deletebtn">删除</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+    }
+    </div>
+</body>
+<script type="text/javascript">
+ function AddBrank(){
+    art.dialog.open("/BaseInfo/AddBrank", { title: "添加品牌", width: 560, height: 470});
+   }
+
+  function AddCategory(){
+    art.dialog.open("/BaseInfo/AddCategory?type=1", { title: "添加类别", width: 560, height: 470});
+   }
+   //选择产品
+function ProductList() {
+
+    art.dialog.open("/BaseInfo/ProductList", {
+        title: "产品列表", width: 660, height: 470, close: function () {
+            var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+            if (bValue !== undefined) {
+                Selectproduct(bValue);
+            }
+        }
+    });
+}
+function CheckInputIntFloat(oInput) {
+    if ('' != oInput.value.replace(/^[-]?\d{1,}\.{0,1}\d{0,}/, '')) {
+        oInput.value = oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/) == null ? '' : oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/);
+    }
+}
+//选择产品后的事件
+function Selectproduct(obj) {
+
+    //只能加载一次产品，不能重复加载
+    var isshownext = true;
+    $("input[name='ProductID']").each(function (i) {
+        if (obj.split("|")[0] == $(this).val()) {
+            isshownext = false;
+            return false;
+        } else {
+            isshownext = true;
+        }
+    });
+    if (!isshownext) return;
+
+    var arry = obj.split("$");
+    var str = "";
+    for (var i = 0; i < arry.length - 1; i++) {
+        str += '<tr><td><input type="hidden" name="ProductID" value="'+arry[i].split("|")[0]+ '" />'+arry[i].split("|")[1]+'</td> '
+       + '<td>'+arry[i].split("|")[5]+'</td> '
+       + '<td>'+arry[i].split("|")[6]+'</td> '
+       + '<td><input  name="DanCiUseUnit" type="text"  onkeyup="CheckInputIntFloat(this)" class="smallinput" /></td> '
+       + '<td><a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>'
+    }
+    $("#tbodyproduct").append(str);
+
+}
+    //删除功能
+    $("#tbodyproduct").delegate('.deletebtn', 'click', function () {
+        $(this).parent().parent().remove();
+
+    })
+  jQuery(document).ready(function(){
+        jQuery('#myform').validationEngine('attach', {
+            promptPosition: "topLeft",
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: ".mainContentRight",
+            onValidationComplete: function(form, status){
+                if(status)
+                {
+                saveAs();
+                }
+        }
+        });
+
+    });
+
+$("h1").toggle(function(){$(".expandable").click();},function(){  $(".collapsable").click();});
+
+$('#txtName').keyup(function () {
+    var re = /[\\\/:\*\?"\<\>\|]/; //只允许输入数字和大小写字母
+    if (re.test($("#txtName").val())) {
+        alert("请勿输入非法字符");
+        $("#txtName").val("");
+        return false;
+    }
+});
+    //提交操作
+ function saveAs(){
+     $("#btnsave").attr("disabled", "disabled");
+    /// $("#txtName").val($("#txtName").val().trim());
+         if($("#txtName").val()=="" || $("#txtRetailPrice").val()=="")
+         {
+            artdialogfail("名称/金额不能为空！","","250");
+            $("#btnsave").attr("disabled", false);
+            return false;
+         }
+
+         if($("#ProjectType").val()=="0")
+         {
+               artdialogfail("分类必许要选择！","","250");
+               $("#btnsave").attr("disabled", false);
+               return false;
+         }
+          if($("#BrandID").val()=="0")
+         {
+               artdialogfail("品牌必许要选择！","","250");
+               $("#btnsave").attr("disabled", false);
+               return false;
+          }
+     //汪
+     //服务时长为正整数
+          var reg = /^[0-9]*[0-9][0-9]*$/;
+          if (!reg.test($("#txtServiceTime").val())) {
+              artdialogfail("服务时长必须为整数！", "", "250");
+              $("#btnsave").attr("disabled", false);
+              return false;
+          }
+     //间隔天数为正整数
+          var reg = /^[0-9]*[0-9][0-9]*$/;
+          if (!reg.test($("#txtHuiDay").val())) {
+              artdialogfail("间隔天数必须为整数！", "", "250");
+              $("#btnsave").attr("disabled", false);
+              return false;
+          }
+          if ($("#txtRetailPrice").val()< 0) {
+              artdialogfail("零售价不能为负数！", "", "250");
+              $("#btnsave").attr("disabled", false);
+              return false;
+          }
+          //if ($("#txtCostPrice").val() < 0) {
+          //    artdialogfail("成本价不能为负数！", "", "250");
+          //    $("#btnsave").attr("disabled", false);
+          //    return false;
+          //}
+     //汪
+         $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/ProjectAddOrEdit?Type=" + type)",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+                 $("#btnsave").attr("disabled", false);
+            },
+            success: function (data) {
+             if(data>0){
+                 alert("保存成功!");
+                 window.top.location.reload();
+                 closeedNorefresh();
+               }else if(data=-1){
+                  artdialogfail("名称重复,请重新填写名称","","250","100");
+                  $("#btnsave").attr("disabled", false);
+               }
+               else
+               {
+                artdialogfailTwo("操作失败,请检查输入项！","","250","100");
+                $("#btnsave").attr("disabled", false);
+               }
+            }
+        });
+     }
+
+
+     //打开新建窗口
+     function oppnStorddisage() {
+        art.dialog.open("/BaseInfo/EditRoyaltyScheme?Type=add", { title: "新建提成方案", width: 660, height: 470 })
+    }
+
+
+    //添加固定手工方案
+    function Addroylty()
+    {
+        var txtallpricetype="2";//价格分类
+        var txtstartprice=$("#StartPrice").val();//开始价格
+        var txtendprice=$("#EndPrice").val();//结束价格
+
+        var txtnonspecifiedtype=$("#NonSpecifiedType").val();//非指定分类
+        var txtnonspecifiedprice=$("#NonSpecifiedPrice").val();//非指定分类价格
+
+        var txtspecifiedtype = "0";//$("#SpecifiedType").val();//指定分类
+        var txtspecifiedprice = "";//;$("#SpecifiedPrice").val();//指定价格
+
+        var tbool=true;
+        if(!Verifybig(txtstartprice,txtendprice))
+        {
+            tbool=false;
+        }
+        if(txtnonspecifiedtype!="0")
+        {
+           if(!Verifyval(txtnonspecifiedtype,txtnonspecifiedprice))
+            {
+                 tbool= false;
+            }
+        }
+        if(txtspecifiedtype!="0")
+        {
+           if(!Verifyval(txtspecifiedtype,txtspecifiedprice))
+           {
+            tbool=false;
+           }
+        }
+        if(txtspecifiedtype=="0"&&txtnonspecifiedtype=="0")
+        {
+            tbool=false;
+        }
+
+        var txtstr=null;
+
+        if(tbool)
+        {
+            if(txtspecifiedprice==null ||txtspecifiedprice=='')
+            {
+                txtspecifiedprice="0";
+            }
+            if(txtnonspecifiedprice==null ||txtnonspecifiedprice=='')
+            {
+                txtnonspecifiedprice="0";
+            }
+            txtstr=txtallpricetype+"|"+txtstartprice+"|"+txtendprice+"|"+txtnonspecifiedtype+"|"+txtnonspecifiedprice+"|"+txtspecifiedtype+"|"+txtspecifiedprice;
+            //$("#Royaltylist").append("<tr><td><input type='hidden' name='vallist' value="+txtstr+"> "+GetStr(txtallpricetype)+"</td><td>"+txtstartprice+"</td><td>"+txtendprice+"</td><td>"+GetStr(txtnonspecifiedtype)+"</td><td>"+txtnonspecifiedprice+"</td><td>"+GetStr(txtspecifiedtype)+"</td><td>"+txtspecifiedprice+"</td><td><a href='javascript:;' class='lista'>删除</a> </td></tr>");
+            $("#Royaltylist").append("<tr><td><input type='hidden' name='vallist' value="+txtstr+"> "+GetStr(txtallpricetype)+"</td><td>"+txtstartprice+"</td><td>"+txtendprice+"</td><td>"+GetStr(txtnonspecifiedtype)+"</td><td>"+txtnonspecifiedprice+"</td><td><a href='javascript:;' class='lista'>删除</a> </td></tr>");
+             $("#tab2").removeClass("hidden");
+        }
+        else
+        {
+            alert("你的数据输入有误,请检查后再提交")
+        }
+    }
+
+    //验证JS..第一个是类型,第二个是对应值
+    //返回true和false
+    function Verifyval(txttype,txtval)
+    {
+        if(txttype==1)
+        {
+            return (txtval<=1&&txtval>=0);
+        }
+        else if(txttype==2)
+        {
+            return txtval>=0;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    //比较大小
+    function Verifybig(txt1,txt2)
+    {
+
+        return Number(txt1)<=Number(txt2);
+    }
+
+    //获得分类名称
+    function GetStr(var1)
+    {
+        switch(var1)
+        {
+            case "1":
+            return "折扣比例";
+            break;
+            case "2":
+            return "固定金额";
+            break;
+            default:
+            return "无";
+        }
+    }
+
+    //删除操作
+    $(function(){
+     $("#Royaltylist").delegate('.lista','click',function(){
+        $(this).parent().parent().remove();
+     });
+    })
+
+    $(".addfangan").click( function(){
+        var id=$(this).attr("tab");
+        $("#"+id).toggleClass("hidden");
+    })
+
+
+
+</script>
+</html>

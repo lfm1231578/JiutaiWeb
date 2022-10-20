@@ -1,0 +1,198 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.MoneyEntity.ItemDetailsConsumptionEntity>
+    @{
+        Layout = null;
+        decimal ProjectNumber = 0;
+        decimal HuaCi = 0;
+        decimal KaKou = 0;
+        decimal XianJin = 0;
+        decimal ShouGong = 0;
+        decimal Reward = 0;
+
+    }
+                    <form action="" method="post" id="submitform">
+                        <table class="gridTable">
+                            <thead style="display: block; position: absolute;">
+                                <tr>
+                                    <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                                        员工名称
+                                    </th>
+                                    <th @(ViewBag.orderField == "BrandName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="BrandName">
+                                        品牌
+                                    </th>
+                                    <th @(ViewBag.orderField == "ProductTypeName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProductTypeName">
+                                        项目分类
+                                    </th>
+                                    <th @(ViewBag.orderField == "ProjectName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProjectName">
+                                        项目名称
+                                    </th>
+                                    <th>
+                                        类别
+                                    </th>
+                                    <th>
+                                        项目数
+                                    </th>
+                                    <th>
+                                        疗程消耗
+                                    </th>
+                                    <th>
+                                        卡扣消耗
+                                    </th>
+                                    <th>
+                                        现金消耗
+                                    </th>
+                                    <th>
+                                        手工费
+                                    </th>
+                                    <th>
+                                        奖励
+                                    </th>
+                                    <th style=" width:160px;" @(ViewBag.orderField == "CreateTime" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CreateTime">
+                                        时间
+                                    </th>
+                                    <th>
+                                        单据分店
+                                    </th>
+                                    <th @(ViewBag.orderField == "PatientName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="PatientName">
+                                        顾客姓名
+                                    </th>
+                                    <th>
+                                        是否指定
+                                    </th>
+                                    <th>
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="height: 40px;">
+                                    <td colspan="16">
+                                    </td>
+                                </tr>
+                                @foreach (var entity in Model)
+                                {
+                                    ProjectNumber += entity.ProjectNumber;
+                                    HuaCi += entity.HuaCi;
+                                    KaKou += entity.KaKou;
+                                    XianJin += entity.XianJin;
+                                    ShouGong += entity.ShouGong;
+                                    Reward += entity.Reward;
+                                    <tr>
+                                        <td>
+                                            @entity.UserName
+                                        </td>
+                                        <td>
+                                            @entity.BrandName
+                                        </td>
+                                        <td>
+                                            @entity.ProductTypeName
+                                        </td>
+                                        <td>
+                                            @entity.ProjectName
+                                        </td>
+                                        <td>
+                                            @(entity.InfoBuyType == 3 ? "划卡" : "单项")
+                                        </td>
+                                        <td>
+                                            @entity.ProjectNumber
+                                        </td>
+                                        <td>
+                                            @entity.HuaCi
+                                        </td>
+                                        <td>
+                                            @entity.KaKou
+                                        </td>
+                                        <td>
+                                            @entity.XianJin
+                                        </td>
+                                        <td>
+                                            @entity.ShouGong
+                                        </td>
+                                        <td>
+                                            @entity.Reward
+                                        </td>
+                                        <td style="width: 160px;">
+                                            @entity.CreateTime.ToString("yyyy-MM-dd")
+                                        </td>
+                                        <td>
+                                            @entity.HospitalName
+                                        </td>
+                                        <td>
+                                            @entity.PatientName
+                                        </td>
+                                        <td>
+                                            @entity.Getzhiding()
+                                        </td>
+                                        <td>
+                                            <a href="javascript:OpenOrderPerformance('@entity.OrderNo')">查看业绩分配</a>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td colspan="4">
+                                    </td>
+                                    <td>
+                                        合计:
+                                    </td>
+                                    <td>
+                                        @(String.IsNullOrEmpty(ViewBag.PatientName) ? ViewBag.Quantity : ProjectNumber)
+                                    </td>
+                                    <td>
+                                        @(String.IsNullOrEmpty(ViewBag.PatientName) ? ViewBag.huaci : HuaCi)
+                                    </td>
+                                    <td>
+                                        @(String.IsNullOrEmpty(ViewBag.PatientName) ? ViewBag.kakou : KaKou)
+                                    </td>
+                                    <td>
+                                        @(String.IsNullOrEmpty(ViewBag.PatientName) ? ViewBag.xianjin : XianJin)
+                                    </td>
+                                    <td>
+                                        @(String.IsNullOrEmpty(ViewBag.PatientName) ? ViewBag.shougong : ShouGong)
+                                    </td>
+                                    <td>
+                                        @(String.IsNullOrEmpty(ViewBag.PatientName) ? ViewBag.jiangli : Reward)
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td class="txtUserCount">
+                                        人头数： @(String.IsNullOrEmpty(ViewBag.PatientName) ? ViewBag.UserCount : 1)
+                                    </td>
+                                    <td colspan="2">
+                                    </td>
+                                </tr>
+                                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 16))
+                            </tbody>
+                        </table>
+
+                        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+                    </form>
+    <div style="height:100px;"></div>
+<script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+    })
+
+    function OpenOrderPerformance(orderNo) {
+        art.dialog.open("/MoneyManage/StaffPerformanceDetail?orderNo=" + orderNo, { title: "订单业绩", width: 860, height: 500 });
+    }
+
+
+    //打开订单业绩详细
+    function OpenOrderPerformance(orderNo) {
+
+        art.dialog.open("/MoneyManage/StaffPerformanceDetail?orderNo=" + orderNo, { title: "订单业绩", width: 860, height: 500 });
+    }
+
+
+
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        //计算head高度，宽度 计算articles高度
+       
+      
+    })
+
+</script>
+<script src="/Scripts/ymx/commonTable.js"></script>

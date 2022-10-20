@@ -1,0 +1,215 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "收银管理";
+    Layout = null;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    CashManage.Factory.IBLL.ICashManageBLL cashBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    //顾客ID
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+    ViewBag.OrderNo = Request["orderno"];
+
+    //查询门店美容师
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);
+    //获取用户所有的划扣次数
+    var projectList = cashBll.GetProjectBalance(UserID, 0, ViewBag.ParentHospitalID);
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+        type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+        <div class="mainContentRight_bottom clearfix">
+            <div class="accountdiv" style="margin-top: 5px;">
+                <input type="hidden" id="orderno" value="@ViewBag.OrderNo" />
+                <input type="hidden" id="labuserid" name="UserID" value="@ViewBag.UserID" />
+                <input type="hidden" id="laballPrice" name="Price" value="0" />
+                <input type="hidden" id="OldOrderNo" name="OldOrderNo" value="" />
+                <input type="hidden" id="bedid"  name="bedid" value="@ViewBag.BedID"  />
+                <input type="button" class="submitbutton2" style="margin-left: 0px;" onclick="PatientList()"
+                    value="选择客户" />
+                <label style="font-weight: normal;">
+                    客户姓名：</label><a id="labUserName" style="color: Blue;"
+            href="@Url.Content("~/PatientManage/PatientDetail?UserID=")@UserID">@ViewBag.UserName</a>
+                <label style="font-weight: normal;">
+                    &nbsp; 结余金额：</label>
+                <label id="labPrice">
+                    @ViewBag.Price</label>
+                <label style="font-weight: normal;">
+                    &nbsp; 结余次数：</label>
+                <label id="labTiems">
+                    @ViewBag.Tiems</label>
+                <label style="font-weight: normal;">
+                    &nbsp; 欠款总额：</label>
+                <label id="labQinakuan">
+                    @ViewBag.AllPrice</label>
+            </div>
+            <div class="accountdiv" style="background-color: White;">
+                划扣次数：
+                <select id="selectProject" style="width: 200px; height: 30px;">
+                    <option value="-999">请选择项目</option>
+                    @foreach (var info in projectList)
+                    {
+                 
+                        <option value="@info.ID">@info.Name (剩余 @info.Tiems 次）</option>
+                    }
+                </select>
+                <input type="button" class="submitbutton4" onclick="ProjetList()" value="选择项目" />
+                <input type="button" class="submitbutton4" onclick="ProductList()" value="选择产品" />
+            </div>
+            <table class="gridTable" style="width: 96%;">
+                <thead>
+                    <tr >
+                        <th>
+                            名称
+                        </th>
+                        <th>
+                            单价
+                        </th>
+                        <th>
+                            数量
+                        </th>
+                        <th>
+                            合计
+                        </th>
+                        <th style="width: 80px;">
+                            美容师
+                        </th>
+                        <th style="width: 80px;">
+                            顾问 &nbsp;&nbsp;<a style="color: Blue;" href="javascript:;" id="btnmore">更多</a>
+                        </th>
+                        <th class="isshowth" style="display: none;">
+                            是否指定
+                        </th>
+                        <th class="isshowth" style="display: none;">
+                            消耗
+                        </th>
+                        <th class="isshowth" style="display: none;">
+                            手工
+                        </th>
+                        <th>
+                            操作
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="gridtbody">
+                </tbody>
+            </table>
+            <div class="accountdiv">
+                <label style="font-weight: normal;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;消费总额：</label><label id="labamout">0</label>
+                <label style="font-weight: normal;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 卡类消费：</label>
+                <label id="labcardamout">
+                    0</label>
+                <label style="font-weight: normal;">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 应付现金：</label>
+                <label id="labcash" style="color: Red;">
+                    0</label>
+            </div>
+            <div class="accountdiv">
+                <input type="button" class="submitbutton2" value="挂 单" onclick="OperateOrderonBed()" />
+                @*     <input type="button" class="submitbutton2" onclick="GetOperateOrder()" value="提 单" />*@
+                <input type="button" class="submitbutton2" value="结 账" onclick="CheckOrderOnBed()" />
+                @*     <input type="button" id="btnsave" class="submitbutton2" value="返 回" onclick=" history.go(-1)" />*@
+            </div>
+        </div>
+        </form>
+    </div>
+    <div id="appendUser" style="display: none;">
+        <ul>
+            <li class="liMenu"><a href="javascript:;">点击选择</a></li>
+            <ul class="liHide ulClass">
+                @foreach (var info in persoList)
+                {
+                    <li class="liClass">
+                        <input type="checkbox" id="chk(@info.UserID)" value="@info.UserID" name="UserID" /><label for="chk(@info.UserID)">@info.UserName </label>
+                    </li>
+                }
+            </ul>
+        </ul>
+    </div>
+    <div id="appendGuUser" style="display: none;">
+        <ul>
+            <li class="liMenu1"><a href="javascript:;">点击选择</a></li>
+            <ul class="liHide1 ulClass">
+                @foreach (var info in persoList)
+                {
+                    <li class="liClass">
+                        <input type="checkbox" id="chk1(@info.UserID)" value="@info.UserID" name="UserID" /><label for="chk1(@info.UserID)">@info.UserName</label>
+                    </li>
+                }
+            </ul>
+        </ul>
+    </div>
+</body>
+</html>
+<script src="../../Scripts/Controls/CashManage/Consumer.js" type="text/javascript"></script>
+<script type="text/javascript">
+    ////ws
+    //$("#appendUser").delegate("ul.liHide ulClass", "click", function () {
+    //    alert(5);
+    //    var $chekbox = $(this).find("input:checkbox");
+    //    alert(1);
+    //    if ($chekbox.prop("checked") == false) {
+    //        $(':checkbox[name=UserID]').removeAttr('checked');
+
+    //        $(this).attr('checked', 'checked');
+    //        $("#check_box").val($(this).val());
+    //    }
+    //});
+    //$("#appendGuUser").delegate("ul.liHide1 ulClass", "click", function () {
+    //    alert(6);
+    //    var $chekbox = $(this).find("input:checkbox");
+    //    alert(2);
+    //    if ($chekbox.prop("checked") == false) {
+    //        $(':checkbox[name=UserID]').removeAttr('checked');
+
+    //        $(this).attr('checked', 'checked');
+    //        $("#check_box").val($(this).val());
+    //    }
+    //});
+    $(function () {
+        if ($("#orderno").val() != '') {
+            $.ajax({
+                type: "post", //使用get方法访问后台 
+                dataType: "text", //返回json格式的数据
+                url: getControllerUrl("CashManage", "GetOrderDetail"),
+                data: { "OrderNo": $("#orderno").val() },
+                success: function (data) {
+                    //赋值下拉框
+                    $("#gridtbody").append(data);
+                    Caculatecash();
+                },
+                error: function () {
+                    artdialogfail("操作失败！");
+                }
+            });
+        }
+    })
+
+</script>

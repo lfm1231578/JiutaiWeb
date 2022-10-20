@@ -1,0 +1,251 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "HospitalDetail";
+    IPersonnelManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var entity = systemBLL.HospitalEntityByID(ViewBag.HospitalID);
+    string busiesstime1 = "";
+    string busiesstime2 = "";
+    if (!String.IsNullOrEmpty(entity.BusinessHours))
+    {
+        busiesstime1 = entity.BusinessHours.Split('-')[0];
+        busiesstime2 = entity.BusinessHours.Split('-')[1];
+    }
+    string ImgPath = System.Configuration.ConfigurationManager.AppSettings["ImgPath"];
+}
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.js"></script>
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.handlers.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //头像
+
+        $(".upload-img").each(function () {
+            $(this).InitSWFUpload({ btntext: "上传门店照片", btnwidth: 119, single: true, water: false, thumbnail: false, filesize: "2048", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+        });
+
+    });
+</script>
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top" >
+           <label class="Soliddots">●</label>  编辑门店信息</div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomHospital">
+            <form id="myform" action="@Url.Content("~/BaseInfo/UpdateHospital")" class="formular" method="post"  style="position:relative;"  enctype="multipart/form-data"  >
+            <table class="mainContentRight_bottomnewdepart" style="z-index: 0px;">
+                <tr>
+                    <td style="width: 110px;">
+                        门店名称
+                    </td>
+                    <td>
+                        <input type="text" name="Name" id="txtName" value="@entity.Name" class="validate[required] text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        联系人
+                    </td>
+                    <td>
+                        <input type="text" name="ContanctName" id="txtContanctName" value="@entity.ContanctName" class="text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        联系方式
+                    </td>
+                    <td>
+                        <input type="text" name="Phone" id="txtPhone" value="@entity.Phone" class="validate[custom[phone]] text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        门店地址
+                    </td>
+                    <td>
+                        <input type="text" name="Address" id="txtAddress" value="@entity.Address" class="text-input"  disabled="disabled"  />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        营业时间
+                    </td>
+                    <td>
+                        <select id="selectbusiesstime1" class="select" name="busiesstime1">
+                            <option value="7:00">7:00</option>
+                            <option value="7:30">7:30</option>
+                            <option value="8:00">8:00</option>
+                            <option value="8:30">8:30</option>
+                            <option value="9:00">9:00</option>
+                            <option value="9:30">9:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="4:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:30">21:30</option>
+                            <option value="22:00">22:00</option>
+                            <option value="22:30">22:30</option>
+                            <option value="23:00">23:00</option>
+                        </select><div style="width: 20px; float: left; line-height: 40px; text-align: center;">
+                            -</div>
+                        <select id="selectbusiesstime2" class="select" name="busiesstime2">
+                            <option value="7:00">7:00</option>
+                            <option value="7:30">7:30</option>
+                            <option value="8:00">8:00</option>
+                            <option value="8:30">8:30</option>
+                            <option value="9:00">9:00</option>
+                            <option value="9:30">9:30</option>
+                            <option value="10:00">10:00</option>
+                            <option value="10:30">10:30</option>
+                            <option value="11:00">11:00</option>
+                            <option value="11:30">11:30</option>
+                            <option value="12:00">12:00</option>
+                            <option value="12:30">12:30</option>
+                            <option value="13:00">13:00</option>
+                            <option value="13:30">13:30</option>
+                            <option value="4:00">14:00</option>
+                            <option value="14:30">14:30</option>
+                            <option value="15:00">15:00</option>
+                            <option value="15:30">15:30</option>
+                            <option value="16:00">16:00</option>
+                            <option value="16:30">16:30</option>
+                            <option value="17:00">17:00</option>
+                            <option value="17:30">17:30</option>
+                            <option value="18:00">18:00</option>
+                            <option value="18:30">18:30</option>
+                            <option value="19:00">19:00</option>
+                            <option value="19:30">19:30</option>
+                            <option value="20:00">20:00</option>
+                            <option value="20:30">20:30</option>
+                            <option value="21:00">21:00</option>
+                            <option value="21:30">21:30</option>
+                            <option value="22:00">22:00</option>
+                            <option value="22:30">22:30</option>
+                            <option value="23:00">23:00</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        周边交通
+                    </td>
+                    <td>
+                        <input type="text" name="Traffic" id="txtTraffic" value="@entity.Traffic" class="text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>单据号前缀</td>
+                    <td><input type="text" name="Prefix" id="Prefix" value="@entity.Prefix" class="text-input" /></td>
+                </tr>
+
+                <tr>
+                    <td>
+                        门店特色
+                    </td>
+                    <td>
+                     <textarea rows="7" cols="60" name="Characteristic" class=" textarea">@entity.Characteristic</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        门店介绍
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="Memo" class=" textarea">@entity.Memo</textarea>
+                    </td>
+                </tr>
+                <tr style="height: 50px; margin: 10px;">
+                    <td>
+                    </td>
+                    <td>
+                        <div style="height: 40px;">
+                         
+                                <input type="button" id="btnsave" class="submitbutton2" value="保 存" />
+                         
+                            &nbsp;&nbsp;<input class="submitbutton2" type="button" style="*margin-top: -12px;"
+                                onclick="history.go(-1)" value="返 回" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="imgupload" style="top: 50px; right: 40px;height: 152px; width: 120px;">
+                 <input type="hidden" name="hidFocusPhoto" id="hidFocusPhoto1" runat="server" class="focus-photo" />
+                <div class="photo-list">
+                    <ul id="photolistul">
+                        <li>
+                            <input type="hidden" name="hid_photo_name" value="@entity.UserID|@entity.Img|@entity.Img" />
+                            <div onclick="setFocusImg(this);" style="border: 0px;">
+                                @if (String.IsNullOrEmpty(entity.Img))
+                                {
+                                    <img src="/Content/themes/default/images/noface.jpg" width="120" height="120" />
+                                }
+                                else
+                                {
+                                    <img src="@(ImgPath+entity.Img)"  width="120" height="120"/>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="upload-box upload-img">
+                   
+                </div>
+                 <label style="color: Red;font-size:12px;">
+                        建议大小390x390</label>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#selectbusiesstime1 option[value='@busiesstime1']").attr("selected", "selected");
+    $("#selectbusiesstime2 option[value='@busiesstime2']").attr("selected", "selected");
+
+    $("#mainContentRight_bottomHospital").height(getDocumentHeight() - $("#header").height() - $("#footer").height());
+
+     //保存
+     $("#btnsave").click(function(){
+         if($("#txtName").val()==""  )
+         {
+            $('#myform').submit();
+            artdialog("门店名称不能为空！","");
+            return;
+         }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/UpdateHospital")",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                alert("Connection error");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("修改成功！","@Url.Content("~/BaseInfo/HospitalDetail")")
+               }else
+               {
+                artdialogfail("修改失败！");
+               }
+            }
+        });
+     });
+</script>

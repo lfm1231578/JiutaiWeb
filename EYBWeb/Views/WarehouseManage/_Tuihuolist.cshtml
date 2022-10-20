@@ -1,0 +1,141 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.WarehouseEntity.BuyOrderEntity>
+@{
+    Layout = null;
+    var allprice = ViewBag.AllPrice;
+    var allnumber = ViewBag.AllNumber;
+    var  myHospitalID=ViewBag.HospitalID;
+}
+<form action="" method="post" id="searchForm">
+<input type="hidden" value="" name="orderDirection" id="orderDirection" />
+<input type="hidden" value="" name="orderField" id="orderField" />
+  <table class="gridTable" style="width: 100%; margin: 0 auto; border-collapse: collapse;">
+        <thead style="position:absolute;">
+            <tr style="">
+            @*<th>
+                业务序号
+            </th>*@
+                <th>
+                    业务单号
+                </th>
+                <th>
+                    业务类型
+                </th>
+                <th>
+                    供应商
+                </th>
+                <th>
+                    业务日期
+                </th>
+                <th>
+                    实付金额
+                </th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="height:40px;"></tr>
+
+            @foreach (var info in Model)
+            {
+                <tr>
+                    @*<td>
+                        @info.DocumentNumber
+                    </td>*@
+                    <td>
+                        <a href="javascript:OpenDailogDetail(@info.ID);">@info.OrderNo</a>
+                    </td>
+                    <td>
+                        @EYB.Web.Code.PageFunction.GetBuyOrderType(info.Type)
+                    </td>
+                    <td>
+                        @info.SupplierName
+                    </td>
+                    <td>
+                        @info.CreateTime.ToString("yyyy-MM-dd")
+                    </td>
+                    <td>
+                        @info.ActualMoney
+                    </td>
+                    <td>
+                        <a href="javascript:OpenDailogDetail(@info.ID);">编辑</a>
+                        @*@if (info.Statu == 1)
+                        {
+                            <a href="javascript:OpenDailogDetail(@info.ID);">审核</a>
+                                        <a href="#" onclick="chuku(@info.ID)">出库</a>
+                                        <a href="@Url.Content("~/WarehouseManage/JinhuoEdit")?Type=tui&ID=@info.ID">编辑</a>
+                                        }
+                                        else
+                                        {
+                                        <label>
+                                            已审核
+                                        </label>
+                                        }*@
+                    </td>
+                </tr>
+            }
+          
+        </tbody>
+    </table>
+  <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse;
+        overflow-x: hidden; width: 100%;" cellpadding="0" cellspacing="0">
+   <tbody>
+       <tr>
+           <td style="border-left:1px solid #d6d6d6;"></td>
+           <td style="border-left:1px solid #fff;"></td>
+           <td style="border-left:1px solid #fff;"></td>
+           <td style="text-align: right;border-left:none; ">
+               实退总额:&nbsp;
+           </td>
+           <td>
+               @ViewBag.AllActualMoney
+           </td>
+           <td>
+               应退总额:
+           </td>
+           <td>
+               @ViewBag.AllNeedMoney
+           </td>
+           <td style="border-left:1px solid #fff;"></td>
+
+       </tr>
+       <tr>
+           <td colspan="4" style="text-align: right;">
+               已审核实退总额:&nbsp;
+           </td>
+           <td>
+               @ViewBag.TActualMoney
+           </td>
+           <td>
+               已审核应退总额:
+           </td>
+           <td>
+               @ViewBag.TNeedMoney
+           </td>
+           <td style="border-left:1px solid #fff;"></td>
+
+       </tr>
+       <tr>
+           <td colspan="4" style="text-align: right;">
+               未审核实退总额:&nbsp;
+           </td>
+           <td>
+               @ViewBag.FActualMoney
+           </td>
+           <td>
+               未审核应退总额:
+           </td>
+           <td>
+               @ViewBag.FNeedMoney
+           </td>
+           <td style="border-left:1px solid #fff;"></td>
+
+       </tr>
+      </tbody>
+  </table>
+
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script src="../../Scripts/ymx/commonTable.js"></script>

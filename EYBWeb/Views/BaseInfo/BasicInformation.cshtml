@@ -1,0 +1,140 @@
+﻿@using HS.SupportComponents;
+@{
+    ViewBag.Title = "基础信息";
+}
+@section head
+{
+    <link href="../../Content/themes/css/tree.css" rel="stylesheet" type="text/css" />
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+            </label>基础字典设置
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div style="height: 39px; width: 100%;">
+                <a href="/BaseInfo/EditBaseInfo?Type=Add" style="" class="abtn">添加</a>
+            </div>
+            <div class="mainContentRight">
+                <div style="width: 30%; float: left; border: 1px solid  #eeeeee; height: 900px;">
+                    <div>
+                        <div class="panelTable">
+                            <div id="setDataRightContent" style="height: 400px;">
+                            </div>
+                            <input type="hidden" id="hiddeninfoType" />
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 68%; float: left; border: 1px solid  #eeeeee; height: 900px;">
+                    <div class="pageContent">
+                        <table class="gridTable" id="TableList">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        分类名称
+                                    </th>
+                                    <th style="display:none;">
+                                        分类编码
+                                    </th>
+                                    <th>
+                                        操作
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../Scripts/Jquery/plugins/jquery.tree.js" type="text/javascript"></script>
+<script type="text/javascript">
+        $(function () {
+
+            $.ajax({
+                type: "post", //使用get方法访问后台
+                dataType: "json", //返回json格式的数据
+                url: getControllerUrl("SystemManagement", "GetBaseInfoType"),
+                success: function (data) {
+
+                     for (let i = 0; i < data[0].ChildNodes.length; i++) {
+                         if (!data[0].ChildNodes[i].text) {
+                             data[0].ChildNodes.splice(i, 1);
+                             break;
+                         }
+                    }
+                    console.log(data[0])
+                    let arr10 = ['尊贵级别', '回访主题类别', '出入库操作类型', '积分操作类型','Category'];
+
+                     data[0].ChildNodes = data[0].ChildNodes.filter((item) => !(arr10.includes(item.text)|| (arr10.includes(item.value)&& item.text=='费用项目名称') ));
+                     var o = { onnodeclick: function (item) {
+                        $("#txtinfotype").val(item.value);
+                        $("#hiddeninfoType").val(item.value);
+                        gettablist(item.value,item.id);
+
+                    }
+                    };
+                    o.data = data;
+                    $("#setDataRightContent").treeview(o);
+                    //$("li.bbit-tree-node").eq(0).click();
+                },
+                error: function (xhr) {
+                    alert('数据没有加载成功！');
+                }
+            });
+//            $("#setDataRightContent").delegate(".bbit-tree-node","click",function(){
+//                $(this).find(".bbit-tree-node-el").removeClass("bbit-tree-selected");
+//            });
+
+
+            //删除操作
+            $("#tbody").delegate('.delbaseinfo',
+                'click',
+                function () {
+                    var thishtml = $(this); //获取自身,防止后面请求$(this)失效
+                    var id = $(this).parent().find(".hidid").val(); //获取ID值
+                    $.ajax({
+                        cache: true,
+                        type: "POST",
+                        url: "@Url.Content("~/BaseInfo/Delbaseinfo?ID=")" + id,
+                        async: false,
+                        error: function (request) {
+                            artdialogfailTwo("删除失败！", "", "250", "100");
+                        },
+                        success: function (data) {
+                            if (data > 0) {
+                                artdialog("操作成功！", "");
+                                thishtml.parent().parent().remove();
+                            } else {
+                                artdialog("操作失败！", "");
+                            }
+                        }
+                    });
+
+                });
+        });
+
+        //获取列表
+        function gettablist(obj,id) {
+            var type = obj;
+              $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/GetTablelist?type=")"+type+"&id="+id,
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("获取列表失败！","","250","100");
+            },
+                  success: function (data) {
+
+                $("#tbody").empty();//清空元素
+                $("#tbody").append(data);
+            }
+        });
+        }
+</script>

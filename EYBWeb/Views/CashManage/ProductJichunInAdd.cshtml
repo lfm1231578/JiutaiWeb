@@ -1,0 +1,213 @@
+﻿@{
+
+    Layout = null;
+    var Type = Request["Type"];
+
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentBody">
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <form id="myform" action="@Url.Content("~/CashManage/AddProductJichunIn")" class="clearfix" method="post">
+
+                    <table class="mainContentRight_table ">
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>顾客姓名
+                            </td>
+                            <td>
+                                <input type="hidden" name="UserID" id="UserID" value="" />
+                                <input type="hidden" name="AllCount" id="AllCount" value="" />
+                                <input type="text" disabled="disabled" name="UserName" id="UserName" class="text-input" value=""
+                                       style="float: left;" />
+                                <input type="button" id="btnAddHSUserID" style="float: left;" class="submitbutton4"
+                                       onclick="PatientList()" value="选择顾客" />
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>寄存类型
+                            </td>
+                            <td>
+                                <select id="JiChunType" name="JiChunType">
+                                    <option value="0">整体寄存</option>
+                                    <option value="1">零散寄存</option>
+                                </select>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>选择要寄存的产品
+                            </td>
+                            <td colspan="3">
+                                <input type="button" id="AddTreatment" class="submitbutton4" style="margin-left: 10px;"
+                                       value="选择产品" onclick="oppadddisage()" />
+                            </td>
+                        </tr>
+                        <tr style="height: auto;">
+                            <td colspan="4">
+                                <table id="ProjectTable" class="gridTable">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                产品名称
+                                            </th>
+                                            <th>
+                                                寄存数量
+                                            </th>
+                                            <th>
+                                                操作
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                备注
+                            </td>
+                            <td colspan="3">
+                                <textarea name="Memo" cols="42" style="height: 50px; line-height: 20px;margin-top:10px;" class="textarea"></textarea>
+                            </td>
+                        </tr>
+                        <tr style="height: 50px;">
+                            <td class="clearfix"></td>
+                            <td colspan="3">
+                                <input type="button" id="btnsave" class="submitbutton2" onclick="saveAs()" value="保 存" />
+                                <input type="button" onclick="closeedNorefresh()" class="submitbutton2" value="关 闭" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    //添加项目.attr("selected", "selected")
+    function oppadddisage() {
+        art.dialog.open("/BaseInfo/ProductList", {
+            title: "产品列表", width: 660, height: 470, close: function () {
+                var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+                if (bValue !== undefined) {
+                    Selectsection(bValue);
+                }
+            }
+        });
+    }
+    //选择顾客赋值
+    function InFoDate(obj) {
+        $("#UserID").val(obj.split("|")[0]);
+        $("#UserName").val(obj.split("|")[1]);
+    }
+
+    //选择项目赋值
+    function Selectsection(obj) {
+        var arry = obj.split("$");
+        var str = "";
+        for (var i = 0; i < arry.length - 1; i++) {
+            str += '<tr><td class="td1"><input type="hidden" class="idandvalue" name="GiveIDList" value="' + arry[i].split("|")[0] + '" />' + arry[i].split("|")[1] + '</td><td><input type="text"  onkeyup="CheckInputIntFloatReturn0(this)" name="txtinput" class="smallinput txtnumber"   value="1"></td> <td><a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>';
+
+        }
+
+        $("#ProjectTable").append(str);
+        //获取中次数
+        var txtnumber = $("#ProjectTable").find(".txtnumber");
+        var allcount = 0;
+        txtnumber.each(function () {
+            allcount += parseInt($(this).val());
+        })
+        $("#AllCount").val(allcount);
+    }
+    //删除功能
+    $(function () {
+        $("#ProjectTable").delegate('.deletebtn', 'click', function () {
+            // $(this).parent().parent().remove();
+            var price = $(this).parent().parent().find(".txtAllPrice").val();
+            var allprice = $("#txtPrice").text();//获取总价
+
+            $(this).parent().parent().remove();
+            GetSumPrice();
+        })
+    });
+
+    //次数改变
+    $("#ProjectTable").delegate('.txtnumber', 'keyup', function () {
+        var txtnumber = $("#ProjectTable").find(".txtnumber");
+        var allcount = 0;
+        txtnumber.each(function () {
+            allcount += parseInt($(this).val());
+        })
+        $("#AllCount").val(allcount);
+    });
+
+
+
+
+    //提交操作
+    function saveAs() {
+        $("#btnsave").attr("disabled", "disabled");
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/CashManage/AddProductJichunIn")",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                artdialogfailTwo("操作失败！", "", "250", "100");
+                $("#btnsave").attr("disabled", false);
+            },
+            success: function (data) {
+                if (data > 0) {
+                    alert("保存成功!");
+                    closeed();
+                } else {
+                    artdialogfailTwo("操作失败！", "", "250", "100");
+                    $("#btnsave").attr("disabled", false);
+                }
+            }
+        });
+    }
+
+
+
+
+</script>
+</html>

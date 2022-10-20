@@ -1,0 +1,167 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.PatientEntity.ArchivesChangeLogEntity>
+    @{
+
+        Layout = null;
+    }
+    <style>
+        /*******表格********/
+        .gridTable tbody {
+            display: block;
+        }
+
+        .gridTable tr {
+            display: block;
+        }
+
+        .gridTable th {
+            width: 200px;
+            line-height: 40px;
+        }
+
+        .gridTable td {
+            width: 200px;
+            text-align: center;
+        }
+    </style>
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse; overflow: scroll;">
+            <thead style="display: block; position: absolute;">
+                <tr>
+                    <th>
+                        序号
+                    </th>
+                    <th>
+                        会员名称
+                    </th>
+                    <th>
+                        操作人
+                    </th>
+                    <th>
+                        变更模块
+                    </th>
+                    <th>
+                        变更类别
+                    </th>
+                    <th>
+                        次数(或金额)
+                    </th>
+                    <th>
+                        有效期
+                    </th>
+                    <th>
+                        单价(或折率)
+                    </th>
+                    <th>
+                        单据号
+                    </th>
+                    <th>
+                        变更时间
+                    </th>
+                    <th style="width:150px; overflow:hidden;">
+                        项目
+                    </th>
+                    <th>
+                        备注
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height: 40px;">
+                    <td colspan="11">
+                    </td>
+                </tr>
+                @foreach (var entity in Model)
+                {
+                    <tr style="height:auto">
+                        <td>
+                            @entity.ID
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.UpdateStaffName
+                        </td>
+                        <td>
+                            @entity.GetChangeClassName()
+                        </td>
+                        <td>
+                            @entity.GetChangeTypeName()
+                        </td>
+                        <td>
+                            <label>
+                                @entity.ResidualFrequency /@entity.newResidualFrequency
+                            </label>
+
+                        </td>
+                        <td>
+                            <label>
+                                @entity.ValidityPeriod /@entity.newValidityPeriod
+                            </label>
+
+                        </td>
+                        <td>
+                            <label>
+                                @entity.ConsumptionUnitPrice / @entity.newConsumptionUnitPrice
+                            </label>
+
+                        </td>
+                        <td>
+                            @entity.OrderNo
+                        </td>
+                        <td>
+                            @entity.CreateTime.ToString("yyyy-MM-dd")
+                        </td>
+                        <td style=" word-break:break-word; word-wrap:break-word; ">
+                            <div style="height:30px; overflow:hidden;">  @entity.Name</div>
+                        </td>
+                        <td>
+                            @entity.Memo
+                        </td>
+                    </tr>
+                }
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 9))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+            //计算head高度，宽度 计算articles高度
+            //var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+            //$(".gridTable thead").css("top", theadheight + "px");
+            //$(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+
+            var theadheight = $("#header").height() -10 + $(".accountdiv").height();
+            $(".gridTable thead").css("top", theadheight + "px");
+            $(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 10) + "px");
+            $(".gridTable tr").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 10) + "px");
+            var gridtablewidth = $(".gridTable").width();
+            var thlen = $(".gridTable thead th").length;
+            $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+            $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+
+            $(".gridTable thead th").css("width", (parseInt((gridtablewidth / thlen))) + "px");
+                $(".gridTable tr td").css("width", (parseInt((gridtablewidth / thlen))) + "px");
+        })
+    </script>
+    <script type="text/javascript">
+    $(function () {
+        window.setTimeout(function () {
+            console.log(123)
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        let theadWidth = $(".gridTable tbody").width()
+        $(".gridTable thead").css("width", theadWidth + "px")
+        let tdWidth = (theadWidth / thlen) + "px";
+        $(".gridTable thead th").css("width", tdWidth);
+        $(".gridTable tr td").css("width", tdWidth);
+        }, 100)
+
+      })
+
+    </script>

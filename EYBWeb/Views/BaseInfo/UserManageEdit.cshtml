@@ -1,0 +1,261 @@
+﻿@model EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity
+@{
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personnelManageBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    //获取门店的权限
+    EYB.ServiceEntity.PersonnelEntity.VersionEntity ve = new EYB.ServiceEntity.PersonnelEntity.VersionEntity();
+    ve.HospitalID = ViewBag.ParentHospitalID;
+    var list = personnelManageBll.SelectVersionList(ve);
+    var type = Request["Type"];
+    var hospitalList = personnelManageBll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+}
+<link href="/Scripts/Jquery/plugins/label/css/tab.css" rel="stylesheet" />
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots"></label>
+            @(type == "Edit" ? "编辑用户" : "新增用户")
+        </div>
+
+
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <input type="hidden" id="type" value="@type" />
+                <form id="myform" action="@Url.Content("~/BaseInfo/UpdateUserManage")" class="clearfix" method="post">
+                    <table class="mainContentRight_table ">
+                        <tr>
+                            <td class="tdright" style="width: 120px;">
+                                <span class="red">*&nbsp;</span>名称:
+                            </td>
+                            <td>
+                                <input type="hidden" value="@Model.UserID" name="UserID" />
+                                <input type="text" name="UserName" id="txtName" value="@Model.UserName" class="text-input input200" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>账号:
+                            </td>
+                            <td>
+                                <input type="text" name="LoginAccount" id="LoginAccount" @(type.ToUpper() == "ADD" ? "" : "readonly='readonly'") value="@(type.ToUpper() == "ADD" ? "" : Model.LoginAccount)" class="text-input input200" />
+                                <label style="color: Green;" id="labloginaccount">
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                密码:
+                            </td>
+                            <td>
+                                <input type="password" name="Password" class="text-input input200" value="@(type.ToUpper() == "ADD" ? "" : Model.Password)" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span> 性别:
+                            </td>
+                            <td>
+                                <select name="sex" class="select">
+                                    <option @(Model.Sex == "女" ? "seleted='selected'" : "") value="女">女</option>
+                                    <option @(Model.Sex == "男" ? "seleted='selected'" : "") value="男">男</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                权限:
+                            </td>
+                            <td>
+                                <select name="Version" class="select">
+                                    @foreach (var info in list)
+                                    {
+                                        <option value="@info.ID" @(info.ID == Model.Version ? "selected='selected'" : "")>@info.VersionName</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                所属分店:
+                            </td>
+                            <td>
+                                <select id="selHospitalID" name="HospitalID" class="select" style="height: 25px;
+                                width: 100px;">
+                                    @foreach (var info in hospitalList)
+                                    {
+                                        <option @(info.ID == Model.HospitalID ? "selected=selected" : "") value="@info.ID">@info.Name</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                用户类型:
+                            </td>
+                            <td class="ymxslectDis">
+                                <select id="selusertype" name="IsAPP" value="" disabled>
+                                    <option value="0" @(Model.IsAPP == 0 ? "selected=selected" : "")>PC系统用户</option>
+                                    <option value="1" @(Model.IsAPP == 1 ? "selected=selected" : "")>手机系统用户</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="trAdmin" style="@(Model.IsAPP == 1 ? "" : "display: none")">
+                            <td class="tdright">
+                                用户角色:
+                            </td>
+                            <td>
+                                <select name="IsAdmin">
+                                    <option value="0" @(Model.IsAdmin == 0 ? "selected=selected" : "")>美容师</option>
+                                    <option value="3" @(Model.IsAdmin == 3 ? "selected=selected" : "")>顾问</option>
+                                    <option value="2" @(Model.IsAdmin == 2 ? "selected=selected" : "")>店长</option>
+                                    <option value="1" @(Model.IsAdmin == 1 ? "selected=selected" : "")>老板</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr id="trRelevance" style="@(Model.IsAPP == 1 && new[] { 0, 3 }.Contains(Model.IsAdmin) ? "" : "display:none;")">
+                            <td class="tdright">
+                                关联员工:
+                            </td>
+                            <td>
+                                <input type="text" id="txtusername" readonly="readonly" class="text-input input200" value="@ViewBag.ContactUserName" />
+                                <input type="button" class="submitbutton4" onclick="SelectUserList()" value="选择员工"
+                                       style="margin: 5px;" />
+                                <input type="hidden" name="ContactUserID" id="hiddenContactUserID" value="@Model.ContactUserID" />
+                            </td>
+                        </tr>
+                        <tr style="height:10px;"></tr>
+                        <tr>
+                            <td></td>
+                            <td class="clearfix">
+                                <input type="button" id="btnsave" onclick="saveAs()" class="submitbutton2" value="保 存" />
+                                <a href="@Url.Content("~/BaseInfo/SysUserpage")" class="submitbutton3">返 回</a>
+                            </td>
+                            </td>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/Scripts/Jquery/plugins/label/js/tab.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("[name=IsAdmin]").change(function () {
+            var trRelevance = $("#trRelevance");
+            if ($(this).val() == "0" || $(this).val() == "3")
+                trRelevance.show();
+            else trRelevance.hide();
+        });
+
+        $('[name=IsAPP]').change(function () {
+            if ($(this).val() == '1') {
+                $("#trAdmin").show();
+                $("#trRelevance").show();
+            } else {
+                $("#trAdmin").hide();
+                $("#trRelevance").hide();
+            }
+        });
+    });
+
+    //选择员工
+    function SelectUserList() {
+        art.dialog.open("/PersonnelManage/PersonList",
+            {
+                title: "员工列表",
+                width: 660,
+                height: 470,
+                close: function () {
+                    var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+                    var bValueProductUserName = art.dialog.data('bValueProductusernmae'); // 读取B页面的数据
+                    if (bValue !== undefined) {
+                        //这里添加一个绑定方法
+                        $("#hiddenContactUserID").val(bValue);
+                        $("#txtusername").val(bValueProductUserName);
+                        //plusTabAdd(bValueProductUserName,bValue);
+                    }
+                }
+            });
+    }
+    //提交操作
+    function saveAs() {
+        var selHospitalId = $("#selHospitalID").val();
+        if (selHospitalId == null) {
+            alert("请选择所属分店！");
+            return false;
+        }
+         $('#selusertype').attr("disabled",false);
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Action("UpdateUserManage", "BaseInfo")",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                artdialogfailTwo("操作失败！", "", "250", "100");
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("保存成功！", "@Url.Content("~/BaseInfo/SysUserpage?t=" + DateTime.Now.Ticks)");//卡项选择,这个还没座列表页
+                } else {
+                    artdialogfailTwo("操作失败,员工不能相同！", "", "250", "100");
+                }
+            }
+        });
+
+    }
+
+    $("#LoginAccount").blur(function () {
+
+        if ($("#type").val().toUpperCase() == "ADD") {
+            var mobile = $("#LoginAccount").val();
+            if (mobile == "") {
+                $("#labloginaccount").text("请输入账号");
+                $("#labloginaccount").css("color", "red");
+                return;
+            }
+            $.ajax({
+                type: "post",
+                url: "/PersonnelManage/GetUserEntityByAccountHavePrefix",
+                data: { "loginAccount": mobile },
+                dataType: "json",
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                    alert("检查错误!");
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        // alert("该账号已经被占用！");
+                        $("#LoginAccount").val(""); $("#LoginAccount").focus();
+                        $("#labloginaccount").text("该账号不可用");
+                        $("#labloginaccount").css("color", "red");
+                        return false;
+                    } else {
+                        $("#labloginaccount").text("该账号可用");
+                        $("#labloginaccount").css("color", "green");
+                        return true;
+                    }
+                }
+            });
+
+        }
+
+
+    });
+</script>
+
+<script>
+            if ("@type" != "Edit") {
+                console.log($("#selusertype"))
+                //(localStorage.getItem("setUser") == "pc") ? $("#selusertype").val("0") : $("#selusertype").val("1");
+                if (localStorage.getItem("setUser") == "pc") {
+
+                    $("#selusertype").val("0")
+
+                } else {
+                    $("#selusertype").val("1");
+                     $("#trRelevance").show();
+                     $("#trAdmin").show();
+                }
+                console.log($("#selusertype").val() )
+            }
+</script>

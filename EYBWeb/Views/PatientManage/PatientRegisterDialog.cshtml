@@ -1,0 +1,391 @@
+﻿@using PatientManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.PatientEntity;
+@using EYB.ServiceEntity.SystemEntity;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using HS.SupportComponents;
+@{
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+    Layout = null;
+    var Hid = ViewBag.HospitalID;//门店ID
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    IPatientManageBLL patientBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPatientManageBLL>();//顾客
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //查询员工
+    IList<HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(Hid, 0);
+    //var docList = List.Where(x => x.IsDoctor > 0).ToList();
+    //查询详情
+    var patientInfo = patientBLL.GetPatienttEntityByID(Convert.ToInt64(UserID));//个人信息  
+    string[] address = new string[4];
+    //详细地址
+    if (!String.IsNullOrEmpty(patientInfo.Address))
+    {
+        address = patientInfo.Address.Split('-');
+    }
+    //获取省份
+    var SList = systemBLL.GetAllAreaList("171");
+    //var SList = AreaList.Where(x => x.ParentAreaCode == 171).ToList();
+    //基础字典查询
+    var BaseInfolist = systemBLL.GetBaseInfoTreeByType("Category", 1, ViewBag.ParentHospitalID);
+    //会员级别
+    var MemberTypelist = systemBLL.GetBaseInfoTreeByType("MemberType", 1, ViewBag.ParentHospitalID);
+    //获悉方式
+    var OriginList = systemBLL.GetBaseInfoTreeByType("Origin", 1, ViewBag.ParentHospitalID);
+    
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+      <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+        type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background:#fff;">
+    <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+        <form action="" method="post" class="clearfix" id="myform" style="position: relative;">
+        <input type="hidden" name="UserID" id="UserID" value="@patientInfo.UserID"/><!-- 顾客ID-->
+        <div class="mainContentRight_bottomContent">
+           <div class="accountdiv">
+                    基本资料</div>
+            <table class="mainContentRight_table">
+                <tr>
+                    <td class="tdright">
+                        <span class="red">*&nbsp;</span>姓名
+                    </td>
+                    <td>
+                        <input type="text"  class="validate[required] text-input input200" name="UserName" id="UserName" value="@patientInfo.UserName"/>
+                    </td>
+                    <td class="tdright">
+                        会员卡号
+                    </td>
+                    <td>
+                        <input type="text" name="MemberNo" class=" text-input input200" id="MemberNo" value="@patientInfo.MemberNo" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        生日
+                    </td>
+                    @{
+                        var Birthday = patientInfo.Birthday;
+                    }
+                    <td>
+                        <label style="margin-top: 5px; width: 50px; line-height: 26px; display: block; float: right;">
+                            <input type="checkbox" id="Calendar" name="Calendar"  @(patientInfo.Calendar == "农历" ? "checked=checked" : "") value="@patientInfo.Calendar" />农历</label>
+                        <select class="select" name="Y" id="Y">
+                            @{ for (int i = 1910; i < 2020; i++)
+                               { <option  @(Birthday + "" == "" ? "" : Birthday.Split('-')[0] == i.ToString() ? "selected=selected" : "")  value="@i">@i</option>} }
+                        </select><span class="tdspan">年</span><select class="select" style="margin-left: 5px;"
+                            name="M" id="M">@{ for (int i = 1; i <= 12; i++)
+                                               { <option @(Birthday + "" == "" ? "" : Birthday.Split('-')[1] == i.ToString() ? "selected=selected" : "") value="@i">@i</option>} }
+                        </select><span class="tdspan">月</span><select class="select" style="margin-left: 5px;"
+                            name="D" id="D">@{ for (int i = 1; i <= 31; i++)
+                                               { <option  @(Birthday + "" == "" ? "" : Birthday.Split('-')[2] == i.ToString() ? "selected=selected" : "") value="@i">@i</option>} }
+                        </select><span class="tdspan">日</span>
+                    </td>
+                    <td class="tdright">
+                        尊贵级别
+                    </td>
+                    <td>
+                        <select class="select" name="Category" id="Category">
+                            @foreach (var info in BaseInfolist)
+                            {
+                                <option  value="@info.InfoName" @(info.InfoName == patientInfo.Category ? "selected=selected" : "")>@info.InfoName
+                                </option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        美容师
+                    </td>
+                    <td>
+                        <select class="select" name="FollowUpMrUserID">
+                            <option value="0"></option>
+                            @foreach (var info in PersonList)
+                            {
+                                <option @(info.UserID == patientInfo.FollowUpMrUserID ? "selected=selected" : "") value="@info.UserID">@info.UserName</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="tdright">
+                        性别
+                    </td>
+                    <td>
+                         @if (patientInfo.UserID != 0)
+                            {
+                                <select class="select" name="Sex" id="Sex">
+                                    <option value="1"  @(patientInfo.Sex == 1 ? "selected=selected" : "")>女</option>
+                                    <option  value="0" @(patientInfo.Sex == 0 ? "selected=selected" : "")>男</option>
+                                </select>
+                            }
+                            else
+                            { 
+                                <select class="select" name="Sex" id="Sex">
+                                    <option value="1" selected="selected">女</option>
+                                    <option  value="0" >男</option>
+                                </select>
+                            }
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        咨询顾问
+                    </td>
+                    <td>
+                        <select class="select" name="FollowUpUserID">
+                            <option value="0"></option>
+                            @foreach (var info in PersonList)
+                            {
+                                <option @(info.UserID == patientInfo.FollowUpUserID ? "selected=selected" : "") value="@info.UserID">@info.UserName</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="tdright">
+                        会员级别
+                    </td>
+                    <td>
+                        <select class="select" name="ArchivesType">
+                            @foreach (var info in MemberTypelist)
+                            {
+                                <option  value="@info.InfoName" @(info.InfoName == patientInfo.ArchivesType ? "selected=selected" : "")>@info.InfoName
+                                </option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        手机
+                    </td>
+                    <td>
+                        <input type="text"  class="validate[custom[phone]] text-input input200" name="Mobile" id="Mobile" value="@patientInfo.Mobile" />
+                    </td>
+                    <td class="tdright">
+                        电子邮件
+                    </td>
+                    <td>
+                        <input type="text" name="Email" class="validate[custom[email]] text-input input200" id="email" value="@patientInfo.Email" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        QQ号
+                    </td>
+                    <td>
+                        <input type="text" class="text-input input200" name="QQ" id="QQ" value="@patientInfo.QQ" />
+                    </td>
+                    <td class="tdright">
+                        微信号
+                    </td>
+                    <td>
+                        <input type="text" class=" text-input input200" name="Weixin" id="Weixin" value="@patientInfo.Weixin" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        身份证号
+                    </td>
+                    <td>
+                        <input type="text" name="CertNo" class="text-input input200" id="CertNo" value="@patientInfo.CertNo" />
+                    </td>
+                    <td class="tdright">
+                        邮编
+                    </td>
+                    <td>
+                        <input   class="validate[] text-input input200" type="text" name="PostalCode" id="PostalCode" value="@patientInfo.PostalCode" />
+                    </td>
+                </tr>
+                     <tr>
+                    <td>
+                        获悉方式
+                    </td>
+                    <td colspan="3">
+                        <select class="select" name="Channel" id="Channel">
+                                <option value="0"></option>
+                                @foreach (var info in OriginList)
+                                {
+                                    <option  value="@info.InfoName" @(info.InfoName == patientInfo.Channel ? "selected=selected" : "")>@info.InfoName
+                                    </option>
+                                }
+                            </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        家庭地址
+                    </td>
+                    <td colspan="3">
+                        <select class="select" style="width: 99px;" id="SelProvince" name="S" onchange="GetCity()">
+                            @{foreach (var s in SList)
+                              {<option id="@s.AreaCode" @( address[0] == s.AreaName ? "selected=selected" : "") value="@s.AreaName">@s.AreaName</option>}}
+                        </select>
+                        <select style="width: 99px; margin-left: 5px;" class="select" name="Q" id="SelCity"
+                            onchange="GetArea()">
+                            <option value="">请选择市</option>
+                        </select>
+                        <select style="width: 99px; margin-left: 5px;" class="select" name="X" id="SelArea">
+                            <option value="">请选择县区</option>
+                        </select>
+                        <input style="width:200px;margin-left:5px;" type="text" class="text-input" name="AD" id="AD" value="@address[3]" />
+                    </td>
+                </tr>
+           
+                <tr>
+                    <td class="tdright">
+                        介绍
+                    </td>
+                    <td colspan="3">
+                        <textarea name="Memo" style="width: 500px;">@patientInfo.Memo</textarea>
+                    </td>
+                </tr>
+            </table>
+            <div class="mainContentButton clearfix">
+                <input type="submit" id="btnsave" class=" submitbutton2" value="保 存" style="margin-left: 80px;" />
+                <input type="reset" class="submitbutton2" value="重 置" />
+                <input type="button" class="submitbutton2" onclick="art.dialog.close();" value="关 闭" />
+                <input type="hidden" id="IsUp" name="IsUp" value="0" /><!--手机号存在是否修改顾客信1.修改0.不修改 -->
+            </div>
+        </div>
+        </form>
+    </div>
+</body>
+</html>
+<script type="text/javascript">
+    jQuery(document).ready(function(){
+        jQuery('#myform').validationEngine('attach', {
+            promptPosition: "topLeft",
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentRight_bottomInfo",
+            onValidationComplete: function(form, status){
+                if(status)
+                {
+                saveAs();
+                }
+        }
+        });
+        //获取地区列表
+        GetCity();
+    });
+    function saveAs()
+     {
+        if ($("#Calendar").prop("checked") == true) {
+             $("#Calendar").val("农历");
+        } else{
+            $("#Calendar").val("公历");
+        }
+     $.ajax({
+            cache: true,
+            type: "POST",
+            url: '@Url.Content("~/PatientManage/AddUpPatient")',
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                alert("保存出错");
+            },
+            success: function (data) {
+             if(data>0){
+             closeed();
+              // artdialog("保存成功！","@Url.Content("~/PatientManage/PatientInfoManage")");
+               }else{
+                artdialogfail("保存失败");
+               }
+            }
+        });
+     
+     }
+     //查询市
+    function GetCity() {
+        var obj=$("#SelProvince").find("option:selected").attr("id");
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data:{areacode:obj},
+            async:false,
+            success: function (data) {
+              $("#SelCity").empty();
+              var areacode ="";
+              $(data).each(function (i,n){
+                
+                  $("#SelCity").append("<option id="+n.AreaCode+" value="+n.AreaName+">"+n.AreaName+"</option>");
+              });
+                 $("#SelCity option[value='@address[1]']").attr("selected", true)
+            areacode= $("#SelCity").find("option:selected").attr("id"); 
+              GetAreaByCode(areacode);
+          
+            $("#SelArea option[value='@address[2]']").attr("selected", true)
+            }
+           
+        });
+     } 
+     //获取县区
+    function GetArea() {
+    var obj=$("#SelCity").find("option:selected").attr("id");
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data:{areacode:obj},
+            async:false,
+            success: function (data) {
+              $("#SelArea").empty();
+              $("#SelArea").append("<option value=''>请选择县区</option>");
+              $(data).each(function (i,n){
+                  $("#SelArea").append("<option id="+n.AreaCode+" value="+n.AreaName+">"+n.AreaName+"</option>");
+              })
+            }
+           
+        });
+     } 
+
+      //根据编号查询
+    function GetAreaByCode(code) {
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data:{areacode:code},
+            async:false,
+            success: function (data) {
+              $("#SelArea").empty();
+                $("#SelArea").append("<option value=''>请选择县区</option>");
+              $(data).each(function (i,n){
+                  $("#SelArea").append("<option  id="+n.AreaCode+" value="+n.AreaName+">"+n.AreaName+"</option>");
+                  
+              })
+            }
+           
+        });
+     }
+     // 所有复选框 单选
+     $("input:checkbox").click(function(){
+        //$(this).attr("checked",true);
+        if(!$(this).hasClass("Diseases"))
+        {
+        $(this).siblings("input[type=checkbox]").attr("checked",false);
+        }
+     })
+
+   
+</script>

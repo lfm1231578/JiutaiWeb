@@ -1,0 +1,134 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.Statistics.StatisticsShareholderBonus>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>
+                        选择
+                    </th>
+                    <th>
+                        姓名
+                    </th>
+                    <th>
+                        微信昵称
+                    </th>
+                    <th>
+                        人脉数
+                    </th>
+                    <th>
+                        累计充值保证金
+                    </th>
+                    <th>
+                        累计消费保证金
+                    </th>
+                    <th>
+                        剩余保证金
+                    </th>
+                    <th>
+                        累计分红
+                    </th>
+                    <th>
+                        累计介绍分红
+                    </th>
+                    <th>
+                        收入合计
+                    </th>
+                    <th>
+                        已提现金额
+                    </th>
+                    <th>
+                        剩余可提现金额
+                    </th>
+                    @*<th>
+                        门店
+                    </th>*@
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr class="ableclick">
+                        <td>
+                            <input type="radio" id="check_box" name="checkbox" class="checkbox" value="@entity.Id" />
+                        </td>
+                        <td>
+                            @entity.UserName
+                        </td>
+                        <td>
+                            @entity.WxNickname
+                        </td>
+                        <td>
+                            @entity.NetworkingCount
+                        </td>
+                        <td>
+                            @entity.RechargeDeposit
+                        </td>
+                        <td>
+                            @entity.ExpenseDeposit
+                        </td>
+                        <td>
+                            @entity.Deposit
+                        </td>
+                        <td>
+                            @entity.Bonus
+                        </td>
+                        <td>
+                            @entity.ReferrerBonus
+                        </td>
+                        <td>
+                            @(entity.Bonus + entity.ReferrerBonus)
+                        </td>
+                        <td>
+                            @entity.WithdrawAmount
+                        </td>
+                        <td>
+                            @entity.BonusAmount
+                            @*@(entity.Bonus + entity.ReferrerBonus - entity.WithdrawAmount)*@
+                        </td>
+                        @*<td>
+                            @entity.HospitalName
+                        </td>*@
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function() {
+            $('#sp').text(@Model.TotalItemCount);
+
+            $('#proudectList tbody tr').click(function(e) {
+                $(this).find('[name=checkbox]').attr('checked', true);
+            });
+        });
+
+        //防止提现多选
+        $(':checkbox[name=checkbox]').each(function () {
+            $(this).click(function () {
+                if ($(this).attr('checked')) {
+                    $(':checkbox[name=checkbox]').removeAttr('checked');
+                    $(this).attr('checked', 'checked');
+                    //赋值给隐藏域
+                    $("#check_box").val($(this).val());
+                }
+            });
+        });
+        $("#articles").delegate("tr.ableclick", "click", function () {
+            var $chekbox = $(this).find("input:checkbox");
+            if ($chekbox.prop("checked") == false) {
+                $(':checkbox[name=checkbox]').removeAttr('checked');
+
+                $(this).attr('checked', 'checked');
+                $("#check_box").val($(this).val());
+            }
+        });
+    </script>
+

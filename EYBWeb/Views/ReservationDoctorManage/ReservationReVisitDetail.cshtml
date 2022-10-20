@@ -1,0 +1,116 @@
+﻿@using ReservationDoctorManage.Factory.IBLL;
+@using DepartmentManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@using EYB.ServiceEntity.ReservationEntity;
+@using HS.SupportComponents;
+@{ 
+    Layout = null;
+    var HID = ViewBag.HospitalID;
+    var ID = ConvertValueHelper.ConvertIntValue(Request["ID"]);
+    var UserID = ConvertValueHelper.ConvertLongValue(Request["UserID"]);
+    var ids = Request["ids"];
+    var ReservationID = Request["ReservationID"];
+    IReservationDoctorManageBLL reserBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IReservationDoctorManageBLL>();
+    var list = reserBLL.GetReservationRevisitModel(ID, UserID);// ID and 门店ID 获取对象
+    list = list.Where(i => i.ID.ToString() == ids).ToList();
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="PlanCaseDetail" style="width: 650px;">
+        <table class="gridTable" >
+            <thead>
+                <tr>
+                    <th  width="64%">
+                        回访内容
+                    </th>
+                    <th  width="20%">
+                        回访时间
+                    </th>
+                    <th width="15%">
+                        回访人
+                    </th>
+                </tr>
+            </thead>
+            <tbody id="tbodydetail">
+                @foreach (var entity in list)
+                {
+                    <tr>
+                        <td>
+                            <div style="width:460px; overflow:hidden;"  title="@entity.Memo" >
+                                @entity.Memo
+                            </div>
+                        </td>
+                        <td >
+                            @entity.CreateTime
+                        </td>
+                        <td >
+                            @entity.UserName
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+       @* <div style="text-align: center; margin: 10px; padding-left: 200px;">
+            <input type="button" class="submitbutton2" id="btnsavedetail" onclick="showPlan()"
+                value="添 加" />
+            <input type="button" class="submitbutton2" onclick="art.dialog.close()" value="取 消" />
+        </div>*@
+    </div>
+    <div id="PlanCase" style="display: none; width: 400px; height: 230px">
+        <div>
+            <textarea style="height: 180px; width: 98%" id="Pcontent"></textarea></div>
+        <div style="text-align: center; margin: 10px; padding-left: 100px;">
+            <input type="button" class="submitbutton2" id="btnsave" value="保 存" />
+            <input type="button" class="submitbutton2" onclick="DivClose()" value="取 消" />
+        </div>
+    </div>
+</body>
+</html>
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<script type="text/javascript">
+     //弹出框
+     var dialog;
+     function showPlan() {
+         dialog = art.dialog({
+             title: '添加回访记录',
+             content: document.getElementById('PlanCase')
+         });
+     }
+     function DivClose() {
+         dialog.close();
+     }
+
+        //保存记录
+    $("#btnsave").click(function () { 
+    var memo = $("#Pcontent").val();
+    if(memo=="")
+    {
+       artdialogfail("回访记录不能为空!");return;
+    }
+       $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/ReservationDoctorManage/AddReservationRevisit")",
+            data:{Memo:memo,UserID:@UserID,ReservationID:@ReservationID},
+            success: function (data)
+             {
+               if(data>0)
+               {
+                 artdialog("保存成功!");
+                 location.reload();
+                 DivClose();
+                }else{
+                 artdialogfail("保存失败!");
+                }
+              }
+        });
+    });
+</script>

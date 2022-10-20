@@ -1,0 +1,102 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@using SystemManage.Factory.IBLL;
+@model List<EYB.ServiceEntity.ReservationEntity.DakaRecordEntity>
+    @{
+        Layout = null;
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+        var YingxianggongxiuDay = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "YingxianggongxiuDay");
+        var gongxiuday = ConvertValueHelper.ConvertIntValue(YingxianggongxiuDay.AttributeValue);
+        gongxiuday= gongxiuday == 0 ? 4 : gongxiuday;
+    }
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th orderfield="">
+                        员工姓名
+                    </th>
+                    <th>
+                        出勤天数
+                    </th>
+                    <th orderfield="">
+                        已休天数
+                    </th>
+                    <th>
+                        应享公休
+                    </th>
+                    <th title="超休天数=已休天数 - 应享公休天数">
+                        超休天数
+                    </th>
+                    <th>
+                        请假天数
+                    </th>
+                    <th>
+                        旷工天数
+                    </th>
+                    <th orderfield="">
+                        迟到次数
+                    </th>
+                    <th>
+                        早退次数
+                    </th>
+                    <th>
+                        缺卡次数
+                    </th>
+                    <th>
+                        实际有效出勤
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                <tr>
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @entity.ChuqingDay
+                    </td>
+                    <td>
+                        @entity.XiuxiDay
+                    </td>
+                    <td>
+                        @entity.Yingxianggongxiu
+                    </td>
+                    <td>
+                        @entity.Chaoxiuday
+                    </td>
+                    <td>
+                        @entity.QingjiaDay
+                    </td>
+                    <td>
+                        @entity.Kuangogngday
+                    </td>
+                    <td>
+                        @entity.ChidaoDay
+                    </td>
+                    <td>
+                        @entity.ZaotuiDay
+                    </td>
+
+                    <td>
+                        @(ViewBag.days - entity.XiuxiDay - entity.ChuqingDay)
+                    </td>
+                    <td>
+                        @(gongxiuday + entity.ChuqingDay)
+                    </td>
+
+                </tr>
+                }
+              
+            </tbody>
+        </table>
+      
+    </form>
+    <script type="text/javascript">
+        
+    </script>

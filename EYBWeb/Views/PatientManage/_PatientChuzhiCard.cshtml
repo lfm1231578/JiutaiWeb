@@ -1,0 +1,97 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+    @{
+        ViewBag.Title = "_PatientChuzhiCard";
+        Layout = null;
+        var UserID = Request["UserID"];
+        decimal chongzhi = 0;
+        decimal xiaofei = 0;
+        decimal yu_e = 0;
+    }
+    <form action="@Url.Content("~/CashManage/OrderList")" method="post" id="submitform">
+        @*<input type="hidden" class="UserID" value="@UserID" />*@
+        <table class="gridTable" style="margin-top: 0px; width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th>
+                        卡项名称
+                    </th>
+                    <th>
+                        充值金额
+                    </th>
+                    <th>
+                        消费金额
+                    </th>
+                    <th>
+                        余额
+                    </th>
+                    <th>
+                        业绩折率
+                    </th>
+                    <th>
+                        是否赠卡
+                    </th>
+                    <th>
+                        购卡时间
+                    </th>
+                    <th>
+                        操作
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    chongzhi += entity.chongzhiPrice;
+                    xiaofei += entity.xiaofeiPrice;
+                    yu_e += entity.Price;
+                    <tr>
+                        <td>
+                            @entity.Name
+                        </td>
+                        <td>
+                            <a href="#" onclick="openaig(@entity.ID,'In')" class="">@(entity.chongzhiPrice)</a>
+                        </td>
+                        <td>
+                            @*<a href="#" onclick="openaig(@entity.ID,'Out')" >@(entity.AllPrice - entity.Price )</a>*@
+                            @(entity.xiaofeiPrice)
+                        </td>
+                        <td>
+                            <a href="#" onclick="Openall('@entity.ID','@entity.UserID')">@entity.Price</a>
+                        </td>
+                        <td>
+                            @entity.HuaKouZheLv
+                        </td>
+                        <td>
+                            @(entity.IsGive == 1 ? "是" : "否")
+                    </td>
+                        <td>
+                            @entity.AddTime.ToString("yyyy-MM-dd")
+                        </td>
+
+                            <td>
+                                <a href="#" onclick="Openall2('@entity.ID','@entity.UserID')">历史明细</a>
+                            </td>
+
+
+            </tr>
+                }
+                <tr>
+                    <td>
+                        合计
+                    </td>
+                    <td>
+                        @chongzhi
+                    </td>
+                    <td>
+                        @xiaofei
+                    </td>
+                    <td>
+                        @yu_e
+                </td>
+                <td colspan="3"></td>
+            </tr>
+            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 7))
+        </tbody>
+    </table>
+</form>

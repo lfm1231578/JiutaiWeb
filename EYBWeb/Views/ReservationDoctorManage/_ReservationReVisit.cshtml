@@ -1,0 +1,75 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ReservationEntity.ReservationEntity>
+@{
+    var ReservationID = Request["ReservationID"];
+    var UserID = Request["UserID"];
+}
+<form action="" method="post" id="myform" name="myform">
+<table class="gridTable">
+    <thead>
+        <tr>
+            <th>
+                预约编号
+            </th>
+          
+            <th>
+                预约美容师
+            </th>
+            <th>
+                预约到店时间
+            </th>
+            <th>
+                预约到店时段
+            </th>
+            <th>
+                服务内容
+            </th>
+            <th>
+                操作
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entity in Model)
+        {
+            <tr @(entity.ID + "" == ReservationID ? "style=background:#E7F6FF;" : "")>
+                <td>
+                    @entity.Reservationnumber
+                </td>
+               
+                <td>
+                    @entity.DepartmentName
+                </td>
+                <td>
+                    @entity.ApplyTime
+                </td>
+                <td>
+                    @(entity.StartTime + "至" + entity.EndTime)
+                </td>
+                <td>
+                    @entity.InfoName
+                </td>
+                <td>
+                    <a onclick="showPlanDetail(@entity.ID,@entity.PID)" href="#">回访详情</a>
+                </td>
+            </tr>
+        }
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 7))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<div id="PlanCaseDetail" style="display: none; width:600px; height: 230px">
+    <div>
+        <textarea style="height: 180px; width: 98%" id="Pcontent"></textarea></div>
+    <div style="text-align: center; margin: 10px; padding-left: 100px;">
+        <input type="button" class="submitbutton2" id="btnsavedetail" value="保 存" />
+        <input type="button" class="submitbutton2" onclick="DivClosedetail()" value="取 消" />
+    </div>
+</div>
+<script type="text/javascript">
+    //预约回访
+    function showPlanDetail(ID,ids) {
+        art.dialog.open("/ReservationDoctorManage/ReservationReVisitDetail" + "?ID=" + ID + "&ids=" + ids + "&UserID=@UserID" + "&ReservationID=@ReservationID", { title: "预约回访", width: 670, height: 360 })
+    }
+</script>

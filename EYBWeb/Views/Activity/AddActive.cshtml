@@ -1,0 +1,534 @@
+﻿@using ActivityFactory.Factory.IBLL;
+@using HS.SupportComponents;
+@{
+    Layout = null;
+    var type = Request["Type"];
+    var Id = Request["ID"];
+
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/addactive.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/kindeditor/kindeditor-min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/kindeditor/lang/zh_CN.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/swfupload/swfupload.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/swfupload/swfupload.queue.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/swfupload/swfupload.handlers.js")" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentBody">
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <div style="width: 400px; float: left;">
+                    <div id="show_quan">
+                        <header id="show_img" class="">
+                            <img id="headerImg" src="@(string.IsNullOrEmpty(Model.Cover) ? "../../Content/themes/images/photo1.png" : Model.Cover)" style="width: 100%;" />
+                            <div class="price column row-c column-c">
+                                <span id="show_price" class="money fb" style="font-size: 16px; color: #EDD5B8; line-height: 1.1;">@Model.Amount</span>
+                                <span style="color: #EDD5B8;">价值</span>
+                            </div>
+                        </header>
+                        <div class="column row-c" style="box-shadow: 0 4px 20px 0 rgba(0,0,0,0.1); padding: 20px 0 30px 0;">
+                            <h1 id="show_name" style="font-size: 18px; margin-bottom: 15px; padding: 0 10px;
+                                color: #333336;">
+                                @(string.IsNullOrEmpty(Model.ActivityName) ? "请输入活动名称" : Model.ActivityName)
+                            </h1>
+                            <button class="receive_now" style="margin-bottom: 7px;"></button>
+                            <time style="color: #9A9A9A;">有效期:<label id="show_time"></label></time>
+                        </div>
+                        <div class="column row-c w">
+                            <div class="row column-c w" style="margin-top: 10px; width: 80%; padding: 20px 15px;
+                                border-bottom: 1px solid rgba(239,239,239,0.4);">
+                                <div class="column cell">
+                                    <h2 class="fb" style="font-size: 14px; margin-bottom: 10px; text-align: left; width: 100%;">
+                                        使用说明
+                                    </h2>
+                                    <span id="show_explain" class="text-gray" style="font-size: 12px;">  @(string.IsNullOrEmpty(Model.Remarks) ? "" : Model.Remarks) </span>
+                                </div>
+                                <img id="consult" src="../../Content/themes/images/lqyh3.png" class="small_img" />
+                            </div>
+                            <div class="row column-c w" style="margin-bottom: 5px; width: 80%; padding: 20px 15px;
+                                border-bottom: 1px solid rgba(239,239,239,0.4);">
+                                <div class="column cell">
+                                    <h2 class="fb" style="font-size: 14px; margin-bottom: 10px;">
+                                        @Model.HospitalName
+                                    </h2>
+                                    <span class="text-gray" style="font-size: 12px;">@Model.HospitalAddress</span>
+                                </div>
+                                <img src="../../Content/themes/images/navigation.png" class="small_img" />
+                            </div>
+                        </div>
+                        <div id="articeLog" style="padding: 15px;">
+                            @Model.Content
+                        </div>
+                    </div>
+                </div>
+                <div style="width: 750px; float: left;">
+                    <div style="width: 100%; height: 40px; background-color: #F2F2F2; margin-bottom: 10px;">
+                        &nbsp;&nbsp;<span style="font-size: 14px; line-height: 40px; padding: 6px 12px; font-weight: bold;">积客活动设置</span>
+                        <a id="btnCancle" style="border: none; background-color: #7F7F7F; padding: 8px 20px;
+                            color: #FFF; cursor: pointer; text-decoration: none; margin-left: 300px;" onclick="closeedNorefresh()">
+                            取消
+                        </a> <a id="btnOk" style="border: none; background-color: rgb(91, 155, 213); padding: 11px 20px;
+                                color: rgb(255, 255, 255); cursor: pointer; text-decoration: none; display: inline-block;">
+                            确定
+                        </a>
+                    </div>
+                    <form id="frmAddEditDetail" method="post">
+                        <div style="width: 94%; margin: auto; padding-bottom: 10px; border-bottom: 1px dashed #ddd;">
+                            <table class="from_table1">
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            <span class="redColor">*</span>积客活动名称：
+                                        </th>
+                                        <td>
+                                            <input type="text" value="@Model.ActivityName" id="CouponName" placeholder="请输入活动名称" name="ActivityName" class="txtInput normal input_style required easyui-validatebox validatebox-text validatebox-invalid"
+                                                   data-options="required:true,validType:['loginName','maxLength[50]']" onkeyup="changeText(this,'show_name')"
+                                                   title="" />
+                                            <input type="hidden" id="ID" name="ID" value="@Id" />
+                                            <input id="cbShareSettings" type="checkbox" onclick="showHiddenShareDesc(this);" @(!string.IsNullOrEmpty(Model.ShareDescription) || Model.ShareTitle != Model.ActivityName ? "checked=\"checked\"":"")  /><span class="grayColor" style="cursor: pointer;">分享设置</span>
+                                        </td>
+                                    </tr>
+                                    <tr id="tr_shareTittle" style="display: none;">
+                                        <th>
+                                            分享标题：
+                                        </th>
+                                        <td>
+                                            <input value="@Model.ShareTitle" type="text" id="shareTittle" name="ShareTitle" class="txtInput normal input_style"
+                                                   value="请输入活动名称" onkeyup="changeText(this,'shareTittleSpan')" onblur="if (this.value == '') this.value = $('#CouponName').val();" />
+                                        </td>
+                                    </tr>
+                                    <tr id="tr_shareDesc" style="display: none;">
+                                        <th>
+                                            分享描述：
+                                        </th>
+                                        <td>
+                                            <input value="@Model.ShareDescription" type="text" id="shareDesc" name="ShareDescription" class="txtInput normal input_style"
+                                                   value="点击领取，到店即可使用" onkeyup="changeText(this,'shareDescSpan')" onblur="if (this.value == '') this.value = '点击领取，到店即可使用';" />
+                                        </td>
+                                    </tr>
+                                    @*  <tr id="tr_shareAgain" style="display: none;">
+                                            <th>分享次数：
+                                            </th>
+                                            <td>
+                                                <input type="checkbox" name="ShareAgain" id="ShareAgain" value="1" style="margin-left: 0px;"><span>允许分享2次</span>
+                                            </td>
+                                        </tr>*@
+                                    <tr>
+                                        <th>
+                                            <span class="redColor">*</span>积客活动面值：
+                                        </th>
+                                        <td>
+                                            <input value="@Model.Amount" name="Amount" placeholder="顾客到店可抵扣金额" type="text" id="CouponPrice" class="txtInput normal input_style required easyui-validatebox validatebox-text"
+                                                   data-options="required:true,validType:'money'" onkeyup="changeText(this,'show_price')"
+                                                   title="" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th rowspan="2">
+                                            <span class="redColor">*</span>有效期：
+                                        </th>
+                                        <td>
+                                            <input type="radio" id="ck_1" checked="checked" name="ValidityType" @(Model.ValidityType == 1 ? "checked=checked" : "") value="1" />
+                                            领取后
+                                            <input name="Validity" type="text" id="Valid" class="txtInput normal required input_style easyui-validatebox validatebox-text" style="width: 30px;" value="@Model.Validity" data-options="validType:'range[1,1000]'" onblur="if(this.value=='')this.value='1'" />
+                                            天有效
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type="radio" id="ck_2" name="ValidityType" @(Model.ValidityType == 2 ? "checked=checked" : "") value="2" />
+                                            <input type="text" class="text-input Wdate" style="width: 85px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                                   name="ValidityStartTime" id="StartTime" value="@(Model.ValidityType != 2 ? "" : Model.ValidityStartTime.ToString("yyyy-MM-dd"))" />
+                                            <span class="addon w20">至</span>
+                                            <input type="text" style="width: 85px;" class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                                                   name="ValidityStartEnd" id="EndTime" value="@(Model.ValidityType != 2 ? "" : Model.ValidityStartEnd.ToString("yyyy-MM-dd"))" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            使用说明：
+                                        </th>
+                                        <td>
+                                            <input name="Remarks" value="@Model.Remarks" type="text" id="explain" class="txtInput normal required input_style easyui-validatebox validatebox-text"
+                                                   data-options="" style="width: 100%; background: #FAFAFA;" onkeyup="changeText(this,'show_explain')"
+                                                   value="仅限本店；领取后次日使用。" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div style="width: 94%; margin: auto; padding-bottom: 10px; padding-top: 10px;">
+                            <table class="from_table1">
+                                <tbody>
+                                    <tr>
+                                        <th>
+                                            <span class="redColor">*</span>自己可用数量：
+                                        </th>
+                                        <td>
+                                            <input name="EnableCount" value="@Model.EnableCount" type="text" id="CouponNum" class="txtInput normal input_style required easyui-validatebox validatebox-text validatebox-invalid"
+                                                   data-options="required:true,validType:'range[0,1000]'" title="" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <span class="redColor">*</span>可分享数量：
+                                        </th>
+                                        <td>
+                                            <input name="ShareCount" value="@Model.ShareCount" type="text" id="ShareNum" class="txtInput normal input_style required easyui-validatebox validatebox-text validatebox-invalid"
+                                                   data-options="required:true,validType:'range[0,1000]'" title="" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            分享奖励：
+                                        </th>
+                                        <td>
+                                            <div>
+                                                <input name="RewardAmount" value="@Model.RewardAmount" type="text" id="RePrice" class="txtInput normal input_style required easyui-validatebox validatebox-text"
+                                                       value="0" data-options="required:true,validType:'money'" style="width: 15%; height: 23px;
+                                                border-bottom: 1px solid #ddd; outline: none; background: #FAFAFA;" /><label id="Company"></label>
+                                                <select id="rebateType" name="ShareRewardType" style="float:left; height:28px; line-height:28px; margin-right:2px;">
+                                                    <option value="0">请选择</option>
+                                                    <option value="1">奖励金额</option>
+                                                    <option value="2">奖励比例</option>
+                                                </select>
+                                                @*     <select id="rebateType" name="rebateType" style="float:left">
+                                                        <option value="0">请选择</option>
+                                                        <option value="1">奖励金额</option>
+                                                        <option value="3">奖励比例</option>
+
+                                                        <option value="2">奖励项目</option>
+
+                                                    </select>
+                                                    <div style="display:none" id="div_1">
+                                                        <input name="RePrice" type="text" id="RePrice" class="txtInput normal input_style required easyui-validatebox validatebox-text" value="0" data-options="required:true,validType:'money'" style="width: 15%;height:23px; border-bottom: 1px solid #ddd; outline: none; background: #FAFAFA;">元
+                                                        <input type="radio" id="rebateUse" checked="checked" name="rebateWay" value="0">消费后奖励
+                                                        <input type="radio" id="rebateReceive" name="rebateWay" value="1">领取后奖励
+                                                    </div>
+                                                    <div style="display:none;float:left" id="div_3">
+                                                        <input name="RePercent" type="text" id="RePercent" class="txtInput normal input_style required easyui-validatebox validatebox-text" value="0" data-options="required:true,validType:'jretailUpperLimit([0,100])'" style="width: 15%;height:23px; border-bottom: 1px solid #ddd; outline: none; background: #FAFAFA;">%
+                                                        <span class="grayColor">(使用后按营业额比例奖励)</span>
+                                                    </div>
+                                                    <div style="display:none;float:left" id="div_2">
+                                                        <input id="package" style="width: 120px; margin-top: -5px; display: none;" class="combogrid-f combo-f textbox-f"><span class="textbox combo" style="width: 120px;"><span class="textbox-addon textbox-addon-right" style="right: 0px;"><a href="javascript:void(0)" class="textbox-icon combo-arrow" icon-index="0" style="width: 18px; height: 25px;"></a></span><input type="text" class="textbox-text validatebox-text textbox-prompt" autocomplete="off" placeholder="" style="margin-left: 0px; margin-right: 18px; padding-top: 4px; padding-bottom: 4px; width: 100px;"><input type="hidden" class="textbox-value" name="" value=""></span>赠送数量
+                                                        <input name="rebateNum" type="text" id="rebateNum" class="txtInput normal required input_style easyui-validatebox validatebox-text" style="width: 30px;height:23px" value="0" data-options="validType:'range[0,1000]'" onblur="if (this.value == '') this.value = '0'"><span class="grayColor">(使用后奖励)</span>
+                                                    </div>*@
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    @*     <tr style="display: none;">
+                                            <th>
+                                                领取支付：
+                                            </th>
+                                            <td>
+                                                <input name="sellingPrice" type="text" id="sellingPrice" class="txtInput normal input_style required easyui-validatebox validatebox-text"
+                                                    value="0" data-options="required:true,validType:'money'" style="width: 18%; height: 23px;
+                                                    border-bottom: 1px solid #ddd; outline: none; background: #FAFAFA;">元
+                                            </td>
+                                        </tr>*@
+                                    <tr>
+                                        <th>
+                                            仅新用户领取：
+                                        </th>
+                                        <td>
+                                            <input type="checkbox" name="NewUserReceive" @(Model.NewUserReceive == 1 ? "checked=checked" : "") id="ToNewUser" value="1" style="margin-left: 0px;" /><span class="grayColor">（仅限分享后新关注用户领取）</span>
+                                        </td>
+                                    </tr>
+                                <tr>
+                                    <th>
+                                        不能重复领取：
+                                    </th>
+                                    <td>
+                                        <input type="checkbox" name="NotRepeatReceive" @(Model.NotRepeatReceive == 1 ? "checked=checked" : "") id="ToNoRepeat" value="1" style="margin-left: 0px;" /><span class="grayColor">（已领取用户不能重复领取）</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        满额使用：
+                                    </th>
+                                    <td>
+                                        <input value="@Model.Limit" name="Limit" placeholder="消费满多少金额可以使用该券" type="text" id="Limit" class="txtInput normal input_style required easyui-validatebox validatebox-text"
+                                               data-options="required:true,validType:'money'" onblur="if (this.value == '') this.value = '0';" onkeyup="CheckInputIntFloat(this)"
+                                               title="" />元
+                                    </td>
+                                </tr>
+                                    @*      <tr style="display: none;">
+                                            <th>到期提醒：</th>
+                                            <td>
+                                                <input type="checkbox" name="ToRemind" id="ToRemind" value="1" style="margin-left: 0px;">到期前
+                                                <input name="beforeDay" type="text" id="beforeDay" class="txtInput normal required input_style easyui-validatebox validatebox-text" style="width: 30px; text-align: center" value="2" data-options="validType:'range[1,365]'" onblur="if(this.value=='')this.value='1'" disabled="disabled">
+                                                天
+                                                <select id="sendTime" name="sendTime" disabled="disabled">
+                                                    <option value="8">8-9点</option>
+                                                    <option value="9">9-10点</option>
+                                                    <option value="10" selected="selected">10-11点</option>
+                                                    <option value="11">11-12点</option>
+                                                    <option value="12">12-13点</option>
+                                                    <option value="13">13-14点</option>
+                                                    <option value="14">14-15点</option>
+                                                    <option value="15">15-16点</option>
+                                                    <option value="16">16-17点</option>
+                                                    <option value="17">17-18点</option>
+                                                    <option value="18">18-19点</option>
+                                                    <option value="19">19-20点</option>
+                                                    <option value="20">20-21点</option>
+                                                    <option value="21">21-22点</option>
+                                                </select>
+                                                微信提醒客户
+                                                <a id="moreSettingsA" href="javascript:void(0);" onclick="moreSettings(1,this)" class="moreSettings_a">更多设置↓</a>
+                                            </td>
+                                        </tr>
+                                        <tr style="display: none;">
+                                            <td colspan="2">
+                                                <textarea placeholder="请输入备注..." name="Remark" rows="2" cols="20" id="Remark" class="txtInput normal required" style="height: 100%; width: 95%;"></textarea>
+
+                                            </td>
+                                        </tr>
+                                    *@
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div style="width: 100%; height: 40px; background-color: #F2F2F2; margin-bottom: 10px;">
+                            &nbsp;&nbsp;<span style="font-size: 14px; line-height: 40px; padding: 6px 12px; font-weight: bold;">图文/小视频设置</span>
+                            <table class="from_table1">
+                                <tbody>
+                                    <tr>
+                                        <td class="tr" style="width: 150px;">
+                                            展示图片：
+                                        </td>
+                                        <td>
+                                            <input type="text" name="hid_photo_name1" class="upload-path"
+                                                   style="float: left; width: 200px; height: 28px" value="" />
+                                            <div class="upload-box upload-img" style="float: left">
+                                            </div>
+                                            <input type="hidden" id="hid_photo_name1" name="Cover" value="@Model.Cover" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <textarea style="height: 340px; width: 700px;" id="TxtContent" name="Content">@Model.Content</textarea>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    //初始加载绑定rebateType 的select 下拉框
+    window.onload = function () {
+        $("#rebateType").val('@Model.ShareRewardType');
+        var input = $("#rebateType").val();
+        if (input == 1) {
+            $("#Company").text("元");
+        }
+        if (input == 2) {
+            $("#Company").text("%");
+        }
+    }
+
+    $("#rebateType").change(function () {
+        var input = $("#rebateType").val();
+        if (input == 1) {
+            $("#Company").text("元");
+        }
+        if (input == 2) {
+            $("#Company").text("%");
+        }
+    });
+
+    $(document).ready(function () {
+
+        $(".upload-img").each(function () {
+            $(this).InitSWFUpload({ btntext: "上传头像", btnwidth: 119, single: true, water: false, thumbnail: false, filesize: "2048", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+        });
+
+        var K = window.KindEditor;
+        KindEditor.ready(function () {
+            K.create("#TxtContent", {
+                cssPath: '/Content/kindeditor/plugins/code/prettify.css',
+                uploadJson: '/Content/kindeditor/aspnet/upload_json.ashx',
+                fileManagerJson: '/Content/kindeditor/aspnet/file_manager_json.ashx',
+                allowFileManager: true,
+                afterCreate: function () {
+                    var self = this;
+                    K.ctrl(document, 13, function () {
+                        self.sync();
+                        K('form[name=myform]')[0].submit();
+                    });
+                    K.ctrl(self.edit.doc, 13, function () {
+                        self.sync();
+                        K('form[name=myform]')[0].submit();
+                    });
+
+                },
+                afterBlur: function () { this.sync(); },
+                afterChange: function () { $("#articeLog").html($("#TxtContent").val()); }
+            });
+        });
+    });
+    function showHiddenShareDesc(_this) {
+        if ($(_this).is(':checked')) {
+            $('#tr_shareTittle').css('display', 'table-row');
+            $('#tr_shareDesc').css('display', 'table-row');
+            $('#tr_shareAgain').css('display', 'table-row');
+        } else {
+            $('#tr_shareTittle').css('display', 'none');
+            $('#tr_shareDesc').css('display', 'none');
+            $('#tr_shareAgain').css('display', 'none');
+        }
+    }
+
+    function changeText(obj, changeid) {
+        $("#" + changeid).text(obj.value);
+        switch (changeid) {
+            case 'show_name':
+                if (obj.value == '') {
+                    $("#" + changeid).text('请输入活动名称');
+                    $("#shareTittleSpan").text('请输分享标题名称');
+                    $("#shareTittle").val("请输分享标题名称");
+                } else {
+                    $("#shareTittleSpan").text(obj.value);
+                    $("#shareTittle").val(obj.value);
+                }
+            case 'shareDescSpan':
+                if (obj.value == '') {
+                    $("#" + changeid).text('点击领取，到店即可使用！');
+                }
+                break;
+            case 'shareTittleSpan':
+                if (obj.value == '') {
+                    $("#shareTittleSpan").text($('#CouponName').val());
+                }
+                break;
+        }
+    }
+
+    $('#ck_1').change(function () {
+        var day = $('#Valid').val();
+        $("#show_time").text(day + "天");
+    });
+    $('#ck_2').change(function () {
+        $('#show_time').text($('#StartTime').val() + ' 至 ' + $('#EndTime').val());
+    });
+
+    //提交表单
+    $("#btnOk").click(function () {
+        var ss = $(" input[ name='RewardAmount' ] ").val()
+        if ($("#rebateType").val() == 2) {
+
+            if (ss > 100) {
+                alert("百分比不能超100%");
+                return;
+            }
+        }
+
+        var temp = 0
+        var startTime = null;
+        var stoptTime = null;
+        if ($('#ck_2').is(":checked")) {
+            if ($("#StartTime").val() == '') {
+                alert('有效期开始时间不能为空');
+                return;
+            }
+            if ($("#StopTime").val() == '') {
+                alert('有效期结束时间不能为空');
+                return;
+            }
+            startTime = new Date(Date.parse($("#StartTime").val()));
+            stoptTime = new Date(Date.parse($("#StopTime").val()));
+            if (startTime > stoptTime) {
+                alert('有效期开始时间不能大于结束时间');
+                return;
+            }
+            temp = (stoptTime - startTime) / (1000 * 3600 * 24);
+        } else {
+            temp = $('#Valid').val();
+        }
+
+        //系统积客区分优惠劵和积客活动 可分享数量不可以为0
+        //系统中需区分优惠劵和积客活动
+        if (parseInt($.trim($("#ShareNum").val())) <= 0) {
+            alert("可分享数量不能为0");
+            return;
+        }
+        //需要支付的积客活动 可使用数量不可以为0
+        if (parseFloat($.trim($("#sellingPrice").val())) > 0 && parseInt($.trim($("#CouponNum").val())) <= 0) {
+            alert('可使用数量不能为0');
+            return;
+        }
+
+
+        if ($('#shareDesc').css('display') != 'none' && $('#shareDesc input').val() == '') {
+            alert('分享描述不能为空');
+            return;
+        }
+        //        if ($('#ToRemind').is(':checked')) {
+        //            if (parseInt($('#beforeDay').val()) > temp) {
+        //                $.messager.alert('提示', '到期提醒天数不能大于活动的有效天数！', 'info');
+        //                return;
+        //            }
+        //        }
+
+        var data = $('#frmAddEditDetail').serialize();
+        $.ajax({
+            type: 'post',
+            data: data,
+            url: '/Activity/AddActiveInfo',
+            success: function (data) {
+
+                if (data > 0) {
+                    alert("保存成功！");
+                    closeed();
+                }
+                else {
+                    alert('错误');
+                }
+            },
+            error: function () {
+                alert('数据提交失败');
+            }
+        });
+    });
+
+
+
+</script>
+</html>

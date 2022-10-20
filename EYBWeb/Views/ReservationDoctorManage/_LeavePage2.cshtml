@@ -1,0 +1,85 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ReservationEntity.LeaveRecordsEntity>
+    @{
+        Layout = null;
+    }
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th orderfield="">
+                        员工姓名
+                    </th>
+                    <th>
+                        添加时间
+                    </th>
+                    <th orderfield="">
+                        年份
+                    </th>
+                    <th orderfield="">
+                        月份
+                    </th>
+                    <th>
+                        行政扣罚
+                    </th>
+                    <th>
+                        职能考评分数
+                    </th>
+                    <th>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                <tr>
+                    <td>
+                        @entity.UserName
+                    </td>
+                    <td>
+                        @entity.Dateleave
+                    </td>
+                    <td>
+                        @entity.StartYear @*@entity.StartLeave*@
+                    </td>
+                    <td>
+                        @entity.StartMoths @*@entity.EndLeave*@
+                    </td>
+                    <td>
+                        @entity.Memo
+                    </td>
+                    <td>
+                        @entity.NumDay
+                    </td>
+                    <td>
+                        <a href="javascript:OpenDailogDetail('Edit',@entity.ID);">编辑</a>
+                        @*@if (entity.State == 2)
+                        {
+                            <a href="javascript:;" onclick="DeleteData(@entity.ID,1)">启用</a>
+                        }
+                        else
+                        { }*@
+                                    <a href="javascript:;" style="color: red;" onclick="DeleteData(@entity.ID,2)">删除</a>
+
+                                </td>
+                                @*  <td>
+                        <a href="javascript:OpenOrderDetail('@entity.ID');" >详情</a>
+                    </td>*@
+                </tr>
+                }
+                @*<tr></tr>
+                    @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))*@
+            </tbody>
+        </table>
+        @*@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })*@
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>

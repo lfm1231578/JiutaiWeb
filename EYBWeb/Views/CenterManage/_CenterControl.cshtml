@@ -1,0 +1,102 @@
+﻿@{
+    ViewBag.Title = "_CenterControl";
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_ReceptionManager);
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_CardBalanceManager);
+
+
+    bool result4 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_BrankZhanyoulv);//品牌占有率
+    bool result5 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_Zhanyoulv);//类别占有率
+    bool result6 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_Pujilv);
+    bool result7 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_Yuyue);
+    bool result8 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalsList);
+    bool result9 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalScheduleList);
+    bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_GoalsStatistics);
+    bool result11 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_BreakEvenList);
+    bool result12 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_CustomerRecommendation);
+    bool result13 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_CardBalanceYueJie);
+    bool result14 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_PatientFuzhaiOrder);
+
+    bool result15 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_YewuxiaoshouMingxi);
+    bool result16 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_Yewuxiaoshouhuizong);
+}
+<div id="mainContentLeft">
+    <div id="mainContentLeft_top">
+        <span>项目管理</span></div>
+    <div id="mainContentLeft_bottom">
+        <ul>
+          
+            @if (result2)
+            {
+                <li  onclick='CheckRight(this,"@result2")' redirect="@Url.Content("~/CenterManage/CardBalanceManager")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;卡项结余管理
+
+                    </a></li>
+            }
+            @if (result13)
+            {
+                <li  onclick='CheckRight(this,"@result13")' style="" redirect="@Url.Content("~/CenterManage/CardBalanceYueJie")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;门店卡项结余月结
+
+                    </a></li>
+            }
+  
+            @if (result6)
+            {
+                <li  onclick='CheckRight(this,"@result6")' redirect="@Url.Content("~/CenterManage/PopularityRate")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;疗程普及率
+
+                    </a></li>
+            }
+            @if (result5)
+            {
+                <li  onclick='CheckRight(this,"@result5")' redirect="@Url.Content("~/CenterManage/TypeZhanyoulv")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;类别占有率
+
+                    </a></li>
+            }
+            @if (result4)
+            {
+                <li  onclick='CheckRight(this,"@result4")' redirect="@Url.Content("~/CenterManage/BrandZhanyoulv")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;品牌占有率
+
+                    </a></li>
+            }
+            
+       @if (result15)
+            {
+                <li  onclick='CheckRight(this,"@result15")' redirect="@Url.Content("~/CenterManage/SalesDetail")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;业务销售明细
+
+                    </a></li>
+            }
+            @if (result16)
+            {
+                <li  onclick='CheckRight(this,"@result16")' redirect="@Url.Content("~/CenterManage/Salestatistics")" >
+                    <a style="cursor: pointer; ">
+                        <span class="list_icon"></span>&nbsp;&nbsp;业务销售汇总
+                    </a></li>
+            }
+
+
+
+
+        </ul>
+    </div>
+</div>
+<script type="text/javascript">
+    //定义权限列表，主要为了显示默认有权限的页面
+    var TheArray = [["@result2", "@Url.Content("~/CenterManage/CardBalanceManager")"],
+        ["@result13", "@Url.Content("~/CenterManage/CardBalanceYueJie")"],
+        ["@result6", "@Url.Content("~/CenterManage/PopularityRate")"],
+        ["@result5", "@Url.Content("~/CenterManage/TypeZhanyoulv")"],
+        ["@result4", "@Url.Content("~/CenterManage/BrandZhanyoulv")"],
+        ["@result15", "@Url.Content("~/CenterManage/SalesDetail")"],
+        ["@result16", "@Url.Content("~/CenterManage/Salestatistics")"]];
+
+</script>

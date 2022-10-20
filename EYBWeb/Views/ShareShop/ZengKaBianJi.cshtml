@@ -1,0 +1,338 @@
+﻿@model EYB.Web.Models.ShareShop.ShareholderActivityInfoModel
+@{
+    Layout = null;
+    var Activityid = Request["ID"];
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/addactive.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+    <script>
+
+
+        $(function () {
+
+            $("#ShareQuantity").blur(function () {
+                var values = $(this).val();
+                if ((/^(\+|-)?\d+$/.test(values)) && values > 0) {
+                    return true;
+                }
+                else {
+                    alert("股东可分享数请输入正整数，必须大于0！");
+                    $("#ShareQuantity").val("0");
+                    return false;
+                }
+            });
+            //$("#FriendShareQuantity").blur(function () {
+            //    var values = $(this).val();
+            //    if ((/^(\+|-)?\d+$/.test(values)) && values > 0) {
+            //        return true;
+            //    }
+            //    else {
+            //        alert("股东朋友可分享数请输入正整数，必须大于0！");
+            //        $("#FriendShareQuantity").val("0");
+            //        return false;
+            //    }
+            //});
+            $('#btnSave').click(function () {
+
+                if ($('#ActivityName').val() == '') {
+                    artdialogfailTwo("活动名称不能为空", "", "250", "100");
+                    return false;
+                }
+                if ($('#MainCardId').val() == '') {
+                    artdialogfailTwo("请选择会员卡", "", "250", "100");
+                    return false;
+                }
+                if ($('#ShareQuantity').val() == '') {
+                    artdialogfailTwo("请填写股东可分享数", "", "250", "100");
+                    return false;
+                }
+
+                if ($('#ShareQuantity').val() <= 0) {
+                    artdialogfailTwo("股东可分享数不能小于0", "", "250", "100");
+                    return false;
+                }
+                if ($("#FriendShareQuantity").val()=='') {
+                    artdialogfailTwo("请填写股东朋友可分享数", "", "250", "100");
+                    return false;
+                }
+                $.post('@Url.Action("SaveActivity")', $('#myForm').serialize(), function (data) {
+                    if (data.IsError) {
+                        artdialogfailTwo(data.Message, "", "250", "100");
+                    } else {
+                        closeed();
+                    }
+                });
+
+            });
+
+            $('#addActivity').click(function () {
+                art.dialog.open("@Url.Action("SelectActivity")",
+                    {
+                        title: '选择活动',
+                        width: 900,
+                        height: 600
+                    });
+            });
+
+            $('.activityDelete').live('click', function () {
+                $(this).parent().remove();
+            });
+        });
+
+        function Activity(obj) {
+            var li = '<li>';
+            //li += '<input type="text" value=\"' + obj.split('|')[3] + '\" class=\"text-input hospitalName\" readonly=\"readonly\" /> ';
+            li += '<input type="text" value=\"' + obj.split('|')[1] + '\" class=\"text-input activityName\" readonly=\"readonly\" /> ';
+            li += '<input type=\"button\" value=\"删除\" class=\"btn activityDelete\" />';
+            li += '<input type="hidden" name=\"ActivityId\" value=\"' + obj.split('|')[0] + '\"  />';
+            li += '</li>';
+
+            $('#activity').append(li);
+        }
+
+        //jquery form序列化转换为json对象
+        (function ($) {
+            $.fn.serializeJson = function () {
+                var serializeObj = {};
+                var array = this.serializeArray();
+                var str = this.serialize();
+                $(array).each(function () {
+                    if (serializeObj[this.name]) {
+                        if ($.isArray(serializeObj[this.name])) {
+                            serializeObj[this.name].push(this.value);
+                        } else {
+                            serializeObj[this.name] = [serializeObj[this.name], this.value];
+                        }
+                    } else {
+                        serializeObj[this.name] = this.value;
+                    }
+                });
+                return serializeObj;
+            };
+        })(jQuery);
+    </script>
+    <style type="text/css">
+        .text-input { width: 100%; }
+        input[type=number].text-input { width: 80px; display: inline-block; }
+
+        input.hospitalName { width: 80px !important; display: inline-block !important; }
+        input.activityName { width: 150px !important; display: inline-block !important; }
+        .activityDelete.btn { border: 1px solid #B5B8C8; background-color: #fff; cursor: pointer; display: inline-block; }
+            .activityDelete.btn:hover { background-color: #f5ebeb; }
+    </style>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentBody">
+        <form class="formular" method="post" id="myForm">
+            <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+                <div class="mainContentRight" style="margin-top: 20px;">
+                    <input type="hidden" name="Id" value="@Model.Result.Id" />
+                    <table class="mainContentRight_bottomnewdepart">
+                        <tbody id="gridtbody">
+                            <tr>
+                                <td>
+                                    <span class="red">*</span>活动名称：
+                                </td>
+                                <td>
+                                    <input type="text" id="ActivityName" name="ActivityName" class="text-input" value="@Model.Result.ActivityName" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span class="red">*</span>会员卡：
+                                </td>
+                                <td>
+                                    <select id="MainCardId" name="MainCardId" class="select">
+                                        <option value="">==请选择==</option>
+                                        @foreach (var card in Model.Maincards)
+                                        {
+                                            <option value="@card.ID" @(card.ID == Model.Result.MainCardId ? "selected=\"selected\"" : "")>@card.Name</option>
+                                        }
+                                    </select>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    股东可分享数
+                                </td>
+                                <td>
+                                    <input type="number" id="ShareQuantity" name="ShareQuantity" class="text-input" onkeyup="CheckInputIntFloat(this)" value="@Model.Result.ShareQuantity" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    股东朋友可分享数
+                                </td>
+                                <td>
+                                    <input type="number" id="FriendShareQuantity" name="FriendShareQuantity" class="text-input" onkeyup="CheckInputIntFloat(this)" value="@Model.Result.FriendShareQuantity" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td style="vertical-align: top;">
+                                    绑定积客活动
+                                </td>
+                                <td>
+                                    <input type="button" id="addActivity" value="添加活动" class="btn" />
+                                    <ul id="activity">
+                                        @foreach (var activity in Model.Result.Details)
+                                        {
+                                            <li>
+                                                @*<input type="text" value="@(activity.HospitalName)" class="text-input hospitalName" readonly="readonly" />*@
+                                                <input type="text" value="@(activity.ActivityName)" class="text-input activityName" readonly="readonly" />
+                                                <input type="button" value="删除" class="btn activityDelete" />
+                                                <input type="hidden" name="ActivityId" value="@(activity.ActivityId)" />
+                                            </li>
+                                        }
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> 品牌介绍 </td>
+                                <td>
+                                    <input type="text" name="BrandUrl" class="text-input" value="@Model.Result.BrandUrl" />
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td>
+                                    备注
+                                </td>
+                                <td>
+                                    <textarea name="Remarks" class="text-input" style="resize: none; height: 50px;">@Model.Result.Remarks</textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <input type="button" class="submitbutton3" id="btnSave" value="保 存" />
+                                    <input class="submitbutton3" type="button" onclick="closeedNorefresh()" value="取 消" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+@*<script type="text/javascript">
+
+        $(document).ready(function () {
+
+
+            //点击积客活动
+            $("#gridtbody").delegate('.jikehuodong',
+                'click',
+                function (event) {
+
+                    art.dialog.open("/Activity/TheActivityList",
+                        {
+                            title: "积客活动列表",
+                            width: 800,
+                            height: 600,
+                            <script type="text/javascript">
+
+                            $(document).ready(function () {
+
+
+                        //点击积客活动
+                        $("#gridtbody").delegate('.jikehuodong',
+                            'click',
+                            function (event) {
+
+                                art.dialog.open("/Activity/TheActivityList",
+                                    {
+                                        title: "积客活动列表",
+                                        width: 800,
+                                        height: 600,
+                                        close: function () {
+                                            var bValueID = art.dialog.data('bValueID'); // 读取B页面的数据
+                                            var bValueCode = art.dialog.data('bValueCode');
+                                            $(event.target).val(bValueCode);
+                                            $(event.target).parent().find("input[name='ActivityID']").val(bValueID);
+
+                                        }
+                                    });
+
+
+                            });
+                    });
+            $("#HospitalID").change(function () {
+                var id = $("#HospitalID").val(); //获取所选门店
+                $.ajax({
+                    type: "post", //使用get方法访问后台
+                    dataType: "text", //返回json格式的数据
+                    url: "/MoneyManage/GetHospltalUser",
+                    data: { "HospitalID": id },
+                    async: false,
+                    success: function (data) {
+                        if (data != null) {
+                            $("#s_FollowUpUserID").empty();
+                            $("#s_FollowUpUserID").append(data.toString());
+                        }
+                    },
+                    error: function () {
+                        alert("数据请求失败!");
+                    }
+                });
+
+            })
+            //确认发送
+            function SendWeixin() {
+                $.ajax({
+                    cache: true,
+                    type: "POST",
+                    url: "@Url.Content("~/Activity/ActivitySend?ID=")" + id + "&isshow=" + isshow,
+                    async: false,
+                    error: function (request) {
+
+                        artdialogfailTwo("操作失败！", "", "250", "100");
+                    },
+                    success: function (data) {
+                        if (data > 0) {
+                            alert("操作成功！");
+                            $("#btnsumbit").click();
+                        } else {
+                            artdialogfailTwo("操作失败,！", "", "250", "100");
+                        }
+                    }
+                });
+
+            }
+            </script>
+    </html>*@
+</html>

@@ -1,0 +1,358 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using PersonnelManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using HS.SupportComponents;
+@model EYB.ServiceEntity.MoneyEntity.TimeConsumingPerformanceEntity
+@{
+    ViewBag.Title = "业绩审核";
+    var orderField = ViewBag.orderField;
+    var orderDirection = ViewBag.orderDirection;
+    var status = ViewBag.Statu;
+    var ordertype = ViewBag.OrderType;
+    var st = ViewBag.StartTime;
+    var et = ViewBag.EndTime;
+    var selhospitalID = ViewBag.SelHospitalID;
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+    //获取区域门店
+    var RegionhospitalList = personbll.GetRegionHospitalListByHospitaId(ViewBag.HospitalID);
+
+    //本月最后一天时间
+    //客单价
+    var KeDanjia = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "KeDanjia");
+    //美容师人数
+    var HhospitalUserCount = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "HospitalUserCount"); 
+}
+@section head{
+    <style>
+        p {line-height: 20px; color: Blue; padding-left: 30px; }
+        .pbold { height: 30px; line-height: 30px; color: Blue; font-size: 16px; font-weight: bold; padding-left: 30px; }
+        .m-shouming{color:#666;}
+        .ptitle { color: Red; font-size: 16px; font-weight: bold; }
+        .gridTable td { border: 1px solid #ccc; }
+    </style>
+}
+<div id="mainContentBody">
+    @Html.Partial("~/Views/CenterManage/_CenterInfoControl.cshtml")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+              
+            </label>
+            店务一键诊断表
+        </div>
+        <div class="mainContentRight_bottom" style="position: relative; height: auto;">
+            <div class="mainContentRight">
+                @using (Ajax.BeginForm("HospitalZhenduan", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                {
+                    <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+                    <input type="hidden" value="" name="orderField" id="orderField" />
+                    <div class="accountdiv" style="margin-bottom: 0px; width: 98%;">
+                        @if (HasPermission)
+                        {
+                            <label style="font-weight: normal;">
+                                所属分店：
+                            </label>
+                            <select name="HospitalID" id="HospitalID" class="select ymxSelect" style="height: 25px; width: 100px;">
+                                <option value="0">请选择分店</option>
+                                @if (RegionhospitalList.Count > 0)
+                                {
+                                    foreach (var info in RegionhospitalList)
+                                    {
+                                        <option @(ViewBag.HospitalID == info.HospitalID ? "selected='selected'" : "") value="@info.HospitalID">@info.Name</option>
+                                    }
+                                }
+                                else
+                                {
+                                    foreach (var info in hospitalList)
+                                    {
+                                        <option @(ViewBag.HospitalID == info.ID ? "selected='selected'" : "") value="@info.ID">@info.Name</option>
+                                    }
+                                }
+                            </select>
+                        }
+                        <label style="font-weight: normal;">
+                            时间:
+                        </label>
+                        <input type="text" autocomplete="off" class="text-input Wdate" style="width: 100px; border: none; padding-left: 10px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="StartTime" id="txtStartTime" value="@ViewBag.StartTime.ToString("yyyy-MM-dd")" />
+                        <label style="font-weight: normal;">
+                            至
+                        </label><input type="text" autocomplete="off" style="width: 100px; border: none; padding-left: 10px;" class="text-input Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" name="EndTime" id="txtEndTime" value="@ViewBag.EndTime.ToString("yyyy-MM-dd")" />
+                        <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                        <input type="submit" id="btnsumbit" class="submitbutton2" style="float: none;" value="一键诊断" />
+                        @*<input type="button" class="submitbutton2" id="btnSave" style="float: none;" value="导出" />*@
+                    </div>
+                }
+                <div id="articles" style="height: 100%; overflow: hidden; margin-top: 5px; width: 100%;">
+                    <table class="gridTable" style="border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th>
+                                    指标项
+                                </th>
+                                <th>
+                                    标准值
+                                </th>
+                                <th>
+                                    实际值
+                                </th>
+                                <th>
+                                    差值
+                                </th>
+                                <th>
+                                    整改意见
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="ptitle">
+                                    实耗/现金
+                                </td>
+                                <td>
+                                    ≥80%
+                                </td>
+                                <td>
+                                    @((Model.SumMoney != 0 ? Math.Round(Model.Liaocheng / Model.SumMoney, 2) : 0).ToString("P"))
+                                   
+                                </td>
+                                <td>
+                                    @((decimal)0.8 - (Model.SumMoney != 0 ? Math.Round(Model.Liaocheng / Model.SumMoney, 2) : 0))
+                                   
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color:@(((decimal)0.8 - (Model.SumMoney != 0 ? Math.Round(Model.Liaocheng / Model.SumMoney, 2) : 0))>0?"red":"blue")">
+                                        1、比例良性，达标
+                                    </p>
+                                    <p style="color:@(((decimal)0.8 - (Model.SumMoney != 0 ? Math.Round(Model.Liaocheng / Model.SumMoney, 2) : 0))>0?"red":"blue")">
+                                        2、实耗不达标，若非活动期，请加大实耗
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ptitle">
+                                    家居/实耗
+                                </td>
+                                <td>
+                                    ≥30%
+                                </td>
+                                <td>
+                                    @((Model.Liaocheng != 0 ? Math.Round(Model.Productprice / Model.Liaocheng, 2) : 0).ToString("P"))
+                                </td>
+                                <td>
+                                    @((decimal)0.3 - (Model.Liaocheng != 0 ? Math.Round(Model.Productprice / Model.Liaocheng, 2) : 0))
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color: @(((decimal)0.3 - (Model.Liaocheng != 0 ? Math.Round(Model.Productprice / Model.Liaocheng, 2) : 0))>0?"red":"#000")">
+                                        1、比例良性，达标
+                                    </p>
+                                    <p style="color: @(((decimal)0.3 - (Model.Liaocheng != 0 ? Math.Round(Model.Productprice / Model.Liaocheng, 2) : 0))>0?"red":"#000")">
+                                        2、家居业绩不达标，请提高家居业绩
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ptitle">
+                                    客单价
+                                </td>
+                                <td>
+                                    ≥@KeDanjia.AttributeValue
+                                </td>
+                                <td>
+                                    @((Model.Keliu != 0 ? Math.Round(Model.Danxiangxiaohao / Model.Keliu, 2) : 0))
+                                </td>
+                                <td>
+                                    @(ConvertValueHelper.ConvertDecimalValue(KeDanjia.AttributeValue) - (Model.Keliu != 0 ? Math.Round(Model.Danxiangxiaohao / Model.Keliu, 2) : 0))
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color:@((ConvertValueHelper.ConvertDecimalValue(KeDanjia.AttributeValue) - (Model.Keliu != 0 ? Math.Round(Model.Danxiangxiaohao / Model.Keliu, 2) : 0))>0?"red":"#000")">
+                                        1、客单价达标，再接再厉
+                                    </p>
+                                    <p style="color:@((ConvertValueHelper.ConvertDecimalValue(KeDanjia.AttributeValue) - (Model.Keliu != 0 ? Math.Round(Model.Danxiangxiaohao / Model.Keliu, 2) : 0))>0?"red":"#000")">
+                                        2、低于标准值，要提高实耗业绩和客流量
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ptitle">
+                                    到店率
+                                </td>
+                                <td>
+                                    ≥2.5
+                                </td>
+                                <td>
+                                    @((Model.RenTou != 0 ? Math.Round((double)Model.Keliu / (double)Model.RenTou, 2) : 0))
+                                </td>
+                                <td>
+                                    @((2.5 - (Model.RenTou != 0 ? Math.Round((double)Model.Keliu / (double)Model.RenTou, 2) : 0)).ToString("f2"))
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color:@(((2.5 - (Model.RenTou != 0 ? Math.Round((double)Model.Keliu / (double)Model.RenTou, 2) : 0)))>0?"red":"#000")">
+                                        1、到店率达标，再接再厉
+                                    </p>
+                                    <p style="color:@(((2.5 - (Model.RenTou != 0 ? Math.Round((double)Model.Keliu / (double)Model.RenTou, 2) : 0)))>0?"red":"#000")">
+                                        2、低于标准值，要提高客流量和进店人头数
+                                    </p>
+                                </td>
+                            </tr>
+                            @*<tr>
+                                <td class="ptitle">
+                                    日人均服务人次
+                                </td>
+                                <td>
+                                    ≥2.5
+                                </td>
+                                <td>
+                                    @((Math.Round((double)Model.Keliu / (Convert.ToDouble(HhospitalUserCount.AttributeValue) == 0 ? 1 : Convert.ToDouble(HhospitalUserCount.AttributeValue)) / DateTime.DaysInMonth(Convert.ToDateTime(ViewBag.StartTime).Year, Convert.ToDateTime(ViewBag.StartTime).Month), 2)))
+                                </td>
+                                <td>
+                                    @(2.5 - (Math.Round((double)Model.Keliu / (Convert.ToDouble(HhospitalUserCount.AttributeValue) == 0 ? 1 : Convert.ToDouble(HhospitalUserCount.AttributeValue)) / DateTime.DaysInMonth(Convert.ToDateTime(ViewBag.StartTime).Year, Convert.ToDateTime(ViewBag.StartTime).Month), 2)))
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color:@((2.5 - (Math.Round((double)Model.Keliu / (Convert.ToDouble(HhospitalUserCount.AttributeValue) == 0 ? 1 : Convert.ToDouble(HhospitalUserCount.AttributeValue)) / DateTime.DaysInMonth(Convert.ToDateTime(ViewBag.StartTime).Year, Convert.ToDateTime(ViewBag.StartTime).Month), 2)))>0?"red":"#000")">
+                                        1、平均日服务人次达标，再接再厉
+                                    </p>
+                                    <p style="color:@((2.5 - (Math.Round((double)Model.Keliu / (Convert.ToDouble(HhospitalUserCount.AttributeValue) == 0 ? 1 : Convert.ToDouble(HhospitalUserCount.AttributeValue)) / DateTime.DaysInMonth(Convert.ToDateTime(ViewBag.StartTime).Year, Convert.ToDateTime(ViewBag.StartTime).Month), 2)))>0?"red":"#000")">
+                                        2、低于标准值，要加强服务质量和客户管理
+                                    </p>
+                                </td>
+                            </tr>*@
+                            @*<tr>
+                                <td class="ptitle">
+                                    新客到店率
+                                </td>
+                                <td>
+                                    ≥2.5
+                                </td>
+                                <td>
+                                    @((Model.zengsongxiangmu != 0 ? Math.Round((double)Model.Shihaoxiangmu / (double)Model.zengsongxiangmu, 2) : 0))
+                                </td>
+                                <td>
+                                    @(2.5 - (Model.zengsongxiangmu != 0 ? Math.Round((double)Model.Shihaoxiangmu / (double)Model.zengsongxiangmu, 2) : 0))
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color:@((2.5 - (Model.zengsongxiangmu != 0 ? Math.Round((double)Model.Shihaoxiangmu / (double)Model.zengsongxiangmu, 2) : 0))>0?"red":"#000")">
+                                        1、新客到店率达标，再接再厉
+                                    </p>
+                                    <p style="color:@((2.5 - (Model.zengsongxiangmu != 0 ? Math.Round((double)Model.Shihaoxiangmu / (double)Model.zengsongxiangmu, 2) : 0))>0?"red":"#000")">
+                                        2、低于标准值，要增进客情，调查感受，加强预约与返预约
+                                    </p>
+                                </td>
+                            </tr>*@
+                            <tr>
+                                <td class="ptitle">
+                                    当月进店人头数
+                                </td>
+                                <td>
+                                    @Model.BenyunJindianrentou
+                                </td>
+                                <td>
+                                    上月进店人头数 （@Model.ShangyunJindianrentou）
+                                </td>
+                                <td>
+                                    @(Model.BenyunJindianrentou - Model.ShangyunJindianrentou - Convert.ToInt32(HhospitalUserCount.AttributeValue))
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color: @((Model.BenyunJindianrentou - Model.ShangyunJindianrentou - Convert.ToInt32(HhospitalUserCount.AttributeValue))>0?"red":"#000")">
+                                        1、指标达标，继续加油
+                                    </p>
+                                    <p style="color: @((Model.BenyunJindianrentou - Model.ShangyunJindianrentou - Convert.ToInt32(HhospitalUserCount.AttributeValue))>0?"red":"#000")">
+                                        2、指标不达标，应将沉睡客激活和转介绍工作常态化，抓新客升卡，加强客户管理，主管人员以此为核心目标
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ptitle">
+                                    新客数
+                                </td>
+                                <td>
+                                    @Model.NewRenTou
+                                </td>
+                                <td>
+                                    上岗满半年 美容师人数（@HhospitalUserCount.AttributeValue）
+                                </td>
+                                <td>
+                                    @(Model.NewRenTou - ConvertValueHelper.ConvertIntValue(HhospitalUserCount.AttributeValue))
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color: @((Model.NewRenTou - ConvertValueHelper.ConvertIntValue(HhospitalUserCount.AttributeValue))>0?"red":"#000")">
+                                        1、指标达标，继续加油 （如果新客数≥上岗满半年美容师人数）
+                                    </p>
+                                    <p style="color: @((Model.NewRenTou - ConvertValueHelper.ConvertIntValue(HhospitalUserCount.AttributeValue))>0?"red":"#000")">
+                                        2、指标不达标，适当进行外拓或加强转介绍（如果新客数＜上岗满半年美容师人数）
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ptitle">
+                                    未消耗业绩(所有)
+                                </td>
+                                <td colspan='3'>
+                                    @Model.InMoney
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color:#000;">
+                                        截止统计日止本店的总未消耗业绩
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ptitle">
+                                    会员占比
+                                </td>
+                                <td colspan='3'>
+                                    @(Model.MemberRatio)%
+                                </td>
+                                <td style="text-align: left;">
+                                    <p style="color:#000;">
+                                        截止统计日止本店的总会员占比
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div>
+                        <p class="pbold m-shouming">
+                            附注：客流包括虚客流（新客的）和实客流（有效客的），进店人头数包括虚人头（新客的）和实人头（有效客的）
+                        </p>
+                        <p class="pbold m-shouming">
+                            1、实操业绩=指定客实操业绩+非指定客实操业绩+现金家居+卡扣家居
+                        </p>
+                        <p class="pbold m-shouming">
+                            2、现金业绩=现金单次项目+现金储值卡+现金疗程卡+现金家居+大项目业绩（这里的现金意思是非卡扣业绩，不仅限于现金交易方式，包括现金、转账、刷卡等）
+                        </p>
+                        <p class="pbold m-shouming">
+                            3、家居业绩=现金家居+卡扣家居
+                        </p>
+                        <p class="pbold m-shouming">
+                            4、客单价=实操业绩÷客流量<label style="color: Red;">（注：不含新客到店次数，不统计体验卡、拓客卡等实耗业绩）</label>
+                        </p>
+                        @*<p class="pbold m-shouming">
+                            5、到店率=月客流量（注：不含新客到店次数）÷月人头数（<label style="color: Red;">注：不含新客人数</label>）
+                        </p>*@
+                        @*<p class="pbold m-shouming">
+                            5、日人均服务人次=月客流量（单位：次，<label style="color: Red;">注：不含新客到店次数</label>）÷美容师人数（单位：人）÷月份天数
+                        </p>*@
+                        <p class="pbold m-shouming">
+                            5、未消耗业绩=未操作疗程卡项余额+储值卡余额+各类券和赠送卡
+                        </p>
+                        <p class="pbold m-shouming">
+                            6、会员占比=持有会员级别里的各种卡的顾客数÷有效客数
+                        </p>
+                        <p class="pbold m-shouming">
+                            7、到店率=月客流量÷月人头数
+                        </p>
+                        <p style="height:20px;"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#btnsumbit").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+</script>

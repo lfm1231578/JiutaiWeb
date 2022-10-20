@@ -1,0 +1,122 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.DepartmentEntity;
+@{
+    Layout = null;
+    var Date = Request["Date"];
+    var ID = Request["ID"];
+    var DocID = Request["DocID"];
+    var StatrTime = Request["StatrTime"];
+    var EndTime = Request["EndTime"];
+    var Hid = ViewBag.HospitalID;//门店ID
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var depList = personbll.GetAllUserByHospitalID(Hid, 1);
+    var starttimeinfo = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 08:00"));
+    var endtimeinfo = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd 23:00"));
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="../../Content/themes/css/core.css" rel="stylesheet" type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <form>
+    <div class="mainContentRight_bottom " style="margin: 0; clear: both; background: #fff;">
+        <div id="patient" class="clearfix">
+            <a class="submitbutton2 canclick"  href="#" src="@Url.Content("~/PatientManage/PatientWeeksReserve")">
+                本周</a> <a class="submitbutton2 canclick"  href="#" src="@Url.Content("~/PatientManage/ReservationMonth")?Year=@DateTime.Now.Year&Month=@DateTime.Now.Month">
+                    当月</a> <a class="submitbutton2 canclick"  href="#" src="@Url.Content("~/PatientManage/ReservationMonth")?Year=@DateTime.Now.AddMonths(1).Year&Month=@DateTime.Now.AddMonths(1).Month"">
+                        下月</a>
+            <input type="hidden" value="@ID"  id="RID"/>
+        </div>
+        <div class="reservationagain" style="height: 26px;">
+            <span style="float: left; font-size: 14px; margin-left: 14px;">预约美容师：</span>
+            <select class="select" style="float: left; width: 160px; height: 26px;" id="DeptID"
+                name="DeptID">
+                @{ foreach (var D in depList)
+                   { <option @(D.UserID == ViewBag.UserID ? "selected=selected" : "") value="@D.UserID">@D.UserName</option>}}
+            </select>
+            <span style="float: left; font-size: 14px; margin-left: 14px;">预约日期：</span><input
+                type="text" id="Date" readonly="readonly" class="Wdate" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                style="float: left; width: 160px; height: 22px; margin-top: 3px;" />
+            <span style="float: left; font-size: 14px; margin-left: 14px;">预约时间段：</span>
+            <select class="select" style="float: left; width: 80px; height: 25px;" id="StartTime"
+                name="StartTime">
+                @for (DateTime dt = starttimeinfo; dt <= endtimeinfo; dt = dt.AddMinutes(30))
+                {
+                    string ss = dt.Hour + ":" + (dt.Minute == 0 ? "00" : dt.Minute + "");
+                    <option value="@ss">@ss</option>
+                }
+            </select><label style="float: left; margin-top: 5px;">至</label>
+            <select class="select" style="float: left; width: 80px; height: 25px;" id="EndTime"
+                name="EndTime">
+                @for (DateTime dt = starttimeinfo; dt <= endtimeinfo; dt = dt.AddMinutes(30))
+                {
+                    string ss = dt.Hour + ":" + (dt.Minute == 0 ? "00" : dt.Minute + "");
+                    <option value="@ss">@ss</option>
+                }
+            </select>
+        </div>
+        <div>
+            <iframe id="iframecontent" src="@Url.Content("~/PatientManage/ReservationMonth")?D=0&Date=@Date" width="100%"  height="400px"  frameborder="0"  >
+            </iframe>
+        </div>
+        <div style="margin: 10px;">
+            <input type="button" class="submitbutton2" id="save" value="保 存" />
+            <input type="button" class="submitbutton2" value="取 消" onclick="closeed()" />
+        </div>
+    </div>
+    </form>
+</body>
+</html>
+<script type="text/javascript">
+
+
+  $(document).ready(function () {
+          /// 编辑时 区域默认选中  
+      var StatrTime='@StatrTime';
+      var EndTime='@EndTime';
+          $("#StartTime").find("option[value='"+StatrTime+"']").attr("selected",true);
+         $("#EndTime").find("option[value='"+EndTime+"']").attr("selected",true);
+     
+
+     });
+    $(".canclick").click(function () {
+        $("#iframecontent").attr("src", $(this).attr("src"));
+    })
+
+    $("#save").click(function () {
+      var ID=$("#RID").val();
+      var Date=$("#Date").val();
+      var departID =$("#DeptID").val();
+      var StartTime=$("#StartTime").val();
+      var EndTime=$("#EndTime").val();
+         $.ajax({
+            type: "post",
+            dataType: "json",
+            url:"@Url.Content("~/ReservationDoctorManage/UpReservationDate")",
+            data:{Date:Date,ID:ID,departID:departID,StartTime:StartTime,EndTime:EndTime},
+            success: function (data) {
+             if(data>0){
+               art.dialog({ content:'保存成功' , cancelVal: '确定', width:'200px',height:'50px'  },function(){ closeed();});
+             }
+             else if( data=-1)
+             {
+               art.dialog({ content:'保存失败,请检查日期' , cancelVal: '确定', width:'200px',height:'50px'  },function(){ }); 
+             }
+            }
+           
+        });
+
+    })
+    //关闭
+    function closeed()
+    {
+      art.dialog.open.api.close();
+    }
+    
+</script>

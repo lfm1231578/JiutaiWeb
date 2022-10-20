@@ -1,0 +1,441 @@
+﻿@model PagedList<EYB.ServiceEntity.WarehouseEntity.BuyOrderInfoEntity>
+@{
+    ViewBag.Title = "添加进货单";
+    Layout = null;
+    WarehouseManage.Factory.IBLL.IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<WarehouseManage.Factory.IBLL.IWarehouseManageBLL>();
+    SystemManage.Factory.IBLL.ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<SystemManage.Factory.IBLL.ISystemManageBLL>();
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> persoList = personBLL.GetAllUserByHospitalID(ViewBag.HospitalID, 0);//查询门店美容师
+    var cangku = wareBll.GetWarehouseList(new EYB.ServiceEntity.WarehouseEntity.WarehouseEntity { HospitalID = ViewBag.HospitalID });//获取仓库列表
+    var zhifu = wareBll.GetPaymentList();//支付方式
+    var ID = Convert.ToInt32(Request["ID"]);
+    var order = wareBll.GetBuyOrderModel(new EYB.ServiceEntity.WarehouseEntity.BuyOrderEntity { ID = ID });
+    var type = Request["Type"].ToUpper();
+    
+    
+    
+}
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--弹出框-->
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<style>
+    .text-input { color: #555; padding: 4px; border: 1px solid #B5B8C8; font-size: 14px; margin-top: 4px; height: 28px; width: 110px; }
+</style>
+<body style="background: #fff;">
+    <form method="post" action="#" id="myform2">
+    <input id="Type" type="hidden" value="@type" />
+    <input type="hidden" name="OrderNo" value="@order.OrderNo" />
+    <table class="mainContentRight_table ">
+        <tr>
+            <td class="tdright">
+                单位名称：
+            </td>
+            <td style="width: 400px;">
+                <input type="hidden" name="SupplierID" class="SupplierID" value="@order.SupplierID" />
+                <input type="text" name="SupperName" class="SupperName text-input" disabled="disabled" value="@order.SupplierName" />
+                <input type="button" id="selectsupper" class="addsame" onclick="SupperList()" style="color: #555;
+                    padding: 4px; border: 1px solid #B5B8C8; font-size: 14px; margin-top: 4px;" value="选择供应商" />
+            </td>
+            <td class="tdright">
+                联系名称:
+            </td>
+            <td>
+                <input type="text" name="LianxiName" class="LianxiName text-input" value="@order.LianxiName" />
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                联系电话:
+            </td>
+            <td>
+                <input type="text" name="Supperphone" class="Supperphone text-input" value="@order.Supperphone" />
+            </td>
+            <td class="tdright">
+                结算方式:
+            </td>
+            <td>
+                <select style="width: 80px;" name="PaymentID" class="select">
+                    <option @(order.PaymentID == 1 ? "selected='selected'" : "") value="1">现金</option>
+                    <option @(order.PaymentID == 2 ? "selected='selected'" : "") value="2">支付宝</option>
+                    <option @(order.PaymentID == 3 ? "selected='selected'" : "") value="3">财付通</option>
+                    <option @(order.PaymentID == 4 ? "selected='selected'" : "") value="4">其它</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                业务员：
+            </td>
+            <td>
+                <select style="width: 80px;" name="UserID" class="select">
+                    @foreach (var j in persoList)
+                    { 
+                        <option @(order.UserID == j.UserID ? "selected='selected'" : "") value="@j.UserID">@j.UserName</option>
+                    }
+                </select>
+            </td>
+            <td class="tdright">
+                应付金额：
+            </td>
+            <td>
+                <input type="text" name="NeedMoney" class="NeedMoney text-input" readonly="readonly" value="@order.NeedMoney" />
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                实付金额：
+            </td>
+            <td>
+                <input type="text" name="ActualMoney" onkeyup="CheckInputIntFloat(this)" value="@order.ActualMoney" class="ActualMoney  text-input" />
+            </td>
+            <td class="tdright">
+                当前仓库：
+            </td>
+            <td>
+                <select name="HouseID" class="select">
+                    @foreach (var i in cangku)
+                    { 
+                        <option @(order.HouseID == i.ID ? "selected='selected'" : "") value="@i.ID">@i.Name</option>
+                    }
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td class="tdright">
+                经手人：
+            </td>
+            <td>
+                <select name="HouseUserID" class="select">
+                    @foreach (var j in persoList)
+                    { 
+                        <option @( order.HouseUserID == j.UserID ? "selected='selected'" : "") value="@j.UserID">@j.UserName</option>
+                    }
+                </select>
+            </td>
+            <td class="tdright">
+                备注:
+            </td>
+            <td>
+                <input type="text" name="Memo"  value="@order.Memo" />
+            </td>
+        </tr>
+    </table>
+    <div class="clearfix">
+        <input type="button" class="submitbutton4" onclick="ProductList()" value="浏览产品" style="line-height: 23px;
+            margin: 6px;" />
+    </div>
+    <table class="gridTable" style="width: 99%; margin: 0 auto; border-collapse: collapse;">
+        <thead>
+            <tr style="background: #c4c4c4;">
+                <th>
+                    产品名称
+                </th>
+                <th>
+                    类别
+                </th>
+                <th>
+                    品牌
+                </th>
+                <th>
+                    成本价
+                </th>
+                <th>
+                    数量
+                </th>
+                <th>
+                    合计金额
+                </th>
+                <th>
+                    操作
+                </th>
+            </tr>
+        </thead>
+        <tbody id="warebody">
+            @foreach (var info in Model)
+            {
+                <tr>
+                    <td>
+                        <input type='hidden' name='ID' class='ID' value="@info.ProductID" />@info.ProductName
+                    </td>
+                    <td>
+                        @info.ProductTypeName
+                    </td>
+                    <td>
+                        @info.BrandName
+                    </td>
+                    <td>
+                        <input type='text' name='Price' onkeyup='CheckInputIntFloat(this)' class='Price wid50'
+                            disabled='disabled' value="@info.Price" />
+                    </td>
+                    <td>
+                        <input type='text' name='Number' onkeyup='CheckInputIntFloat(this)' class='Number wid50'
+                            value='@info.Quatity' />
+                    </td>
+                    <td class='allprice'>
+                        @info.Allprice
+                    </td>
+                    <td>
+                        <a href='#' class='delthis'>删除</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="accountdiv">
+        <label style="font-weight: normal; line-height: 40px;">
+            &nbsp;&nbsp;数量：</label><label id="labcash0" class="labamout0">@order.AllQutity</label>
+        <label style="font-weight: normal;">
+            合计金额：</label><label id="labcash1" class="labcash1">@order.ActualMoney</label>
+    </div>
+
+    <table class="mainContentRight_table ">
+        @*<tr>
+            <td class="tdright">
+                说明：
+            </td>
+            <td>
+                <textarea cols="40" rows="4" name="Memo">@order.Memo</textarea>
+            </td>
+        </tr>*@
+        <tr>
+            <td class="tdright">
+            </td>
+            <td>
+                <input type="button" id="btn" value="保  存" class="submitbutton2" />
+                @if (type == "JIN")
+                { 
+                  <a class="submitbutton2 rukubtn" href="JavaScript:closeedNorefresh();" > 关 闭</a>
+                }
+                else
+                { 
+                   <a class="submitbutton2 rukubtn" href="JavaScript:closeedNorefresh();">  关 闭</a> 
+                }
+
+                
+            </td>
+        </tr>
+    </table>
+    </form>
+</body>
+<script type="text/javascript">
+    //接收产品
+    function ProductList() {
+        art.dialog.open("/WarehouseManage/Pdlist", { title: "产品列表", width: 660, height: 470, close: function () {
+            var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+            if (bValue != undefined && bValue != '') {
+                //这里添加一个绑定方法
+                pdbind(bValue);
+            }
+        }
+        })
+    }
+    //接受产品的方法
+    function pdbind(obj) {
+        var arraylist = new Array();
+        arraylist = obj.split('$');
+        //1|多肽保湿喷雾|488.00|358.00|蕾琳|娇兰
+        $.each(arraylist, function (n, value) {
+            if (value != '') {
+                $("#warebody").append("<tr><td><input type='hidden' name='ID' class='ID' value=" + value.split('|')[0] + " />" + value.split('|')[1] + "</td><td>" + value.split('|')[5] + "</td><td>" + value.split('|')[4] + "</td><td><input type='text' name='Price' onkeyup='CheckInputIntFloat(this)' class='Price wid50' disabled='disabled' value=" + value.split('|')[3] + " /> </td><td><input type='text' name='Number' onkeyup='CheckInputIntFloat(this)' class='Number wid50' value='1' /> </td><td class='allprice'>" + value.split('|')[3] + "</td><td><a href='#' class='delthis' >删除</a></td></tr>");
+            }
+        })
+
+        UpdateNeedPrice();
+        updateallpeice();
+    }
+
+    function SupperList() {
+        art.dialog.open("/WarehouseManage/SupplierList", { title: "供应商列表", width: 660, height: 470, close: function () {
+            var bValue = art.dialog.data('SValueProduct'); // 读取B页面的数据
+            if (bValue != undefined && bValue != '') {
+                //这里添加一个绑定方法
+                Supplierbind(bValue);
+            }
+        }
+        })
+    }
+
+    //供应商
+    function Supplierbind(obj) {
+        var arraylist = new Array();
+        arraylist = obj.split('$');
+        $.each(arraylist, function (n, value) {
+            if (value != '') {
+                $(".SupplierID").val(value.split('|')[0]);
+                $(".SupperName").val(value.split('|')[1]);
+                $(".Supperphone").val(value.split('|')[2]);
+            }
+        })
+    }
+
+    //次数更改了修改总价
+    $("#warebody").delegate(".Number", "keyup", function () {
+        if ($(this).val() == '') {
+            $(this).val(0);
+        }
+        var number = $(this).val(); //获取当前价格
+        var price = $(this).parent().parent().find(".Price").val(); //获取单价
+        var allprice = parseFloat(price) * parseFloat(number);
+        $(this).parent().parent().find(".allprice").text(allprice.toFixed(2));
+        UpdateNeedPrice();
+        updateallpeice();
+    })
+
+    //单价发生改变修改总价
+    $("#warebody").delegate(".Price", "keyup", function () {
+        if ($(this).val() == '') {
+            $(this).val(0);
+        }
+        var number = $(this).parent().parent().find(".Number").val();   //获取数量
+        var allprice = parseFloat($(this).val()) * parseFloat(number);
+        $(this).parent().parent().find(".allprice").text(allprice.toFixed(2));
+        UpdateNeedPrice();
+        updateallpeice();
+
+    })
+
+    function UpdateNeedPrice() {
+        var plist = $("#warebody").find(".allprice");
+        var needprice = 0;
+        plist.each(function () {
+            needprice = parseFloat(needprice) + parseFloat($(this).text());
+        })
+
+        $(".NeedMoney").val(needprice);
+    }
+
+    //删除功能的实现
+    $("#warebody").delegate(".delthis", "click", function () {
+        if (confirm('确实要删除吗?')) {
+            $(this).parent().parent().remove();
+            UpdateNeedPrice();
+            updateallpeice();
+        }
+    })
+
+    //保存
+    $("#btn").click(function () {
+        $(this).attr("disabled", "disabled ");     //给当前元素加上不可操作功能
+
+        if ($(".SupplierID").val() == '') {
+            artdialogfail("请选择供应商！");
+            $(this).attr("disabled", false);
+            return false;
+        }
+        if ($(".ActualMoney").val() == '') {
+            artdialogfail("请填写付款金额！");
+            $(this).attr("disabled", false);
+            return false;
+        }
+
+
+        var idlist = false;
+        var Idinfo = $("#warebody").find(".ID");
+        Idinfo.each(function () { idlist = true; })
+        if (!idlist) {
+            artdialogfail("请选择产品！");
+            $(this).attr("disabled", false);
+            return false;
+        }
+        var type = $("#Type").val();
+        if (type == "JIN") {
+            $.ajax({
+                type: "POST",
+                url: getControllerUrl("WarehouseManage", "EditJinhuo"),
+                async: false,
+                data: $('#myform2').serialize(), // 你的formid
+                error: function (request) {
+                    artdialogfail("操作失败！");
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                }
+            });
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: getControllerUrl("WarehouseManage", "EditTuihuo"),
+                async: false,
+                data: $('#myform2').serialize(), // 你的formid
+                error: function (request) {
+                    artdialogfail("操作失败！");
+                },
+                success: function (data) {
+                    if (data == 9) {
+                        artdialog("库存不足！");
+                    }
+                    else {
+                        artdialog("操作成功！");
+                        closeed();
+                    }
+                }
+            });
+        }
+
+
+        $(this).attr("disabled", false); //吧提交按钮还原
+    })
+
+    //新增仓库
+    $(".addhouse").click(function () {
+        art.dialog.open("/WarehouseManage/addWarehouse", { title: "产品列表", width: 250, height: 100, close: function () {
+            var bValue = art.dialog.data('WValue'); // 读取B页面的数据
+            if (bValue != undefined && bValue != '') {
+                //这里添加一个绑定方法
+                cangkubind(bValue);
+            }
+        }
+        })
+    })
+
+    function cangkubind(obj) {
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("WarehouseManage", "Addhouse"),
+            async: false,
+            //data: $('#myform2').serialize(), // 你的formid
+            data: { "name": obj },
+            error: function (request) {
+                artdialogfail("操作失败！");
+            },
+            success: function (data) {
+                if (data > 0) {
+                    // artdialog("操作成功！", "", "250", "100");
+                    $(".HouseID").append("<option selected='selected'  value='" + data + "'>" + obj + "</option> ");
+                }
+            }
+        });
+    }
+
+    //总价格计算
+    function updateallpeice() {
+        var numb = $("#warebody").find(".Number");
+        var allp = $("#warebody").find(".allprice");
+        var allnumber = 0;
+        numb.each(function () {
+            allnumber = allnumber + parseFloat($(this).val());
+        })
+        var allprice = 0;
+        allp.each(function () {
+            allprice = allprice + parseFloat($(this).text());
+        })
+        $("#labcash0").text(allnumber);
+        $("#labcash1").text(allprice);
+
+    } 
+
+</script>

@@ -1,0 +1,70 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.PersonnelEntity;
+@model PagedList<HospitalUserEntity>
+@{
+    ViewBag.Title = "选择参与员工";
+    Layout = null;
+   
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    
+        <div id="articles" class="mainContentRight_bottom" style=" overflow: hidden;
+            margin-top: 5px;">
+            @Html.Partial("_PersonnelSelectManagePage", Model)
+        </div>
+        @{Html.RegisterMvcPagerScriptResource();}
+        <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+        <div style="margin: 20px; margin-left: 0px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="确 定" onclick="FullValue()" />
+            <input class="submitbutton2" type="button" onclick="closeed()" value="取 消" />
+        </div>
+   
+</body>
+</html>
+<script type="text/javascript">
+
+    $(function () {
+        $("#articles").delegate("tr.ableclick", "dblclick", function () {
+            FullValue();
+        });
+        $("#articles").delegate("tr.ableclick", "click", function () {
+            $(this).find("input:radio").attr("checked", "checked");
+            $("tbody tr").css("background", "");
+            $(this).css("background", "#E7F6FF");
+        });
+        
+    });
+    //
+ 
+    function FullValue() {
+        var value = $("input[name='radioList']:checked").val();
+          var username = $("input[name='radioList']:checked").attr("code");
+        if (value == null) {
+            alert("请选择参与员工");
+            return false;
+        }
+        try {
+            window.top.InFoDate(value);
+        } catch (e) {
+            window.top.document.getElementsByTagName('iframe')[1].contentWindow.InFoDate(value, username);
+        }
+        closeed();
+
+    }
+     
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+</script>

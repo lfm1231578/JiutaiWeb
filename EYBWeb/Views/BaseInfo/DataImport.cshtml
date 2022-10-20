@@ -1,0 +1,161 @@
+﻿@using EYB.ServiceEntity.BaseInfo;
+@using BaseinfoManage.Factory.IBLL;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@{
+    ViewBag.Title = "DataImport";
+}
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                </label>数据导入(<span>此功能仅作于新店数据导入</span>)
+        </div>
+        <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto;"
+            id="">
+            <div class="mainContentRight">
+                <fieldset style="border-color: #ccc; width: 98%; margin: 0 auto;">
+                    <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;产品导入&nbsp;&nbsp;</legend>
+                    <form action="@Url.Content("~/BaseInfo/UploadProduct")" method="post" id="submitbutton" enctype="multipart/form-data" style=" margin:10px auto;">
+                        <span style="margin: auto 0px auto 20px;">选择产品文件:</span>
+                        <input type="file" name="file" />
+                        <select name="IsJoinBrands">
+                            <option value="1">加入导入品牌</option>
+                            <option value="2">不加入品牌</option>
+                        </select>
+                        <input id="ButtonUpload" type="submit" value="提交" />
+                        <a href="/download/产品.xlsx" style="color: Blue;">导入模板下载(xlsx)</a>
+                        <a href="/download/产品.xls" style="color: Blue;">导入模板下载(xls)</a>
+                    </form>
+                </fieldset>
+                <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+                    <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;项目导入&nbsp;&nbsp;</legend>
+                    <form action="@Url.Content("~/BaseInfo/UploadProject")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
+                        <span style="margin: auto 0px auto 20px;">选择项目文件:</span>
+                        <input type="file" name="file" />
+                        <select name="IsJoinBrands">
+                            <option value="1">加入导入品牌</option>
+                            <option value="2">不加入品牌</option>
+                        </select>
+                        <input id="" type="submit" value="提交" />
+                        <a href="/download/项目.xlsx" style="color: Blue;">导入模板下载(xlsx)</a>
+                        <a href="/download/项目.xls" style="color: Blue;">导入模板下载(xls)</a>
+                    </form>
+                </fieldset>
+                @*<fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;储值卡项导入&nbsp;&nbsp;</legend>
+            <form action="@Url.Content("~/BaseInfo/UploadCard1")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
+                <span style="margin: auto 0px auto 20px;">选择卡项文件:</span>
+                <input type="file" name="file" />
+                <input id="" type="submit" value="提交" />
+                <a href="/download/储值卡.xls" style="color: Blue;">储值卡导入模板下载</a>
+            </form>
+        </fieldset>
+        <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;疗程卡项导入&nbsp;&nbsp;</legend>
+            <form action="@Url.Content("~/BaseInfo/UploadCard1")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
+                <span style="margin: auto 0px auto 20px;">选择卡项文件:</span>
+                <input type="file" name="file" />
+                <input id="" type="submit" value="提交" />
+                <a href="/download/疗程卡.xls" style="color: Blue;">疗程卡导入模板下载</a>
+            </form>
+        </fieldset>*@
+                <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+                    <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;顾客导入&nbsp;&nbsp;</legend>
+                    <form action="@Url.Content("~/BaseInfo/UploadCustomer")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
+                        <span style="margin: auto 0px auto 20px;">选择顾客文件:</span>
+                        <input type="file" name="file" />
+                        <input id="" type="submit" value="提交" />
+                        <a href="/download/顾客档案.xlsx" style="color: Blue;">导入模板下载(xlsx)</a>
+                        <a href="/download/顾客档案.xls" style="color: Blue;">导入模板下载(xls)</a>
+                    </form>
+                </fieldset>
+                @if (ViewBag.HospitalID == 2)
+                {
+                    <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+                        <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;公众号证书导入（只有heyics账号能看到）&nbsp;&nbsp;</legend>
+                        <form action="@Url.Content("~/BaseInfo/UploadCustomer1")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
+                            <span style="margin: auto 0px auto 20px;">选择公众号证书文件:</span>
+                            <input type="file" name="file" />
+                            <input id="" type="submit" value="提交" />
+                        </form>
+                    </fieldset>
+
+                }
+                <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+                    <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;用户储值余额导入&nbsp;&nbsp;</legend>
+                    <form action="@Url.Content("~/BaseInfo/UploadCustomerChuZhika")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
+                        <span style="margin: auto 0px auto 20px;">选择储值余额文件:</span>
+                        <input type="file" name="file" />
+                        <input id="" type="submit" value="提交" />
+                        <a href="/download/储值卡结余.xlsx" style="color: Blue;">导入模板下载</a>
+                    </form>
+                </fieldset>
+                <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+                    <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;用户疗程项目导入&nbsp;&nbsp;</legend>
+                    <form action="@Url.Content("~/BaseInfo/UploadCustomerProject")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
+                        <span style="margin: auto 0px auto 20px;">选择疗程项目文件:</span>
+                        <input type="file" name="file" />
+                        <input id="" type="submit" value="提交" />
+                        <a href="/download/疗程卡结余.xlsx" style="color: Blue;">导入模板下载</a>
+                    </form>
+                </fieldset>
+                @*<fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;用户储值余额导入&nbsp;&nbsp;</legend>
+            <form action="@Url.Content("~/BaseInfo/UploadCustomerChuZhika")"  method="post" id=""  enctype="multipart/form-data" style=" margin:10px auto;" >
+            <span style="margin: auto 0px auto 20px;">选择储值余额文件:</span>
+            <input type="file" name="file" />
+            <input id="" type="submit" value="提交" />
+            <a href="/download/储值卡结余.xlsx" style="color: Blue;">导入模板下载</a>
+            </form>
+        </fieldset>
+        <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;员工导入&nbsp;&nbsp;</legend>
+            <form action="@Url.Content("~/BaseInfo/UploadStaff")"  method="post" id=""  enctype="multipart/form-data" style=" margin:10px auto;" >
+            <span style="margin: auto 0px auto 20px;">选择员工文件:</span>
+            <input type="file" name="file" />
+            <input id="" type="submit" value="提交" />
+            </form>
+        </fieldset>
+        <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;用户欠款数据导入&nbsp;&nbsp;</legend>
+            <form action="@Url.Content("~/BaseInfo/UploadCustomerQianKuan")"  method="post" id=""  enctype="multipart/form-data" style=" margin:10px auto;" >
+            <span style="margin: auto 0px auto 20px;">选择卡项套餐分析文件:</span>
+            <input type="file" name="file" />
+            <input id="" type="submit" value="提交" />
+            </form>
+        </fieldset>
+        <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
+            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;顾客更新&nbsp;&nbsp;</legend>
+            <form action="@Url.Content("~/BaseInfo/CustomerUpdate")"  method="post" id=""  enctype="multipart/form-data" style=" margin:10px auto;" >
+            <span style="margin: auto 0px auto 20px;">顾客更新:</span>
+            <input type="file" name="file" />
+            <input id="" type="submit" value="提交" />
+            </form>
+        </fieldset>*@
+            </div>
+        </div>
+        <script type="text/javascript">
+            function doUpload() {
+                $.ajax({
+                    enctype: "multipart/form-data",
+                    type: "post", //使用get方法访问后台 
+                    dataType: "json", //返回json格式的数据
+                    url: getControllerUrl("BaseInfo", "UploadProduct"),
+                    data: $('#submitbutton').serialize(),
+                    async: false,
+                    success: function (data) {
+                        if (data > 0) {
+                            alert("操作成功!");
+                        }
+                    },
+                    error: function (e) {
+                        //alert(e.responseText);
+                        artdialogfail("操作失败！");
+                    }
+                });
+            }    
+        </script>
+    </div>
+</div>

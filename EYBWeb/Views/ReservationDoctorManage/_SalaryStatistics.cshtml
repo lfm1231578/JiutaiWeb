@@ -1,0 +1,149 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@using SystemManage.Factory.IBLL;
+@model List<EYB.ServiceEntity.ReservationEntity.DakaRecordEntity>
+    @{
+        Layout = null;
+        ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+        var YingxianggongxiuDay = systemBLL.GetUserSettingsValue(ViewBag.HospitalID, "YingxianggongxiuDay");
+        var gongxiuday = ConvertValueHelper.ConvertIntValue(YingxianggongxiuDay.AttributeValue);
+        gongxiuday = gongxiuday == 0 ? 4 : gongxiuday;
+    }
+
+    <form action="" method="post" id="submitform">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" style="border-collapse: collapse;">
+            <thead style="position:absolute; width:100%;display:block">
+                <tr>
+
+                    <th orderfield="" style="font-size:11px">
+                        员工职位
+                    </th>
+                    <th orderfield="" style="font-size:11px">
+                        员工姓名
+                    </th>
+                    <th style="font-size:11px">
+                        出勤天数
+                    </th>
+                    <th style="font-size:11px">
+                        实际出勤天数
+                    </th>
+                    <th style="font-size:11px">
+                        全勤奖
+                    </th>
+                    <th title="超休天数=请假+旷工" style="font-size:11px">
+                        超休天数
+                    </th>
+                    <th style="font-size:11px">
+                        总底薪
+                    </th>
+                    <th style="font-size:11px">
+                        绩效提成
+                    </th>
+                    <th style="font-size:11px">
+                        绩效奖金
+                    </th>
+                    @*<th>
+            加班工资
+        </th>
+        <th>
+            工龄补贴
+        </th>
+        <th>
+            社保
+        </th>
+        <th>
+            公积金
+        </th>*@
+                    <th style="font-size:11px">
+                        手工费
+                    </th>
+                    <th style="font-size:11px">
+                        应发工资
+                    </th>
+                    @*<th>
+            职责扣款
+        </th>*@
+                    <th style="font-size:11px">
+                        其他
+                    </th>
+                    <th style="font-size:11px">
+                        实发工资
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+            <tr>
+                <td>
+                    @entity.UserPost
+                </td>
+                <td>
+                    @entity.UserName
+                </td>
+                <td>
+                    @entity.ChuqingDay
+                </td>
+                <td>
+                    @(gongxiuday + entity.ChuqingDay)
+                </td>
+
+                <td>
+                    @entity.QuanqingReward
+                </td>
+                <td>
+                    @entity.Chaoxiuday
+                </td>
+                <td>
+                    @entity.DixinSalary
+                </td>
+                <td>
+                    @entity.JixiaoTicheng
+                </td>
+                <td>
+                    @entity.JixiaoReward
+                </td>
+                @*<td>
+            @entity.JiabanSalary
+        </td>
+        <td>
+            @entity.GonglingSubsidy
+        </td>
+        <td>
+            @entity.Shibao
+        </td>
+        <td>
+            @entity.Gongjijin
+        </td>*@
+                <td>
+                    @entity.ShouGongFei
+                </td>
+                <td>
+                    @entity.YingfaSalary
+                </td>
+                @*<td>
+            @entity.KoukuanDuty
+        </td>*@
+                <td>
+                    @entity.Other
+                </td>
+                <td>
+                    @entity.ShifaSalary
+                </td>
+
+            </tr>
+                }
+
+            </tbody>
+        </table>
+
+    </form>
+    <div style="height:100px;"></div>
+    <script type="text/javascript">
+
+    </script>
+    <script src="/Scripts/ymx/commonTable.js"></script>

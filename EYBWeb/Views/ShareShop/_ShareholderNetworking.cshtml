@@ -1,0 +1,76 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.ShareShopEntity.ShareholderNetworkingEntity>
+    @{
+        Layout = null;
+    }
+    <form action="" method="post" id="searchForm">
+        <input type="hidden" value="" name="orderDirection" id="orderDirection" />
+        <input type="hidden" value="" name="orderField" id="orderField" />
+        <table class="gridTable" id="proudectList" style="height: auto; border-collapse: collapse; margin: 0px;width:100%;"
+               cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>
+                        股东姓名
+                    </th>
+                    <th>
+                        会员名称
+                    </th>
+                    <th>
+                        会员手机号
+                    </th>
+                    <th>
+                        会员微信
+                    </th>
+                    <th>
+                        人脉级别
+                    </th>
+
+                    <th>
+                        人脉创建时间
+                    </th>
+                    <th>
+                        门店
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entity in Model)
+                {
+                    <tr class="ableclick">
+                        <td>
+                            @entity.ShareholderName
+                        </td>
+                        <td>
+                            @entity.CustomerName
+                        </td>
+                        <td>
+                            @entity.Mobile
+                        </td>
+                        <td>
+                            @entity.WxNickname
+                        </td>
+                        <td>
+                            @(entity.Level == 1 ? "一级人脉" : "二级人脉")
+                        </td>
+                        <td>
+                            @entity.CreateTime
+                        </td>
+                        <td>
+                            @entity.HospitalName
+                        </td>
+
+
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new { id = "badoopager" })
+    </form>
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+        })
+    </script>
+
+

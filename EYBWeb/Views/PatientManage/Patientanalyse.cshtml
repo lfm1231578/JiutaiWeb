@@ -1,0 +1,102 @@
+﻿@{
+    var UserID = Request["UserID"];
+}
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+            <input type="hidden" name="UserID" id="UserID" value="@UserID" /><!-- 顾客ID-->
+            <div class="mainContentRight_top">
+                <label class="Soliddots">
+                 
+                </label>
+                @*<a href="@Url.Content("~/PatientManage/PatientanalyseBig")" title="全屏" style="float:right; display:block;width:28px;margin-right:30px; margin-top:5px; height:28px; background:url(../../Content/themes/images/fullscreen_alt.png);background-size: 100% 100%;">
+                </a>*@顾客分析
+            </div>
+            <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;
+            overflow: hidden;">
+                <div class="mainContentRight_bottomContent">
+                    <div id="tabbox">
+                        <ul class="tabs" id="tabs">
+                            <li><a href="###" tab="tab0">流失客分析</a></li>
+                            <li><a href="###" tab="tab1">顾客到店率</a></li>
+                            <li><a href="###" tab="tab2">贡献率</a></li>
+                            @*    <li><a href="###" tab="tab3">储值卡销售</a></li>
+                                <li><a href="###" tab="tab4">项目销售</a></li>*@
+                            <li><a href="###" tab="tab6">卡项结余</a></li>
+                            <li><a href="###" tab="tab7">欠款汇总</a></li>
+                            <li><a href="###" tab="tab5">消费汇总</a></li>
+                            <li><a href="###" tab="tab8">会员结构分析设置</a></li>
+                            <li><a href="###" tab="tab9">A/B/C/D类顾客</a></li>
+
+                        </ul>
+                        <ul id="tab_conbox" class="tab_conbox">
+                            @*<li id="tab0" class="tab_con" style="height: 525px;">*@
+                            <li id="tab0" class="tab_con" style="height: 925px;">
+                            <iframe src="@Url.Content("~/PatientManage/PatientstatisticsLost?UserID=")@UserID" href="@Url.Content("~/PatientManage/PatientstatisticsLost?UserID=")@UserID" frameborder="0" style="width:100%;_border:none; height:100%; border:none;border:0px; _border:0px; "></iframe>
+                            </li>
+                            <li id="tab1" class="tab_con" style="height: 100%;">
+                                <iframe src="" href="@Url.Content("~/PatientManage/PatientstatisticsDaodian?UserID=")@UserID" frameborder="0" style="width:100%;_border:none; height:100%; border:none;border:0px; _border:0px; "></iframe>
+                            </li>
+                            <li id="tab2" class="tab_con" style="display: none;">
+                                <iframe id="PatientDetailPage" src="" frameborder="0" href="@Url.Content("~/PatientManage/PatientstatisticsCashxiaofei?UserID=")@UserID&s_TableType=1" style="width:100%;_border:none;border:none; border:0px; _border:0px; "></iframe>
+                            </li>
+                            @* <li id="tab3" class="tab_con"  style="display: none;">
+         <iframe src="" href="@Url.Content("~/PatientManage/PatientstatisticsCardxiaoshou?UserID=")@UserID" frameborder="0" style="width:100%; ">
+            </iframe>
+        </li>
+        <li id="tab4" class="tab_con"  style="display: none;">
+         <iframe src="" href="@Url.Content("~/PatientManage/PatientstatisticsProjectxiaoshou?UserID=")@UserID" frameborder="0" style="width:100%; ">
+            </iframe>
+        </li>*@
+                            <li id="tab6" class="tab_con" style="display: none;">
+                                <iframe href="@Url.Content("~/PatientManage/PatientstatisticsCardShengyu?UserID=")@UserID" src="" frameborder="0" style="width:100%;_border:none; border:none;border:0px; _border:0px;"></iframe>
+                            </li>
+                            <li id="tab7" class="tab_con" style="display: none;">
+                                <iframe href="@Url.Content("~/PatientManage/PatientstatisticsQianKuan?UserID=")@UserID" src="" frameborder="0" style="width:100%;_border:none;border:none; border:0px; _border:0px;"></iframe>
+                            </li>
+                            <li id="tab5" class="tab_con" style="display: none;">
+                                <iframe href="@Url.Content("~/PatientManage/PatientstatisticsAllxiaofei?UserID=")@UserID" src="" frameborder="0" style="width:100%;_border:none;border:none; border:0px; _border:0px;"></iframe>
+                            </li>
+                            <li id="tab8" class="tab_con" style="height: 100%; width: 100%;">
+                                <iframe src="@Url.Content("~/Statistics/StatisticsPatient_CustomerStructure")" href="@Url.Content("~/Statistics/StatisticsPatient_CustomerStructure")" frameborder="0" style="_border:none;border:none; height:100%; width:100%; margin:0px; padding:0px;  border:0px; _border:0px;  "></iframe>
+                            </li>
+                            <li id="tab9" class="tab_con" style="height: 100%; width: 100%;display: none; padding:0px;">
+                                <iframe src="@Url.Content("~/Statistics/StatisticsPatient_CustomerStructureSelect")" href="@Url.Content("~/Statistics/StatisticsPatient_CustomerStructureSelect")" frameborder="0" style="_border:none;border:none; height:100%; width:100%; margin:0px; padding:0px;  border:0px; _border:0px;  "></iframe>
+                            </li>
+                            @*    <li id="tab8" class="tab_con" style="display: none;">
+            <iframe   href="@Url.Content("~/Statistics/StatisticsPatient_ProjectJiegou?UserID=")@UserID" src="" frameborder="0"   style="width:100%;_border:none;border:none; border:0px; _border:0px;">
+            </iframe>
+        </li>
+        <li id="tab9" class="tab_con" style="display: none;">
+            <iframe   href="@Url.Content("~/Statistics/StatisticsPatient_CustomerStructure?UserID=")@UserID" src="" frameborder="0"   style="width:100%;_border:none;border:none; border:0px; _border:0px;">
+            </iframe>
+        </li>*@
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+
+    jQuery(document).ready(function () {
+        $("iframe").height(getDocumentHeight() - $("#header").height() - $("#footer").height() - 110);
+        //Tab切换
+        $("#tabs  li").click(function () {
+            $("#tabs li").removeClass("thistab");
+            $(this).addClass("thistab");
+            $(".tab_con").hide();
+            $("#tabs li").children("a").css("color","#666","textShadow", "1px 1px 1px #868686")
+            $(this).children("a").css("color","lightsalmon","textShadow", "1px 1px 1px #868686")
+            var index = $(this).parent().find("li").index(this);
+            $("#tab_conbox").find(".tab_con").eq(index).show();
+            var iframe1 = $("#tab_conbox").find(".tab_con").eq(index).find("iframe");
+            iframe1.attr("src", iframe1.attr("href"));
+        });
+        $("#tabs li:first").addClass("thistab").show();
+        $("#tabs li:first").children("a").css("color", "lightsalmon");
+    });
+
+</script>

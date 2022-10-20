@@ -1,0 +1,115 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.BaseInfo.MainCardEntity>
+@{
+    ViewBag.Title = "储值卡销售统计";
+    Layout = null;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+}
+<!--位置不能颠倒，否则影响样式-->
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>      
+<!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+<style type="text/css">
+    body { background: #fff; }
+</style>
+<div class="mainContentRight_bottom" style="margin-top:0px;">
+    @using (Ajax.BeginForm("PatientstatisticsCardxiaoshou", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+    {
+        <div class="accountdiv" style="margin-bottom: 0px;margin-top:0px;width:100%;">
+         @if (HasPermission)
+         {
+            <label style="font-weight: normal;">
+                所属分店：</label>
+            <select name="s_HospitalID" class="select s_HospitalID" style="height: 25px; width: 100px;">
+                <option value="0">请选择分店</option>
+                @foreach (var info in hospitalList)
+                {
+                    <option value="@info.ID">@info.Name</option>
+                }
+            </select>
+             }
+            <label style="font-weight: normal;">
+                会员卡号:</label>
+            <input type="text" name="s_MemberNo" class="s_MemberNo" style="height: 20px; width: 80px;" />
+              <label style="font-weight: normal;">
+                卡项名称:</label>
+            <input type="text" name="s_Name"  style="height: 20px; width: 80px;" />
+             <label style="font-weight: normal;">
+                开始时间：</label>                                                                    
+            <input type="text" class="text-input Wdate input130 s_StareTime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                    name="s_StareTime" id="StartTime" value="@DateTime.Now.AddDays(-90).ToString("yyyy-MM-dd")" />
+            <label style="font-weight: normal;">
+                结束时间：</label><input type="text" class="text-input Wdate input130 s_Endtime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                        name="s_Endtime" id="EndTime" value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+             <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />  
+            <input type="submit" class="submitbutton2" id="btnselect" style="float: none;" value="查询" />
+        </div>
+        
+    }
+    <div id="articles" class="mainContentRight_bottom" style="margin-top:0px;">
+        @Html.Partial("_CardXiaoShouList", Model)
+    </div>
+    @{Html.RegisterMvcPagerScriptResource();}
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+</div>
+<script type="text/javascript">
+       $("#btnselect").click(function () {
+        $("#txtTime").val(Math.random());
+       })
+
+</script>
+@*<script type="text/javascript">
+
+
+    $(function () {
+
+
+        $("tbody").delegate("tr.clickclass", "click", function () {
+
+            if ($(this).find(".info").is(":hidden")) {
+                $(this).next().remove();
+                $(this).find(".info").show();
+                $(this).find(".hid").remove();
+            }
+            else {
+                $(this).find(".info").parent().append("<a href='javascript:;' class='hid' >关闭</a> ")
+                $(this).find(".info").hide(); //影藏这个标签
+                var ProjectID =$(this).find(".hidval").val();
+                var HospitalID=$(".s_HospitalID").val();
+                var Endtime=$(".s_Endtime").val();
+                var StareTime=$(".s_StareTime").val();
+                var MemberNo=$(".s_MemberNo").val();
+                var parent = $(this);
+                $.ajax({
+                    type: "post", //使用get方法访问后台 
+                    url: "/PatientManage/GetPayinfoList",
+                    data: { "UserID": 0, "HospitalID": HospitalID, "ProjectID": ProjectID, "Endtime": Endtime, "StareTime": StareTime,"MemberNo":MemberNo,"Type":3 },
+                    async: false,
+                    success: function (data) {
+                        if (data != null) {
+                            parent.after("<tr class='newtr' style='background:#E7F6FF;'><td colspan='6'>" + data + "</td></tr>");
+                        }
+                    },
+                    error: function () {
+                        alert("数据获取失败！");
+                    }
+                });
+            }
+        })
+    })
+
+</script>*@

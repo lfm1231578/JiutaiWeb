@@ -1,0 +1,180 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderEntity>
+@{
+    Layout = null;
+}
+<style>
+    /*******表格********/
+    .gridTable tbody
+    {
+        display: block;
+    }
+    .gridTable tr
+    {
+        display: block;
+    }
+    .gridTable th
+    {
+        width: 200px;
+        line-height: 40px;
+    }
+    .gridTable td
+    {
+        width: 200px;
+    }
+</style>
+<form action="" method="post" id="submitform">
+<table class="gridTable" style="border-collapse: collapse; overflow: scroll;">
+    <thead style="display: block; position: fixed;">
+        <tr>
+            <th @(ViewBag.orderField == "DocumentNumber" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="DocumentNumber">
+                流水号
+            </th>
+            <th @(ViewBag.orderField == "OrderType" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="OrderType">
+                业务类型
+            </th>
+            <th @(ViewBag.orderField == "MemberNo" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MemberNo">
+                卡号
+            </th>
+            <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                客户姓名
+            </th>
+            <th>
+                现金
+            </th>
+            <th>
+                刷卡
+            </th>
+            <th>
+                支付宝
+            </th>
+            <th>
+                微信
+            </th>
+            <th>
+                其他现金
+            </th>
+            <th>
+                总收入
+            </th>
+            <th>
+                储值卡划扣
+            </th>
+            <th>
+                赠卡划扣
+            </th>
+            <th>
+                疗程消耗
+            </th>
+            <th>
+                券类
+            </th>
+            <th @(ViewBag.orderField == "QianPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="QianPrice">
+                欠款
+            </th>
+            <th>
+                详情
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr style="height: 40px;">
+            <td colspan="11">
+            </td>
+        </tr>
+        @foreach (var entity in Model)
+        {
+            <tr @(entity.IsArchives == 1 ? "style=background:#e7f6ff" : "")>
+                <td title="流水号">
+                    @entity.DocumentNumber @(entity.IsArchives == 1 ? Html.Raw("(<label style='color:red;'>变更单据</label>)") : null)
+                </td>
+                <td title="业务类别">
+                    @EYB.Web.Code.PageFunction.GetorderType(entity.OrderType)
+                </td>
+                <td title="卡号">
+                    @entity.MemberNo
+                </td>
+                <td title="客户姓名">
+                    @entity.UserName
+                </td>
+                <td title="现金">@entity.Xianjin
+                </td>
+                <td title="刷卡">@entity.Yinlianka
+                </td>
+                <td title="支付宝">@entity.Zhifubao
+                </td>
+                <td title="微信">@entity.Weixin
+                </td>
+                <td title="免单">@entity.MianDan
+                </td>
+                <td>@(entity.Xianjin + entity.Yinlianka + entity.Zhifubao + entity.Weixin + entity.MianDan)
+                </td>
+                <td title="储值卡划扣">@entity.Chuzhika
+                </td>
+                <td title="赠卡划扣">@entity.ZengChuzhika
+                </td>
+                <td title="疗程卡划扣">@entity.Huakouka
+                </td>
+                <td title="其他支付">@entity.OtherPay
+                </td>
+                <td title="欠款">@entity.QianPrice
+                </td>
+                <td>
+                    <a href="javascript:OpenOrderDetail('@entity.OrderNo');" >详情</a>
+                </td>
+            </tr>
+        }
+        <tr>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+                总计:
+            </td>
+            <td>@ViewBag.xianjin
+            </td>
+            <td>@ViewBag.shuaka
+            </td>
+            <td>@ViewBag.zhifubao
+            </td>
+            <td>@ViewBag.weixin
+            </td>
+            <td>@ViewBag.miandan
+            </td>
+            <td>@ViewBag.zongshouru
+            </td>
+            <td>@ViewBag.chuzhi
+            </td>
+            <td>@ViewBag.zengchuzhi
+            </td>
+            <td>@ViewBag.liaocheng
+            </td>
+            <td>@ViewBag.otherpay
+            </td>
+            <td>@ViewBag.qiankuan
+            </td>
+            <td>
+            </td>
+        </tr>
+        @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 11))
+    </tbody>
+</table>
+@Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+</form>
+<script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+        //计算head高度，宽度 计算articles高度
+        var theadheight = $("#header").height() + 60 + $(".accountdiv").height();
+        $(".gridTable thead").css("top", theadheight + "px");
+        $(".gridTable thead").css("width", (getDocumentWidth() - $("#mainContentLeft").width() - 30) + "px");
+        var gridtablewidth = $(".gridTable").width();
+        var thlen = $(".gridTable thead th").length;
+        $(".gridTable thead th").css("width", (gridtablewidth / thlen) + "px");
+        $(".gridTable tr td").css("width", (gridtablewidth / thlen) + "px");
+        $("#showmessage").css("display", "none");
+    })
+</script>

@@ -1,0 +1,51 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model EYB.ServiceEntity.CenterEntity.ChartConfigEntity
+@{
+    ViewBag.Title = "目标状态";
+    Layout = null;
+}
+@if (Model != null)
+{
+    <script>
+    $(function () {
+     $('#canvasDiv').highcharts({
+            chart: {
+                type: '@Model.Type'
+            },
+            colors: ['#90ed7d','#7CB5EC','#8085e9'],
+            credits: {
+                enabled: false
+            },
+            title: {
+                text: '@Model.Title'
+            },
+            subtitle: {
+                text: '@Model.Subtitle'
+            },
+            xAxis: {
+            categories:@Html.Raw(Model.XAxis.CategoriesJson)
+           },
+            yAxis: {
+                min: 0,
+                alternateGridColor: '#FDFFD5',
+                title: {
+                    text: '@Model.YAxis.Title'
+                }
+            },
+            tooltip: {
+                shared: true,
+                useHTML: true
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: @Html.Raw(Model.SeriesJson)
+        });       
+    });	
+</script>
+}
+<div id="canvasDiv" style="height: 400px;">
+</div>

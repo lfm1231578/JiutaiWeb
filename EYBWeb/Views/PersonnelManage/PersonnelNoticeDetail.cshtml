@@ -1,0 +1,98 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.PersonnelEntity;
+@{
+    ViewBag.Title = "PersonnelNoticeDetail";
+    Layout = null;
+    IPersonnelManageBLL PersonnelManageBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    var id = int.Parse(Request["id"]);
+    var entity =PersonnelManageBLL.GetNotcie(id);
+    //获取
+    var Type = Request["Type"];
+    NoticeEntity info = new NoticeEntity();
+    int rows = 0;
+    List<NoticeEntity> list = new List<NoticeEntity>();
+    //已发送通知
+    if(Type=="1")  
+    {
+        info.numPerPage = 10;
+        info.HospitalID = ViewBag.HospitalID;
+        info.UserID = ViewBag.UserID;
+        info.IsRead = 1;
+        list = PersonnelManageBLL.GetNotcieReciveList(info, out rows);
+    }
+    else if (Type == "2"){//未读通知
+        info.numPerPage = 10;
+        info.HospitalID = ViewBag.HospitalID;
+        info.UserID = ViewBag.UserID;
+        info.IsRead = 0;
+        list = PersonnelManageBLL.GetNotcieReciveList(info, out rows);
+    }else{//已读通知
+        info.numPerPage = 10;
+        info.HospitalID = ViewBag.HospitalID;
+        info.UserID = ViewBag.UserID;
+        list = PersonnelManageBLL.GetNotcieList(info, out rows);
+    }
+    //设为已读
+    PersonnelManageBLL.BatchNotcie(new List<int> { id }, 2, ViewBag.UserID);
+}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title></title>
+ <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+ <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+</head>
+<body  style="background:#fff; font-family:微软雅黑;">
+<div >
+<div style="padding:0 10px; border:0px; height:50px;line-height:50px; color:#5d6975; background:#e7f6ff;" id="txttitle" >
+<span style="float:left; display:block;width:34px; height:28px;margin-top:10px; background:#e7f6ff url('../../Content/themes/default/images/menu/icon2.jpg')  0px -218px no-repeat;"></span>
+@entity.Title</div>
+<div style="height:140px; padding:10px;color:#ccc;" id="txtContent" >@entity.Content</div>
+<div style="height:30px;line-height:30px;padding:0 10px; background:#c4c4c4;color:#fff;">发布人：<label id="labusername">@entity.UserName</label><label id="labcreatetime" style="float:right;">发布时间：@entity.CreateTime</label></div>
+<div style="margin-top: 20px; text-align: center; padding-left: 250px;">
+     <input type="button" class="submitbutton2" id="btnNextFirst" value="下一篇" />
+    <input type="button"  class="submitbutton2" onclick="closeed()" value="返 回" />
+</div>
+</div>
+<script type="text/javascript">
+
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+    }
+      var index = 1;
+    var ScreenShotCount = @rows;
+    var getScreenShotURL="/PersonnelManage/GetNextMsgInfo";
+    $('#btnNextFirst').click(function () {
+        if (index >= ScreenShotCount) {
+            artdialogfail("已经是最后一篇");
+        }
+        else {
+            index++;
+            getImg("ScreenShotImg", getScreenShotURL, index);
+        }
+    });
+    function getImg(imgID, url, index) {
+        var params = '?Type=@Type&index=' + index;
+        url = url + params;
+        $.ajax({
+            type: "POST",
+            dataType: "json",
+            url: url,
+            success: function (data) {
+                $("#txttitle").text(data.Title);
+                $("#txtContent").text(data.Content);
+                $("#labusername").text(data.UserName);
+                $("#labcreatetime").text(formatDateTime(data.CreateTime));
+            }, error: function () {
+                alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
+            }
+        });
+    };
+</script>
+</body>
+</html>

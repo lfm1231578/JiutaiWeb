@@ -1,0 +1,88 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using WarehouseManage.Factory.IBLL;
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@{
+    ViewBag.Title = "业务销售汇总";
+    Layout = null;
+    var ParentHospitalID = ViewBag.ParentHospitalID;
+    PersonnelManage.Factory.IBLL.IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<PersonnelManage.Factory.IBLL.IPersonnelManageBLL>();
+    IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    var hospitalList = personbll.GetHospitalListByParentID(ParentHospitalID);
+    IList<EYB.ServiceEntity.PersonnelEntity.HospitalUserEntity> PersonList = personbll.GetAllUserByHospitalID(ParentHospitalID, 0);
+    var brandlist = wareBll.GetBrandListNoPage(ParentHospitalID);//获取品牌列表
+    var caretypelist = wareBll.GetProductTypeNoPage(ParentHospitalID, 1);//获取项目分类列表
+    bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_跨店权限);
+}
+<!--位置不能颠倒，否则影响样式-->
+<link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+    type="text/css" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+<!--表格-->
+<script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+<!--日期-->
+<script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+<style type="text/css">
+    body
+    {
+        background: #fff;
+        overflow-x: hidden;
+    }
+</style>
+<div class="mainContentRight_bottom" style="margin-top: 0px;">
+    @using (Ajax.BeginForm("PatientstatisticsCardShengyu", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles",HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+    {
+        <div class="accountdiv" style="margin-bottom: 0px; margin-top: 0px; width: 99%;">
+             @if (HasPermission)
+             {
+            <label style="font-weight: normal;">
+                所属分店：</label>
+            <select name="s_HospitalID" class="select" style="height: 25px; width: 100px;">
+                <option value="0">请选择分店</option>
+                @foreach (var info in hospitalList)
+                {
+                    <option value="@info.ID">@info.Name</option>
+                }
+            </select>
+             }
+            <label style="font-weight: normal;">
+                关键词</label>
+            <input type="text" name="s_Name" style="height: 20px; width: 100px;" />
+            <label style="font-weight: normal;">
+                品牌:</label>
+            <select name="BrandID" id="BrandID" style="width: 96px;" class="select">
+                <option value="0">=选择品牌=</option>
+                @foreach (var info in brandlist)
+                {
+                    <option value="@info.ID">@info.Name</option>
+                }
+            </select>
+            <label style="font-weight: normal;">
+                项目类别</label>
+            <select name="ProductType" id="ProductType" style="width: 96px;" class="select">
+                <option value="0">=选择分类=</option>
+                @foreach (var info in caretypelist)
+                {
+                    <option  value="@info.ID">@info.Name</option>
+                }
+            </select>
+            <label style="font-weight: normal;">
+                开始时间：</label>
+            <input type="text" class="text-input Wdate" style="width:80px;" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                    name="StartTime" id="StartTime" value="@DateTime.Now.AddDays(-10).ToString("yyyy-MM-dd")" />
+            <label style="font-weight: normal;">
+                至：</label><input type="text" style="width:80px;" class="text-input Wdate input130" onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"
+                        name="EndTime" id="EndTime" value="@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")" />
+            <input type="submit" class="submitbutton2" style="float: none;" value="查询" />
+        </div>
+        
+    }
+    <div id="articles" class="mainContentRight_bottom" style="margin-top: 0px;">
+        @* @Html.Partial("_ShengyuList", Model)*@
+    </div>
+    @{Html.RegisterMvcPagerScriptResource();}
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+</div>

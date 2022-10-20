@@ -1,0 +1,143 @@
+﻿@model PagedList<EYB.ServiceEntity.WarehouseEntity.BuyOrderEntity>
+@{
+    ViewBag.Title = "添加退货单列表";
+    Layout = null;
+    var EndTime = ViewBag.EndTime;
+    var StartTime = ViewBag.StartTime;
+    var statu = ViewBag.Statu;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.2" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+        type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <style type="text/css">
+        .linecent
+        {
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body style="background: #fff; clear: both; float: none; margin: 0; padding: 0;">
+    <div class="clearfix" style="margin-bottom: 5px;">
+        <div class="toolbar" style="padding: 0px;">
+            <div class="box-wrap">
+                <div class="l-list accountdiv ullist" style="width: 99%; padding: 0px; margin: 5px auto 5px;">
+                    <ul>
+                        @using (Ajax.BeginForm("TuiHuoList", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
+                        {
+                            <li>
+                                <label class="linecent">
+                                    开始时间:
+                                </label>
+                                <input type="text" autocomplete="off"   name="StartTime" id="StartTime" value="@StartTime" class="text-input Wdate input130 " onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})"/>
+                            </li>
+                            <li>
+                                <label class="linecent">
+                                    结束时间:
+                                </label>
+                                <input type="text" autocomplete="off"   name="EndTime"  id="EndTime"  value="@EndTime"  class="text-input Wdate input130 " onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" id="EndTime"  />
+                            </li>
+                            <li style="display:none;" >
+                                <label class="">
+                                    是否审核:</label>
+                                <select name="Statu" class="ymxSelect" id="Statu">
+                                    <option @(statu == 0 ? "selected='selected'" : "") value="0">请选择</option>
+                                    <option @(statu == 2 ? "selected='selected'" : "") value="2">已审核</option>
+                                    <option @(statu == 1 ? "selected='selected'" : "") value="1">待审核</option>
+                                </select>
+                            </li>
+                            <li>
+                                <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTime" />
+                                <input type="submit" class="submitbutton2 ymxButtonMT" id="btnsearch" style="float: none; margin-top: 5px;"
+                                    value="查 询" />
+                            </li>
+                            <li style="float: right;">
+                                <ul class="icon-list">
+                                    <li><a class="add" style="cursor:pointer;"   onclick="redirectUrl('@Url.Content("~/WarehouseManage/Tuihuo")')" >
+                                        <span>添加</span></a></li>
+                                    <li><a id="btnSave" style="cursor: pointer;" class="save"><span>导出</span></a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                    <div style="clear: both;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="articles" class="mainContentRight_bottom" style="margin-top: 5px; width: 100%;overflow:auto;">
+        @Html.Partial("_Tuihuolist", Model)
+    </div>
+   @{Html.RegisterMvcPagerScriptResource();}
+    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+   
+</body>
+</html>
+<script type="text/javascript">
+    $("#btnsearch").click(function () {
+        $("#txtTime").val(Math.random());
+    })
+
+    //导出
+    $("#btnSave").click(function () {
+        var StartTime = $("#StartTime").val();
+        var EndTime = $("#EndTime").val();
+        var Statu = $("#Statu").val();
+        var url = getControllerUrl("WarehouseManage", "ExportTuiHuoList") + "?pageNum=1&numPerPage=10000&Statu=" + Statu + "&StartTime=" + StartTime + "&EndTime=" + EndTime;
+        window.location.href = url;
+    });
+    function redirectUrl(url) {
+        location.href = url;
+    }
+    function OpenDailogDetail(ID) {
+        art.dialog.open("/WarehouseManage/tuihuoInfo?ID=" + ID, { title: "单据详情", width: 960, height: 640 });
+    }
+    function chuku(obj) {
+        var id = obj;
+        if (confirm("你确定出库么?") == true) {
+            $.ajax({
+                type: "POST",
+                url: getControllerUrl("WarehouseManage", "OrderChuku"),
+                async: false,
+                // data: $('#myform2').serialize(), // 你的formid
+                data: { "ID": id },
+                error: function (request) {
+                    artdialogfailTwo("操作失败！", "", "250", "100");
+                },
+                success: function (data) {
+                    if (data > 0) {
+                        artdialog("操作成功！", "/WarehouseManage/JinhuoList", "250", "100");
+                    }
+                }
+            });
+        }
+    }
+
+</script>
+<script>
+    $(function () {
+        let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
+        $("#articles").css("height", acHeight + "px");
+    })
+</script>

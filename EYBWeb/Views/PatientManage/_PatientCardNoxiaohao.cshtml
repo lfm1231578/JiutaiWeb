@@ -1,0 +1,198 @@
+﻿@using SystemManage.Factory.IBLL
+@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.SystemEntity
+@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+    @{
+        ViewBag.Title = "_Patientlist";
+        Layout = null;
+        int Sum_AllTimes = 0;
+        decimal RetailPrice = 0;
+        decimal Sum_AllPrice = 0;
+        decimal Sum_Price = 0;
+        var notComeDay = 0;
+        var notSaleDay = 0;
+        decimal notH = 0;
+        var systemBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+        var customerTypeList = systemBll.GetBaseInfoTreeByType("CustomerType", 1, ViewBag.ParentHospitalID);
+        var customerTypeList1 = systemBll.GetBaseInfoTreeByType("CustomerType", 1, 1);
+    }
+    <style>
+        /*******表格********/
+        .gridTable tbody {
+            display: block;
+        }
+
+        .gridTable tr {
+            display: block;
+        }
+
+        .gridTable th {
+            width: 200px;
+            line-height: 40px;
+        }
+
+        .gridTable td {
+            width: 200px;
+        }
+    </style>
+    <form action="" method="post" id="submitform">
+        <table class="gridTable" style="border-collapse: collapse; overflow: scroll;">
+            <thead style="display: block; position: absolute;">
+                <tr>
+                    <th style="display: none;">
+                        店名
+                    </th>
+                    <th>
+                        姓名
+                    </th>
+                    <th>卡号</th>
+
+                    <th>开卡时间</th>
+                    
+                    <th>顾客分类</th>
+                    <th @(ViewBag.orderField == "Sum_AllTimes" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_AllTimes">
+                        疗程卡余次
+                    </th>
+                    <th @(ViewBag.orderField == "RetailPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="RetailPrice">
+                        疗程卡余额
+                    </th>
+                    <th @(ViewBag.orderField == "Sum_Price" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_Price">
+                        储值卡
+                    </th>
+                    <th @(ViewBag.orderField == "Sum_AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_AllPrice">
+                        赠卡
+                    </th>
+                    <th @(ViewBag.orderField == "Number" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Number">
+                        未到天数
+                    </th>
+                    <th @(ViewBag.orderField == "Sum_Tiems" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Sum_Tiems" title="多少天没有现金购买过产品或者项目">
+                        未销售天数
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height: 40px;">
+                </tr>
+                @foreach (var entity in Model)
+                {
+                    //Sum_AllTimes = entity.Sum_AllTimes + Sum_AllTimes;
+                    //RetailPrice = entity.RetailPrice + RetailPrice;
+                    //Sum_AllPrice = entity.Sum_AllPrice + Sum_AllPrice;
+                    //Sum_Price = entity.Sum_Price + Sum_Price;
+                    Sum_AllTimes += entity.Sum_AllTimes;
+                    RetailPrice += entity.RetailPrice;
+                    Sum_AllPrice += entity.Sum_AllPrice;
+                    Sum_Price += entity.Sum_Price;
+
+                    //if (entity.HospitalID == 1107)
+                    //{
+                    //    Sum_Price = Convert.ToDecimal(600); // += entity.Sum_Price;
+                    //    if (entity.UserID == 174554) { entity.Sum_Price = Convert.ToDecimal(600); } else { entity.Sum_Price = Convert.ToDecimal(0); }
+                    //}
+                    notComeDay += entity.Number;
+                    notSaleDay += entity.Sum_Tiems;
+            <tr>
+                <td style="display: none;">
+                    @entity.HospitalName
+                </td>
+                <td>
+                    <a id="labUserName" style="color: Blue;" href="javascript:OpenPatientDetail(@entity.UserID,1)">@entity.UserName</a>
+                </td>
+                <td>
+                    @entity.MemberNo
+                </td>
+                <td>
+                    @entity.RuhuiTime
+                </td>
+                
+                <td>
+                    @if (entity.CustomerTypeID == 26 || entity.CustomerTypeID == 27 || entity.CustomerTypeID == 28 || entity.CustomerTypeID == 29)
+                    {
+                        foreach (BaseinfoEntity type in customerTypeList1)
+                        {
+                            if (type.ID == entity.CustomerTypeID)
+                            {
+                                @type.InfoName;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (BaseinfoEntity type in customerTypeList)
+                        {
+                            if (type.ID == entity.CustomerTypeID)
+                            {
+                                @type.InfoName;
+                                break;
+                            }
+                        }
+
+                    }
+                </td>
+                <td>
+                    @entity.Sum_AllTimes
+                </td>
+                <td>
+                    @entity.RetailPrice
+                </td>
+                <td>
+                    @entity.Sum_Price
+                </td>
+                <td>
+                    @entity.Sum_AllPrice
+                </td>
+                <td>
+                    @entity.Number
+                </td>
+                <td>
+                    @entity.Sum_Tiems
+                </td>
+            </tr>
+
+                }
+            <tr>
+                <td>
+                    合计
+                </td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>
+                    @Sum_AllTimes
+                </td>
+                <td>
+                    @RetailPrice
+                </td>
+                <td>
+                    @Sum_Price
+                </td>
+                <td>
+                    @Sum_AllPrice
+                </td>
+                <td>@notComeDay</td>
+                <td>@notSaleDay</td>
+            </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 8))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#sp").text('@Model.TotalItemCount');
+            //计算head高度，宽度 计算articles高度
+              window.setTimeout(function () {
+                var gridtablewidth = $(".gridTable").width();
+                var thlen = $(".gridTable thead th").length;
+                let theadWidth = $(".gridTable tbody").width()
+                $(".gridTable thead").css("width", theadWidth + "px")
+                let tdWidth = (theadWidth / (thlen-1)) + "px";
+                $(".gridTable thead th").css("width", tdWidth);
+                $(".gridTable tr td").css("width", tdWidth);
+                }, 100)
+        })
+    </script>
+    <script>
+    </script>

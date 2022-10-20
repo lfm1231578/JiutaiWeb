@@ -1,0 +1,33 @@
+﻿@{
+    ViewBag.Title = "角色管理";
+    Layout = "~/Views/Shared/Header.cshtml";
+}
+@section head
+{
+    <link type="text/css" rel="Stylesheet" href="@Url.Content("~/Content/Css/tree.css")" />
+}
+<form id="myform" name="myform" action="@Url.Content("~/SystemManagement/DeleteRole")" method="post" onsubmit="return check();">
+<div class="subnav">
+    <div class="content-menu ib-a blue line-x">
+        <a style=" width:66px;" class="add fb" href="javascript:window.top.art.dialog({id:'add',iframe:'@Url.Content("~/SystemManagement/RoleManageAdd")', title:'添加角色', width:'480', height:'250', lock:true,show:true}, function(){var d = window.top.art.dialog({id:'add'}).data.iframe;var form = d.document.getElementById('dosubmit');form.click();return false;}, function(){window.top.art.dialog({id:'add'}).close()});void(0);">
+            <em>添加角色</em></a>
+             <a style=" width:66px;" class="add fb"  id="btnlinkRoleMemuPermit">
+            <em>管理权限</em></a>
+            @* <a style=" width:66px;" class="add fb" id="btnsetdataRight" >
+            <em>数据权限</em></a>*@
+  @*      <input type="submit" class="button" name="dosubmit" value="禁用" onclick="return confirm('确认操作吗？')" />*@
+    </div>
+
+</div>
+<table id="tableRoleManage">
+</table>
+<div id="pagerRoleManage">
+</div>
+<div id="dialogareaRole" style="text-align: left;">
+    <div id="areatreeRole">
+    </div>
+</div>
+</form>
+<script type="text/javascript" src="@Url.Content("~/Scripts/Controls/SystemManage/RoleManage.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/Controls/SystemManage/PageRight.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/JqueryPlugins/jquery.treeRight.js")"></script>

@@ -1,0 +1,211 @@
+﻿@using SystemManage.Factory.IBLL;
+@using DepartmentManage.Factory.IBLL;
+@using HS.SupportComponents;
+@using PersonnelManage.Factory.IBLL;
+@{
+    ViewBag.Title = "PersonnelDetail";
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    IDepartmentManageBLL DepartmentManageBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IDepartmentManageBLL>();
+    IPersonnelManageBLL PersonnelManageBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //获取基础字典
+    var baseinfolist = systemBLL.GetBaseInfoTreeByType("Job", 1, ViewBag.ParentHospitalID);
+    //获取部门选择框
+    var departList = DepartmentManageBLL.GetDepartmentListByHospitalID((int)ViewBag.ParentHospitalID, 1);
+
+    //获取详情
+    var UserID = ViewBag.UserID;
+    var entity = PersonnelManageBLL.GetUserByUserID(UserID);
+    string ImgPath = System.Configuration.ConfigurationManager.AppSettings["ImgPath"];
+}
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.js"></script>
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Scripts/swfupload/swfupload.handlers.js"></script>
+<script type="text/javascript">
+    $(function () {
+        //头像
+
+        $(".upload-img").each(function () {
+            $(this).InitSWFUpload({ btntext: "上传头像", btnwidth: 119, single: true, water: false, thumbnail: false, filesize: "2048", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+        });
+
+    });
+</script>
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+               </label>
+          账号信息</div>
+        <div class="mainContentRight_bottom" style="position: relative;">
+            <form id="myform" action="@Url.Content("~/PersonnelManage/UpdatePersonnelDetail")" class="formular" enctype="multipart/form-data" method="post"  style="position:relative;" >
+            <table class="mainContentRight_bottomnewdepart">
+                <tr>
+                    <td style="width: 110px;">
+                        姓名
+                    </td>
+                    <td>
+                        <input type="hidden" name="UserID" value="@UserID" />
+                        <input type="text" name="UserName" id="txtName" value="@entity.UserName" class="validate[required] text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        性别
+                    </td>
+                    <td>
+                        <select class="select" name="Sex">
+                            <option @(entity.Sex == "男" ? "selected=selected" : "") value="男">男</option>
+                            <option @(entity.Sex == "女" ? "selected=selected" : "") value="女">女</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        职务
+                    </td>
+                    <td>
+                        <select disabled="disabled" class="select" name="DutyName">
+                            @foreach (var info in baseinfolist)
+                            {
+                                <option value="@info.InfoName"  @(info.InfoName == entity.DutyName ? "selected=selected" : "")  >@info.InfoName</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        出生年月
+                    </td>
+                    <td>
+                        <input type="text" name="Birthday" id="txtBirthday" value="@entity.Birthday" class="validate[required] text-input Wdate"
+                            onclick="WdatePicker({dateFmt:'yyyy-MM-dd'})" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        联系方式
+                    </td>
+                    <td>
+                        <input type="text" name="Phone" id="txtPhone" value="@entity.Phone" class="validate[custom[phone]] text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        家庭地址
+                    </td>
+                    <td>
+                        <input type="text" name="Address" id="txtAddress" value="@entity.Address" class="text-input" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        电子邮件
+                    </td>
+                    <td>
+                        <input type="text" name="Email" id="txtEmail" value="@entity.Email" class="validate[custom[email]] text-input" />
+                    </td>
+                </tr>
+                <tr style="display: none;">
+                    <td>
+                        部门
+                    </td>
+                    <td>
+                        <select disabled="disabled" class="select" name="DepartmentID">
+                            @foreach (var info in departList)
+                            {
+                                <option @(info.ID == entity.DepartmentID ? "selected=selected" : "")   value="@info.ID">@info.Name</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="vertical-align: top; padding-top: 4px;">
+                        员工介绍
+                    </td>
+                    <td>
+                        <textarea rows="7" cols="60" name="Memo" class=" textarea">@entity.Memo</textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        员工账号
+                    </td>
+                    <td>
+                        @entity.LoginAccount
+                        <input type="text" name="LoginAccount" disabled="disabled" style="display:none; float:left; background:#ccc;" value="@entity.LoginAccount" class="validate[required] text-input" />
+                    </td>
+                </tr>
+                <tr style="height: 60px; margin: 10px;">
+                    <td>
+                    </td>
+                    <td>
+                        <input value="保 存" type="button" id="btnsave" class="submitbutton2" style="margin: 0;" />
+                    </td>
+                </tr>
+            </table>
+            <div class="imgupload" style="top: 50px; right: 50px; height: 150px; width: 120px;">
+                <input type="hidden" name="hidFocusPhoto" id="hidFocusPhoto1" runat="server" class="focus-photo" />
+                <div class="photo-list">
+                    <ul id="photolistul">
+                        <li>
+                            <input type="hidden" name="hid_photo_name" value="@entity.UserID|@entity.Photo|@entity.Photo" />
+                            <div onclick="setFocusImg(this);" style="border: 0px;">
+                                @if (String.IsNullOrEmpty(entity.Photo))
+                                {
+                                    <img src="/Content/themes/default/images/noface.jpg" width="120" height="120" />
+                                }
+                                else
+                                {
+                                    <img src="@(ImgPath + entity.Photo)"  width="120" height="120"/>
+                                }
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="upload-box upload-img">
+                </div>
+                <label style="color: Red; font-size: 12px;">
+                    建议大小150x210</label>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery("#myform").validationEngine('attach', {
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentBody",
+            promptPosition: "bottomLeft"
+        });
+       //保存
+     $("#btnsave").click(function(){
+         if($("#txtName").val()==""  )
+         {
+            $('#myform').submit();
+            artdialogfail("姓名不能为空！","");
+            return;
+         }
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/PersonnelManage/UpdatePersonnelDetail")",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                alert("Connection error");
+            },
+            success: function (data) {
+             if(data>0){
+                artdialog("修改成功！")
+               }else
+               {
+                artdialogfail("修改失败！");
+               }
+            }
+        });
+     });
+    });
+</script>

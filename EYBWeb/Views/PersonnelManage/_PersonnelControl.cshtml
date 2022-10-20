@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "_PersonnelControl";
+    //新建员工
+    bool result1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.OrderinglsManager_Introduce_View);
+    //员工列表
+    bool result2 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.OrderingManager_Introduce);
+}
+
+    <div id="mainContentLeft">
+      <form action="@Url.Content("~/PersonnelManage/PersonnelManagePage")" method="post" id="submitform11" >
+        <div id="mainContentLeft_top">
+         <a style="background:#fff url('../../Content/themes/default/images/menu/icon1.jpg')  13px -145px no-repeat;"> </a><span>员工管理</span> </div>
+        <div id="mainContentLeft_center">
+            <ul>
+                <li onclick='CheckRight(this,"@result1")' redirect="@Url.Content("~/PersonnelManage/PersonnelNew")"><a  href="javascript:;"  ><img width='130' height='110' src='../../Content/themes/images/person1.png'   /><label>新建员工</label></a></li>
+                <li style="margin-left:20px;" redirect="@Url.Content("~/PersonnelManage/PersonnelManagePage")" onclick='CheckRight(this,"@result2")'><a  href="javascript:;"   ><img width='130' height='110' src='../../Content/themes/images/person2.png'   /><label>员工列表</label></a></li>
+            </ul>
+        </div>
+        <div id="mainContentLeft_bottom">
+            <ul>
+               <li style="height:33px;padding-left:13px;"><span  class="submitspan"  ></span><input type="text" name="UserName" class="searchInput" value="搜索" />
+                <input type="submit" class="submitbutton"  value="" />
+                </li>
+            </ul>
+        </div>
+        </form>
+    </div>
+    
+    
+    <script type="text/javascript">
+        //登录回车事件
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13 || event.keyCode == 32) {
+                if ($.trim($(".searchInput").val()) != "" && $(".searchInput").val() != "搜索") {
+                    document.getElementById("submitform11").submit();
+                }
+            }
+        });
+
+    </script>

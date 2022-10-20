@@ -1,0 +1,92 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@{
+    ViewBag.Title = "添加供应商";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div id="mainContentBody">
+    @Html.Partial("_WarehouseManageControl")
+    <div id="mainContentRight">
+        <form action="" method="post" class="clearfix" name="myform" id="myform">
+        <input type="hidden" name="ID" value="@Model.ID" />
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+              </label>编辑供应商
+        </div>
+        <div class="mainContentRight_bottom clearfix">
+            <form method="post" action="#" id="myform2">
+            <table class="mainContentRight_table">
+                <tr>
+                    <td class="tdright">
+                        供应商名称
+                    </td>
+                    <td>
+                        <input type="text" name="Name" class="text-input Name" value="@Model.Name" />
+                    </td>
+                    <td class="tdright">
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        供应商电话
+                    </td>
+                    <td>
+                        <input type="text" name="Phone" class="text-input Phone" value="@Model.Phone" />
+                    </td>
+                    <td class="tdright">
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="tdright">
+                        供应商地址
+                    </td>
+                    <td>
+                        <input type="text" name="Address" class="text-input Address" value="@Model.Address" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    </td>
+                    <td>
+                        <input type="button" id="btn" value="保  存" class="submitbutton2" />
+                        <a class="submitbutton2 rukubtn ymxBTLine" href="@Url.Content("~/WarehouseManage/TheSupplierList")" >
+                            返 回</a>
+                    </td>
+                </tr>
+            </table>
+            </form>
+        </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $("#btn").click(function () {
+        var name = $(".Name").val();
+        if (name == "") {
+            artdialogfail("操作失败！用户名必须输入...");
+            return false;
+        }
+
+
+        $.ajax({
+            type: "POST",
+            url: getControllerUrl("WarehouseManage", "SupplierEdit"),
+            async: false,
+            data: $('#myform').serialize(), // 你的formid
+            error: function (request) {
+                artdialogfail("操作失败！");
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("操作成功！", "/WarehouseManage/TheSupplierList", "250", "100");
+                }
+            }
+        });
+    })
+  
+</script>

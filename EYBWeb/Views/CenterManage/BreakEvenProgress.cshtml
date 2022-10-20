@@ -1,0 +1,207 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using HS.SupportComponents;
+@model EYB.ServiceEntity.CenterEntity.BreakEvenEntity
+@{
+    ViewBag.Title = "BreakEvenProgress";
+}
+<style type="text/css">
+
+
+    .phfxTb{ line-height:36px; border:1px solid #ddd; width:800px;}
+    .phfxTb tr{ line-height:36px; font-size:16px; text-align:center;}
+    .phfxTb tr td{ border:1px solid #ddd; line-height:26px; font-size:16px; border-collapse:collapse;}
+</style>
+<div id="mainContentBody">
+    @Html.Partial("_CenterControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+                ●</label>
+            盈利平衡分析</div>
+        <div class="mainContentRight_bottom " style="">
+            <div class="box-wrap toolbar">
+                <div class="accountdiv l-list ullist" style="margin: 0px auto; padding: 0px;">
+                <input type="button" class="submitbutton3" style="" onclick="history.go(-1)" value="返回" />
+                    <table class="phfxTb">
+                        <tbody>
+                            <tr>
+                                <td>
+                                </td>
+                                <td colspan="3">
+                                    盈利平衡点分析
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    收支
+                                </td>
+                                <td>
+                                    科目
+                                </td>
+                                <td>
+                                    @Model.Years 年 @Model.Months 月
+                                </td>
+                                <td>
+                                    上月
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="2">
+                                    收入
+                                </td>
+                                <td>
+                                    现金业绩
+                                </td>
+                                <td>
+                                    @ViewBag.Xianjin
+                                </td>
+                                <td>
+                                    @ViewBag.Xianjin1
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    实操业绩
+                                </td>
+                                <td>
+                                    @ViewBag.Shihao
+                                </td>
+                                <td>
+                                     @ViewBag.Shihao1
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="8">
+                                    支出
+                                </td>
+                                <td>
+                                    院用成本
+                                </td>
+                                <td>
+                                    @ViewBag.yuanyong
+                                </td>
+                                <td>
+                                    @ViewBag.yuanyong1
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    产品成本
+                                </td>
+                                <td>
+                                    @ViewBag.Chengben
+                                </td>
+                                <td>
+                                    @ViewBag.Chengben1
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    租金物管
+                                </td>
+                                <td>
+                                    @Model.Zujin
+                                </td>
+                                <td>
+                                     @ViewBag.Zujin
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    水电
+                                </td>
+                                <td>
+                                    @Model.ShuiDian
+                                </td>
+                                <td>
+                                     @ViewBag.ShuiDian
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    生活开支
+                                </td>
+                                <td>
+                                    @Model.ShenghuoKaizhi
+                                </td>
+                                <td>
+                                   @ViewBag.ShenghuoKaizhi
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    营运费用
+                                </td>
+                                <td>
+                                    @Model.Yunying
+                                </td>
+                                <td>
+                                    @ViewBag.Yunying
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    装修折旧
+                                </td>
+                                <td>
+                                    @Model.Zhuangxiu
+                                </td>
+                                <td>
+                                    @ViewBag.Zhuangxiu
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    工资
+                                </td>
+                                <td>
+                                    @Model.Dixin
+                                </td>
+                                <td>
+                                   @ViewBag.Dixin
+                                </td>
+                            </tr>
+                            <tr>
+                                <td rowspan="3">
+                                    利润
+                                </td>
+                                <td>
+                                    毛利润
+                                </td>
+                                <td>
+                                    @( Convert.ToDecimal(ViewBag.Shihao) - Convert.ToDecimal(ViewBag.yuanyong) - Convert.ToDecimal(ViewBag.Chengben))
+                        
+                                </td>
+                                <td>
+                                     @( Convert.ToDecimal(ViewBag.Shihao1) - Convert.ToDecimal(ViewBag.yuanyong1) - Convert.ToDecimal(ViewBag.Chengben1))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    现金业绩利润
+                                </td>
+                                <td>
+                                    @(Convert.ToDecimal(ViewBag.Xianjin) * Model.XianjinBili)
+                                </td>
+                                <td>
+                                    @(Convert.ToDecimal(ViewBag.Xianjin1) * Convert.ToDecimal(ViewBag.XianjinBili))
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    消耗业绩利润
+                                </td>
+                                <td>
+                                   @(Convert.ToDecimal(ViewBag.ShiHao) * Model.ShihaoBili)
+                                </td>
+                                <td>
+                                    @(Convert.ToDecimal(ViewBag.ShiHao1) * Convert.ToDecimal(ViewBag.ShihaoBili))
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

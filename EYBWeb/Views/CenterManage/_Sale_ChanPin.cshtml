@@ -1,0 +1,130 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@model PagedList<EYB.ServiceEntity.CashEntity.OrderinfoEntity>
+    @{
+        ViewBag.Title = "产品销售明细";
+        Layout = null;
+    }
+    <div id="showmessage" style=" display:none;width:220px; height:140px; position:fixed; top:300px; left:650px; color:Red;  margin:0 auto; text-align:center;">
+        <img src="../../Content/themes/images/loading.gif" width="100" />
+        <p style=" text-align:center; height:30px;line-height:30px;">
+            正在努力查询中，请稍后...
+        </p>
+    </div>
+    <form action="" method="post" id="submitform">
+
+        <table class="gridTable" style="border-collapse: collapse;width:99%;">
+            <thead style="position:absolute;width: 98%;">
+                <tr>
+                    <th @(ViewBag.orderField == "HospitalName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="HospitalName">
+                        店名
+                    </th>
+                    <th @(ViewBag.orderField == "CreateTime" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="CreateTime">
+                        时间
+                    </th>
+                    <th @(ViewBag.orderField == "BrandName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="BrandName">
+                        品牌
+                    </th>
+                    <th @(ViewBag.orderField == "ProductTypeName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProductTypeName">分类</th>
+                    <th @(ViewBag.orderField == "ProdcuitName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="ProdcuitName">
+                        名称
+                    </th>
+                    <th @(ViewBag.orderField == "OldPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="OldPrice">
+                        单价
+                    </th>
+                    <th @(ViewBag.orderField == "Price" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Price">
+                        优惠价
+                    </th>
+                    <th @(ViewBag.orderField == "Quantity" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="Quantity">
+                        数量
+                    </th>
+                    <th @(ViewBag.orderField == "AllPrice" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="AllPrice">
+                        合计
+                    </th>
+                    <th @(ViewBag.orderField == "SendAmount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="SendAmount">
+                        赠送
+                    </th>
+                    <th @(ViewBag.orderField == "DiscountAmount" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="DiscountAmount">
+                        折让
+                    </th>
+                    <th @(ViewBag.orderField == "DocumentNumber" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="DocumentNumber">
+                        单据号
+                    </th>
+                    <th @(ViewBag.orderField == "MemberNo" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="MemberNo">
+                        会员卡号
+                    </th>
+                    <th @(ViewBag.orderField == "UserName" ? "class=" + ViewBag.orderDirection + "" : "") orderfield="UserName">
+                        顾客
+                    </th>
+                    <th>
+                        说明
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="height:40px;"></tr>
+                @foreach (var entity in Model)
+                {
+                    <tr>
+                        <td>
+                            @entity.HospitalName
+                        </td>
+                        <td>
+                            @entity.CreateTime.ToString("yyyy-MM-dd HH:mm:ss")
+                        </td>
+                        <td>
+                            @entity.BrandName
+                        </td>
+                        <td>
+                            @entity.ProductTypeName
+                        </td>
+                        <td>
+                            @entity.ProdcuitName
+                        </td>
+                        <td>
+                            @entity.OldPrice
+                        </td>
+                        <td>
+                            @entity.Price
+                        </td>
+                        <td>
+                            @entity.Quantity
+                        </td>
+                        <td>
+                            @entity.AllPrice
+                        </td>
+                        <td>
+                            @entity.SendAmount
+                        </td>
+                        <td>
+                            @entity.DiscountAmount
+                        </td>
+                        <td>
+                            <a href="javascript:OpenOrderDetail('@entity.OrderNo');"> @entity.DocumentNumber </a>
+                        </td>
+                        <td>
+                            @entity.MemberNo
+                        </td>
+                        <td>
+                            <a id="labUserName" style="color: Blue;" href="javascript:OpenPatientDetail(@entity.UserID,1)">@entity.UserName</a>
+                        </td>
+                        <td>
+                            @entity.Memo
+                        </td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="6"></td>
+                    <td>合计:</td>
+                    <td class="txtQuatity">@ViewBag.Quatity</td>
+                    <td class="txtSumPrice">@ViewBag.SumPrice</td>
+                    <td class="txtZengSong">@ViewBag.ZengSong</td>
+                    <td class="txtZheRang">@ViewBag.ZheRang</td>
+                    <td colspan="4"></td>
+                </tr>
+                @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 15))
+            </tbody>
+        </table>
+        @Ajax.Pager(Model, new PagerOptions { PageIndexParameterName = "pageNum", PagerItemsSeperator = "", ShowPageIndexBox = false, CurrentPagerItemWrapperFormatString = "<span class=\"current\">{0}</span>" }, new MvcAjaxOptions { UpdateTargetId = "articles", HttpMethod = "Post", DataFormId = "searchForm" }, new { id = "badoopager" })
+    </form>
+    <div style="height:120px;"></div>
+    <script src="/Scripts/ymx/commonTable.js"></script>

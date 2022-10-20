@@ -1,0 +1,49 @@
+﻿@using Webdiyer.WebControls.Mvc;
+@using EYB.ServiceEntity.PersonnelEntity;
+@model PagedList<HospitalUserEntity>
+    @{
+        Layout = null;
+    }
+
+    <table class="gridTable" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr style="height:30px;">
+                
+                <th>
+                    编号
+                </th>
+                <th>
+                    姓名
+                </th>
+                <th>
+                    生日
+                </th>
+
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var info in Model)
+            {
+                <tr>
+                   
+                    <td>
+                        @info.UserID
+                </td>
+                <td>
+                    @info.UserName
+            </td>
+            <td>
+                @info.Birthday (@info.Calendar)
+            </td>
+
+        </tr>
+            }
+            @Html.Raw(HS.SupportComponents.NoRecord.NoRecords(Model.Count, 4))
+        </tbody>
+    </table>
+<script type="text/javascript">
+    $(function () {
+        $("#sp").text('@Model.TotalItemCount');
+
+    })
+</script>

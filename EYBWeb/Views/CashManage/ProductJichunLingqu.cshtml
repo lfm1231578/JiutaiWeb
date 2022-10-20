@@ -1,0 +1,117 @@
+﻿@model PagedList<EYB.ServiceEntity.CashEntity.MainCardBalanceEntity>
+@{
+    ViewBag.Title = "";
+    Layout = null;
+    var JiChunID = Request["JiChunID"];
+    var ProductID = Request["ProductID"];
+    var ProductName = Request["ProductName"];
+    var ShengYuCount = Request["ShengYuCount"];
+    var JichunCount = Request["JichunCount"];
+    var OrderNo = Request["OrderNo"];
+    var type = Request["Type"];
+
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+<link href="@Url.Content("~/Content/themes/css/core.css")?v=1.1" rel="stylesheet" type="text/css" media="screen" />
+<link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+
+<style>
+    .mainContentRight_bottomnewdepart1 tr{ height:40px; line-height:40px;}
+  .mainContentRight_bottomnewdepart1 td{text-align:left; padding-left:50px;}
+</style>
+</head>
+<body style="background: #fff;">
+    <div style="width: 96%; float: left;">
+        <div class="accountdiv">
+            当前领取的产品：<label style="font-size: 20px; color: Red;">@ProductName</label></div>
+        <div>
+       <form id="submitform">
+            <input type="hidden" name="JiChunID" value="@JiChunID" />
+            <input type="hidden" name="ProductID" value="@ProductID" />
+            <input type="hidden" name="OrderNo" value="@OrderNo" />
+            <input type="hidden" name="JichunCount" value="@JichunCount" />
+
+            <input type="hidden" name="Type" value="@type" />
+            	<input type="hidden" name="hiddenToken" value="@Guid.NewGuid()"  id="hiddenToken" />
+           <table class="mainContentRight_bottomnewdepart1">
+               <tr>
+                   <td>
+                       输入领取数量（剩余数量：@ShengYuCount）
+                   </td>
+               </tr>
+               <tr>
+                   <td>
+                       <input type="text" name="LingquCount" id="txtmemberNO" class="text-input " onkeyup="javascript:CheckInputIntFloat(this);" style="height: 40px; width: 300px; color: Blue; font-size: 20px;"/>
+
+                   </td>
+               </tr>
+               <tr>
+                   <td>
+                       备注
+                   </td>
+               </tr>
+               <tr>
+                   <td>
+                       <textarea rows="5" cols="40" name="Memo"></textarea>
+                   </td>
+               </tr>
+           </table>
+</form>
+        </div>
+        <div style="margin: 20px; margin-left: 50px;" class="clearfix">
+            <input type="button" class="submitbutton2" value="领 取" onclick="CheckCard()" />
+            <input class="submitbutton2" type="button" onclick="closeedNorefresh()" value="取 消" /></div>
+    </div>
+</body>
+<script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+ <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js" type="text/javascript"></script>
+<script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+<script type="text/javascript">
+     $(function () {
+        $(".aui_outer").css("display", "none");
+
+    });
+
+    //关闭
+    function closeed() {
+        art.dialog.open.api.close();
+        var win = art.dialog.open.origin; //来源页面
+        // 如果父页面重载或者关闭其子对话框全部会关闭
+        win.location.reload();
+    }
+    function CheckCard() {
+        var txtmemberNO = $("#txtmemberNO").val();
+        if (txtmemberNO == "" || parseInt(txtmemberNO) > parseInt("@ShengYuCount"))
+        {
+          alert("请输入领取数量,领取数量不能大于剩余数量！");return;
+        }
+        $.ajax({
+            type: "post", //使用get方法访问后台
+            dataType: "json", //返回json格式的数据
+            url: "@Url.Action("AddProductJichunLingqu","CashManage")",
+            data: $('#submitform').serialize(), // 你的formid
+            async: false,
+            success: function (data) {
+                if (data.IsError) {
+                    alert(data.Message); return;
+                }
+                else {
+                    alert(data.Message);
+                    art.dialog.open.api.close();
+                }
+            },
+            error: function (e) {
+                alert("操作失败！");
+            }
+        });
+    }
+</script>
+</html>
