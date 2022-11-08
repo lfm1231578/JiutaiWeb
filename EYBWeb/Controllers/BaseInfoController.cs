@@ -25,6 +25,7 @@ using EYB.ServiceEntity.PatientEntity;
 using HS.SupportComponents.Base;
 using System.IO;
 using System.Data.SqlClient;
+using NPOI.SS.Formula.Functions;
 
 namespace EYB.Web.Controllers
 {
@@ -108,12 +109,48 @@ namespace EYB.Web.Controllers
             ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
             return View();
         }
+        public ActionResult Editproject1()
+        {
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            return View();
+        }
 
         public ActionResult CardBusiness()
         {
             return View();
         }
-
+        /// <summary>
+        /// 九泰报价
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult PatientRegister1()
+        {
+            int rows;
+            int pagecount;
+            ViewBag.HospitalID = LoginUserEntity.HospitalID;
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            ViewBag.ProvinceCode = LoginUserEntity.ProvinceCode;
+  
+            bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_模拟账号);//模拟账号控制查看权限
+            IList<ProjectEntity> list = new List<ProjectEntity>();
+            var entity = new ProjectEntity();
+            if (HasPermission1)//模拟账号
+            {
+                entity.numPerPage = 1000; //每页显示条数
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+                list = list.Where(c => c.IsMoni != 2).ToList(); //2就是要隐藏
+            }
+            else
+            {
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            }
+            var result = list.AsQueryable().ToPagedList(1, 5000);
+            ViewBag.Yixue = result.Where(c => c.IsHalf == 1).ToList();
+            ViewBag.Shujutongji = result.Where(c => c.IsHalf == 2).ToList();
+            ViewBag.CRA = result.Where(c => c.IsHalf == 3).ToList();
+            ViewBag.Qita = result.Where(c => c.IsHalf == 4).ToList();
+            return View();
+        }
         public ActionResult ProjectEdit()
         {
             var ID = Request["ID"];//这是疗程卡ID
@@ -331,6 +368,301 @@ namespace EYB.Web.Controllers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
+        public ActionResult TheProject1(ProjectEntity entity)
+        {
+            int rows;
+            int pagecount;
+            if (!String.IsNullOrEmpty(entity.Name))
+            {
+                entity.Name = entity.Name.ToUpper();
+            }
+            entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础数据通用总店ID
+            entity.numPerPage = 50; //每页显示条数
+
+            if (entity.orderField + "" == "") { entity.orderField = "ID"; }
+            bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_模拟账号);//模拟账号控制查看权限
+            IList<ProjectEntity> list = new List<ProjectEntity>();
+            if (HasPermission1)//模拟账号
+            {
+                entity.numPerPage = 1000; //每页显示条数
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+                list = list.Where(c => c.IsMoni != 2).ToList(); //2就是要隐藏
+            }
+            else
+            {
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            }
+            list = list.Where(c => c.IsHalf == 1).ToList();
+            //var list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            var result = list.AsQueryable().ToPagedList(1, entity.numPerPage);
+            //foreach (var info in result) {
+            //    var enresult = baseinfoBLL.GetProjectModel(ConvertValueHelper.ConvertIntValue(info.ID.ToString()));
+            //    var royaltyScheme = baseinfoBLL.GetAllRoyaltyScheme(new RoyaltySchemeEntity { ProjectID = entity.ID });
+            //    if(royaltyScheme.Count() > 0) {
+
+            //        info.IsServiceFee = "是";
+            //    } else
+            //    {
+            //        info.IsServiceFee = "否";
+            //    }
+            //}
+            if (HasPermission1)//模拟账号
+            {
+                result.TotalItemCount = list.Count;
+            }
+            else
+            {
+                result.TotalItemCount = rows;
+            }
+            result.CurrentPageIndex = entity.pageNum;
+            ViewBag.orderField = entity.orderField;
+            ViewBag.orderDirection = entity.orderDirection;
+            ViewBag.orderName = entity.Name;
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            if (Request.IsAjaxRequest())
+                return PartialView("_TheProject1", result);
+            return View(result);
+        }
+        /// <summary>
+        /// 项目搜索
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public ActionResult TheProject2(ProjectEntity entity)
+        {
+            int rows;
+            int pagecount;
+            if (!String.IsNullOrEmpty(entity.Name))
+            {
+                entity.Name = entity.Name.ToUpper();
+            }
+            entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础数据通用总店ID
+            entity.numPerPage = 50; //每页显示条数
+
+            if (entity.orderField + "" == "") { entity.orderField = "ID"; }
+            bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_模拟账号);//模拟账号控制查看权限
+            IList<ProjectEntity> list = new List<ProjectEntity>();
+            if (HasPermission1)//模拟账号
+            {
+                entity.numPerPage = 1000; //每页显示条数
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+                list = list.Where(c => c.IsMoni != 2).ToList(); //2就是要隐藏
+            }
+            else
+            {
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            }
+
+            list = list.Where(c => c.IsHalf == 2).ToList();
+            //var list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            var result = list.AsQueryable().ToPagedList(1, entity.numPerPage);
+            //foreach (var info in result) {
+            //    var enresult = baseinfoBLL.GetProjectModel(ConvertValueHelper.ConvertIntValue(info.ID.ToString()));
+            //    var royaltyScheme = baseinfoBLL.GetAllRoyaltyScheme(new RoyaltySchemeEntity { ProjectID = entity.ID });
+            //    if(royaltyScheme.Count() > 0) {
+
+            //        info.IsServiceFee = "是";
+            //    } else
+            //    {
+            //        info.IsServiceFee = "否";
+            //    }
+            //}
+            if (HasPermission1)//模拟账号
+            {
+                result.TotalItemCount = list.Count;
+            }
+            else
+            {
+                result.TotalItemCount = rows;
+            }
+            result.CurrentPageIndex = entity.pageNum;
+            ViewBag.orderField = entity.orderField;
+            ViewBag.orderDirection = entity.orderDirection;
+            ViewBag.orderName = entity.Name;
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            if (Request.IsAjaxRequest())
+                return PartialView("_TheProject2", result);
+            return View(result);
+        }
+
+        /// <summary>
+        /// 项目搜索
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public ActionResult TheProject3(ProjectEntity entity)
+        {
+            int rows;
+            int pagecount;
+            if (!String.IsNullOrEmpty(entity.Name))
+            {
+                entity.Name = entity.Name.ToUpper();
+            }
+            entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础数据通用总店ID
+            entity.numPerPage = 50; //每页显示条数
+
+            if (entity.orderField + "" == "") { entity.orderField = "ID"; }
+            bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_模拟账号);//模拟账号控制查看权限
+            IList<ProjectEntity> list = new List<ProjectEntity>();
+            if (HasPermission1)//模拟账号
+            {
+                entity.numPerPage = 1000; //每页显示条数
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+                list = list.Where(c => c.IsMoni != 2).ToList(); //2就是要隐藏
+            }
+            else
+            {
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            }
+
+            list = list.Where(c => c.IsHalf == 3).ToList();
+            //var list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            var result = list.AsQueryable().ToPagedList(1, entity.numPerPage);
+            //foreach (var info in result) {
+            //    var enresult = baseinfoBLL.GetProjectModel(ConvertValueHelper.ConvertIntValue(info.ID.ToString()));
+            //    var royaltyScheme = baseinfoBLL.GetAllRoyaltyScheme(new RoyaltySchemeEntity { ProjectID = entity.ID });
+            //    if(royaltyScheme.Count() > 0) {
+
+            //        info.IsServiceFee = "是";
+            //    } else
+            //    {
+            //        info.IsServiceFee = "否";
+            //    }
+            //}
+            if (HasPermission1)//模拟账号
+            {
+                result.TotalItemCount = list.Count;
+            }
+            else
+            {
+                result.TotalItemCount = rows;
+            }
+            result.CurrentPageIndex = entity.pageNum;
+            ViewBag.orderField = entity.orderField;
+            ViewBag.orderDirection = entity.orderDirection;
+            ViewBag.orderName = entity.Name;
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            if (Request.IsAjaxRequest())
+                return PartialView("_TheProject3", result);
+            return View(result);
+        }
+        public ActionResult TheProject4(ProjectEntity entity)
+        {
+            int rows;
+            int pagecount;
+            if (!String.IsNullOrEmpty(entity.Name))
+            {
+                entity.Name = entity.Name.ToUpper();
+            }
+            entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础数据通用总店ID
+            entity.numPerPage = 50; //每页显示条数
+
+            if (entity.orderField + "" == "") { entity.orderField = "ID"; }
+            bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_模拟账号);//模拟账号控制查看权限
+            IList<ProjectEntity> list = new List<ProjectEntity>();
+            if (HasPermission1)//模拟账号
+            {
+                entity.numPerPage = 1000; //每页显示条数
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+                list = list.Where(c => c.IsMoni != 2).ToList(); //2就是要隐藏
+            }
+            else
+            {
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            }
+
+            list = list.Where(c => c.IsHalf == 4).ToList();
+            //var list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            var result = list.AsQueryable().ToPagedList(1, entity.numPerPage);
+            //foreach (var info in result) {
+            //    var enresult = baseinfoBLL.GetProjectModel(ConvertValueHelper.ConvertIntValue(info.ID.ToString()));
+            //    var royaltyScheme = baseinfoBLL.GetAllRoyaltyScheme(new RoyaltySchemeEntity { ProjectID = entity.ID });
+            //    if(royaltyScheme.Count() > 0) {
+
+            //        info.IsServiceFee = "是";
+            //    } else
+            //    {
+            //        info.IsServiceFee = "否";
+            //    }
+            //}
+            if (HasPermission1)//模拟账号
+            {
+                result.TotalItemCount = list.Count;
+            }
+            else
+            {
+                result.TotalItemCount = rows;
+            }
+            result.CurrentPageIndex = entity.pageNum;
+            ViewBag.orderField = entity.orderField;
+            ViewBag.orderDirection = entity.orderDirection;
+            ViewBag.orderName = entity.Name;
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            if (Request.IsAjaxRequest())
+                return PartialView("_TheProject4", result);
+            return View(result);
+        }
+        public ActionResult TheProject5(ProjectEntity entity)
+        {
+            int rows;
+            int pagecount;
+            if (!String.IsNullOrEmpty(entity.Name))
+            {
+                entity.Name = entity.Name.ToUpper();
+            }
+            entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础数据通用总店ID
+            entity.numPerPage = 50; //每页显示条数
+
+            if (entity.orderField + "" == "") { entity.orderField = "ID"; }
+            bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_模拟账号);//模拟账号控制查看权限
+            IList<ProjectEntity> list = new List<ProjectEntity>();
+            if (HasPermission1)//模拟账号
+            {
+                entity.numPerPage = 1000; //每页显示条数
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+                list = list.Where(c => c.IsMoni != 2).ToList(); //2就是要隐藏
+            }
+            else
+            {
+                list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            }
+
+            list = list.Where(c => c.IsHalf == 5).ToList();
+            //var list = baseinfoBLL.GetAllProject(entity, out rows, out pagecount);
+            var result = list.AsQueryable().ToPagedList(1, entity.numPerPage);
+            //foreach (var info in result) {
+            //    var enresult = baseinfoBLL.GetProjectModel(ConvertValueHelper.ConvertIntValue(info.ID.ToString()));
+            //    var royaltyScheme = baseinfoBLL.GetAllRoyaltyScheme(new RoyaltySchemeEntity { ProjectID = entity.ID });
+            //    if(royaltyScheme.Count() > 0) {
+
+            //        info.IsServiceFee = "是";
+            //    } else
+            //    {
+            //        info.IsServiceFee = "否";
+            //    }
+            //}
+            if (HasPermission1)//模拟账号
+            {
+                result.TotalItemCount = list.Count;
+            }
+            else
+            {
+                result.TotalItemCount = rows;
+            }
+            result.CurrentPageIndex = entity.pageNum;
+            ViewBag.orderField = entity.orderField;
+            ViewBag.orderDirection = entity.orderDirection;
+            ViewBag.orderName = entity.Name;
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            if (Request.IsAjaxRequest())
+                return PartialView("_TheProject5", result);
+            return View(result);
+        }
+        /// <summary>
+        /// 项目搜索
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         public ActionResult TheProject(ProjectEntity entity)
         {
             int rows;
@@ -431,7 +763,7 @@ namespace EYB.Web.Controllers
             entity.numPerPage = 50; //每页显示条数
             if (entity.orderField + "" == "") { entity.orderField = "ID"; }
             var list = baseinfoBLL.GetAllPrePayCard(entity, out rows, out pagecount);
-            list = list.Where(c=>c.Name!="积分消费").ToList();
+            list = list.Where(c => c.Name != "积分消费").ToList();
             var result = list.AsQueryable().ToPagedList(1, entity.numPerPage);
             result.TotalItemCount = list.Count;
             result.CurrentPageIndex = entity.pageNum;
@@ -834,7 +1166,7 @@ namespace EYB.Web.Controllers
         {
             var Liaochengliexing = entity.IsAdmin;
             if (Liaochengliexing == "0") entity.BaseType = 1;
-            else if(Liaochengliexing == "1") entity.BaseType = 2;
+            else if (Liaochengliexing == "1") entity.BaseType = 2;
 
             string[] str = Request.Form.GetValues("GiveIDList");  //ID|数量|消耗单价|总价|销售单价
             long result = 0;
@@ -846,7 +1178,7 @@ namespace EYB.Web.Controllers
                 {
                     return Json(-1);
                 }
-                
+
                 entity.HospitalID = LoginUserEntity.ParentHospitalID;
                 entity.Type = 2;
                 entity.CreateTime = DateTime.Now;
@@ -879,7 +1211,7 @@ namespace EYB.Web.Controllers
             {
 
             }
-            String sql = @"UPDATE EYB_tb_MainCard set BaseType = "+ entity.BaseType  + @"   WHERE 	HospitalID = "+ LoginUserEntity.ParentHospitalID  + @" AND isnull( IsActive, 0 ) = 0 and Name = '"+ entity.Name + @"'  ";
+            String sql = @"UPDATE EYB_tb_MainCard set BaseType = " + entity.BaseType + @"   WHERE 	HospitalID = " + LoginUserEntity.ParentHospitalID + @" AND isnull( IsActive, 0 ) = 0 and Name = '" + entity.Name + @"'  ";
             changeSqlData(sql);
             return Json(result);
 
@@ -1031,22 +1363,22 @@ namespace EYB.Web.Controllers
             entity.numPerPage = 9;
             if (entity.orderField + "" == "") { entity.orderField = "ID"; entity.orderDirection = "desc"; }
             IList<MainCardEntity> list = new List<MainCardEntity>();
-           // var list = baseinfoBLL.GetAllPrePayCard1(entity, out rows, out pagecount);
+            // var list = baseinfoBLL.GetAllPrePayCard1(entity, out rows, out pagecount);
             //if (entity.Type==2)
-           /// {
-                // list = baseinfoBLL.GetAllPrePayCard1(entity, out rows, out pagecount);
-             //   list = baseinfoBLL.GetAllPrePayCard1(entity, out rows, out pagecount).GroupBy(t => t.ID).Select(t => t.First()).ToList();
-               // list = list.GroupBy(t => t.ID).Select(t => t.First()).ToList();
-               // list=(t=>t.id)
-               // list = list.Where(t=>t.ID).;
+            /// {
+            // list = baseinfoBLL.GetAllPrePayCard1(entity, out rows, out pagecount);
+            //   list = baseinfoBLL.GetAllPrePayCard1(entity, out rows, out pagecount).GroupBy(t => t.ID).Select(t => t.First()).ToList();
+            // list = list.GroupBy(t => t.ID).Select(t => t.First()).ToList();
+            // list=(t=>t.id)
+            // list = list.Where(t=>t.ID).;
 
-           // }
-          //  else
-           // {
-                list = baseinfoBLL.GetAllPrePayCard(entity, out rows, out pagecount);
-           // }
+            // }
+            //  else
+            // {
+            list = baseinfoBLL.GetAllPrePayCard(entity, out rows, out pagecount);
+            // }
             //  var list1 = baseinfoBLL.GetAllPrePayCard(entity, out rows, out pagecount);
-           
+
             var result = list.AsQueryable().ToPagedList(1, entity.numPerPage);//添加Webdiyer.WebControls.Mvc应用
             result.TotalItemCount = rows;
             result.CurrentPageIndex = entity.pageNum;
@@ -1217,6 +1549,55 @@ namespace EYB.Web.Controllers
         }
 
 
+        /// <summary>
+        /// 项目编辑/新建
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public ActionResult ProjectAddOrEdit1(ProjectEntity entity)
+        {
+            //var k = Request["Tag"];
+            entity.Namepingyin = Utils.GetAllPYLetters(entity.Name);
+            string[] strlist = Request.Form.GetValues("vallist");//提成方案数据列表 2|1|200|1|0.7|1|0.4
+
+            long result = 0;
+            long projectId = entity.ID;
+            string[] productIdList = Request.Form.GetValues("ProductID");
+            string[] danCiUseUnitList = Request.Form.GetValues("DanCiUseUnit");
+
+            if (Request["Type"].ToUpper() == "ADD")//添加功能
+            {
+                var list = baseinfoBLL.GetAllName(LoginUserEntity.ParentHospitalID);//获取所有的名称
+                entity.Name = entity.Name.Replace(" ", "");
+                if (list.Any(i => i.Name == entity.Name))
+                {
+                    return Json(-1);
+                }
+
+
+                //添加项目
+                entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础信息全部改为父节点
+
+                projectId = result = baseinfoBLL.AddProject(entity);
+
+
+
+            }
+            else if (Request["Type"].ToUpper() == "EDIT")
+            {
+                var list = baseinfoBLL.GetAllName(LoginUserEntity.ParentHospitalID).Where(i => i.Name == entity.Name);//获取所有的名称
+                foreach (var info in list)
+                {
+                    if (info.ID != entity.ID)
+                    {
+                        return Json(-1);
+                    }
+                }
+                result = baseinfoBLL.UpdateProject(entity);
+
+            }
+            return Json(result);
+        }
 
         /// <summary>
         /// 项目编辑/新建
@@ -1246,6 +1627,7 @@ namespace EYB.Web.Controllers
 
                 //添加项目
                 entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础信息全部改为父节点
+
                 projectId = result = baseinfoBLL.AddProject(entity);
 
                 //添加产品提成方案
@@ -1541,7 +1923,7 @@ namespace EYB.Web.Controllers
             int hospitalID = LoginUserEntity.HospitalID;
             var entity = new UserSettingsEntity();
             entity.HospitalID = hospitalID;
-            ViewBag.HospitalID=LoginUserEntity.HospitalID;
+            ViewBag.HospitalID = LoginUserEntity.HospitalID;
 
             var list = IsystemBLL.GetUserSettingsList(entity);
             if (hospitalID == 1017 || hospitalID == 2)
@@ -1886,8 +2268,8 @@ namespace EYB.Web.Controllers
             }
             DataTable tableExport = new DataTable("Export");
 
-            tableExport.Columns.AddRange(new DataColumn[] { new DataColumn("名称"), new DataColumn("所属类别"), new DataColumn("基础类别"), new DataColumn("是否套盒"),
-                new DataColumn("间隔天数"), new DataColumn("服务时长"), new DataColumn("零售价"), new DataColumn("成本价"), new DataColumn("品牌") });
+            tableExport.Columns.AddRange(new DataColumn[] { new DataColumn("服务项目"), new DataColumn("负责人员"), new DataColumn("工时单价"), new DataColumn("工时"),
+                new DataColumn("成本"), new DataColumn("备注说明") });
             foreach (ProjectEntity model in list)
             {
                 DataRow row = tableExport.NewRow();
@@ -2081,7 +2463,7 @@ namespace EYB.Web.Controllers
             //  entity.numPerPage = 50; //每页显示条数
             if (entity.orderField + "" == "") { entity.orderField = "ID"; }
             var list = baseinfoBLL.GetAllPrePayCard(entity, out rows, out pagecount);
-            list = list.Where(c => c.Name != "积分消费").ToList() ;
+            list = list.Where(c => c.Name != "积分消费").ToList();
             DataTable tableExport = new DataTable("Export");
 
             tableExport.Columns.AddRange(new DataColumn[] { new DataColumn("卡项名称"), new DataColumn("金额"), new DataColumn("有效期(天)") });
@@ -2109,7 +2491,7 @@ namespace EYB.Web.Controllers
         /// <returns></returns>
         public ActionResult DataImport()
         {
-            ViewBag.HospitalID  = LoginUserEntity.HospitalID;
+            ViewBag.HospitalID = LoginUserEntity.HospitalID;
             return View();
         }
 
@@ -2141,7 +2523,7 @@ namespace EYB.Web.Controllers
             }
             else
             {
-                return this.SuccessDirect("操作失败," +mod.message, "/BaseInfo/DataImport");
+                return this.SuccessDirect("操作失败," + mod.message, "/BaseInfo/DataImport");
             }
         }
 
@@ -2158,7 +2540,7 @@ namespace EYB.Web.Controllers
 
 
             //path += "/ImportFile/" + typename + "/";
-            path = "D:\\HeYi/Ymwap";
+            path = "D:\\Eye/Jiutai";
 
             if (!Directory.Exists(path))
             {
@@ -2175,7 +2557,7 @@ namespace EYB.Web.Controllers
                         //保存文件
                         fileBase.SaveAs(path + "/" + fileName);
 
-                        return  fileName;
+                        return fileName;
                     }
                 }
                 catch (Exception e)
@@ -2246,11 +2628,13 @@ namespace EYB.Web.Controllers
                 var hospid = LoginUserEntity.ParentHospitalID == 0 ? LoginUserEntity.HospitalID : LoginUserEntity.ParentHospitalID;
                 //将Excel中的数据写入table。格式要XLS
                 DataTable excelData = null;
-                try{
+                try
+                {
 
                     excelData = ExcelOperate.ExcelToTableForXLSX(Server.MapPath("~/") + fileName);
                 }
-                catch{
+                catch
+                {
 
                     excelData = ExcelOperate.ExcelToTableForXLS(Server.MapPath("~/") + fileName);
                 }
@@ -2459,6 +2843,28 @@ namespace EYB.Web.Controllers
 
         }
 
+        public ActionResult UploadProject1(string file, int IsJoinBrands)
+        {
+            if (file == null)
+            {
+                return Content("没有文件！", "text/plain");
+            }
+            string filename = SaveFile("项目");
+
+            var mod = ImportDataProject(filename, IsJoinBrands);
+
+            if (mod.IsOK)
+            {
+                return this.SuccessDirect("操作成功");
+            }
+            else
+            {
+                return this.SuccessDirect("操作失败," + mod.message, "/BaseInfo/TheProject1");
+            }
+
+
+        }
+
 
 
 
@@ -2511,7 +2917,7 @@ namespace EYB.Web.Controllers
                     {
                         pe.BaseType = 1;
                     }
-                    else if(info.基础类别 == "特殊项目")
+                    else if (info.基础类别 == "特殊项目")
                     {
                         pe.BaseType = 2;
                     }
@@ -2587,7 +2993,7 @@ namespace EYB.Web.Controllers
             }
             else
             {
-                return this.SuccessDirect("操作失败," +mod.message, "/BaseInfo/DataImport");
+                return this.SuccessDirect("操作失败," + mod.message, "/BaseInfo/DataImport");
             }
 
 
@@ -2812,7 +3218,7 @@ namespace EYB.Web.Controllers
             }
             else
             {
-                return this.SuccessDirect("操作失败," +mod.message, "/BaseInfo/DataImport");
+                return this.SuccessDirect("操作失败," + mod.message, "/BaseInfo/DataImport");
             }
         }
 
@@ -3004,6 +3410,50 @@ namespace EYB.Web.Controllers
 
         #endregion
 
+        #region  ==报价系统导入==
+        public ActionResult UploadCustomerBaojia1(string file, string type)
+        {
+            if (file == null)
+            {
+                return Content("没有文件！", "text/plain");
+            }
+            if (type == "上传文件")
+            {
+                string filename = SaveFile1(type);
+                var mod = ImportDataCustomerbaojiao1(filename, type);
+
+                if (mod.IsOK)
+                {
+
+                    return this.SuccessDirect("操作成功");
+
+                }
+                else
+                {
+                    return this.SuccessDirect("操作失败，" + mod.message, "/BaseInfo/TheProject5");
+                }
+
+            } else {
+
+                string filename = SaveFile(type);
+                var mod = ImportDataCustomerbaojiao(filename, type);
+
+                if (mod.IsOK)
+                {
+
+                    return this.SuccessDirect("操作成功");
+
+                }
+                else
+                {
+                    return this.SuccessDirect("操作失败，" + mod.message, "/BaseInfo/TheProject5");
+                }
+
+            }
+            //string type = "";
+
+        }
+        #endregion
 
         #region ==顾客导入==
 
@@ -3024,7 +3474,7 @@ namespace EYB.Web.Controllers
             }
             else
             {
-                return this.SuccessDirect("操作失败，"+ mod.message, "/BaseInfo/DataImport");
+                return this.SuccessDirect("操作失败，" + mod.message, "/BaseInfo/DataImport");
             }
         }
 
@@ -3037,7 +3487,7 @@ namespace EYB.Web.Controllers
             string filename = SaveFile1("顾客");
             //var mod = ImportDataCustomer(filename);
 
-            if (filename !="")
+            if (filename != "")
             {
 
                 return this.SuccessDirect("操作成功");
@@ -3049,6 +3499,136 @@ namespace EYB.Web.Controllers
             }
         }
 
+        public JsonModelEntity ImportDataCustomerbaojiao1(string fileName, string type)
+        {
+            JsonModelEntity mod = new JsonModelEntity();
+            List<Int32> AddIDList = new List<int>();
+            List<Int32> IRIDList = new List<int>();
+
+            try
+            {
+
+                var hospid = LoginUserEntity.ParentHospitalID == 0 ? LoginUserEntity.HospitalID : LoginUserEntity.ParentHospitalID;
+                var tag = type;
+                var entity = new ProjectEntity();
+                if (fileName != null)
+                {
+                    entity.Name = fileName.Trim();
+                }
+
+                entity.BarCode = "9999";
+                entity.RetailPrice = HS.SupportComponents.ConvertValueHelper.ConvertDecimalValue("9999");
+
+                entity.ServiceTime = ConvertValueHelper.ConvertIntValue("9999");
+                entity.HuiDay = ConvertValueHelper.ConvertIntValue("9999");
+                entity.Memo = tag.Trim();
+                entity.ids = LoginUserEntity.UserName.Trim();
+                entity.SellEndTime = DateTime.Now;
+                entity.HospitalID = hospid;
+                entity.IsHalf = 5;
+                long id = baseinfoBLL.AddProject(entity);
+                AddIDList.Add(Convert.ToInt32(id));
+
+                mod.IsOK = true;
+                return mod;
+            }
+            catch {
+                mod.IsOK = false;
+                return mod;
+            }
+        }
+        public JsonModelEntity ImportDataCustomerbaojiao(string fileName, string type)
+        {
+            JsonModelEntity mod = new JsonModelEntity();
+            List<Int32> AddIDList = new List<int>();
+            List<Int32> IRIDList = new List<int>();
+            var tag = type;
+            var isHf = 0;
+            if (tag == "医学")
+            {
+                isHf = 1;
+            }
+            if (tag == "数据统计")
+            {
+                isHf = 2;
+            }
+            if (tag == "CRA")
+            {
+                isHf = 3;
+            }
+            if (tag == "其他")
+            {
+                isHf = 4;
+            }
+            if (tag == "九泰报价")
+            {
+                isHf = 5;
+            }
+            var hospid = LoginUserEntity.ParentHospitalID == 0 ? LoginUserEntity.HospitalID : LoginUserEntity.ParentHospitalID;
+            int allrow = 1;
+            try
+            {
+                DataTable excelData = null;
+                try
+                {
+                    excelData = ExcelOperate.ExcelToTableForXLSX(Server.MapPath("~/") + fileName);
+                }
+                catch
+                {
+                    excelData = ExcelOperate.ExcelToTableForXLS(Server.MapPath("~/") + fileName);
+                }
+                List<ImportBaojiaEntity> list = ModelConvertHelper<ImportBaojiaEntity>.ConvertToModel(excelData).ToList();
+
+                foreach (var info in list)
+                {
+                    allrow = allrow + 1;
+                    var entity = new ProjectEntity();
+                    if (info.服务项目 != null)
+                    {
+                        entity.Name = info.服务项目.Trim();
+                    }
+                    if (info.责任人员 != null)
+                    {
+                        entity.BarCode = info.责任人员.Trim();
+                    }
+                    if (info.工时单价 != null)
+                    {
+                        entity.RetailPrice = HS.SupportComponents.ConvertValueHelper.ConvertDecimalValue(info.工时单价);
+                    }
+                    if (info.工时 != null)
+                    {
+                        entity.ServiceTime = ConvertValueHelper.ConvertIntValue(info.工时);
+                    }
+                    if (info.成本 != null)
+                    {
+                        entity.HuiDay = ConvertValueHelper.ConvertIntValue(info.成本);
+                    }
+                    if (info.说明 != null)
+                    {
+                        entity.Memo = info.说明.Trim();
+                    }
+                    entity.IsHalf = isHf;
+                    //添加项目
+                    entity.HospitalID = LoginUserEntity.ParentHospitalID;//基础信息全部改为父节点
+                    long id = baseinfoBLL.AddProject(entity);
+                    AddIDList.Add(Convert.ToInt32(id));
+
+                }
+                mod.IsOK = true;
+
+                return mod;
+            }
+            catch (Exception e)
+            {
+                foreach (var id in AddIDList)
+                {
+                    baseinfoBLL.DelProject(id, 0);//.DelPatient(id);
+                }
+                mod.IsOK = false;
+                mod.message = "报错行数：" + allrow + "," + e.Message;
+                return mod;
+            }
+        }
         public JsonModelEntity ImportDataCustomer(string fileName)
         {
             JsonModelEntity mod = new JsonModelEntity();
@@ -3085,10 +3665,13 @@ namespace EYB.Web.Controllers
                     entity.Sex = info.性别 == "女" ? 1 : 2;
                     var day = "28";
                     var bir = string.IsNullOrEmpty(info.生日) ? "2000-01-01" : info.生日;
-                    try {
+                    try
+                    {
                         var a = Convert.ToInt32(info.生日);
                         bir = "2000-01-01";
-                    } catch {
+                    }
+                    catch
+                    {
 
                     }
                     if (!string.IsNullOrEmpty(info.生日))
@@ -3098,7 +3681,7 @@ namespace EYB.Web.Controllers
                             if (bir.Split('-')[1] == "2" || bir.Split('-')[1] == "02")
                             {
 
-                                if (bir.Split('-')[2] == "29" )
+                                if (bir.Split('-')[2] == "29")
                                 {
                                     bir = bir.Split('-')[0] + bir.Split('-')[1] + day;
                                 }
@@ -3112,7 +3695,7 @@ namespace EYB.Web.Controllers
                     entity.CreateTime = DateTime.Now;
                     entity.Channel = "0";
                     entity.ArchivesType = "";
-                    entity.Calendar = string.IsNullOrEmpty(info.日历)? "2000-01-01" : info.日历;
+                    entity.Calendar = string.IsNullOrEmpty(info.日历) ? "2000-01-01" : info.日历;
                     entity.CustomerTypeID = string.IsNullOrEmpty(info.顾客分类) ? 26 : info.顾客分类 == "A客" ? 26 : info.顾客分类 == "B客" ? 27 : info.顾客分类 == "C客" ? 28 : 29;
                     entity.DaodianCount = 0;// string.IsNullOrEmpty(info.到店次数) ? 0 : Convert.ToInt32(info.到店次数);
 
@@ -3384,7 +3967,7 @@ namespace EYB.Web.Controllers
             }
             else
             {
-                return this.SuccessDirect("操作失败," +mod.message, "/BaseInfo/DataImport");
+                return this.SuccessDirect("操作失败," + mod.message, "/BaseInfo/DataImport");
             }
         }
 
@@ -3742,7 +4325,7 @@ namespace EYB.Web.Controllers
                     mb.HuaKouZheLv = ConvertValueHelper.ConvertDecimalValue(info.划扣折率);
                     mb.ConsumePrice = 0;
                     mb.ExpireTime = GetDateTime(info.有效期);
-                    mb.AddTime =DateTime.Now;
+                    mb.AddTime = DateTime.Now;
                     if (mb.Price > 0 && mb.UserID > 0)
                     {
                         var mbID = (int)icashManageBLL.AddMainCardBalance(mb);
@@ -4002,7 +4585,8 @@ namespace EYB.Web.Controllers
         #endregion
 
         #region MyRegion
-        public ActionResult salaryStructure() {
+        public ActionResult salaryStructure()
+        {
             return View();
         }
 

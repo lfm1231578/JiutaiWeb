@@ -1,0 +1,371 @@
+﻿@using PatientManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.PatientEntity;
+@using EYB.ServiceEntity.SystemEntity;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using HS.SupportComponents;
+@{
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+
+    var Hid = ViewBag.HospitalID;//门店ID
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    IPatientManageBLL patientBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPatientManageBLL>();//顾客
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //查询员工
+    IList<HospitalUserEntity> personList = personbll.GetAllUserByHospitalID(Hid, 0);
+    personList = personList.Where(i => i.IsSys != 1).ToList();
+    //var docList = List.Where(x => x.IsDoctor > 0).ToList();
+    //查询详情
+    var patientInfo = patientBLL.GetPatienttEntityByID(Convert.ToInt64(UserID));//个人信息
+                                                                                //查询顾客详情
+    var patientDetailInfo = patientBLL.GetPatientDetailEntityByID(UserID);//个人信息
+
+    string[] address = new string[4];
+    var Yixue = ViewBag.Yixue;
+    var Shujutongji = ViewBag.Shujutongji;
+    var CRA = ViewBag.CRA;
+    var Qita = ViewBag.Qita;
+    var userid = Request["UserID"];
+
+}
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.handlers.js"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgdialog/lhgdialog.js?skin=idialog")"></script>
+<link href="@Url.Content("~/Content/themes/css/lightbox.min.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+<script src="../../Scripts/Jquery/lightbox.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    //$(function () {
+    //    //头像
+    //    $(".upload-album").each(function () {
+    //        $(this).InitSWFUpload({ btntext: "上传护理照片", btnwidth: 140, btnheight: 30, single: false, water: false, thumbnail: false, filesize: "9948", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+    //    });
+    //});
+</script>
+<div id="mainContentBody">
+    @Html.Partial("_BaseInfoControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+
+            </label>
+            报价管理
+        </div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <div class="mainContentRight_bottomContent">
+                <div class="accountdiv">
+                    九泰报价（共计:1000元）
+                </div>
+                <div class="accountdiv">
+                    服务项目  -- 服务费用
+                </div>
+                <form action="" method="post" class="clearfix" id="myform" style="position: relative; ">
+                    <div class="panel collapse close" defh="1">
+                        <h1>
+                            医学服务 --  200（元）
+                        </h1>
+                        <div>
+                            <div class="accountdiv">
+                                医学具体分析
+                            </div>
+                            <table class="mainContentRight_table">
+
+                                <thead style="position:absolute;">
+                                    <tr>
+                                        <th width="320" orderfield="Name">
+                                            服务项目
+                                        </th>
+                                        <th orderfield="TypeName">
+                                            负责人员
+                                        </th>
+                                        <th orderfield="RetailPrice">
+                                            工时单价
+                                        </th>
+
+                                        <th>
+                                            工时
+                                        </th>
+                                        <th>
+                                            成本
+                                        </th>
+                                        <th>
+                                            类型
+                                        </th>
+                                        <th>
+                                            备注说明
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="height:40px;"></tr>
+                                    @foreach (var entity in Yixue)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @entity.Name
+                                            </td>
+                                            <td>
+                                                @entity.BarCode
+                                            </td>
+                                            <td>
+                                                @entity.RetailPrice
+                                            </td>
+                                            <td>
+                                                @entity.ServiceTime
+                                            </td>
+                                            @*<td>@entity.BrandName
+                                    </td>*@
+                                            <td>
+                                                @entity.HuiDay
+                                            </td>
+                                            <td>
+                                                @entity.IsHalf
+                                            </td>
+                                            <td>
+                                                @entity.Memo
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel collapse close" defh="1">
+                        <h1>
+                            数据统计服务 --  200（元）
+                        </h1>
+                        <div>
+                            <div class="accountdiv">
+                                数据统计详细分析
+                            </div>
+                            <table class="mainContentRight_table">
+
+                                <thead style="position:absolute;">
+                                    <tr>
+                                        <th width="320" orderfield="Name">
+                                            服务项目
+                                        </th>
+                                        <th orderfield="TypeName">
+                                            负责人员
+                                        </th>
+                                        <th orderfield="RetailPrice">
+                                            工时单价
+                                        </th>
+
+                                        <th>
+                                            工时
+                                        </th>
+                                        <th>
+                                            成本
+                                        </th>
+                                        <th>
+                                            类型
+                                        </th>
+                                        <th>
+                                            备注说明
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="height:40px;"></tr>
+                                    @foreach (var entity in Shujutongji)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @entity.Name
+                                            </td>
+                                            <td>
+                                                @entity.BarCode
+                                            </td>
+                                            <td>
+                                                @entity.RetailPrice
+                                            </td>
+                                            <td>
+                                                @entity.ServiceTime
+                                            </td>
+                                            @*<td>@entity.BrandName
+                                    </td>*@
+                                            <td>
+                                                @entity.HuiDay
+                                            </td>
+                                            <td>
+                                                @entity.IsHalf
+                                            </td>
+                                            <td>
+                                                @entity.Memo
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel collapse close" defh="1">
+                        <h1>
+                            CRA服务 --  200（元）
+                        </h1>
+                        <div>
+                            <div class="accountdiv">
+                                CRA具体分析
+                            </div>
+                            <table class="mainContentRight_table">
+
+                                <thead style="position:absolute;">
+                                    <tr>
+                                        <th width="320" orderfield="Name">
+                                            服务项目
+                                        </th>
+                                        <th orderfield="TypeName">
+                                            负责人员
+                                        </th>
+                                        <th orderfield="RetailPrice">
+                                            工时单价
+                                        </th>
+
+                                        <th>
+                                            工时
+                                        </th>
+                                        <th>
+                                            成本
+                                        </th>
+                                        <th>
+                                            类型
+                                        </th>
+                                        <th>
+                                            备注说明
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="height:40px;"></tr>
+                                    @foreach (var entity in CRA)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @entity.Name
+                                            </td>
+                                            <td>
+                                                @entity.BarCode
+                                            </td>
+                                            <td>
+                                                @entity.RetailPrice
+                                            </td>
+                                            <td>
+                                                @entity.ServiceTime
+                                            </td>
+                                            @*<td>@entity.BrandName
+                                    </td>*@
+                                            <td>
+                                                @entity.HuiDay
+                                            </td>
+                                            <td>
+                                                @entity.IsHalf
+                                            </td>
+                                            <td>
+                                                @entity.Memo
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel collapse close" defh="1">
+                        <h1>
+                            其他服务 --  200（元）
+                        </h1>
+                        <div>
+                            <div class="accountdiv">
+                                其他具体分析
+                            </div>
+                            <table class="mainContentRight_table">
+
+                                <thead style="position:absolute;">
+                                    <tr>
+                                        <th width="320" orderfield="Name">
+                                            服务项目
+                                        </th>
+                                        <th orderfield="TypeName">
+                                            负责人员
+                                        </th>
+                                        <th orderfield="RetailPrice">
+                                            工时单价
+                                        </th>
+
+                                        <th>
+                                            工时
+                                        </th>
+                                        <th>
+                                            成本
+                                        </th>
+                                        <th>
+                                            类型
+                                        </th>
+                                        <th>
+                                            备注说明
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="height:40px;"></tr>
+                                    @foreach (var entity in Qita)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @entity.Name
+                                            </td>
+                                            <td>
+                                                @entity.BarCode
+                                            </td>
+                                            <td>
+                                                @entity.RetailPrice
+                                            </td>
+                                            <td>
+                                                @entity.ServiceTime
+                                            </td>
+                                            @*<td>@entity.BrandName
+                                    </td>*@
+                                            <td>
+                                                @entity.HuiDay
+                                            </td>
+                                            <td>
+                                                @entity.IsHalf
+                                            </td>
+                                            <td>
+                                                @entity.Memo
+                                            </td>
+                                        </tr>
+
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </form>
+
+                <div class="accountdiv">
+                    合计  -- 800 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    // 所有复选框 单选
+    //     $("input:checkbox").click(function(){
+    //        //$(this).attr("checked",true);
+    //        if(!$(this).hasClass("Diseases"))
+    //        {
+    //        $(this).siblings("input[type=checkbox]").attr("checked",false);
+    //        }
+    //     })
+
+</script>

@@ -2208,6 +2208,19 @@
     <Content Include="Views\PatientManage\_PatientProjectCard - 复制.cshtml" />
     <Content Include="Views\BaseInfo\EditTreatmentCard - 复制.cshtml" />
     <Content Include="Views\MoneyManage\StaffPerformanceDetail - 复制.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject1.cshtml" />
+    <Content Include="Views\BaseInfo\_TheProject1.cshtml" />
+    <Content Include="Views\BaseInfo\Editproject1.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject2.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject3.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject4.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject5.cshtml" />
+    <Content Include="Views\BaseInfo\_TheProject2.cshtml" />
+    <Content Include="Views\BaseInfo\_TheProject3.cshtml" />
+    <Content Include="Views\BaseInfo\_TheProject4.cshtml" />
+    <Content Include="Views\BaseInfo\_TheProject5.cshtml" />
+    <Content Include="Views\PatientManage\PatientRegister1.cshtml" />
+    <Content Include="Views\BaseInfo\PatientRegister1.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\PatientManage\_PartialPatientControl.cshtml" />

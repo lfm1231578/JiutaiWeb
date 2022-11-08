@@ -1,0 +1,459 @@
+﻿@using BaseinfoManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using EYB.ServiceEntity.CashEntity;
+@using HS.SupportComponents;
+@using EYB.ServiceEntity.BaseInfo;
+@using EYB.ServiceEntity.SystemEntity;
+@using WarehouseManage.Factory.IBLL;
+@using EYB.ServiceEntity.WarehouseEntity;
+@{
+    var tag = Request["Tag"];
+    var isHf = 0;
+    if (tag == "医学")
+    {
+        isHf = 1;
+    }
+    if (tag == "数据统计")
+    {
+        isHf = 2;
+    }
+    if (tag == "CRA")
+    {
+        isHf = 3;
+    }
+    if (tag == "其他")
+    {
+        isHf = 4;
+    }
+    if (tag == "九泰报价")
+    {
+        isHf = 5;
+    }
+    var type = Request["Type"];
+    var id = Request["ID"];
+    Layout = null;
+    ProjectEntity entity = new ProjectEntity();
+    //IList<ProjectProductEntity> ppentity = new List<ProjectProductEntity>();
+    IBaseinfoBLL baseinfoBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IBaseinfoBLL>();
+    //IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+    //ISystemManageBLL sysBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();
+    //CashManage.Factory.IBLL.ICashManageBLL icashBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<CashManage.Factory.IBLL.ICashManageBLL>();
+    if (!String.IsNullOrEmpty(id))
+    {
+        entity = baseinfoBLL.GetProjectModel(ConvertValueHelper.ConvertIntValue(id));//获取项目实体
+    }
+    var ParentHospitalID = ViewBag.ParentHospitalID;//总店ID
+
+    //IList<RoyaltySchemeEntity> royentity = new List<RoyaltySchemeEntity>();
+    //IList<BrandEntity> brandlist = new List<BrandEntity>();
+    //royentity = baseinfoBLL.GetAllRoyaltyScheme(new RoyaltySchemeEntity { ProjectID = entity.ID });//获取提成方案列表
+
+    //var caretypelist = wareBll.GetProductTypeNoPage(ParentHospitalID, 1);//获取项目分类列表
+    //brandlist = wareBll.GetBrandListNoPage(ParentHospitalID);//获取品牌列表
+
+    ViewBag.Title = "编辑项目";
+
+    if (type.ToUpper() == "ADD")
+    {
+        entity.SellEndTime = DateTime.Now.AddYears(10);
+    }
+    //获取项目成本价
+    //bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_项目管理成本价);
+    //var relationList = baseinfoBLL.GetProjectProductRelation(new ProjectProductRelationEntity { ProjectID = ConvertValueHelper.ConvertIntValue(id) });
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <!--位置不能颠倒，否则影响样式-->
+    <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+    <link href="../../Content/themes/css/validationEngine.jquery.css" rel="stylesheet"
+          type="text/css" />
+    <link href="../../Content/themes/css/template.css" rel="stylesheet" type="text/css" />
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/common.js")" type="text/javascript"></script>
+    <!--Panel-->
+    <script src="@Url.Content("~/Scripts/Common/dwz.panel.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/dwz.effects.js")" type="text/javascript"></script>
+    <!--表格-->
+    <script src="@Url.Content("~/Scripts/Common/table.js")" type="text/javascript"></script>
+    <!--表单验证-->
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine-zh_CN.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.validationEngine.js" type="text/javascript"></script>
+    <!--日期-->
+    <script src="../../Scripts/My97DatePicker/WdatePicker.js?v=1.2" type="text/javascript"></script>
+    <!--弹出框-->
+    <script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/artDialog/plugins/iframeTools.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/wbox-min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/Common/timeticket.js?v=1.4")" type="text/javascript"></script>
+</head>
+<body style="background: #fff;">
+    <div id="mainContentBody">
+
+        <div class="mainContentRight_bottom clearfix" style="position: relative;" id="mainContentRight_bottom">
+            <div class="mainContentRight" style="margin-top: 20px;">
+                <form id="myform" action="@Url.Content("~/BaseInfo/ProjectAddOrEdit")" class="clearfix" method="post">
+                    <table class="mainContentRight_table ">
+                        <tr>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>服务项目
+                            </td>
+                            <td>
+                                <input type="hidden" value="@entity.ID" name="ID" />
+                                <input type="text" name="Name" id="txtName" value="@entity.Name" class="validate[required] text-input input200" />
+                            </td>
+                            <td class="tdright">
+                                <span class="red">*&nbsp;</span>负责人
+                            </td>
+                            <td>
+                                <input type="text" name="BarCode" id="txtBarCode" value="@entity.BarCode" class="validate[required] text-input input200    />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                工时单价
+                            </td>
+                            <td>
+                                <input type="text" name="RetailPrice" id="txtRetailPrice" value="@entity.RetailPrice" class="text-input input200 validate[custom[number]]" style=" width:100px;" />元/小时
+                            </td>
+                            <td class="tdright">
+                                工时
+                            </td>
+                            <td>
+                                <input type="text" name="ServiceTime" id="txtServiceTime" value="@entity.ServiceTime" class="text-input input200 validate[custom[number]]" style=" width:100px;" />小时
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                成本
+                            </td>
+                            <td>
+                                <input type="text" name="HuiDay" id="txtHuiDay" value="@entity.HuiDay" class="text-input input200 validate[custom[number]]" />
+
+                                <input type="text" name="IsHalf" id="txtIsHalf" value="@isHf" style="display:none" />
+                            </td>
+                        </tr>
+                        <tr style="display: none;">
+                        </tr>
+                        <tr>
+                            <td class="tdright">
+                                说明
+                            </td>
+                            <td colspan="2">
+                                <textarea rows="1" name="Memo" cols="40" class="textarea" style="height: 80px; line-height: 20px;">@entity.Memo</textarea>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="clearfix">
+                            </td>
+                            <td colspan="3">
+                                <input type="submit" id="btnsave" class="submitbutton2" value="保 存" />
+                                <input type="button" onclick="closeedNorefresh()" class="submitbutton2" value="关 闭" />
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+
+
+    </div>
+</body>
+<script type="text/javascript">
+ function AddBrank(){
+    art.dialog.open("/BaseInfo/AddBrank", { title: "添加品牌", width: 560, height: 470});
+   }
+
+  function AddCategory(){
+    art.dialog.open("/BaseInfo/AddCategory?type=1", { title: "添加类别", width: 560, height: 470});
+   }
+   //选择产品
+function ProductList() {
+
+    art.dialog.open("/BaseInfo/ProductList", {
+        title: "产品列表", width: 660, height: 470, close: function () {
+            var bValue = art.dialog.data('bValueProduct'); // 读取B页面的数据
+            if (bValue !== undefined) {
+                Selectproduct(bValue);
+            }
+        }
+    });
+}
+function CheckInputIntFloat(oInput) {
+    if ('' != oInput.value.replace(/^[-]?\d{1,}\.{0,1}\d{0,}/, '')) {
+        oInput.value = oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/) == null ? '' : oInput.value.match(/^[-]?\d{1,}\.{0,1}\d{0,}/);
+    }
+}
+//选择产品后的事件
+function Selectproduct(obj) {
+
+    //只能加载一次产品，不能重复加载
+    var isshownext = true;
+    $("input[name='ProductID']").each(function (i) {
+        if (obj.split("|")[0] == $(this).val()) {
+            isshownext = false;
+            return false;
+        } else {
+            isshownext = true;
+        }
+    });
+    if (!isshownext) return;
+
+    var arry = obj.split("$");
+    var str = "";
+    for (var i = 0; i < arry.length - 1; i++) {
+        str += '<tr><td><input type="hidden" name="ProductID" value="'+arry[i].split("|")[0]+ '" />'+arry[i].split("|")[1]+'</td> '
+       + '<td>'+arry[i].split("|")[5]+'</td> '
+       + '<td>'+arry[i].split("|")[6]+'</td> '
+       + '<td><input  name="DanCiUseUnit" type="text"  onkeyup="CheckInputIntFloat(this)" class="smallinput" /></td> '
+       + '<td><a href="javascript:;" class=\'deletebtn\'>删除</a></td></tr>'
+    }
+    $("#tbodyproduct").append(str);
+
+}
+    //删除功能
+    $("#tbodyproduct").delegate('.deletebtn', 'click', function () {
+        $(this).parent().parent().remove();
+
+    })
+  jQuery(document).ready(function(){
+        jQuery('#myform').validationEngine('attach', {
+            promptPosition: "topLeft",
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: ".mainContentRight",
+            onValidationComplete: function(form, status){
+                if(status)
+                {
+                saveAs();
+                }
+        }
+        });
+
+    });
+
+$("h1").toggle(function(){$(".expandable").click();},function(){  $(".collapsable").click();});
+
+$('#txtName').keyup(function () {
+    var re = /[\\\/:\*\?"\<\>\|]/; //只允许输入数字和大小写字母
+    if (re.test($("#txtName").val())) {
+        alert("请勿输入非法字符");
+        $("#txtName").val("");
+        return false;
+    }
+});
+    //提交操作
+ function saveAs(){
+     $("#btnsave").attr("disabled", "disabled");
+    /// $("#txtName").val($("#txtName").val().trim());
+         if($("#txtName").val()=="" || $("#txtRetailPrice").val()=="")
+         {
+            artdialogfail("名称/金额不能为空！","","250");
+            $("#btnsave").attr("disabled", false);
+            return false;
+         }
+
+         if($("#ProjectType").val()=="0")
+         {
+               artdialogfail("分类必许要选择！","","250");
+               $("#btnsave").attr("disabled", false);
+               return false;
+         }
+          if($("#BrandID").val()=="0")
+         {
+               artdialogfail("品牌必许要选择！","","250");
+               $("#btnsave").attr("disabled", false);
+               return false;
+          }
+     //汪
+     //服务时长为正整数
+          //var reg = /^[0-9]*[0-9][0-9]*$/;
+          //if (!reg.test($("#txtServiceTime").val())) {
+          //    artdialogfail("服务时长必须为整数！", "", "250");
+          //    $("#btnsave").attr("disabled", false);
+          //    return false;
+          //}
+     //间隔天数为正整数
+          var reg = /^[0-9]*[0-9][0-9]*$/;
+          if (!reg.test($("#txtHuiDay").val())) {
+              artdialogfail("间隔天数必须为整数！", "", "250");
+              $("#btnsave").attr("disabled", false);
+              return false;
+          }
+          if ($("#txtRetailPrice").val()< 0) {
+              artdialogfail("零售价不能为负数！", "", "250");
+              $("#btnsave").attr("disabled", false);
+              return false;
+          }
+          //if ($("#txtCostPrice").val() < 0) {
+          //    artdialogfail("成本价不能为负数！", "", "250");
+          //    $("#btnsave").attr("disabled", false);
+          //    return false;
+          //}
+     //汪
+         $.ajax({
+            cache: true,
+            type: "POST",
+            url: "@Url.Content("~/BaseInfo/ProjectAddOrEdit1?Type=" + type )",
+            data: $('#myform').serialize(), // 你的formid
+            async: false,
+            error: function (request) {
+                 artdialogfailTwo("操作失败！","","250","100");
+                 $("#btnsave").attr("disabled", false);
+            },
+            success: function (data) {
+             if(data>0){
+                 alert("保存成功!");
+                 window.top.location.reload();
+                 closeedNorefresh();
+               }else if(data=-1){
+                  artdialogfail("名称重复,请重新填写名称","","250","100");
+                  $("#btnsave").attr("disabled", false);
+               }
+               else
+               {
+                artdialogfailTwo("操作失败,请检查输入项！","","250","100");
+                $("#btnsave").attr("disabled", false);
+               }
+            }
+        });
+     }
+
+
+     //打开新建窗口
+     function oppnStorddisage() {
+        art.dialog.open("/BaseInfo/EditRoyaltyScheme?Type=add", { title: "新建提成方案", width: 660, height: 470 })
+    }
+
+
+    //添加固定手工方案
+    function Addroylty()
+    {
+        var txtallpricetype="2";//价格分类
+        var txtstartprice=$("#StartPrice").val();//开始价格
+        var txtendprice=$("#EndPrice").val();//结束价格
+
+        var txtnonspecifiedtype=$("#NonSpecifiedType").val();//非指定分类
+        var txtnonspecifiedprice=$("#NonSpecifiedPrice").val();//非指定分类价格
+
+        var txtspecifiedtype = "0";//$("#SpecifiedType").val();//指定分类
+        var txtspecifiedprice = "";//;$("#SpecifiedPrice").val();//指定价格
+
+        var tbool=true;
+        if(!Verifybig(txtstartprice,txtendprice))
+        {
+            tbool=false;
+        }
+        if(txtnonspecifiedtype!="0")
+        {
+           if(!Verifyval(txtnonspecifiedtype,txtnonspecifiedprice))
+            {
+                 tbool= false;
+            }
+        }
+        if(txtspecifiedtype!="0")
+        {
+           if(!Verifyval(txtspecifiedtype,txtspecifiedprice))
+           {
+            tbool=false;
+           }
+        }
+        if(txtspecifiedtype=="0"&&txtnonspecifiedtype=="0")
+        {
+            tbool=false;
+        }
+
+        var txtstr=null;
+
+        if(tbool)
+        {
+            if(txtspecifiedprice==null ||txtspecifiedprice=='')
+            {
+                txtspecifiedprice="0";
+            }
+            if(txtnonspecifiedprice==null ||txtnonspecifiedprice=='')
+            {
+                txtnonspecifiedprice="0";
+            }
+            txtstr=txtallpricetype+"|"+txtstartprice+"|"+txtendprice+"|"+txtnonspecifiedtype+"|"+txtnonspecifiedprice+"|"+txtspecifiedtype+"|"+txtspecifiedprice;
+            //$("#Royaltylist").append("<tr><td><input type='hidden' name='vallist' value="+txtstr+"> "+GetStr(txtallpricetype)+"</td><td>"+txtstartprice+"</td><td>"+txtendprice+"</td><td>"+GetStr(txtnonspecifiedtype)+"</td><td>"+txtnonspecifiedprice+"</td><td>"+GetStr(txtspecifiedtype)+"</td><td>"+txtspecifiedprice+"</td><td><a href='javascript:;' class='lista'>删除</a> </td></tr>");
+            $("#Royaltylist").append("<tr><td><input type='hidden' name='vallist' value="+txtstr+"> "+GetStr(txtallpricetype)+"</td><td>"+txtstartprice+"</td><td>"+txtendprice+"</td><td>"+GetStr(txtnonspecifiedtype)+"</td><td>"+txtnonspecifiedprice+"</td><td><a href='javascript:;' class='lista'>删除</a> </td></tr>");
+             $("#tab2").removeClass("hidden");
+        }
+        else
+        {
+            alert("你的数据输入有误,请检查后再提交")
+        }
+    }
+
+    //验证JS..第一个是类型,第二个是对应值
+    //返回true和false
+    function Verifyval(txttype,txtval)
+    {
+        if(txttype==1)
+        {
+            return (txtval<=1&&txtval>=0);
+        }
+        else if(txttype==2)
+        {
+            return txtval>=0;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    //比较大小
+    function Verifybig(txt1,txt2)
+    {
+
+        return Number(txt1)<=Number(txt2);
+    }
+
+    //获得分类名称
+    function GetStr(var1)
+    {
+        switch(var1)
+        {
+            case "1":
+            return "折扣比例";
+            break;
+            case "2":
+            return "固定金额";
+            break;
+            default:
+            return "无";
+        }
+    }
+
+    //删除操作
+    $(function(){
+     $("#Royaltylist").delegate('.lista','click',function(){
+        $(this).parent().parent().remove();
+     });
+    })
+
+    $(".addfangan").click( function(){
+        var id=$(this).attr("tab");
+        $("#"+id).toggleClass("hidden");
+    })
+
+
+
+</script>
+</html>

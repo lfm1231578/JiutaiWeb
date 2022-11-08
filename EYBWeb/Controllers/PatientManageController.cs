@@ -193,6 +193,16 @@ namespace EYB.Web.Controllers
             ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
             ViewBag.ProvinceCode = LoginUserEntity.ProvinceCode;
             return View();
+        }        /// <summary>
+                 /// 顾客登记
+                 /// </summary>
+                 /// <returns></returns>
+        public ActionResult PatientRegister1()
+        {
+            ViewBag.HospitalID = LoginUserEntity.HospitalID;
+            ViewBag.ParentHospitalID = LoginUserEntity.ParentHospitalID;
+            ViewBag.ProvinceCode = LoginUserEntity.ProvinceCode;
+            return View();
         }
         /// <summary>
         /// 顾客登记 弹出框

@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
     <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
-    <title>益美行 云管店系统</title>
+    <title>九泰云系统</title>
     <!--位置不能颠倒，否则影响样式-->
     <link href="@Url.Content("~/Content/themes/default/style.css")?v=1.22" rel="stylesheet" type="text/css" media="screen" />
     <link href="@Url.Content("~/Content/themes/css/core.css")?v=1.22" rel="stylesheet" type="text/css" media="screen" />
@@ -81,9 +81,9 @@
         //entity.EndTime = now + "-" + days;
         entity.EndTime = now + "-" + nowdd;
     }
-    var list = resBLL.GetReservationListByCondition(entity, out rows, out pagecount);
-    list = list.Where(x => x.Statu != 4).ToList();
-    var countres1 = list.Count();
+    //var list = resBLL.GetReservationListByCondition(entity, out rows, out pagecount);
+    //list = list.Where(x => x.Statu != 4).ToList();
+    //var countres1 = list.Count();
     //var countres = resList.Count();
 
     int rownum = 0;//计数器
@@ -174,16 +174,11 @@
                     </a>
                 </div>
                 @*@if (HS.SupportComponents.ConvertValueHelper.ConvertIntValue(Session["ExpireTime"] + "") <= 3388)*@
-                @if (countres1 > 0)
-                {
-                    <a onclick="JumpUrl('@Url.Content("~/ReservationDoctorManage/ReservationList")')">
-                        <div id="blink" style="position: absolute; top: 20px; right: 260px; color: #fff; font-size: 20px;
-                            font-weight: bold;">
 
-                            【顾客预约：@countres1】
+ 
 
                             @*【到期剩余时间：@Session["ExpireTime"]天，请及时续费】*@
-                        </div>
+                        <!--</div>
                     </a>
                     <script type="text/javascript">
                         function changeColor() {
@@ -193,7 +188,7 @@
                         }
                         setInterval("changeColor()", 300);
                     </script>
-                }
+                }-->
                 <!-- header right start-->
                 <div class="ymx_header_right" style="display:flex; justify-content:flex-end;">
                     <div>
@@ -201,54 +196,10 @@
 
                             <div style="position:relative;">
                                 <li style="border: 0px; text-align:center;">
-                                    <a href="javascript:;" id="btnremind" style="display:inline-block; width:23px;height:23px; background: url('../../Content/themes/images/messsage.png'); background-size:100% 100%; margin:0 auto;
-                line-height: 80px;">
 
-                                    </a>
+
                                     <span id="spanall"></span>
                                 </li>
-                                <div class="dropdown-menu" style="left:0;width:235px;">
-                                    <ul>
-                                        <li>
-                                            <a style="cursor: pointer; " onclick="JumpUrl('@Url.Content("~/RemindManage/CustomerBirthdaysList")')">
-                                                顾客生日
-                                                <label id="guke" style="padding:5px;border-radius:2px;background-color:#EA767D !important; color:#fff;">
-                                                    0
-                                                </label>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a style="cursor: pointer; " onclick="JumpUrl('@Url.Content("~/RemindManage/PersonnelBirthdaysList")')">
-                                                员工生日<label id="yuangong" style="padding:5px;border-radius:2px;background-color:#EA767D !important; color:#fff;">0</label>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a style="cursor: pointer; " onclick="JumpUrl('@Url.Content("~/RemindManage/BalanceManage")')">
-                                                余额不足<label id="yue" style="padding:5px;border-radius:2px;background-color:#EA767D !important; color:#fff;">0</label>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a style="cursor: pointer; " onclick="JumpUrl('@Url.Content("~/RemindManage/BalanceTimesManage")')">
-                                                余次不足<label id="yuci" style="padding:5px;border-radius:2px;background-color:#EA767D !important; color:#fff;">0</label>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a style="cursor: pointer; " onclick="JumpUrl('@Url.Content("~/RemindManage/BalanceExpireTimesManage")')">
-                                                卡项过期<label id="guoqi" style="padding:5px;border-radius:2px;background-color:#EA767D !important; color:#fff;">0</label>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a style="cursor: pointer; " onclick="JumpUrl('@Url.Content("~/RemindManage/KucunRemind")')">
-                                                库存预警<label id="kucun" style="padding:5px;border-radius:2px;background-color:#EA767D !important; color:#fff;">0</label>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a style="cursor: pointer; " onclick="JumpUrl('@Url.Content("~/RemindManage/CustomerRemind")')">
-                                                顾客跟进<label id="gukegenjin" style="padding:5px;border-radius:2px;background-color:#EA767D !important; color:#fff;">0</label>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
 
                             </div>
 
@@ -369,7 +320,7 @@
 
     <div id="footer">
         <div>
-            <div style="font-size:12px;padding-top:10px;margin-top:5px;">网站备案号: 粤ICP备19130599号    技术支持 : 广州合益软件科技有限公司  Copyright 2018-2029 hy.heyisoftware.net All Rights Reserved</div>
+            <div style="font-size:12px;padding-top:10px;margin-top:5px;">网站备案号: 粤ICP备19130599号    技术支持 : 广州九泰需要些科技有限公司  Copyright 2018-2029 www.jiutai.net All Rights Reserved</div>
             @*<div style="font-size:12px;margin-top:5px;padding-bottom:12px; "></div>*@
         </div>
 
@@ -537,262 +488,5 @@
 
 
 <script>
-    new Vue({
-        el: '#apps',
-        data: {
-            userBirthArr: [],
-            now: '',
-            staffBirthArr: [],
-            kucunNum: '',
-            tanchu: 0,
-            differDay:'',
-        },
-        created() {
-            let month =(new Date().getMonth() + 1)<10?('0'+(new Date().getMonth() + 1)):new Date().getMonth() + 1
-            let date =(new Date().getDate())<10?('0'+(new Date().getDate())):(new Date().getDate())
-            let monthDay = month + '-' + date;
-            this.now = monthDay;
-            this.customerBirth();
-            this.staffBirth();
-            this.kucunyujin();
-            this.exipred();
-        },
-        methods: {
-            closeDialog() {
-                $(".dialogNews").css("bottom", '-175px'); 
-            },
-            customerBirth() {
-            let _that = this
-            let now = new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate();
-            let snow = new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + (new Date().getMonth() - 3);
 
-            $.ajax({
-            type: "post", //使用get方法访问后台
-            dataType: "text", //返回json格式的数据
-            url: '/RemindManage/CustomerBirthdaysListJson',
-            //data: {s: '2020-1-1', e: '2020-12-31', t: "", },
-            data: {s: '1990-1-1', e: '1990-12-31', t: "", },
-                success: function (data) {
-                    //alert(snow + "@@" + now);
-                    console.log("员工生日提示", data);
-                    _that.tanchu++;
-                    let arr = JSON.parse(data)
-                     
-                     let currentArr = [];
-                    //for (let item of arr) {
-                    //        let str = item.Birthday.substr(5);
-                    //        //console.log("str", str);
-                    //        //console.log("员工生日提示", data);
-                    //        if (str == _that.now) {
-                    //            _that.userBirthArr.push(item)
-                    //            currentArr.push(item.UserID)
-                    //        }
-                    //}
-                    for (let item of arr) {
-                                _that.userBirthArr.push(item)
-                                currentArr.push(item.UserID)
-                     }
-                    let localhostStaff = localStorage.getItem('userArrId');
-                      if (currentArr.length != 0) {
-                         
-                        if (localhostStaff == null) {
-                                 localhostStaff = JSON.parse(currentArr);
-                                 localStorage.setItem('userArrId', localhostStaff);
-                               
-                                 _that.dialogUp(); 
-                             } else {
-                            localhostStaff = JSON.parse(localhostStaff);
-                            if (typeof (localhostStaff) == 'number') {
-                                let a =localhostStaff 
-                                localhostStaff = [];
-                                localhostStaff.push(a);
-                            }
-                            let isTrue = false;
-                            for (let item of currentArr) {
-                                if (localhostStaff.indexOf(item) == -1) {
-                                    isTrue = true;
-                                }
-                            } 
-                            
-                               if (isTrue) {
-                                   localhostStaff = JSON.stringify(currentArr);
-                                 
-                                localStorage.setItem('userArrId', localhostStaff);
-                                 
-                                 _that.dialogUp();
-                             }  
-                        }
-
-                       }
-                    
-                },
-                error: function () {
-                 _that.tanchu++;
-                //alert("对不起！系统出错啦，我们会尽快跟踪处理的！");
-                }
-            });
-
-            },
-
-            staffBirth() {
-                _that = this;
-                $.ajax({
-                    type: "post", //使用get方法访问后台
-                    dataType: "text", //返回json格式的数据
-                    url: '/RemindManage/PersonnelBirthdaysListJson',
-                    data: { s: '2020-1-1', e: '2020-12-31', t: "", },
-                    success: function (data) {
-                         _that.tanchu++;
-                        let arr = JSON.parse(data)
-                        let currentArr = [];
-                        for (let item of arr) {
-                            let str = item.Birthday.substr(5);
-                            if (str == _that.now) {
-                                _that.staffBirthArr.push(item)
-                                currentArr.push(item.UserID)
-                            }
-                        }
-                        let localhostStaff = localStorage.getItem('staffArr');
-                        if (currentArr.length != 0) {
-                            if (localhostStaff == null) {
-                                 localhostStaff = JSON.parse(currentArr);
-                                localStorage.setItem('staffArr', localhostStaff);
-                            
-                                 _that.dialogUp(); 
-                            } else {
-
-                                localhostStaff = JSON.parse(localhostStaff);
-                                    if (typeof (localhostStaff) == 'number') {
-                                        let a =localhostStaff 
-                                        localhostStaff = [];
-                                        localhostStaff.push(a);
-                                    }
-                                    let isTrue = false;
-                                    for (let item of currentArr) {
-                                        if (localhostStaff.indexOf(item) == -1) {
-                                            isTrue = true;
-                                        }
-                                    } 
-
-
-                               if (isTrue) {
-                                localhostStaff = JSON.stringify(currentArr);
-                                localStorage.setItem('staffArr', localhostStaff);
-                                 _that.dialogUp();
-                               }  
-                            }
-                        }
-                        
-                    },
-                    error: function (data) {
-                        _that.tanchu++;
-                     
-                    }
-                })
-
-
-            },
-
-            kucunyujin() {
-              
-                 _that = this;
-                 $.ajax({
-                        type: "post", //使用get方法访问后台
-                        dataType: "json", //返回json格式的数据
-                        url: getControllerUrl("RemindManage", "GetRemindCount"),
-                     success: function (data) {
-                        
-                         _that.kucunNum = data.CourseExpireCardQuatity;
-                         
-                          if (data != null) {
-                           localhostKuCun = localStorage.getItem('kucun');
-                            
-                                if (localhostKuCun == null) {
-                                     _that.kucunNum = data.CourseExpireCardQuatity;
-                                     localhostKuCun = localStorage.setItem('kucun', _that.kucunNum);
-                                      _that.dialogUp();
-                                } else {
-                                    console.log(localhostKuCun,)
-                                    if (localhostKuCun != data.CourseExpireCardQuatity) {
-                                       
-                                        _that.kucunNum = data.CourseExpireCardQuatity;
-                                        localhostKuCun = localStorage.setItem('kucun', _that.kucunNum);
-                                        _that.dialogUp();
-                                    }
-                                }
-
-                              
-                               
-                            }
-                        },
-                     error: function (e) {
-                            _that.tanchu++;
-                            //alert(e.responseText);
-                            //artdialogfail("操作失败！");
-                        }
-                 });
-
-
-
-            },
-
-            exipred() {
-
-                  $.ajax({
-                    type: "post", //使用get方法访问后台
-                    dataType: "text", //返回json格式的数据
-                    url: '/RemindManage/espiredJson1',
-                      success: function (data) {
-
-                         let obj = JSON.parse(data);
-                         if (obj.ID==0) {
-                              return
-                          }
-                          let str = obj.ExpireTime;
-                          let date1 = parseInt(str.substr(6, 13));
-                          let date2 = (new Date()).getTime();
-                          let chazhiTime = date1 - date2;
-                          let differDay = parseInt(chazhiTime / (86400 * 1000));
-                          if (differDay < 20) {
-                             let localhostDay = localStorage.getItem('differDay');
-                              if (localhostDay == null) {
-                                  _that.differDay = differDay;
-                                  localStorage.setItem('differDay', differDay);
-                                    _that.dialogUp(); 
-                              } else {
-                                  if (differDay != localhostDay) {
-                                      _that.differDay = differDay;
-                                      localStorage.setItem('differDay', differDay);
-                                        _that.dialogUp(); 
-                                  }
-                               
-                              }
-                              
-                          } 
-                          
-                      }
-                  })
-
-                
-
-
-            },
-            dialogUp() {
-              if ($(".dialogNews").css("bottom") == '-175px') {
-                    let i = 0;
-                    var Timer = setInterval(function () {
-                        i += 5;
-                        let j = -175 + i;
-                        $(".dialogNews").css("bottom", String(j) + 'px')
-                        if (j == 0) {
-                            clearInterval(Timer)
-                            return 
-                        }
-                    }, 50)
-                }
-              },
-            
-
-        }
-    })
 </script>

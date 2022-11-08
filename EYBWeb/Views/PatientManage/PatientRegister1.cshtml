@@ -1,0 +1,625 @@
+﻿@using PatientManage.Factory.IBLL;
+@using SystemManage.Factory.IBLL;
+@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.PatientEntity;
+@using EYB.ServiceEntity.SystemEntity;
+@using EYB.ServiceEntity.PersonnelEntity;
+@using HS.SupportComponents;
+@{
+    var UserID = ConvertValueHelper.ConvertIntValue(Request["UserID"]);
+
+    var Hid = ViewBag.HospitalID;//门店ID
+    ISystemManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<ISystemManageBLL>();//基础数据
+    IPatientManageBLL patientBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPatientManageBLL>();//顾客
+    IPersonnelManageBLL personbll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+    //查询员工
+    IList<HospitalUserEntity> personList = personbll.GetAllUserByHospitalID(Hid, 0);
+    personList = personList.Where(i => i.IsSys != 1).ToList();
+    //var docList = List.Where(x => x.IsDoctor > 0).ToList();
+    //查询详情
+    var patientInfo = patientBLL.GetPatienttEntityByID(Convert.ToInt64(UserID));//个人信息
+                                                                                //查询顾客详情
+    var patientDetailInfo = patientBLL.GetPatientDetailEntityByID(UserID);//个人信息
+    string[] address = new string[4];
+    //详细地址
+    if (!String.IsNullOrEmpty(patientInfo.Address))
+    {
+        address = patientInfo.Address.Split('-');
+    }
+    //获取省份
+    var SList = systemBLL.GetAllAreaList("171");
+    //var SList = AreaList.Where(x => x.ParentAreaCode == 171).ToList();
+    //基础字典查询
+    var BaseInfolist = systemBLL.GetBaseInfoTreeByType("Category", 1, ViewBag.ParentHospitalID);
+    //会员级别
+    var MemberTypelist = systemBLL.GetBaseInfoTreeByType("MemberType", 1, ViewBag.ParentHospitalID);
+    //获悉方式
+    var OriginList = systemBLL.GetBaseInfoTreeByType("Origin", 1, ViewBag.ParentHospitalID);
+
+    var hospitalList = personbll.GetHospitalListByParentID(ViewBag.ParentHospitalID);
+    //获取顾客护理图片
+    var imglist = patientBLL.GePatientImgList(new PatientImgEntity { UserID = UserID });
+
+    var userid = Request["UserID"];
+    string ImgPath = System.Configuration.ConfigurationManager.AppSettings["ImgPath"];
+    bool HasPermission1 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_查看手机号);
+}
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.queue.js"></script>
+<script type="text/javascript" src="../../Scripts/swfuploadall/swfupload.handlers.js"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/lhgdialog/lhgdialog.js?skin=idialog")"></script>
+<link href="@Url.Content("~/Content/themes/css/lightbox.min.css")?v=1.21" rel="stylesheet" type="text/css" media="screen" />
+<script src="../../Scripts/Jquery/lightbox.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(function () {
+        //头像
+        $(".upload-album").each(function () {
+            $(this).InitSWFUpload({ btntext: "上传护理照片", btnwidth: 140, btnheight: 30, single: false, water: false, thumbnail: false, filesize: "9948", sendurl: "../../Content/tools/upload_ajax.ashx", flashurl: "../../Scripts/swfupload/swfupload.swf", filetypes: "*.png;*.jpg;*.gif;" });
+        });
+    });
+</script>
+<div id="mainContentBody">
+    @Html.Partial("_PartialPatientControl")
+    <div id="mainContentRight">
+        <div class="mainContentRight_top">
+            <label class="Soliddots">
+           
+            </label>
+            顾客登记
+        </div>
+        <div class="mainContentRight_bottom" id="mainContentRight_bottomInfo" style="position: relative;">
+            <div class="mainContentRight_bottomContent">
+                <div class="accountdiv">
+                    基本资料
+                </div>
+                <form action="" method="post" class="clearfix" id="myform" style="position: relative; ">
+                    <div class="panel collapse close" defh="1">
+                        <h1>
+                            档案详情
+                        </h1>
+                        <div>
+                            <div class="accountdiv">
+                                消费分析
+                            </div>
+                            <table class="mainContentRight_table">
+                                <tr>
+                                    <td>
+                                        1、曾经做过的护理项目：<input class="validate[] text-input input200" type="text" name="DoProject" value="@patientDetailInfo.DoProject" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        2、曾经购买的家居产品：<input class="validate[] text-input input200" type="text" name="DoProduct" value="@patientDetailInfo.DoProduct" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        3、年&nbsp;均&nbsp; 消&nbsp; 费&nbsp; 金&nbsp; 额 ：<input class="validate[] text-input input200" type="text" name="XiaofeiSum" value="@patientDetailInfo.XiaofeiSum" />元
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        4、结账习惯
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Payment" value="1" @(!String.IsNullOrEmpty(patientDetailInfo.Payment) && patientDetailInfo.Payment.Contains("1") ? "checked=checked" : "") />现付
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Payment" value="2" @(!String.IsNullOrEmpty(patientDetailInfo.Payment) && patientDetailInfo.Payment.Contains("2") ? "checked=checked" : "") />月结
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Payment" value="3" @(!String.IsNullOrEmpty(patientDetailInfo.Payment) && patientDetailInfo.Payment.Contains("3") ? "checked=checked" : "") />整清
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Payment" value="4" @(!String.IsNullOrEmpty(patientDetailInfo.Payment) && patientDetailInfo.Payment.Contains("4") ? "checked=checked" : "") />拖欠
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Payment" value="5" @(!String.IsNullOrEmpty(patientDetailInfo.Payment) && patientDetailInfo.Payment.Contains("5") ? "checked=checked" : "") />赖账
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        5、消费潜力
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    A、职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业：<input class="validate[] text-input input200" type="text" name="ZhiYe" value="@patientDetailInfo.ZhiYe" />
+                                                </td>
+                                                <td>
+                                                    B、职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;务：<input class="validate[] text-input input200" type="text" name="ZhiWu" value="@patientDetailInfo.ZhiWu" />
+                                                </td>
+                                                <td>
+                                                    C、个人收入：<input class="validate[] text-input input200" type="text" name="PersonShouru" value="@patientDetailInfo.PersonShouru" />万/年
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    D、婚姻状况：<input class="validate[] text-input input200" type="text" name="HunyinZhuangkuang" value="@patientDetailInfo.HunyinZhuangkuang" />
+                                                </td>
+                                                <td>
+                                                    E、配偶职业：<input class="validate[] text-input input200" type="text" name="PeiouZhiYe" value="@patientDetailInfo.PeiouZhiYe" />
+                                                </td>
+                                                <td>
+                                                    F、家庭收入：<input class="validate[] text-input input200" type="text" name="JiatingShouru" value="@patientDetailInfo.JiatingShouru" />万/年
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    G、私&nbsp;&nbsp;家&nbsp;&nbsp;车：<input class="validate[] text-input input200" type="text" name="ShijiaChe" value="@patientDetailInfo.ShijiaChe" />
+                                                </td>
+                                                <td>
+                                                    H、住房状况：<input class="validate[] text-input input200" type="text" name="Zhufang" value="@patientDetailInfo.Zhufang" />
+                                                </td>
+                                                <td>
+                                                    I、其他收入：<input class="validate[] text-input input200" type="text" name="OtherShouru" value="@patientDetailInfo.OtherShouru" />
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        6、消费意识
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiyishi" value="1" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiyishi) && patientDetailInfo.Xiaofeiyishi.Contains("1") ? "checked=checked" : "") />消费型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiyishi" value="2" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiyishi) && patientDetailInfo.Xiaofeiyishi.Contains("2") ? "checked=checked" : "") />居家型
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        7、消费外因
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiWaiyin" value="1" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiWaiyin) && patientDetailInfo.XiaofeiWaiyin.Contains("1") ? "checked=checked" : "") />配偶支持
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiWaiyin" value="2" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiWaiyin) && patientDetailInfo.XiaofeiWaiyin.Contains("2") ? "checked=checked" : "") />配偶不支持
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiWaiyin" value="3" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiWaiyin) && patientDetailInfo.XiaofeiWaiyin.Contains("3") ? "checked=checked" : "") />配偶反对
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        8、消费倾向
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="10" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("10") ? "checked=checked" : "") />美容
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="11" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("11") ? "checked=checked" : "") />整形
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="12" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("12") ? "checked=checked" : "") />美体
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="13" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("13") ? "checked=checked" : "") />养生
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="14" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("14") ? "checked=checked" : "") />健康
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="15" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("15") ? "checked=checked" : "") />抗衰
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="16" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("16") ? "checked=checked" : "") />健身
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="17" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("17") ? "checked=checked" : "") />美发
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="18" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("18") ? "checked=checked" : "") />美甲
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="19" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("19") ? "checked=checked" : "") />时装
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="20" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("20") ? "checked=checked" : "") />配饰
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="21" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("21") ? "checked=checked" : "") />旅游
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="22" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("22") ? "checked=checked" : "") />饮食
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="23" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("23") ? "checked=checked" : "") />娱乐
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="24" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("24") ? "checked=checked" : "") />珠宝
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="25" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("25") ? "checked=checked" : "") />收藏品
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xiaofeiqingxiang" value="26" @(!String.IsNullOrEmpty(patientDetailInfo.Xiaofeiqingxiang) && patientDetailInfo.Xiaofeiqingxiang.Contains("26") ? "checked=checked" : "") />奢侈品牌
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        9、消费类型
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="10" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("10") ? "checked=checked" : "") />时尚
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="11" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("11") ? "checked=checked" : "") />前卫
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="12" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("12") ? "checked=checked" : "") />保守
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="13" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("13") ? "checked=checked" : "") />阔绰
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="14" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("14") ? "checked=checked" : "") />大方
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="15" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("15") ? "checked=checked" : "") />小气
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="16" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("16") ? "checked=checked" : "") />冲动型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="17" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("17") ? "checked=checked" : "") />理智型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="18" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("18") ? "checked=checked" : "") />虚荣型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="19" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("19") ? "checked=checked" : "") />实惠型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="20" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("20") ? "checked=checked" : "") />从众型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="21" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("21") ? "checked=checked" : "") />有主见
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="22" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("22") ? "checked=checked" : "") />没主见
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="23" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("23") ? "checked=checked" : "") />节俭型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="24" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("24") ? "checked=checked" : "") />透支型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="25" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("25") ? "checked=checked" : "") />挑剔型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="26" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("26") ? "checked=checked" : "") />张扬型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="26" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("27") ? "checked=checked" : "") />平和型
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="XiaofeiLeixing" value="26" @(!String.IsNullOrEmpty(patientDetailInfo.XiaofeiLeixing) && patientDetailInfo.XiaofeiLeixing.Contains("28") ? "checked=checked" : "") />低调型
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="accountdiv">
+                                性格分析
+                            </div>
+                            <table class="mainContentRight_table">
+                                <tr>
+                                    <td>
+                                        1、血型：<input class="validate[] text-input input200" type="text" name="Xuexing" value="@patientDetailInfo.Xuexing" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        2、星座：<input class="validate[] text-input input200" type="text" name="Xingzuo" value="@patientDetailInfo.Xingzuo" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        3、属相：<input class="validate[] text-input input200" type="text" name="Shuxiang" value="@patientDetailInfo.Shuxiang" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        4、性格
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="10" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("10") ? "checked=checked" : "") />内向
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="11" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("11") ? "checked=checked" : "") />开朗
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="12" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("12") ? "checked=checked" : "") />外向
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="13" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("13") ? "checked=checked" : "") />不善谈
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="14" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("14") ? "checked=checked" : "") />健谈
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="15" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("15") ? "checked=checked" : "") />暴躁
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="16" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("16") ? "checked=checked" : "") />怪癖
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="17" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("17") ? "checked=checked" : "") />急性子
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="18" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("18") ? "checked=checked" : "") />慢性子
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="19" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("19") ? "checked=checked" : "") />温和
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="20" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("20") ? "checked=checked" : "") />爱发火
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="21" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("21") ? "checked=checked" : "") />豪放
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="22" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("22") ? "checked=checked" : "") />有洁癖
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="23" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("23") ? "checked=checked" : "") />敏感
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="24" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("24") ? "checked=checked" : "") />多疑
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="25" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("25") ? "checked=checked" : "") />自信
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="26" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("26") ? "checked=checked" : "") />优越感
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="27" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("27") ? "checked=checked" : "") />平和
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="28" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("28") ? "checked=checked" : "") />尖锐
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="29" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("29") ? "checked=checked" : "") />挑剔
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="30" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("30") ? "checked=checked" : "") />忧郁
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Xingge" value="31" @(!String.IsNullOrEmpty(patientDetailInfo.Xingge) && patientDetailInfo.Xingge.Contains("31") ? "checked=checked" : "") />乐观
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="accountdiv">
+                                护理习惯
+                            </div>
+                            <table class="mainContentRight_table">
+                                <tr>
+                                    <td>
+                                        1、习惯到店时间：<input class="validate[] text-input input200" type="text" name="XiGuanDaoDianTime" value="@patientDetailInfo.XiGuanDaoDianTime" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        2、习&nbsp;惯&nbsp;到&nbsp;店&nbsp;日：<input class="validate[] text-input input200" type="text" name="XiGuanDaoDianDay" value="@patientDetailInfo.XiGuanDaoDianDay" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        3、月&nbsp;到&nbsp;店&nbsp;次&nbsp;数：<input class="validate[] text-input input200" type="text" name="YueDaoDianTimes" value="@patientDetailInfo.YueDaoDianTimes" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        4、护理习惯
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="10" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("10") ? "checked=checked" : "") />畏寒
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="11" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("11") ? "checked=checked" : "") />怕热
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="12" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("12") ? "checked=checked" : "") />怕喧闹
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="13" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("13") ? "checked=checked" : "") />喜欢睡觉
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="14" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("14") ? "checked=checked" : "") />喜欢聊天
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="15" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("15") ? "checked=checked" : "") />喜欢力度大
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="16" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("16") ? "checked=checked" : "") />承受力差
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="17" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("17") ? "checked=checked" : "") />怕痒
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="18" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("18") ? "checked=checked" : "") />预约
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="19" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("19") ? "checked=checked" : "") />守时
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Hulixiguan" value="20" @(!String.IsNullOrEmpty(patientDetailInfo.Hulixiguan) && patientDetailInfo.Hulixiguan.Contains("20") ? "checked=checked" : "") />按时到店
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="accountdiv">
+                                生活习惯
+                            </div>
+                            <table class="mainContentRight_table">
+                                <tr>
+                                    <td>
+                                        1、生理期：<input class="validate[] text-input input200" type="text" name="Shengliqi" value="@patientDetailInfo.Shengliqi" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        2、睡眠习惯
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Shuimianxiguan" value="1" @(!String.IsNullOrEmpty(patientDetailInfo.Shuimianxiguan) && patientDetailInfo.Shuimianxiguan.Contains("1") ? "checked=checked" : "") />早睡早起
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Shuimianxiguan" value="2" @(!String.IsNullOrEmpty(patientDetailInfo.Shuimianxiguan) && patientDetailInfo.Shuimianxiguan.Contains("2") ? "checked=checked" : "") />晚睡晚起
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        3、运动习惯
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yundongxiguan" value="1" @(!String.IsNullOrEmpty(patientDetailInfo.Yundongxiguan) && patientDetailInfo.Yundongxiguan.Contains("1") ? "checked=checked" : "") />经常运动
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yundongxiguan" value="2" @(!String.IsNullOrEmpty(patientDetailInfo.Yundongxiguan) && patientDetailInfo.Yundongxiguan.Contains("2") ? "checked=checked" : "") />偶尔运动
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yundongxiguan" value="3" @(!String.IsNullOrEmpty(patientDetailInfo.Yundongxiguan) && patientDetailInfo.Yundongxiguan.Contains("3") ? "checked=checked" : "") />从不运动
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        4、饮食习惯
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="10" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("10") ? "checked=checked" : "") />喜食辛辣
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="11" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("11") ? "checked=checked" : "") />经常宵夜
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="12" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("12") ? "checked=checked" : "") />喜欢蔬菜
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="13" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("13") ? "checked=checked" : "") />喜吃荤腥
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="14" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("14") ? "checked=checked" : "") />多吃水果
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="15" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("15") ? "checked=checked" : "") />喜吃甜品
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="16" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("16") ? "checked=checked" : "") />喜吃零食
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="17" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("17") ? "checked=checked" : "") />喜吃面食
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="18" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("18") ? "checked=checked" : "") />海鲜过敏
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="19" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("19") ? "checked=checked" : "") />饮水充足
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="20" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("20") ? "checked=checked" : "") />很少喝水
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="21" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("21") ? "checked=checked" : "") />节食
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="22" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("22") ? "checked=checked" : "") />暴饮暴食
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="23" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("23") ? "checked=checked" : "") />不吃早餐
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="24" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("24") ? "checked=checked" : "") />喜零食
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="25" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("25") ? "checked=checked" : "") />经常饮酒
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="26" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("26") ? "checked=checked" : "") />口味真
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Yinshixiguan" value="27" @(!String.IsNullOrEmpty(patientDetailInfo.Yinshixiguan) && patientDetailInfo.Yinshixiguan.Contains("27") ? "checked=checked" : "") />三餐定时定量
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        5、其他
+                                    </td>
+                                </tr>
+                                <tr class="bgcolor">
+                                    <td>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="10" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("10") ? "checked=checked" : "") />接送子女上学
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="11" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("11") ? "checked=checked" : "") />子女已工作
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="12" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("12") ? "checked=checked" : "") />子女已婚
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="13" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("13") ? "checked=checked" : "") />经常出差
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="14" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("14") ? "checked=checked" : "") />夫妻两地分居
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="15" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("15") ? "checked=checked" : "") />夫妻感情
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="16" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("16") ? "checked=checked" : "") />夫妻感情不好
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="17" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("17") ? "checked=checked" : "") />家庭和睦
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="18" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("18") ? "checked=checked" : "") />工作繁忙
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="19" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("19") ? "checked=checked" : "") />工作压力
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="20" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("20") ? "checked=checked" : "") />工作愉快
+                                        &nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="21" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("21") ? "checked=checked" : "") />工作不开心
+                                        &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="Othershenghuo" value="22" @(!String.IsNullOrEmpty(patientDetailInfo.Othershenghuo) && patientDetailInfo.Othershenghuo.Contains("22") ? "checked=checked" : "") />人际关系广泛
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var kk = "11";
+    var uid = '@userid';
+    jQuery(document).ready(function () {
+
+        //默认加载有权限的
+        //for (var i = 0; i < TheArray.length; i++) {
+        //    if (TheArray[i][0] == "True") {
+        //        if ("/PatientManage/PatientRegister" == TheArray[i][1]) {
+        //            return;
+        //        } else {
+        //            self.location = TheArray[i][1];
+        //            return;
+        //        }
+        //    }
+        //}
+
+        jQuery('#myform').validationEngine('attach', {
+            promptPosition: "topLeft",
+            relative: true,
+            showOneMessage: true,
+            overflownDIV: "#mainContentRight_bottomInfo",
+            onValidationComplete: function (form, status) {
+                if (status) {
+                    saveAs();
+                }
+            }
+        });
+        $("#SelProvince option[id='@ViewBag.ProvinceCode']").attr("selected", true);
+        //获取地区列表
+        GetCity();
+
+
+    });
+    //选择顾客赋值
+    function InFoDate(obj) {
+        $("#JieshaoUserID").val(obj.split("|")[0]);
+        $("#txtjieshaoUsername").val(obj.split("|")[1]);
+    }
+    function SetArchivesType(UserID) {
+        art.dialog.open("/PatientManage/PatientArchivesType?UserID=" + UserID, {
+            title: "设置顾客类型", width: 560, height: 470, close: function () {
+                var ArchivesType = art.dialog.data('ArchivesType');
+                $("#txtArchivesType").val(ArchivesType);
+            }
+        });
+    }
+    function saveAs() {
+        //alert("1111");
+        
+        if ($("#Calendar").prop("checked") == true) {
+            $("#Calendar").val("农历");
+        } else {
+            $("#Calendar").val("公历");
+        }
+        //var Birthday = $("Birthday").val;
+        //if (Birthday == "" || Birthday == "0") {
+
+        //}
+        var txtArchivesType = $("#txtArchivesType").val();
+        var Category = $("#Category").val();
+        // console.log("顾客档案的顾客类型设置为必填项",txtArchivesType);
+        if (txtArchivesType=="0") {
+               alert("请选择顾客类型"); return;
+        }
+        if (txtArchivesType == "正式会员" && Category == "0") {
+            alert("请选择会员级别"); return;
+        }
+        if (txtArchivesType != "正式会员" && Category != "0") {
+            alert("请勿选择会员级别"); return;
+        }
+       
+        $("#btnsave").attr("disabled", "disabled");
+        $.ajax({
+            cache: true,
+            type: "POST",
+            url: '@Url.Content("~/PatientManage/AddUpPatient")',
+            data: $('#myform').serialize(), // 你的formid
+            asyanc: false,
+            error: function (request) {
+                alert("保存出错");
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("保存成功！");
+                    if (uid > 0) {
+                        history.go(-1);
+                    } else {
+                        artdialog("保存成功！", "@Url.Content("~/PatientManage/PatientInfoManage")");
+                    }
+                    if ("@UserID" == "0") {
+                        OperateCard(data);
+                    }
+                } else {
+                    artdialogfail("保存失败");
+                }
+            }
+        });
+        $("#btnsave").attr("disabled", "");
+    }
+        //图片上传
+    //$("#Calendar").click(function () {
+        
+    //    if ($("#Calendar").prop("checked") == true) {
+    //        alert("1");
+    //        $("#Calendar").val("农历");
+    //    } else {
+    //        alert(kk);
+    //        $("#Calendar").val("公历");
+    //    }
+    //});
+    //图片上传
+    $("#btnupload").click(function () {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Content("~/PatientManage/UploadPatientImg")' + "?UserID=@UserID",
+            data: $('#submitfomimg').serialize(), // 你的formid
+            asyanc: false,
+            error: function (request) {
+                alert("保存出错" + request.responseText);
+            },
+            success: function (data) {
+                if (data > 0) {
+                    artdialog("保存成功！");
+                } else {
+                    artdialogfail("保存失败！");
+                }
+            }
+        });
+    });
+    $("h1").toggle(function () { $(".expandable").click(); }, function () { $(".collapsable").click(); });
+    //办卡
+    function OperateCard(UserID) {
+        art.dialog.open("/PatientManage/MakeCardNoSet?UserID=" + UserID, { title: "办卡", width: 410, height: 300 })
+    }
+    //查询市
+    function GetCity() {
+
+        var obj = $("#SelProvince").find("option:selected").attr("id");
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data: { areacode: obj },
+            async: false,
+            success: function (data) {
+                $("#SelCity").empty();
+                var areacode = "";
+                $(data).each(function (i, n) {
+                    $("#SelCity").append("<option id=" + n.AreaCode + " value=" + n.AreaName + ">" + n.AreaName + "</option>");
+                });
+                $("#SelCity option[value='@address[1]']").attr("selected", true)
+
+                areacode = $("#SelCity").find("option:selected").attr("id");
+                GetAreaByCode(areacode);
+
+                $("#SelArea option[value='@address[2]']").attr("selected", true)
+            }
+
+        });
+    }
+    //获取县区
+    function GetArea() {
+        var obj = $("#SelCity").find("option:selected").attr("id");
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data: { areacode: obj },
+            async: false,
+            success: function (data) {
+                $("#SelArea").empty();
+                $("#SelArea").append("<option value=''>请选择县区</option>");
+                $(data).each(function (i, n) {
+                    $("#SelArea").append("<option id=" + n.AreaCode + " value=" + n.AreaName + ">" + n.AreaName + "</option>");
+                })
+            }
+
+        });
+    }
+
+    //根据编号查询
+    function GetAreaByCode(code) {
+        $.ajax({
+            type: "post",
+            dataType: "json",
+            url: "@Url.Content("~/SystemManagement/GetAllAreaListNo")",
+            data: { areacode: code },
+            async: false,
+            success: function (data) {
+                $("#SelArea").empty();
+                $("#SelArea").append("<option value=''>请选择县区</option>");
+                $(data).each(function (i, n) {
+                    $("#SelArea").append("<option  id=" + n.AreaCode + " value=" + n.AreaName + ">" + n.AreaName + "</option>");
+
+                })
+            }
+
+        });
+    }
+    // 所有复选框 单选
+    //     $("input:checkbox").click(function(){
+    //        //$(this).attr("checked",true);
+    //        if(!$(this).hasClass("Diseases"))
+    //        {
+    //        $(this).siblings("input[type=checkbox]").attr("checked",false);
+    //        }
+    //     })
+
+</script>

@@ -14,13 +14,14 @@
     bool result10 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_DataClear);
     bool result12 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.CenterManage_DataImport);
     bool result13 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_salaryStructure);
+    bool result14 = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.SystemManager_Baojia);
 
 }
 <style></style>
 
 <div id="mainContentLeft">
     <div id="mainContentLeft_top">
-       <span>系统设置</span>
+        <span>系统设置</span>
     </div>
     @* <div id="mainContentLeft_center">
             <ul>
@@ -30,8 +31,50 @@
         </div>*@
     <div id="mainContentLeft_bottom">
         <ul>
-            @if (result1)
+            @if (result14)
             {
+
+                <li redirect="@Url.Content("~/BaseInfo/PatientRegister1")" onclick='CheckRight(this,"@result14")'>
+                    <a>
+                        <span class="list_icon"></span>&nbsp;&nbsp;九泰报价
+
+                    </a>
+                </li>
+                <li redirect="@Url.Content("~/BaseInfo/TheProject1")" onclick='CheckRight(this,"@result14")'>
+                    <a>
+                        <span class="list_icon"></span>&nbsp;&nbsp;
+                        医学
+
+                    </a>
+                </li>
+                <li redirect="@Url.Content("~/BaseInfo/TheProject2")" onclick='CheckRight(this,"@result14")'>
+                    <a>
+                        <span class="list_icon"></span>&nbsp;&nbsp;
+                        数据统计
+
+                    </a>
+                </li>
+                <li redirect="@Url.Content("~/BaseInfo/TheProject3")" onclick='CheckRight(this,"@result14")'>
+                    <a>
+                        <span class="list_icon"></span>&nbsp;&nbsp;
+                        CRA
+
+                    </a>
+                </li>
+                <li redirect="@Url.Content("~/BaseInfo/TheProject4")" onclick='CheckRight(this,"@result14")'>
+                    <a>
+                        <span class="list_icon"></span>&nbsp;&nbsp;
+                        其他
+
+                    </a>
+                </li>
+                <li redirect="@Url.Content("~/BaseInfo/TheProject5")" onclick='CheckRight(this,"@result14")'>
+                    <a>
+                        <span class="list_icon"></span>&nbsp;&nbsp;
+                        眼球项目上传
+
+                    </a>
+                </li>
                 <li redirect="@Url.Content("~/BaseInfo/TheProject")" onclick='CheckRight(this,"@result1")'>
                     <a>
                         <span class="list_icon"></span>&nbsp;&nbsp;
@@ -118,7 +161,7 @@
                     </a>
                 </li>
             }
-            
+
             @if (result9)
             {
                 <li redirect="@Url.Content("~/BaseInfo/SysUserManage")" onclick='CheckRight(this,"@result9")'>
@@ -129,14 +172,14 @@
                 </li>
             }
             @*@if (result9)
-            {
-                <li redirect="@Url.Content("~/BaseInfo/CompetenceManage")" onclick='CheckRight(this,"@result9")'>
-                    <a style="cursor: pointer; ">
-                        <span class="list_icon">
-                        </span>&nbsp;&nbsp;权限组管理
-                    </a>
-                </li>
-            }*@
+                {
+                    <li redirect="@Url.Content("~/BaseInfo/CompetenceManage")" onclick='CheckRight(this,"@result9")'>
+                        <a style="cursor: pointer; ">
+                            <span class="list_icon">
+                            </span>&nbsp;&nbsp;权限组管理
+                        </a>
+                    </li>
+                }*@
 
             @if (result12)
             {
@@ -154,11 +197,11 @@
                 </a>
             </li>
             <li>
-            <a onclick="JumpUrl('@Url.Content("~/BaseInfo/PersonnelAccount")?UserID=@ViewBag.UserID')">
-                <span class="list_icon"></span>&nbsp;&nbsp;系统安全
+                <a onclick="JumpUrl('@Url.Content("~/BaseInfo/PersonnelAccount")?UserID=@ViewBag.UserID')">
+                    <span class="list_icon"></span>&nbsp;&nbsp;系统安全
 
-            </a>
-        </li>
+                </a>
+            </li>
 
             @if (result13)
             {

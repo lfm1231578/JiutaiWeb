@@ -1,12 +1,12 @@
 ﻿/* 文 件 名：LoginPage.js
 * 功    能：登录页面控制脚本
-* 作    者：匡世钢
 * 备    注：
 * 创建时间：
 */
 
 var LoginURL = getControllerUrl("Account", "Login");
-var IndexURL = getControllerUrl("Home", "Index");
+var IndexURL = getControllerUrl("BaseInfo", "TheProject1");
+//var IndexURL = getControllerUrl("Home", "Index");
 var CheckURL = getControllerUrl("Account", "CheckCode");
 //var usbKeyUrl = getControllerUrl("Account", "ValidateUSBKeyPage");
 
@@ -53,7 +53,6 @@ function checkLogin() {
 
 //登录
 function login() {
-
     if (!checkLogin()) {
         alert("请输入完整的登录信息!");
         return;
