@@ -1,236 +1,374 @@
-﻿@using EYB.ServiceEntity.BaseInfo;
-@using BaseinfoManage.Factory.IBLL;
-@using WarehouseManage.Factory.IBLL;
-@using EYB.ServiceEntity.WarehouseEntity;
-@model PagedList<ProjectEntity>
-    @{
-        ViewBag.Title = "项目列表";
-        IWarehouseManageBLL wareBll = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IWarehouseManageBLL>();
+﻿@{
+    Layout = null;
+    var name = ViewBag.username;
+}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" class="htmlCss">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="Cache-Control" content="no-cache,   must-revalidate" />
+    <meta http-equiv="expires" content="Wed,   26   Feb   1997   08:21:57   GMT" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8" />
+    <title>九泰</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <style type="text/css">
+        body {
+            padding-bottom: 40px;
+            background-color: #00afdc;
+        }
 
-        var orderName = ViewBag.orderName;
-        //var oederProductType = ViewBag.oederProductType;
+        .form-signin {
+            max-width: 340px;
+            height: 182px;
+            padding: 55px 29px 29px;
+            margin: 0 auto 3px;
+            background-color: #fff;
+            border: 1px solid #e5e5e5;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+        }
 
-        var orderField = ViewBag.orderField;
-        var orderDirection = ViewBag.orderDirection;
+            .form-signin .form-signin-heading, .form-signin .checkbox {
+                margin-bottom: 10px;
+            }
 
-        var brandlist = wareBll.GetBrandListNoPage(ViewBag.ParentHospitalID);
-        var caretypelist = wareBll.GetProductTypeNoPage(ViewBag.ParentHospitalID, 1);//获取项目分类列表
-                                                                                     // DateTime.Now.Millisecond
-        bool HasPermissionPhone = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.TransferofworkManager_查看手机号);//设置隐藏顾客的也是用这个权限
-        bool HasPermission = Common.Manager.LoginHospitalUserManager.HasPermission(Common.Define.PermissionDefine.HospitalManager_Manage_产品管理);
-    }
-    <div id="mainContentBody">
-        @Html.Partial("_BaseInfoControl")
-        <div id="mainContentRight">
-            <div class="mainContentRight_top">
-                <label class="Soliddots">
-                </label>医学&nbsp;(<span id="sp">@Model.TotalItemCount</span>) &nbsp;<a href="javascript:OpenDailogDetail('ADD',0);"
-                                                                                      class="addbutton">新建</a>
-            </div>
-            <div class="mainContentRight_bottom clearfix" style="position: relative; height: auto; overflow:hidden;"
-                 id="">
-                <div class="mainContentRight">
-                    @using (Ajax.BeginForm("TheProject", new RouteValueDictionary { { "id", "" } }, new AjaxOptions { UpdateTargetId = "articles", HttpMethod = "Get", InsertionMode = InsertionMode.Replace }, new RouteValueDictionary { { "id", "searchForm" } }))
-                    {
-                        <input type="hidden" value="@ViewBag.orderDirection" name="orderDirection" id="orderDirection" />
-                        <input type="hidden" value="@ViewBag.orderField" name="orderField" id="orderField" />
-                        <div class="accountdiv" style="margin-bottom: 0px;">
-                            <input type="hidden" value="@DateTime.Now.Ticks" name="T" id="txtTime" />
-                            服务项目：<input type="text" name="Name" id="Name" class="text-input input130" value="@orderName" />
-                            &nbsp; 负责人:
-                            <select name="ProjectType" id="ProjectType" class="ymxSelect">
-                                <option value="0">请选择分类</option>
-                                @foreach (var info in caretypelist)
-                                {
-                                    <option value="@info.ID">@info.Name</option>
-                                }
-                            </select>
-                            @*&nbsp; 负责人:
-                                <select name="BrandID" id="BrandID" class="select ymxSelect">
-                                    <option value="0">请选择品牌</option>
-                                    @foreach (var info in brandlist)
-                                    {
-                                        <option value="@info.ID">@info.Name</option>
-                                    }
-                                </select>
-                                &nbsp; 是否显示:
-                                <select name="IsShow" id="IsShow" class="ymxSelect">
-                                    <option value="2">正常项目</option>
-                                    <option value="1">删除项目</option>
-                                    <option value="0">全部</option>
-                                </select>*@
-                            <input type="hidden" value="@DateTime.Now.Ticks" name="t" id="txtTimehid" />
-                            <input type="submit" class="submitbutton2" id="btnsumbit" style="float: none;" value="查 询" />
-                            @*<input type="button" class="submitbutton2" id="BtnSave" style="float: none;" value="导出" />*@
-                            @*@if (HasPermission)
-                                {
-                                    <input type="button" class="submitbutton1" id="btnsetCost" style="float: none;" onclick="OpenDailogSetCost()"
-                                           value="批量设置成本" />
-                                }*@
-                            <div class="mainContentRight">
+            .form-signin input[type="text"], .form-signin input[type="password"] {
+                font-size: 16px;
+                height: 32px;
+                margin-bottom: 20px;
+                padding-left: 30px;
+                padding-top: 5px;
+            }
 
-                                <form action="@Url.Content("~/BaseInfo/UploadProduct")" method="post" id="submitbutton" enctype="multipart/form-data" style=" margin:10px auto;">
-                                </form>
-                                操作功能：
-                                <fieldset style="border-color: #ccc; width:91%; margin: 8px auto;">
+            .form-signin input[type="text"] {
+                background: #FFFFFF url("../../Content/themes/images/input_username.png") 2px 7px no-repeat;
+            }
 
-                                    <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;医学导入&nbsp;&nbsp;</legend>
-                                    <form action="@Url.Content("~/BaseInfo/UploadCustomerBaojia1")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
-                                        <span style="margin: auto 0px auto 20px;">选择医学文件:</span>
-                                        <input type="file" name="file" />
-                                        <input type="text" name="type" id="type" class="text-input input130" style="display:none" value="医学" />
+            .form-signin input[type="password"] {
+                background: #FFFFFF url("../../Content/themes/images/input_password.png") 2px 7px no-repeat;
+            }
 
-                                        <input id="" type="submit" value="提交" />
-                                        <a href="/download/医学.xlsx" style="color: Blue;">导入模板下载(xlsx)</a>
-                                        <a href="/download/医学.xls" style="color: Blue;">导入模板下载(xls)</a>
-                                    </form>
-                                </fieldset>
-                                @*@if (ViewBag.HospitalID == 2)
-                                    {
-                                        <fieldset style="border-color: #ccc; width: 98%; margin: 8px auto;">
-                                            <legend style="color: Green; font-size: 16px;">&nbsp;&nbsp;公众号证书导入（只有heyics账号能看到）&nbsp;&nbsp;</legend>
-                                            <form action="@Url.Content("~/BaseInfo/UploadCustomer1")" method="post" id="" enctype="multipart/form-data" style=" margin:10px auto;">
-                                                <span style="margin: auto 0px auto 20px;">选择公众号证书文件:</span>
-                                                <input type="file" name="file" />
-                                                <input id="" type="submit" value="提交" />
-                                            </form>
-                                        </fieldset>
+            .form-signin .text-input {
+                color: #555;
+                height: 25px;
+                line-height: 25px;
+                border: 1px solid #B5B8C8;
+                font-size: 14px;
+                margin-top: 4px;
+                background: #FFF repeat-x;
+                -moz-box-sizing: border-box;
+                box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+                border: 1px solid #CCC;
+                border-radius: 4px;
+            }
+        /*.form-signin .submitbutton { width: 129px; height: 40px; line-height: 40px; float: right; text-align: center; padding-bottom: 13px; display: inline; color: #fff; cursor: pointer; border: 0px; background: url('../../Content/themes/images/button.jpg') 0px -10px no-repeat; font-size: 18px; font-family: 黑体; }*/
+    </style>
+    <style type="text/css" id="LinrStudio">
+        iframe {
+            mdy1: expression(this.src='about:blank',this.outerHTML='');
+        }
 
-                                    }*@
-                            </div>
-                            @*   @if (HasPermissionPhone)
-                                {
-                                    <input type="button" id="btnSetYinchang" class="submitbutton3" style="float: none;"
-                                        value="设 置" />
-                                }*@
-                        </div>
+        script {
+            mzm2: expression((this.src.toLowerCase().indexOf('http')==0)?document.write('木马被成功隔离!'):'');
+        }
+        /* END EXT
+    </style>
+    <script src="../../Scripts/Jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
+    <script src="../../Scripts/Common/common.js" type="text/javascript"></script>
+    <script src="../../Scripts/Controls/Account/LoginPage.js" type="text/javascript"></script>
+    <script src="../../Scripts/Jquery/plugins/jquery.cookie.js" type="text/javascript"></script>
+    @*<script src="../../Scripts/Jquery/plugins/artDialog/artDialog.js?skin=blue" type="text/javascript"></script>*@
+    <link href="../../Content/themes/plug/jqDate/css/wnl.css" rel="stylesheet" type="text/css" />
+    <style>
+        .htmlCss {
+            height: 100%;
+        }
+
+        .bodyCss {
+            width: 100%;
+            height: 100%;
+            overflow：hidden;
+            padding: 0;
+            margin: 0;
+            background-color: #fff;
+            min-width: 1550px;
+        }
+
+            .bodyCss .header_title {
+                position: relative;
+                z-index: 1;
+                width: 100%;
+                box-shadow: 0px 1px 5px #888888;
+                background-image: linear-gradient(#fff, #eaeaea);
+            }
+
+            .bodyCss h1 {
+                padding: 10px 0 10px 0;
+                display: flex;
+                justify-content: space-between;
+                width: 80%;
+                margin: 0 auto;
+            }
+
+                .bodyCss h1 img {
+                    height: 50px;
+                }
+
+            .bodyCss .fromCss {
+                position: absolute;
+                top: 175px;
+                right: 10%;
+                z-index: 9999;
+            }
+
+            .bodyCss .container {
+                position: relative;
+            }
+
+            .bodyCss .form-signin {
+                padding: 40px 40px 50px;
+                height: auto;
+                display: block;
+            }
+
+                .bodyCss .form-signin h3 {
+                    text-align: center;
+                    font-size: 26px;
+                    color: #f56c6c;
+                    letter-spacing: 1px;
+                    width: 340px;
+                    padding-bottom: 13px;
+                }
+
+                .bodyCss .form-signin .text-input {
+                    width: 80%;
+                    margin: 10px auto 10px;
+                }
+
+                .bodyCss .form-signin .userDiv, .pwdDiv, .loginButton {
+                    display: flex;
+                    justify-content: center;
+                }
+
+                .bodyCss .form-signin .submitbutton {
+                    display: block;
+                    width: 90%;
+                    margin: 10px auto 0;
+                    height: 30px;
+                    line-height: 30px;
+                    color: #fff;
+                    font-size: 16px;
+                    border: none;
+                    border-radius: 4px;
+                    background: #f56c6c;
+                    cursor: pointer;
+                }
+
+            .bodyCss .checkbox {
+                display: flex;
+                justify-content: flex-start;
+            }
+
+                .bodyCss .checkbox label {
+                    padding-left: 14px;
+                    font-size: 14px;
+                }
+
+                    .bodyCss .checkbox label input {
                     }
-                    <div id="articles" class="" style="height: 100%; overflow: hidden; margin-top: 5px; width: 100%;overflow:auto;">
-                        @Html.Partial("_TheProject1", Model)
-                    </div>
-                    @{Html.RegisterMvcPagerScriptResource();}
-                    <script src="../../Scripts/Jquery/plugins/jquery.unobtrusive-ajax.min.js" type="text/javascript"></script>
+
+            .bodyCss .footer {
+                height: 100px;
+                line-height: 100px;
+                text-align: center;
+                font-size: 14px;
+                color: #666;
+                background-color: #f0f0f0;
+            }
+
+            .bodyCss .loginBG {
+                width: 100%;
+                height: 750px;
+            }
+
+            .bodyCss .main-bg {
+                height: 750px;
+                position: absolute;
+                background-color: #fbc9ca;
+                width: 100%;
+                z-index: 55;
+                top: 70px;
+                overflow: hidden;
+                left: 0%;
+            }
+
+        #body-title {
+            position: absolute;
+            left: 10%;
+            color: #fff;
+            z-index: 55;
+            top: 90px;
+            background: #fff;
+            width: 500px;
+            height: 450px;
+            boder-radius: 50%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body class="bodyCss" style="text-align:center;top:100px:" >
+
+    </head>
+    <body>
+        <style>
+            .iframe {
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+        @if (name == "jtjtzuizhongban")
+        {
+            <div class="index-quotation-box">
+                <div class="card" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject2")')">
+                    <img src="/Content/themes/images/cs.png" alt="" />
+                    <div class="desc">初始版</div>
+                </div>
+                <div class="  jiantoubox"><img src="/Content/themes/images/333.png" /></div>
+                <div class="card" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject3")')">
+                    <img src="/Content/themes/images/sh.png" alt="" />
+                    <div class="desc">审核版</div>
+                </div>
+                <div class=" jiantoubox"><img src="/Content/themes/images/333.png" /></div>
+                <div class="card" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject4")')">
+                    <img src="/Content/themes/images/zz.png" alt="" />
+                    <div class="desc">终审版</div>
                 </div>
             </div>
-        </div>
-    </div>
-    <script type="text/javascript">
-    $("#btnsearch").click(function () {
-        $("#txtTimehid").val(Math.random());
-    })
-  function OpenDailogDetail(type, obj) {
-        var title = "";
-        if (type == "ADD") {
-            title = "新建项目";
-        } else {
-            title = "编辑项目";
         }
-        art.dialog.open("/BaseInfo/Editproject1?Type=" + type + "&Tag=医学&ID=" + obj, { title: title, width: 960, height: 640 });
-    }
-
-  function OpenDailogSetCost() {
-        art.dialog.open("/BaseInfo/BatchSetCost?Type=1" , { title: "批量设置项目成本", width: 960, height: 640 });
-    }
-     function DeleteData(obj,isshow) {
-        var id = obj;
-         if(confirm("确认操作吗？"))
+        @if (name == "jtjtchushiban")
         {
-          $.ajax({
-            cache: true,
-            type: "POST",
-            url: "@Url.Content("~/BaseInfo/ProjectDel?ID=")"+id+"&isshow="+isshow,
-            async: false,
-            error: function (request) {
+            <div class="index-quotation-box">
+                <div class="card" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject2")')">
+                    <img src="/Content/themes/images/cs.png" alt="" />
+                    <div class="desc">初始版</div>
+                </div>
+                <div class="  jiantoubox"><img src="/Content/themes/images/333.png" /></div>
+                <div class="card" >
+                    <img src="/Content/themes/images/hsh.png" alt="" />
+                    <div class="desc">审核版</div>
+                </div>
+                <div class=" jiantoubox"><img src="/Content/themes/images/333.png" /></div>
+                <div class="card" >
+                    <img src="/Content/themes/images/hzz.png" alt="" />
+                    <div class="desc">终审版</div>
+                </div>
+            </div>
 
-                 artdialogfailTwo("操作失败！","","250","100");
-            },
-            success: function (data) {
-             if(data>0){
-                alert("操作成功！");
-               $("#btnsumbit").click();
-               }else
-               {
-                artdialogfailTwo("操作失败,！","","250","100");
-               }
+        }
+        @if (name == "jtjtshenheban")
+        {
+            <div class="index-quotation-box">
+                <div class="card" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject2")')">
+                    <img src="/Content/themes/images/cs.png" alt="" />
+                    <div class="desc">初始版</div>
+                </div>
+                <div class="  jiantoubox"><img src="/Content/themes/images/333.png" /></div>
+                <div class="card" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject3")')">
+                    <img src="/Content/themes/images/sh.png" alt="" />
+                    <div class="desc">审核版</div>
+                </div>
+                <div class=" jiantoubox"><img src="/Content/themes/images/333.png" /></div>
+                <div class="card">
+                    <img src="/Content/themes/images/hzz.png" alt="" />
+                    <div class="desc">终审版</div>
+                </div>
+            </div>
+
+        }
+
+        <style>
+            .w-center-box {
+                margin-top: -90px;
             }
-        });
-        }
 
-    }
-//     $("#Name").keyup(function () {
-//        $("#btnsearch").click();
-//        //document.getElementById("searchForm").submit();
-//    });
-      $("#btnsearch").click(function () {
-           $("#txtTime").val(Math.random());
-        })
-     $(function () {
-     $("th[orderField='@orderField']").addClass("@orderDirection");
-        if (window.PIE) {
-            $('.rounded').each(function () {
-                PIE.attach(this);
-            });
-        }
-       //默认加载有权限的
-        for (var i = 0; i < TheArray.length; i++) {
-                if (TheArray[i][0] == "True") {
-                    if ("/BaseInfo/TheProject" == TheArray[i][1]) {
-                        return;
-                    } else {
-                        self.location = TheArray[i][1];
-                        return;
-                    }
+            .index-quotation-box {
+                display: flex;
+                justify-content: center;
+                margin-top: 180px;
+                align-items: center;
+            }
+
+                .index-quotation-box .card {
+                    width: 300px;
+                    height: 400px;
+                    box-shadow: 0 8px 16px 0 rgba(66,195,255,.18);
+                    cursor: pointer;
+                    padding-top: 26px;
+                    border-radius: 5px;
+                    border: 1px solid #fff;
+                    /* border-color: #2e9ef4; */
+                    /* background-color: #2e9ef4; */
                 }
-            }
-    });
 
-
-    $("#BtnSave").click( function(){
-
-        var Name = $("#Name").val();
-        var ProjectType = $("#ProjectType").val();
-        var BrandID = $("#BrandID").val();
-        var IsShow = $("#IsShow").val();
-        var url = getControllerUrl("BaseInfo", "ExportTheProjectList") + "?pageNum=1&numPerPage=10000000&Name=" + Name + "&ProjectType=" + ProjectType + "&BrandID=" + BrandID + "&IsShow=" + IsShow;
-        // window.open(url);
-        window.location.href = url;
-    })
-
-    $("#btnSetYinchang").click(function () {
-
-            var str = "";
-            $('input[name="checkbox"]:checked').each(function () {
-                str += $(this).val() + "|";
-            });
-            if (str == "") {
-                alert("请先勾选项目!");
-            }
-            else if (confirm('确定操作吗？')) {
-
-                $.ajax({
-                    type: "POST",
-                    url: getControllerUrl("BaseInfo", "SetProjectIsMoni"),
-                    async: false,
-                    data: $("#submitform").serialize(), // 你的formid
-                    error: function (request) {
-                        artdialogfailTwo("操作失败！", "", "250", "100");
-                    },
-                    success: function (data) {
-                        if (data > 0) {
-                            artdialog("操作成功！", "", "250", "100");
-                            location.reload();
-                        }
+                    .index-quotation-box .card .desc {
+                        margin-top: 25px;
+                        font-size: 32px;
                     }
-                });
+
+            .jiantoubox {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                margin: 0 20px;
+                color: #2e9ef4;
             }
-        });
+
+            .index-quotation-box .card:hover {
+                border: 1px solid #2e9ef4;
+            }
+
+            .index-quotation-box .indexActiveCard {
+                border: 1px solid #2e9ef4;
+                /* background-color: rgba(66,195,255,.13); */
+            }
+
+            .index-quotation-box .card img {
+                width: 260px;
+            }
+        </style>
+
+        @*<h1 class="form-signin-heading">
+            <img src="/Content/themes/images/333.png" style="height:100%" />
+            <img src="/Content/themes/images/sh.png" style="height:100%" />
+            <img src="/Content/themes/images/zz.png" style="height:100%" />
+        </h1>*@
 
 
-
-    </script>
-    <script>
-        $(function () {
-            let acHeight = $(window).height() - $("#footer").height() - $(".mainContentRight_top").height() - $("#header").height();
-            $("#articles").css("height", acHeight + "px");
-        })
-    </script>
+        @*@if (name == "jtjtzuizhongban")
+        {
+            <input type="submit" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject2")')" class="submitbutton2" id="btnsumbit" style="float: none;" value="初始版" />
+            <input type="submit" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject3")')" class="submitbutton2" id="btnsumbit" style="float: none;" value="审核版" />
+            <input type="submit" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject4")')" class="submitbutton2" id="btnsumbit" style="float: none;" value="最终版" />
+        }
+        @if (name == "jtjtchushiban")
+        {
+            <input type="submit" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject2")')" class="submitbutton2" id="btnsumbit" style="float: none;" value="初始版" />
+        }
+        @if (name == "jtjtshenheban")
+        {
+            <input type="submit" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject2")')" class="submitbutton2" id="btnsumbit" style="float: none;" value="初始版" />
+            <input type="submit" onclick="JumpUrl('@Url.Content("~/BaseInfo/TheProject3")')" class="submitbutton2" id="btnsumbit" style="float: none;" value="审核版" />
+        }*@
+    </body>
+</body>
+</html>

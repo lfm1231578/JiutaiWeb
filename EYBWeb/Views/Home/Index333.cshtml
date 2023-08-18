@@ -1,0 +1,245 @@
+﻿@using PersonnelManage.Factory.IBLL;
+@using EYB.ServiceEntity.SystemEntity;
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    IPersonnelManageBLL systemBLL = HS.SupportComponents.Base.XmlRegistration.Current.GetResovleContainer().Resolve<IPersonnelManageBLL>();
+
+    //获取所有的菜单
+    int userid = ViewBag.UserID;
+    List<UIControlEntity> menulist = new List<UIControlEntity>();
+    if (ViewBag.IsAdmin != 1)
+    {
+        menulist = systemBLL.GetUserMenuByUserID(userid).Where(c => c.ParentUIControlID == new Guid("BEF5CCF2-18C0-46a6-9B91-E984BEB9BFEF")).ToList();
+    }
+    else
+    {
+        menulist = systemBLL.GetUserMenuByUserID(userid).Where(c => c.ParentUIControlID == new Guid("BEF5CCF2-18C0-46a6-9B91-E984BEB9BFEF")).ToList();
+
+        //menulist = SystemManageBLL.GetMenuList(1,1).Where(c => c.ParentUIControlID == new Guid("BEF5CCF2-18C0-46a6-9B91-E984BEB9BFEF")).ToList();
+    }
+    int rownum = 0;//计数器
+}
+
+<style>
+    .topmenu_hover {display: inline-block; }
+    .menus-1, .menus-2, .menus-3, .menus-4, .menus-5, .menus-6, .menus-7 {display: inline-block;cursor: pointer;}
+    .menuimg-1{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon1.png");background-size:100%;}
+    .menuimg-2{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon2.png");background-size:100%;}
+    .menuimg-3{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon3.png");background-size:100%;}
+    .menuimg-4{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon4.png");background-size:100%;}
+    .menuimg-5{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon5.png");background-size:100%;}
+    .menuimg-6{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon6.png");background-size:100%;}
+    .menuimg-7{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon7.png");background-size:100%;}
+    .menuimg-8{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon8.png");background-size:100%;}
+    .menuimg-9{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon9.png");background-size:100%;}
+    .menuimg-10{width:110px;height:110px; background-image:url("../../Content/themes/ymt/img/menuicon/menuicon10.png");background-size:100%;}
+    .menu_box a{color:#666;}
+    .menu_box:hover {
+        background-color: #ff8680;
+        background-image: radial-gradient(#2890e8, #42c3fe);
+        /*background-image:linear-gradient(to right,#ff889a, #CC0000);*/
+    }
+    .menu_box:hover .menuimg-1{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons1.png");}
+    .menu_box:hover .menuimg-2{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons2.png");}
+    .menu_box:hover .menuimg-3{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons3.png");}
+    .menu_box:hover .menuimg-4{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons4.png");}
+    .menu_box:hover .menuimg-5{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons5.png");}
+    .menu_box:hover .menuimg-6{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons6.png");}
+    .menu_box:hover .menuimg-7{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons7.png");}
+    .menu_box:hover .menuimg-8{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons8.png");}
+    .menu_box:hover .menuimg-9{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons9.png");}
+    .menu_box:hover .menuimg-10{ background-image:url("../../Content/themes/ymt/img/menuicon/menuicons10.png");}
+    .menu_box:hover a{color:#fff;}
+    .menuTitle-1,.menuTitle-2,.menuTitle-3,.menuTitle-4,.menuTitle-5,.menuTitle-6,.menuTitle-7,.menuTitle-8,.menuTitle-9,.menuTitle-10{margin-top:15px; font-weight:bold;}
+    .menu_box{display:inline-block; width:160px;height:160px;background-color:#fff; text-align:center;padding:10px;border-radius:5px;margin-top:20px;}
+    .menu_box >a{padding:10px;text-decoration:none;}
+    .menu_box:hover{margin-top:15px;box-shadow: 3px 3px 1px #868686;}
+    #Topmenu{ width:1100px; display:flex; justify-content :space-around; margin:0 auto;height:220px;}
+    .ywgl {
+        width: 1100px;
+        margin-bottom: 18px;
+        background-image: linear-gradient(to right,#42c3fe, #2890e8);
+        color: #fff;
+        line-height: 40px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .ywgl1 {
+        margin-top:20px;
+    } 
+</style>
+
+<div id="layout" style="width:100%;height: 100%;">
+   
+    <!-- 菜单开始-->
+    <div class="menu" style=" display:flex;align-items:center;justify-content:center;height: 100%;margin-top:-10px;">
+        <div>
+            <div style="display:flex; justify-content:center;"><div class="ywgl">临床工具</div></div>
+            <div style="display:flex; justify-content :space-around;width:1100px;margin:0 auto;">
+                   @{
+    if (@menulist.Count() > 1)
+    {
+                                    <div class="menu_box">
+                                        <a class="menus-2" onclick="JumpUrl('/BaseInfo/TheProject3')">
+                                            <div class="menuimg-2"></div>
+                                            <div class="menuTitle-2">报价系统</div>
+                                        </a>
+                                    </div>
+    }
+
+                    }
+                   @{
+    if (@menulist.Count() > 2)
+    {
+
+                                    <div class="menu_box">
+                                        <a class="menus-2" onclick="JumpUrl('/BaseInfo/TheProject31')">
+                                            <div class="menuimg-2"></div>
+                                            <div class="menuTitle-2">技术审评报告</div>
+                                        </a>
+                                    </div>
+    }
+
+                    }
+                    @{
+    if (@menulist.Count() > 3)
+    {
+                                <div class="menu_box">
+                                    <a class="menus-4" onclick="JumpUrl('/BaseInfo/TheProject32')">
+                                        <div class="menuimg-4"></div>
+                                        <div class="menuTitle-4">现行法规</div>
+                                    </a>
+                                </div>
+    }
+
+                     }
+
+
+
+
+
+
+                        @{
+    if (@menulist.Count() > 4)
+    {
+                                <div class="menu_box">
+                                    <a class="menus-5" onclick="JumpUrl('/BaseInfo/TheProject33')">
+                                        <div class="menuimg-5"></div>
+                                        <div class="menuTitle-5">临床问询表</div>
+                                    </a>
+                                </div>
+    }
+
+                        }
+
+
+
+                    </div>
+
+                        <div  style="display:flex; justify-content:center;margin-top:50px;"><div class="ywgl" >通用工具</div></div>
+                        <div id="Topmenu">
+                            @*@foreach (var menu in menulist)
+        {
+
+            rownum = rownum + 1;
+            int numstatu = EYB.Web.Code.PageFunction.GetNumStatu(menu.UIControlName);
+
+            <div class="menu_box">
+                <div>@menu.URL</div>
+                <a class="@("menus-"+numstatu)" onclick="JumpUrl('@menu.URL')">
+                    <div class=@("menuimg-"+numstatu)></div>
+
+                    <div class="@("menuTitle-"+numstatu)">@menu.UIControlName</div>
+                </a>
+            </div>
+
+        }*@
+                            @{
+                                if (@menulist.Count() > 0)
+                                {
+
+                                    <div class="menu_box">
+                                        <a class="menus-1" onclick="JumpUrl('/BaseInfo/TheProject35')">
+                                            <div class="menuimg-1"></div>
+                                            <div class="menuTitle-1">前往九泰 </div>
+                                        </a>
+                                    </div>
+
+                                    <div class="menu_box">
+                                        <a class="menus-1" onclick="JumpUrl('/BaseInfo/TheProject36')">
+                                            <div class="menuimg-1"></div>
+                                            <div class="menuTitle-1">二类器械注册 </div>
+                                        </a>
+                                    </div>
+                                    @*<div class="menu_box" onclick='CheckRight(this,"")' redirect="@Url.Content("~/ReservationDoctorManage/ReservationList")">
+                    <a class="menus-1">
+                        <div class="menuimg-9"></div>
+                        <div class="menuTitle-9">前往九泰 </div>
+                    </a>
+                </div>*@
+                                }
+                            }
+
+
+
+
+
+
+
+                            @{
+                                if (@menulist.Count() > 5)
+                                {
+                                    <div class="menu_box">
+                                        <a class="menus-6" onclick="JumpUrl('/BaseInfo/TheProject34')">
+                                            <div class="menuimg-6"></div>
+                                            <div class="menuTitle-6">AI绘画</div>
+                                        </a>
+                                    </div>
+                                }
+
+                                if (@menulist.Count() > 6)
+                                {
+                                    <div class="menu_box">
+                                        <a class="menus-6" onclick="JumpUrl('/BaseInfo/TheProject37')">
+                                            <div class="menuimg-7"></div>
+                                            <div class="menuTitle-7">九泰GPT</div>
+                                        </a>
+                                    </div>
+                                }
+
+                            }
+
+                            @*<div class="menu_box">
+                        <a class="menus-1" onclick="JumpUrl('@Url.Content("~/BaseInfo/PersonnelDetail")?UserID=@ViewBag.UserID')">
+                            <div class="menuimg-8"></div>
+                            <div class="menuTitle-8">个人资料</div>
+                        </a>
+        </div>
+        <div class="menu_box">
+            <a class="menus-7" onclick="JumpUrl('@menulist[6].URL')">
+                <div class="menuimg-7"></div>
+                <div class="menuTitle-7">@menulist[6].UIControlName</div>
+            </a>
+        </div>
+                            *@
+
+                            @*<div class="menu_box">
+            <a class="menus-1" onclick="JumpUrl('@Url.Content("~/BaseInfo/PersonnelAccount")?UserID=@ViewBag.UserID')">
+                <div class="menuimg-10"></div>
+                <div class="menuTitle-10">安全</div>
+            </a>
+        </div>
+                            *@
+                        </div>
+                    </div>
+    </div>
+    <!-- 菜单结束-->
+   
+</div>
+<script type="text/javascript">
+    $(function () {
+        $(".topmenu").hover(function () { $(this).find(".topmenu_hover").css("display", "block") },
+            function () { $(this).find(".topmenu_hover").css("display", "none") });
+    })
+</script>

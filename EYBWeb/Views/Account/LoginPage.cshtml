@@ -20,18 +20,12 @@
         }
 
         .form-signin {
-            max-width: 340px;
-            height: 182px;
-            padding: 55px 29px 29px;
-            margin: 0 auto 3px;
-            background-color: #fff;
-            border: 1px solid #e5e5e5;
-            -webkit-border-radius: 5px;
-            -moz-border-radius: 5px;
-            border-radius: 5px;
-            -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-            -moz-box-shadow: 0 1px 2px rgba(0,0,0,.05);
-            box-shadow: 0 1px 2px rgba(0,0,0,.05);
+            display: flex !important;
+            width: 100%;
+            justify-content: center;
+
+
+
         }
 
             .form-signin .form-signin-heading, .form-signin .checkbox {
@@ -65,7 +59,7 @@
                 -moz-box-sizing: border-box;
                 box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
                 border: 1px solid #CCC;
-                border-radius: 4px;
+                border-radius: 25px;
             }
         /*.form-signin .submitbutton { width: 129px; height: 40px; line-height: 40px; float: right; text-align: center; padding-bottom: 13px; display: inline; color: #fff; cursor: pointer; border: 0px; background: url('../../Content/themes/images/button.jpg') 0px -10px no-repeat; font-size: 18px; font-family: 黑体; }*/
     </style>
@@ -104,8 +98,8 @@
                 position: relative;
                 z-index: 1;
                 width: 100%;
-                box-shadow: 0px 1px 5px #888888;
-                background-image: linear-gradient(#fff, #eaeaea);
+           /*     box-shadow: 0px 1px 5px #888888;
+                background-image: linear-gradient(#fff, #eaeaea);*/
             }
 
             .bodyCss h1 {
@@ -122,8 +116,8 @@
 
             .bodyCss .fromCss {
                 position: absolute;
-                top: 175px;
-                right: 10%;
+                top: 245px;
+                right: 0;
                 z-index: 9999;
             }
 
@@ -154,22 +148,27 @@
                 .bodyCss .form-signin .userDiv, .pwdDiv, .loginButton {
                     display: flex;
                     justify-content: center;
+                    margin-right: 43px;
+
                 }
 
                 .bodyCss .form-signin .submitbutton {
                     display: block;
-                    width: 90%;
+                    width: 150px;
                     margin: 10px auto 0;
-                    height: 30px;
-                    line-height: 30px;
+                    height: 39px;
+                    line-height: 39px;
                     color: #fff;
                     font-size: 16px;
                     border: none;
                     border-radius: 4px;
-                    background: #f56c6c;
+                    background: #2991e8;;
                     cursor: pointer;
+                    border-radius: 25px;
                 }
-
+        input {
+            outline: none;
+        }
             .bodyCss .checkbox {
                 display: flex;
                 justify-content: flex-start;
@@ -181,6 +180,7 @@
                 }
 
                     .bodyCss .checkbox label input {
+                        text-decoration:none
                     }
 
             .bodyCss .footer {
@@ -194,19 +194,27 @@
 
             .bodyCss .loginBG {
                 width: 100%;
-                height: 750px;
+             
             }
 
-            .bodyCss .main-bg {
-                height: 750px;
+        .bodyCss .main-bg {
+            /*        height: 750px;
                 position: absolute;
                 background-color: #fbc9ca;
                 width: 100%;
                 z-index: 55;
                 top: 70px;
                 overflow: hidden;
-                left: 0%;
-            }
+                left: 0%;*/
+            position: absolute;
+            top: 70px;
+            width: 100%;
+            height: calc(100vh - 87px);
+            background-image: url("http://192.168.10.12:3003/_nuxt/img/dev.523eace.png");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
 
         #body-title {
             position: absolute;
@@ -247,132 +255,12 @@
     <body>
         <!-- BEGIN #main -->
         <div class="main-bg">
-            <div id="body-title">
-                <!--<div style="color:rgb(2,255,254);font-size:55px;text-shadow: 1px 1px 2px #d6d6d6"> -->
-                <div>
-                    <div style="color:#ea767d;font-size:55px;text-shadow: 1px 1px 2px #d6d6d6">
-                        九泰软件科技
-                    </div>
-                    <div style="display:flex;justify-content:flex-start;width:322px;padding:5px 0;">
-                        <div style="height:1px;width:50%;background:#ea767d">
-                            <!-- <div style="height:1px;width:50%;background:rgb(2,255,254)">-->
-                        </div>
-                        <div style="height:1px;width:50%;background:indianred;"></div>
-                    </div>
-                    <div style="font-size:29px;letter-spacing:8px;text-shadow: 1px 1px 2px #d6d6d6;color:indianred;">做临研有灵魂的软件</div>
-                </div>
-            </div>
+       
             @*<img src="../../Content/themes/ymt/img/Weblogin_3.gif" alt="Alternate Text" style="position:absolute;width:100%;height:100%;opacity:0.9; " />*@
             <div id="main" style="position: absolute;z-index: 6666;opacity: 0.9; top: 99px;left:calc(50% - 270px); top:17%; display:none;">
                 <div id="so_top">
                 </div>
-                <!-- <ul id="m-result" class="result">
-                <li id="first" class="res-list">
-                    <div id="mohe-rili" class="g-mohe" data-mohe-type="rili">
-                        <div class="mh-rili-wap mh-rili-only " data-mgd='{"b":"rili-body"}'>
-                            <div class="mh-tips">
-                                <div class="mh-loading">
-                                    <i class="mh-ico-loading"></i>正在为您努力加载中...
-                                </div>
-                                <div class="mh-err-tips">亲，出了点问题~ 您可<a href="#reload" class="mh-js-reload">重试</a></div>
-                            </div>
-                            <div class="mh-rili-widget">
-
-                                <div class="mh-doc-bd mh-calendar">
-                                    <div class="mh-hint-bar gclearfix">
-                                        <div class="mh-control-bar">
-                                            <div class="mh-control-module mh-year-control mh-year-bar">
-                                                <a href="#prev-year" action="prev" class="mh-prev" data-md='{"p":"prev-year"}'></a>
-                                                <div class="mh-control">
-                                                    <i class="mh-trigger"></i>
-                                                    <div class="mh-field mh-year" val=""></div>
-                                                </div>
-                                                <a href="#next-year" action="next" class="mh-next" data-md='{"p":"next-year"}'></a>
-                                                <ul class="mh-list year-list" style="display:none;" data-md='{"p":"select-year"}'></ul>
-                                            </div>
-                                            <div class="mh-control-module mh-month-control mh-mouth-bar">
-                                                <a href="#prev-month" action="prev" class="mh-prev" data-md='{"p":"prev-month"}'></a>
-                                                <div class="mh-control">
-                                                    <i class="mh-trigger"></i>
-                                                    <div class="mh-field mh-month" val=""></div>
-                                                </div>
-                                                <a href="#next-month" action="next" class="mh-next" data-md='{"p":"next-month"}'></a>
-                                                <ul class="mh-list month-list" style="display:none;" data-md='{"p":"select-month"}'></ul>
-                                            </div>
-                                            @*<div class="mh-control-module mh-holiday-control mh-holiday-bar">
-                                            <div class="mh-control">
-                                                <i class="mh-trigger"></i>
-                                                <div class="mh-field mh-holiday"></div>
-                                            </div>
-                                            <ul class="mh-list" style="display:none;" data-md='{"p":"select-holiday"}'></ul>
-                                        </div>*@
-                                            <div class="mh-btn-today" data-md='{"p":"btn-today"}' id="todayClick">返回今天</div>
-                                        </div>
-                                        <div class="mh-time-panel" style="display:flex;justify-content:space-between;">
-                                            <dl class="gclearfix" style="margin-left:-138px;">
-                                                <dt class="mh-time-monitor-title">时间:</dt>
-                                                <dd class="mh-time-monitor"></dd>
-                                            </dl>
-                                            <div  id="closeRiLi" style="display:inline-block;vertical-align:middle;cursor:pointer;"> <img src="../../Content/themes/ymt/img/close.png" style="width:17px;height:17px;margin-right: 15px;" alt="Alternate Text" /></div>
-                                        </div>
-                                    </div>
-                                    <div class="mh-cal-main">
-                                        <div class="mh-col-1 mh-dates">
-                                            <ul class="mh-dates-hd gclearfix">
-                                                <li class="mh-days-title">一</li>
-                                                <li class="mh-days-title">二</li>
-                                                <li class="mh-days-title">三</li>
-                                                <li class="mh-days-title">四</li>
-                                                <li class="mh-days-title">五</li>
-                                                <li class="mh-days-title mh-weekend">六</li>
-                                                <li class="mh-days-title mh-last mh-weekend">日</li>
-                                            </ul>
-                                            <ol class="mh-dates-bd"></ol>
-                                        </div>
-                                        <div class="mh-col-2 mh-almanac">
-                                            <div class="mh-almanac-base mh-almanac-main"></div>
-                                            <div class="mh-almanac-extra gclearfix" style="display:none;">
-                                                <div class="mh-suited">
-                                                    <h3 class="mh-st-label">宜</h3>
-                                                    <ul class="mh-st-items gclearfix"></ul>
-                                                </div>
-                                                <div class="mh-tapu">
-                                                    <h3 class="mh-st-label">忌</h3>
-                                                    <ul class="mh-st-items gclearfix"></ul>
-                                                </div>
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <span id="mh-date-y" style="display:none;">2015</span>
-
-                                <script>
-                                    /*
-                                    2015节假日清单，一年一改
-                                    */
-
-                                    (function () { window.OB = window.OB || {}, window.OB.RiLi = window.OB.RiLi || {}, window.OB.RiLi.dateRest = ["0101", "0102", "0103", "0218", "0219", "0220", "0221", "0222", "0223", "0224", "0404", "0405", "0406", "0501", "0502", "0503", "0620", "0621", "0622", "0903", "0904", "0905", "0926", "0927", "1001", "1002", "1003", "1004", "1005", "1006", "1007"], window.OB.RiLi.dateWork = ["0104", "0215", "0228", "0906", "1010"], window.OB.RiLi.dateFestival = ["20150101||元旦", "20150219||春节", "20150405||清明节", "20150501||劳动节", "20150620||端午节", "20150903||抗战纪念日", "20150927||中秋节", "20151001||国庆节"], window.OB.RiLi.dateAllFestival = ["正月初一|v,春节", "正月十五|v,元宵节", "二月初二|v,龙头节", "五月初五|v,端午节", "七月初七|v,七夕节", "七月十五|v,中元节", "八月十五|v,中秋节", "九月初九|v,重阳节", "十月初一|i,寒衣节", "十月十五|i,下元节", "腊月初八|i,腊八节", "腊月廿三|i,祭灶节", "0202|i,世界湿地日,1996", "0214|v,西洋情人节", "0308|i,国际妇女节,1975", "0315|i,国际消费者权益日,1983", "0422|i,世界地球日,1990", "0501|v,国际劳动节,1889", "0512|i,国际护士节,1912", "0518|i,国际博物馆日,1977", "0605|i,世界环境日,1972", "0623|i,国际奥林匹克日,1948", "0624|i,世界骨质疏松日,1997", "1117|i,世界学生日,1942", "1201|i,世界艾滋病日,1988", "0101|v,元旦", "0312|i,植树节,1979", "0504|i,五四青年节,1939", "0601|v,儿童节,1950", "0701|v,建党节,1941", "0801|v,建军节,1933", "0903|v,抗战胜利纪念日", "0910|v,教师节,1985", "1001|v,国庆节,1949", "1224|v,平安夜", "1225|v,圣诞节", "w:0520|v,母亲节,1913", "w:0630|v,父亲节", "w:1144|v,感恩节(美国)", "w:1021|v,感恩节(加拿大)"]; var e = "https://s.ssl.qhimg.com/!97be6a4c/data/"/*本地老黄历库在lhl文件夹，此处是官网调用的*/; location.protocol == "https:" && (e = "https://s.ssl.qhimg.com/!97be6a4c/data/")/*本地老黄历库在lhl文件夹，此处是官网调用的*/, window.OB.RiLi.hlUrl = { 2008: e + "hl2008.js", 2009: e + "hl2009.js", 2010: e + "hl2010.js", 2011: e + "hl2011.js", 2012: e + "hl2012.js", 2013: e + "hl2013.js", 2014: e + "hl2014.js", 2015: e + "hl2015.js", 2016: e + "hl2016.js", 2017: e + "hl2017.js", 2018: e + "hl2018.js", 2019: e + "hl2019.js", 2020: e + "hl2020.js" }, window.OB.RiLi.dateHuochepiao = ["-20141201||20", "20141201||30", "20141202||36", "20141203||42", "20141204||48", "20141205||54", "+20141205||60", "c20141221-20141228||red"], window.OB.RiLi.useLunarTicketDay = { 2015: { "0218": "除夕", "0219": "初一", "0220": "初二", "0221": "初三", "0222": "初四", "0223": "初五", "0224": "初六", "0225": "初七" } } })()</script>
-
-                            </div>
-                        </div>
-
-                        <div class="mh-rili-foot">
-                        </div>
-                        <select class="mh-holiday-data" style="display:none;">
-                            <option value="0" data-desc="" data-gl="">放假安排</option>
-                            <option value="抗战胜利纪念日" data-desc="9月3日至5日放假调休，共3天。9月6日（星期日）上班。" data-gl="">抗战胜利纪念日</option>
-                            <option value="国庆节" data-desc="10月1日至7日放假调休，共7天。10月10日（星期六）上班。" data-gl="">国庆节</option>
-                            <option value="中秋节" data-desc="9月27日放假。" data-gl="">中秋节</option>
-                            <option value="端午节" data-desc="6月20日放假，6月22日（星期一）补休。" data-gl="">端午节</option>
-                            <option value="劳动节" data-desc="5月1日放假，与周末连休。" data-gl="">劳动节</option>
-                            <option value="清明节" data-desc="4月5日放假，4月6日（星期一）补休。" data-gl="">清明节</option>
-                            <option value="春节" data-desc="2月18日至24日放假调休，共7天。2月15日（星期日）、2月28日（星期六）上班。" data-gl="">春节</option>
-                            <option value="元旦" data-desc="1月1日至3日放假调休，共3天。1月4日（星期日）上班。" data-gl="">元旦</option>
-                        </select>
-                        <!--value获取当前PHP服务器时间-->
+               
                 <input type="hidden" id="mh-rili-params" value="action=query&year=2015&month=09&day=04" />
 
             </div>
@@ -600,7 +488,6 @@
 
             <div class="loginBG"></div>
             <form class="form-signin fromCss " id="form-signin">
-                <h3>泰美行 云系统</h3>
                 <div class="userDiv"><input type="text" id="txtAccount" class="text-input" placeholder="用户名" value="" /></div>
                 <div class="pwdDiv"><input type="password" id="txtPassword" class="text-input" placeholder="密码" value="" /></div>
                 <div class="loginButton">
@@ -609,21 +496,21 @@
                     </button>
                 </div>
 
-                <div style="height: 45px; line-height: 45px;width:100%;">
+                @*<div style="height: 45px; line-height: 45px;width:100%;">
                     <div class="checkbox">
                         <label><input type="checkbox" name="rememberme" value="1" id="texrememberme" />记住密码</label>
                     </div>
-                </div>
+                </div>*@
             </form>
             @*<div style="width:400px; margin:0 auto;"><img src="../../Content/themes/images/bgbottom.png" /></div>*@
         </div>
         <!-- /container -->
         <!-- footer start  -->
-        <div class="footer">
-            网站备案号: 粤ICP备19130599号    技术支持 : 广州九泰药械科技有限公司
+        <!--<div class="footer">
+            网站备案号: 粤ICP备19130599号    技术支持 : 广州九泰药械科技有限公司-->
             @*<br />*@
-            Copyright 2018-2029 www.jiutai.net All Rights Reserved
-        </div>
+            <!--Copyright 2018-2039 Rights Reserved
+        </div>-->
         <!-- footer end  -->
         <script type="text/javascript">
             //获取cookie

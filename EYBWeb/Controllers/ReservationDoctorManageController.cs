@@ -1281,7 +1281,7 @@ namespace EYB.Web.Controllers
             string month = "0";
             try
             {
-                string conStr = "server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft";//连接字符串  
+                string conStr = "server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft112";//连接字符串  
                 SqlConnection conText = new SqlConnection(conStr);//创建Connection对象 
                 conText.Open();//打开数据库  
                 string sqls = sqlstr;//创建统计语句  
@@ -1957,7 +1957,7 @@ namespace EYB.Web.Controllers
             var LR = new LeaveRecordsEntity();
             try
             {
-                string conStr = "server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft";//连接字符串  
+                string conStr = "server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft112";//连接字符串  
                 SqlConnection conText = new SqlConnection(conStr);//创建Connection对象 
                 conText.Open();//打开数据库  
                 string sqls = sqlstr;//创建统计语句  
@@ -1985,7 +1985,7 @@ namespace EYB.Web.Controllers
         {  //执行
             try
             {
-                using (SqlConnection con = new SqlConnection("server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft"))
+                using (SqlConnection con = new SqlConnection("server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft112"))
                 {
                     con.Open();//操作数据库的工具SqlCommand
                     SqlCommand cmd = new SqlCommand(sql, con);//(操作语句和链接工具)

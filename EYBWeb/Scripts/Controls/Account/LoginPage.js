@@ -1,11 +1,13 @@
-﻿/* 文 件 名：LoginPage.js
+﻿ /* 文 件 名：LoginPage.js
 * 功    能：登录页面控制脚本
 * 备    注：
 * 创建时间：
 */
 
 var LoginURL = getControllerUrl("Account", "Login");
-var IndexURL = getControllerUrl("BaseInfo", "TheProject1");
+var IndexURL = getControllerUrl("BaseInfo", "TheProjectBaojia");
+var IndexURL = getControllerUrl("BaseInfo", "TheProject371");
+
 //var IndexURL = getControllerUrl("Home", "Index");
 var CheckURL = getControllerUrl("Account", "CheckCode");
 //var usbKeyUrl = getControllerUrl("Account", "ValidateUSBKeyPage");

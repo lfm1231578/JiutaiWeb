@@ -2088,7 +2088,7 @@ ir.Integral = 0;
             var list = new List<IntegralRecordEntity>();
             try
             {
-                string conStr = "server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft";//连接字符串  
+                string conStr = "server=47.99.170.3;user=gaole;pwd=heyi2020!@#$%^;database=Ymsoft112";//连接字符串  
                 SqlConnection conText = new SqlConnection(conStr);//创建Connection对象 
                 conText.Open();//打开数据库  
                 string sqls = sqlstr;//创建统计语句  

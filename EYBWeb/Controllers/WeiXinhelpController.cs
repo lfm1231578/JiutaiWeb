@@ -82,10 +82,11 @@ namespace EYB.Web.Controllers
             
             var userkey = (UserModel.UserID + 2016) * 5;
             string statrstr =userkey.ToString();
-            statrstr += "a" + Common.Helper.WeiXinMessage.UpStr(UserModel.UserKey.ToString().Substring(0, 6)) + "a" + wx.ID + "a4799663";
+            //statrstr += "a" + Common.Helper.WeiXinMessage.UpStr(UserModel.UserKey.ToString().Substring(0, 6)) + "a" + wx.ID + "a4799663";
+             statrstr += "a" + Common.Helper.WeiXinMessage.UpStr(UserModel.UserKey.ToString().Substring(0, 6)) + "a" + wx.ID + "a4795634348";
 
 
-            var url = string.Format("https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state={2}#wechat_redirect", wx.AppID, wx.BindUrl + "/WeiXin/ParientBindingWeixin", statrstr);
+                var url = string.Format("https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state={2}#wechat_redirect", wx.AppID, wx.BindUrl + "/WeiXin/ParientBindingWeixin", statrstr);
 
             LogWriter.WriteInfo("地址：" + url, "绑定地址,用户编号："+UserModel.UserID);                                                
             QRCodeHandler qr = new QRCodeHandler();

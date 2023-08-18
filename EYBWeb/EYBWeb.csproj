@@ -28,6 +28,7 @@
     <IISExpressUseClassicPipelineMode />
     <UseGlobalApplicationHostFile />
     <Use64BitIISExpress />
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,16 +47,36 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Aspose.Words">
+      <HintPath>..\..\..\..\..\..\sofofiter\asposewordsdll\Aspose.Words.dll</HintPath>
+    </Reference>
     <Reference Include="DTcms.Common">
       <HintPath>..\..\引用组件\DTcms.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="FontBox-0.1.0-dev">
+      <HintPath>..\..\..\..\..\..\sofofiter\PDFBox-0.7.3\PDFBox-0.7.3\bin\FontBox-0.1.0-dev.dll</HintPath>
     </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>..\..\引用组件\HtmlAgilityPack.dll</HintPath>
     </Reference>
+    <Reference Include="IKVM.GNU.Classpath">
+      <HintPath>..\..\..\..\..\..\sofofiter\PDFBox-0.7.3\PDFBox-0.7.3\bin\IKVM.GNU.Classpath.dll</HintPath>
+    </Reference>
+    <Reference Include="IKVM.Runtime">
+      <HintPath>..\..\..\..\..\..\sofofiter\PDFBox-0.7.3\PDFBox-0.7.3\bin\IKVM.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>C:\Users\dell\Downloads\Compressed\itextsharp\X86\5.3.2.0\itextsharp.dll</HintPath>
+    </Reference>
     <Reference Include="LitJSON">
       <HintPath>..\..\引用组件\LitJSON.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Interop.Word, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Office.Interop.Word.15.0.4797.1004\lib\net20\Microsoft.Office.Interop.Word.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Caching">
       <HintPath>..\..\引用组件\Microsoft.Practices.EnterpriseLibrary.Caching.dll</HintPath>
@@ -83,8 +105,20 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\引用组件\NPOI\NPOI.dll</HintPath>
     </Reference>
+    <Reference Include="PDFBox-0.7.3">
+      <HintPath>..\..\..\..\..\..\sofofiter\PDFBox-0.7.3\PDFBox-0.7.3\bin\PDFBox-0.7.3.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Doc, Version=3.6.2.2, Culture=neutral, PublicKeyToken=19cd8b2d76b7209e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\soft\Blog-master\src\SupportComponents\SupportComponents\bin\Debug\Spire.Doc.dll</HintPath>
+    </Reference>
+    <Reference Include="Spire.Pdf">
+      <HintPath>..\..\..\..\..\..\sofofiter\Spire.Pdf\Spire.Pdf.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Web.WebPages" />
     <Reference Include="System.Web.Helpers" />
@@ -96,17 +130,14 @@
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="ThoughtWorks.QRCode, Version=1.0.3990.25764, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\引用组件\ThoughtWorks.QRCode.dll</HintPath>
@@ -142,6 +173,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MobilePhoneController.cs" />
     <Compile Include="Controllers\MoneyManageController.cs" />
+    <Compile Include="Controllers\ParsingPDF.cs" />
     <Compile Include="Controllers\PatientManageController.cs" />
     <Compile Include="Controllers\PayController.cs" />
     <Compile Include="Controllers\PersonnelManageController.cs" />
@@ -1559,12 +1591,10 @@
     <None Include="download\疗程卡结余.xlsx" />
     <None Include="download\项目.xlsx" />
     <None Include="download\顾客档案.xlsx" />
+    <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Properties\PublishProfiles\配置文件1.pubxml" />
     <None Include="qqwry.dat" />
-    <None Include="Service References\SerialNumber\EYB.Web.SerialNumber.SerialNumberEntity.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
     <None Include="Service References\SerialNumber\configuration91.svcinfo" />
     <None Include="Service References\SerialNumber\configuration.svcinfo" />
     <None Include="Service References\SerialNumber\Reference.svcmap">
@@ -2221,6 +2251,35 @@
     <Content Include="Views\BaseInfo\_TheProject5.cshtml" />
     <Content Include="Views\PatientManage\PatientRegister1.cshtml" />
     <Content Include="Views\BaseInfo\PatientRegister1.cshtml" />
+    <Content Include="Views\BaseInfo\SysUserpage1.cshtml" />
+    <Content Include="Views\BaseInfo\AppUserPage1.cshtml" />
+    <Content Include="Views\BaseInfo\_AppUserPage1.cshtml" />
+    <Content Include="Views\BaseInfo\TheProjectBaojia.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject1 - 复制.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject2 - 复制.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject3 - 复制.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject4 - 复制.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject2 - 复制%282%29.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject3 - 复制%282%29.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject4 - 复制%282%29.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject31.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject32.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject33.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject34.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject35.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject36.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject37.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject38.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject39.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject310.cshtml" />
+    <Content Include="Views\Account\LoginPage - 复制.cshtml" />
+    <Content Include="Views\Home\Index - 复制.cshtml" />
+    <Content Include="Views\Home\Index - 复制%282%29.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject371.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject37 - 复制%282%29.cshtml" />
+    <Content Include="Views\BaseInfo\TheProject372.cshtml" />
+    <Content Include="Views\Account\LoginHome.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\PatientManage\_PartialPatientControl.cshtml" />
@@ -2229,7 +2288,7 @@
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Account\CheckCode.cshtml" />
     <Content Include="Views\Account\LoginPage.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Index333.cshtml" />
     <Content Include="Views\Shared\Success.cshtml" />
     <Content Include="Views\SystemManagement\BaseinfoSet.cshtml" />
     <Content Include="Views\SystemManagement\DataRight.cshtml" />
@@ -2533,7 +2592,7 @@
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>10542</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:10543/</IISUrl>
+          <IISUrl>http://localhost:10546/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
